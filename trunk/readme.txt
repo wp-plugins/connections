@@ -28,6 +28,8 @@ To insert a contact list in a page/post use the shortcode:
 
 `[connections_list]`
 
+
+
 This shortcode has three available options:
 
 1. id
@@ -41,11 +43,15 @@ Usage:
 
 `[connections_list id=2]`
 
+
+
 The *private_override* option allows you to show the a contact list including all private entires whether the user is logged into your site or not. This is useful when you want to sure a single private entry in a page/post to the public.
 
 Usage:
 
 `[connections_list private_override=true]` **or** `[connections_list id=2 private_override=true]`
+
+
 
 The *show_alphaindex* option inserts an an A thru Z anchor list at the head of the contact list. This is useful if you have many entries.
 
@@ -54,12 +60,15 @@ Usage:
 `[connections_list show_alphaindex=true]`
 
 
-
+ 
+ 
 There is also a second shortcode that can be use for displaying a list of upcoming birthdays and/or anniversaries.
 
 Usage:
 
 `[upcoming_list]`
+
+
 
 This defaults to showing birthdays for the next 30 days using the this date format: January 15th; and does not show last names.
 
@@ -79,6 +88,8 @@ Usage:
 
 `[upcoming_list list_type=anniversary]`
 
+
+
 The *days* option allows you to change the default 30 days to any numbers of days. This can be used with birthdays or anniversaries.
 
 
@@ -86,11 +97,15 @@ Usage:
 
 `[upcoming_list days=90]`
 
+
+
 The list by default will only show public entries when a user is not logged into your site. By setting *private_override* to true this list will show all entries whether the user is logged in or not.
 
 Usage:
 
 `[upcoming_list private_override=true]`
+
+
 
 The *date_format* option allows you to customize the displayed date. The default is 'F jS'. Refer to the [PHP Manual](http://us2.php.net/date) for the format characters.
 
@@ -98,17 +113,22 @@ Usage:
 
 `[upcoming_list date_format="F jS Y"]` 
 
+
+
 By default only the first letter of the last name will be shown. The *show_lastname* option can be used to show the full last name.
 
 Usage:
 
 `[upcoming_list show_lastname=true]`
 
+
+
 The *list_title* option allows you to use custom text for the list title. Be default, if the list is a birthday list for the next 7 days, the title will read "Upcoming Birthdays for the next 7 days".
 
 Usage:
 
 `[upcoming_list list_title="Any Text"]`
+
 
 
 
