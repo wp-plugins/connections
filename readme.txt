@@ -30,9 +30,9 @@ To insert a contact list in a page/post use the shortcode:
 
 This shortcode has three available options:
 
-# id
-# private_override
-# show_alphaindex
+1. id
+2. private_override
+3. show_alphaindex
 
 
 The *id* option allows you to show the contact info for a single entry. Default is all public and/or private entries.
@@ -65,12 +65,12 @@ This defaults to showing birthdays for the next 30 days using the this date form
 
 This shortcode has six available options:
 
-# list_type
-# days
-# private_override
-# date_format
-# show_lastname
-# list_title
+1. list_type
+2. days
+3. private_override
+4. date_format
+5. show_lastname
+6. list_title
 
 
 The *list_type* option allows you to change the listed upcoming dates from birthdays to anniversaries.
