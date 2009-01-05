@@ -49,7 +49,11 @@ The *private_override* option allows you to show the a contact list including al
 
 Usage:
 
-`[connections_list private_override=true]` **or** `[connections_list id=2 private_override=true]`
+`[connections_list private_override=true]` 
+
+**or**
+
+`[connections_list id=2 private_override=true]`
 
 
 
