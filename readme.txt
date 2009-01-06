@@ -4,7 +4,7 @@ Donate link:
 Tags: addresses, address book, addressbook, contact, contacts, directory, lists, people
 Requires at least: 2.7
 Tested up to: 2.7
-Stable tag: 0.2.3
+Stable tag: 0.2.4
 
 A address book plugin. View and manage addresses in the admin back-end or embedded
 in a post or page.
@@ -37,7 +37,7 @@ This shortcode has three available options:
 3. show_alphaindex
 
 
-The *id* option allows you to show the contact info for a single entry. Default is all public and/or private entries.
+The *id* option allows you to show the contact info for a single entry. Default is to show all public and/or private entries in the list. The ID can be found in the admin by showing the details for an entry. It will be labelled **Entry ID:**
 
 Usage:
 

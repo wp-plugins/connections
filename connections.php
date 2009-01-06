@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://shazahm.net/
 Description: An address book.
-Version: 0.2.3
+Version: 0.2.4
 Author: Steve. A. Zahm
 Author URI: http://www.shazahm.net/
 
@@ -26,7 +26,7 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 ----------------------------------------
 */
 
-$connections_version = '0.2.3';
+$connections_version = '0.2.4';
 add_action('admin_head', 'connections_adminhead');
 session_start();
 
@@ -432,7 +432,7 @@ function connections_main() {
 											echo "<td class='".$altrow."' colspan='3'>";
 												if ($row->notes) echo "<strong>Notes:</strong> " . $row->notes; else echo "&nbsp;";
 											echo "</td>";
-											echo "<td class='".$altrow."'>&nbsp;</td>";
+											echo "<td class='".$altrow."'><strong>Entry ID:</strong> " . $row->id . "</td>";
 										echo "</tr>";
 																				
 									} ?>
