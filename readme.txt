@@ -45,7 +45,7 @@ Usage:
 
 
 
-The *private_override* option allows you to show the a contact list including all private entires whether the user is logged into your site or not. This is useful when you want to sure a single private entry in a page/post to the public.
+The *private_override* option allows you to show the a contact list including all private entires whether the user is logged into your site or not. This is useful when you want to show a single private entry in a page/post to the public.
 
 Usage:
 
@@ -141,7 +141,11 @@ Upcoming features:
 * Picture support
 * Assign entries to groups and display those groups in a page/post
 * Create "family" connections between entries
+* An update request form
 * A print link for easy printing of the list
+* A print link for printing out a list of birthdays and anniversaries
+* Integration with WP Users to permit users to maintain their own info, mostly likely this will be optional on a per entry instance
+* Selectable entry type; Personal / Business to allow this to be used as a business directory as well
 * ...and any suggestion that I may receive...
 
 
