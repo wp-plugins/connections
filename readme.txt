@@ -11,7 +11,7 @@ in a post or page.
 
 == Description ==
 
-This plugin was based off LBB, "Little Black Book"; which was based on Addressbook, both of which can be found in the Plugin Directory. Though these are great, I needed something a bit more. Here's a overview list of changes:
+This plugin was based off LBB, "Little Black Book"; which was based on Addressbook, both of which can be found in the Plugin Directory. Though these are great, I needed something a bit more. Here's a overview list of changes:
 
 * Added many more fields that include multiple addresses with selectable type; birthday and anniversary
 * Each contact has selectable visibility. You can choose between, public, private and unlisted.
