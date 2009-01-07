@@ -127,7 +127,7 @@ Usage:
 
 **Upcoming features:**
 
-* Picture support with adjustable picture size
+* Picture support with adjustable picture size **The developement version under other versions has preliminary image support**
 * Assign entries to groups and display those groups in a page/post
 * Create "family" connections between entries
 * An update request form
