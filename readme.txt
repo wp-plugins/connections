@@ -56,7 +56,6 @@ Usage:
 `[connections_list id=2 private_override=true]`
 
 
-
 The *show_alphaindex* option inserts an an A thru Z anchor list at the head of the contact list. This is useful if you have many entries.
 
 Usage:
@@ -64,14 +63,11 @@ Usage:
 `[connections_list show_alphaindex=true]`
 
 
- 
- 
 There is also a second shortcode that can be use for displaying a list of upcoming birthdays and/or anniversaries.
 
 Usage:
 
 `[upcoming_list]`
-
 
 
 This defaults to showing birthdays for the next 30 days using the this date format: January 15th; and does not show last names.
@@ -93,14 +89,12 @@ Usage:
 `[upcoming_list list_type=anniversary]`
 
 
-
 The *days* option allows you to change the default 30 days to any numbers of days. This can be used with birthdays or anniversaries.
 
 
 Usage:
 
 `[upcoming_list days=90]`
-
 
 
 The list by default will only show public entries when a user is not logged into your site. By setting *private_override* to true this list will show all entries whether the user is logged in or not.
@@ -110,13 +104,11 @@ Usage:
 `[upcoming_list private_override=true]`
 
 
-
 The *date_format* option allows you to customize the displayed date. The default is 'F jS'. Refer to the [PHP Manual](http://us2.php.net/date) for the format characters.
 
 Usage:
 
 `[upcoming_list date_format="F jS Y"]` 
-
 
 
 By default only the first letter of the last name will be shown. The *show_lastname* option can be used to show the full last name.
@@ -126,7 +118,6 @@ Usage:
 `[upcoming_list show_lastname=true]`
 
 
-
 The *list_title* option allows you to use custom text for the list title. Be default, if the list is a birthday list for the next 7 days, the title will read "Upcoming Birthdays for the next 7 days".
 
 Usage:
@@ -134,11 +125,9 @@ Usage:
 `[upcoming_list list_title="Any Text"]`
 
 
+**Upcoming features:**
 
-
-Upcoming features:
-
-* Picture support
+* Picture support with adjustable picture size
 * Assign entries to groups and display those groups in a page/post
 * Create "family" connections between entries
 * An update request form
@@ -146,13 +135,13 @@ Upcoming features:
 * A print link for printing out a list of birthdays and anniversaries
 * Integration with WP Users to permit users to maintain their own info, mostly likely this will be optional on a per entry instance
 * Selectable entry type; Personal / Business to allow this to be used as a business directory as well
+* Alternate views for the contact list; condenced and profile
 * ...and any suggestion that I may receive...
 
 
 
-Known Issues:
+**Known Issues:**
 
-* Currently the entry id has to be found in the output html
 * The CSS style sheet is linked on every page in the admin
 * The styles in the output html is hard coded
 
@@ -171,3 +160,4 @@ There is no need to de-activate and then re-activate Connections to upgrade.
 
 == Version History ==
 0.2.3 First version in the repository
+0.2.4 Add entry ID to the admin
