@@ -159,5 +159,5 @@ Usage:
 There is no need to de-activate and then re-activate Connections to upgrade.
 
 == Version History ==
-0.2.3 First version in the repository
-0.2.4 Add entry ID to the admin
+*0.2.3 First version in the repository
+*0.2.4 Add entry ID to the admin

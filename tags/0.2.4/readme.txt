@@ -127,7 +127,7 @@ Usage:
 
 **Upcoming features:**
 
-* Picture support with adjustable picture size
+* Picture support with adjustable picture size **The developement version under other versions has preliminary image support**
 * Assign entries to groups and display those groups in a page/post
 * Create "family" connections between entries
 * An update request form
@@ -159,5 +159,5 @@ Usage:
 There is no need to de-activate and then re-activate Connections to upgrade.
 
 == Version History ==
-0.2.3 First version in the repository
-0.2.4 Add entry ID to the admin
+*0.2.3 First version in the repository
+*0.2.4 Add entry ID to the admin
