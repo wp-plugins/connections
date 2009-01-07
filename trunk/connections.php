@@ -470,7 +470,7 @@ function connections_main() {
 												if ($row->notes) echo "<strong>Notes:</strong> " . $row->notes; else echo "&nbsp;";
 											echo "</td>";
 											echo "<td class='".$altrow."'><strong>Entry ID:</strong> " . $row->id;
-												if (!$row->image_names) echo "<br /><strong>Image Attached:</strong> : No"; else echo "<br /><strong>Image Attached:</strong> : Yes";
+												if (!$row->image_names) echo "<br /><strong>Image Attached:</strong> No"; else echo "<br /><strong>Image Attached:</strong> Yes";
 											echo "</td>";
 										echo "</tr>";
 																				
