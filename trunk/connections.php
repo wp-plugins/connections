@@ -26,11 +26,26 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 ----------------------------------------
 */
 
-$connections_version = '0.2.4';
-add_action('admin_head', 'connections_adminhead');
+//GPL PHP upload class from http://www.verot.net/php_class_upload.htm
+require_once(WP_PLUGIN_DIR . '/connections/php_class_upload/class.upload.php');
+
+$connections_version = '0.2.6';
 session_start();
 
+// Define a few constants until I can get to creating the options page.
+define('CN_DEFAULT_JPG_QUALITY', 80);
+define('CN_DEFAULT_PROFILE_X', 300);
+define('CN_DEFAULT_PROFILE_Y', 225);
+define('CN_DEFAULT_ENTRY_X', 225);
+define('CN_DEFAULT_ENTRY_Y', 150);
+define('CN_DEFAULT_THUMBNAIL_X', 80);
+define('CN_DEFAULT_THUMBNAIL_Y', 54);
+define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
+define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
+
+
 // CSS Styles for the plugin. This adds it to the admin page head.
+add_action('admin_head', 'connections_adminhead');
 function connections_adminhead() {
 	echo '<link type="text/css" rel="stylesheet" href="' . get_bloginfo('wpurl') . '/wp-content/plugins/connections/css-admin.css" />' . "\n";
 }
@@ -43,6 +58,7 @@ function connections_menus() {
 
 function connections_main() {
 	    global $wpdb, $connections_version;
+		
 	    if ($_GET['action']=='editform') {
 	        $sql = "SELECT * FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($_GET['id'])."'";
 	        $row = $wpdb->get_row($sql);
@@ -57,6 +73,7 @@ function connections_main() {
 					<input type="hidden" name="token" value="<?php echo _formtoken("edit_address"); ?>" />
 					<p class="submit">
 						<input type="submit" name="save" value="Save" />
+						<a href="tools.php?page=connections/connections.php" class="button">Cancel</a> <!-- THERE HAS TO BE A BETTER WAY THAN REFERRING DIRECTLY TO THE TOOLS.PHP -->
 					</p>
 					</form>
 				</div>
@@ -85,7 +102,8 @@ function connections_main() {
 				if ($_GET['action']=='addnew' AND $_POST['new'] AND $_SESSION['formTokens']['add_address']['token'] == $_POST['token']) {
 					
 					//I think I should set these to null if no value was input???
-					//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them. Did this because most often people don't want to give the year.
+					//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
+					//Did this because most often people don't want to give the year.
 					$bdaydate = strtotime($_POST['birthday_day'] . '-' . $_POST['birthday_month'] . '-' . '1970 00:00:00');
 					//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
 					$anndate = strtotime($_POST['anniversary_day'] . '-' . $_POST['anniversary_month'] . '-' . '1970 00:00:00');
@@ -124,6 +142,13 @@ function connections_main() {
 					
 					if ($_POST['website'] == "http://") $_POST['website'] = "";
 					
+					if ($_FILES['original_image']['error'] != 4) {
+						$image_proccess_results = _process_images($_FILES);
+						$serial_image_names = $image_proccess_results['serial_image_names'];
+						$error = $image_proccess_results['error'];
+						$success = $image_proccess_results['success'];
+					}
+					
 					$sql = "INSERT INTO ".$wpdb->prefix."connections SET
 			            first_name    = '".$wpdb->escape($_POST['first_name'])."',
 			            last_name     = '".$wpdb->escape($_POST['last_name'])."',
@@ -156,94 +181,105 @@ function connections_main() {
 						phone_numbers = '".$wpdb->escape($serial_phone_numbers)."',
 						email	      = '".$wpdb->escape($serial_email)."',
 						websites      = '".$wpdb->escape($serial_websites)."',
+						image_names   = '".$wpdb->escape($serial_image_names)."',
 			            notes         = '".$wpdb->escape($_POST['notes'])."'";
-			        $wpdb->query($sql);
 					
-					echo "<div id='message' class='updated fade'>";
-						echo "<p><strong>Address added.</strong></p>";
-					echo "</div>";
+					if (!$error) {
+						$wpdb->query($sql); //Writes the entry to the db if there were no errors with the image processing.
+						echo "<div id='message' class='updated fade'>";
+							echo "<p><strong>Address added.</strong></p> \n";
+							if ($image_proccess_results['success']) {
+								echo $success;
+							}
+						echo "</div>";
+					} else {
+						echo "<div id='notice' class='error'>";
+							echo $error;
+						echo "</div>";
+					}
+					
 					unset($_SESSION['formTokens']);
 				}
 				
-			if ($_GET['action']=='editcomplete' AND $_POST['save'] AND $_SESSION['formTokens']['edit_address']['token'] == $_POST['token']) {
-				$sql = "SELECT * FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($_GET['id'])."'";
-				$row = $wpdb->get_row($sql);
+				if ($_GET['action']=='editcomplete' AND $_POST['save'] AND $_SESSION['formTokens']['edit_address']['token'] == $_POST['token']) {
+					$sql = "SELECT * FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($_GET['id'])."'";
+					$row = $wpdb->get_row($sql);
 				
-				//I think I should set these to null if no value was input???
-				//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them. Did this because most often people don't want to give the year.
-				$bdaydate = strtotime($_POST['birthday_day'] . '-' . $_POST['birthday_month'] . '-' . '1970 00:00:00');
-				//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
-				$anndate = strtotime($_POST['anniversary_day'] . '-' . $_POST['anniversary_month'] . '-' . '1970 00:00:00');
+					//I think I should set these to null if no value was input???
+					//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them. Did this because most often people don't want to give the year.
+					$bdaydate = strtotime($_POST['birthday_day'] . '-' . $_POST['birthday_month'] . '-' . '1970 00:00:00');
+					//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
+					$anndate = strtotime($_POST['anniversary_day'] . '-' . $_POST['anniversary_month'] . '-' . '1970 00:00:00');
+					
+					$addresses[] = array(type=>$_POST['address_type'],
+										 address_line1=>$_POST['address_line1'],
+										 address_line2=>$_POST['address_line2'],
+										 city=>$_POST['city'],
+										 state=>$_POST['state'],
+										 zipcode=>$_POST['zipcode'],
+										 visibility=>'unlisted');
+					
+					$addresses[] = array(type=>$_POST['address2_type'],
+										 address_line1=>$_POST['address2_line1'],
+										 address_line2=>$_POST['address2_line2'],
+										 city=>$_POST['city2'],
+										 state=>$_POST['state2'],
+										 zipcode=>$_POST['zipcode2'],
+										 visibility=>'unlisted');
+					
+					$phone_numbers[] = array(type=>'home', homephone=>$_POST['homephone'], visibility=>'unlisted');
+					$phone_numbers[] = array(type=>'homefax', homephone=>$_POST['homefax'], visibility=>'unlisted');
+					$phone_numbers[] = array(type=>'cell', homephone=>$_POST['cellphone'], visibility=>'unlisted');
+					$phone_numbers[] = array(type=>'work', homephone=>$_POST['workphone'], visibility=>'unlisted');
+					$phone_numbers[] = array(type=>'workfax', homephone=>$_POST['workfax'], visibility=>'unlisted');
+					
+					$email[] = array(type=>personal, address=>$_POST['personalemail'], visibility=>'unlisted');
+					$email[] = array(type=>work, address=>$_POST['workemail'], visibility=>'unlisted');
+					
+					$websites[] = array(type=>'personal', address=>$_POST['website'], visibility=>'unlisted');
+					
+					$serial_addresses = serialize($addresses);
+					$serial_phone_numbers = serialize($phone_numbers);
+					$serial_email = serialize($email);
+					$serial_websites = serialize($websites);
 				
-				$addresses[] = array(type=>$_POST['address_type'],
-									 address_line1=>$_POST['address_line1'],
-									 address_line2=>$_POST['address_line2'],
-									 city=>$_POST['city'],
-									 state=>$_POST['state'],
-									 zipcode=>$_POST['zipcode'],
-									 visibility=>'unlisted');
-				
-				$addresses[] = array(type=>$_POST['address2_type'],
-									 address_line1=>$_POST['address2_line1'],
-									 address_line2=>$_POST['address2_line2'],
-									 city=>$_POST['city2'],
-									 state=>$_POST['state2'],
-									 zipcode=>$_POST['zipcode2'],
-									 visibility=>'unlisted');
-				
-				$phone_numbers[] = array(type=>'home', homephone=>$_POST['homephone'], visibility=>'unlisted');
-				$phone_numbers[] = array(type=>'homefax', homephone=>$_POST['homefax'], visibility=>'unlisted');
-				$phone_numbers[] = array(type=>'cell', homephone=>$_POST['cellphone'], visibility=>'unlisted');
-				$phone_numbers[] = array(type=>'work', homephone=>$_POST['workphone'], visibility=>'unlisted');
-				$phone_numbers[] = array(type=>'workfax', homephone=>$_POST['workfax'], visibility=>'unlisted');
-				
-				$email[] = array(type=>personal, address=>$_POST['personalemail'], visibility=>'unlisted');
-				$email[] = array(type=>work, address=>$_POST['workemail'], visibility=>'unlisted');
-				
-				$websites[] = array(type=>'personal', address=>$_POST['website'], visibility=>'unlisted');
-				
-				$serial_addresses = serialize($addresses);
-				$serial_phone_numbers = serialize($phone_numbers);
-				$serial_email = serialize($email);
-				$serial_websites = serialize($websites);
-			
-	            $wpdb->query("UPDATE ".$wpdb->prefix."connections SET
-	                first_name    = '".$wpdb->escape($_POST['first_name'])."',
-	                last_name     = '".$wpdb->escape($_POST['last_name'])."',
-					title    	  = '".$wpdb->escape($_POST['title'])."',
-					organization  = '".$wpdb->escape($_POST['organization'])."',
-	                personalemail = '".$wpdb->escape($_POST['personalemail'])."',
-	                workemail     = '".$wpdb->escape($_POST['workemail'])."',
-	                homephone     = '".$wpdb->escape($_POST['homephone'])."',
-					homefax       = '".$wpdb->escape($_POST['homefax'])."',
-	                cellphone     = '".$wpdb->escape($_POST['cellphone'])."',
-					workphone     = '".$wpdb->escape($_POST['workphone'])."',
-					workfax       = '".$wpdb->escape($_POST['workfax'])."',
-					address_type  = '".$wpdb->escape($_POST['address_type'])."',
-	                address_line1 = '".$wpdb->escape($_POST['address_line1'])."',
-	                address_line2 = '".$wpdb->escape($_POST['address_line2'])."',
-	                city          = '".$wpdb->escape($_POST['city'])."',
-	                state         = '".$wpdb->escape($_POST['state'])."',
-	                zipcode       = '".$wpdb->escape($_POST['zipcode'])."',
-					address2_type = '".$wpdb->escape($_POST['address2_type'])."',
-					address2_line1= '".$wpdb->escape($_POST['address2_line1'])."',
-	                address2_line2= '".$wpdb->escape($_POST['address2_line2'])."',
-	                city2         = '".$wpdb->escape($_POST['city2'])."',
-	                state2        = '".$wpdb->escape($_POST['state2'])."',
-	                zipcode2      = '".$wpdb->escape($_POST['zipcode2'])."',
-					birthday      = '".$wpdb->escape($bdaydate)."',
-					anniversary   = '".$wpdb->escape($anndate)."',
-					addresses     = '".$wpdb->escape($serial_addresses)."',
-					phone_numbers = '".$wpdb->escape($serial_phone_numbers)."',
-					email	      = '".$wpdb->escape($serial_email)."',
-					websites      = '".$wpdb->escape($serial_websites)."',
-	                notes         = '".$wpdb->escape($_POST['notes'])."',
-	                website       = '".$wpdb->escape($_POST['website'])."',
-					visibility    = '".$wpdb->escape($_POST['visibility'])."'
-	                WHERE id ='".$wpdb->escape($_GET['id'])."'");
-	            echo '<div id="message" class="updated fade"><p><strong>The address has been updated.</strong></p></div>';
-				unset($_SESSION['formTokens']);
-			}
+					$wpdb->query("UPDATE ".$wpdb->prefix."connections SET
+						first_name    = '".$wpdb->escape($_POST['first_name'])."',
+						last_name     = '".$wpdb->escape($_POST['last_name'])."',
+						title    	  = '".$wpdb->escape($_POST['title'])."',
+						organization  = '".$wpdb->escape($_POST['organization'])."',
+						personalemail = '".$wpdb->escape($_POST['personalemail'])."',
+						workemail     = '".$wpdb->escape($_POST['workemail'])."',
+						homephone     = '".$wpdb->escape($_POST['homephone'])."',
+						homefax       = '".$wpdb->escape($_POST['homefax'])."',
+						cellphone     = '".$wpdb->escape($_POST['cellphone'])."',
+						workphone     = '".$wpdb->escape($_POST['workphone'])."',
+						workfax       = '".$wpdb->escape($_POST['workfax'])."',
+						address_type  = '".$wpdb->escape($_POST['address_type'])."',
+						address_line1 = '".$wpdb->escape($_POST['address_line1'])."',
+						address_line2 = '".$wpdb->escape($_POST['address_line2'])."',
+						city          = '".$wpdb->escape($_POST['city'])."',
+						state         = '".$wpdb->escape($_POST['state'])."',
+						zipcode       = '".$wpdb->escape($_POST['zipcode'])."',
+						address2_type = '".$wpdb->escape($_POST['address2_type'])."',
+						address2_line1= '".$wpdb->escape($_POST['address2_line1'])."',
+						address2_line2= '".$wpdb->escape($_POST['address2_line2'])."',
+						city2         = '".$wpdb->escape($_POST['city2'])."',
+						state2        = '".$wpdb->escape($_POST['state2'])."',
+						zipcode2      = '".$wpdb->escape($_POST['zipcode2'])."',
+						birthday      = '".$wpdb->escape($bdaydate)."',
+						anniversary   = '".$wpdb->escape($anndate)."',
+						addresses     = '".$wpdb->escape($serial_addresses)."',
+						phone_numbers = '".$wpdb->escape($serial_phone_numbers)."',
+						email	      = '".$wpdb->escape($serial_email)."',
+						websites      = '".$wpdb->escape($serial_websites)."',
+						notes         = '".$wpdb->escape($_POST['notes'])."',
+						website       = '".$wpdb->escape($_POST['website'])."',
+						visibility    = '".$wpdb->escape($_POST['visibility'])."'
+						WHERE id ='".$wpdb->escape($_GET['id'])."'");
+					echo '<div id="message" class="updated fade"><p><strong>The address has been updated.</strong></p></div>';
+					unset($_SESSION['formTokens']);
+				}
 				
 				if ($_POST['doaction'] AND $_SESSION['formTokens']['do_action']['token'] == $_POST['token']) {
 					if ($_POST['action'] != "") {
@@ -297,6 +333,7 @@ function connections_main() {
 				
 				
 				<div id="col-container">
+
 					<div id="col-right">
 						<div class="col-wrap">
 					        
@@ -432,7 +469,9 @@ function connections_main() {
 											echo "<td class='".$altrow."' colspan='3'>";
 												if ($row->notes) echo "<strong>Notes:</strong> " . $row->notes; else echo "&nbsp;";
 											echo "</td>";
-											echo "<td class='".$altrow."'><strong>Entry ID:</strong> " . $row->id . "</td>";
+											echo "<td class='".$altrow."'><strong>Entry ID:</strong> " . $row->id;
+												if (!$row->image_names) echo "<br /><strong>Image Attached:</strong> : No"; else echo "<br /><strong>Image Attached:</strong> : Yes";
+											echo "</td>";
 										echo "</tr>";
 																				
 									} ?>
@@ -442,13 +481,13 @@ function connections_main() {
 							<p style='font-size:smaller; text-align:center'>This is version <?php echo get_option("connections_version"); ?> of the Connections.</p>
 						</div>
 			        </div>
-					
+				
 					<div id="col-left">
 						<div class="col-wrap">
 							<div class="form-wrap">
 							<h3><a name="new"></a>Add Address</h3>
 							
-								<form action="admin.php?page=connections/connections.php&action=addnew" method="post">
+								<form action="admin.php?page=connections/connections.php&action=addnew" method="post" enctype="multipart/form-data">
 									<?php echo _connections_getaddressform(); ?>
 									<input type="hidden" name="formId" value="add_address" />
 									<input type="hidden" name="token" value="<?php echo _formtoken("add_address"); ?>" />
@@ -460,6 +499,7 @@ function connections_main() {
 							</div>
 						</div>
 					</div>
+					
 				</div>
 			</div>
 <?php
@@ -476,6 +516,109 @@ function _build_alphaindex() {
 	}
 	
 	return $linkindex;
+}
+
+function _process_images($_FILES) {
+	// Uses the upload.class.php to handle file uploading and image manipulation.
+	
+		$process_image = new Upload($_FILES['original_image']);
+		
+		if ($process_image->uploaded) {
+			// Saves the uploaded image with no changes to the wp_content/connection_images/ dir.
+			// If needed this will create the upload dir and chmod it.
+			$process_image->auto_create_dir		= true;
+			$process_image->auto_chmod_dir		= true;
+			$process_image->file_safe_name		= true;
+			$process_image->file_auto_rename	= true;
+			$process_image->file_name_body_add= '_original';
+			$process_image->image_convert		= 'jpg';
+			$process_image->jpeg_quality		= CN_DEFAULT_JPG_QUALITY;
+			$process_image->Process(CN_IMAGE_PATH);
+			if ($process_image->processed) {
+				$success .= "<p><strong>Uploaded image saved.</strong></p> \n";
+				$image_names['original'] = $process_image->file_dst_name;
+			} else {
+				$error .= "<p><strong>Uploaded could not be saved to the destination folder.</strong></p> \n
+						   <p><strong>Error: </strong>" . $process_image->error . "</p> \n";
+			}
+			
+			// Creates the profile image and saves it to the wp_content/connection_images/ dir.
+			// If needed this will create the upload dir and chmod it.
+			$process_image->auto_create_dir		= true;
+			$process_image->auto_chmod_dir		= true;
+			$process_image->file_safe_name		= true;
+			$process_image->file_auto_rename	= true;
+			$process_image->file_name_body_add= '_profile';
+			$process_image->image_convert		= 'jpg';
+			$process_image->jpeg_quality		= CN_DEFAULT_JPG_QUALITY;
+			$process_image->image_resize		= true;
+			$process_image->image_ratio_crop	= true;
+			$process_image->image_ratio_fill	= true;
+			$process_image->image_y				= CN_DEFAULT_PROFILE_Y;
+			$process_image->image_x				= CN_DEFAULT_PROFILE_X;
+			$process_image->Process(CN_IMAGE_PATH);
+			if ($process_image->processed) {
+				$success .= "<p><strong>Profile image created and saved.</strong></p> \n";
+				$image_names['profile'] = $process_image->file_dst_name;
+			} else {
+				$error .= "<p><strong>Profile image could not be created and/or saved to the destination folder.</strong></p> \n
+						   <p><strong>Error:</strong> " . $process_image->error . "</p> \n";
+			}						
+			
+			// Creates the entry image and saves it to the wp_content/connection_images/ dir.
+			// If needed this will create the upload dir and chmod it.
+			$process_image->auto_create_dir		= true;
+			$process_image->auto_chmod_dir		= true;
+			$process_image->file_safe_name		= true;
+			$process_image->file_auto_rename	= true;
+			$process_image->file_name_body_add= '_entry';
+			$process_image->image_convert		= 'jpg';
+			$process_image->jpeg_quality		= CN_DEFAULT_JPG_QUALITY;
+			$process_image->image_resize		= true;
+			$process_image->image_ratio_crop	= true;
+			$process_image->image_ratio_fill	= true;
+			$process_image->image_y				= CN_DEFAULT_ENTRY_Y;
+			$process_image->image_x				= CN_DEFAULT_ENTRY_X;
+			$process_image->Process(CN_IMAGE_PATH);
+			if ($process_image->processed) {
+				$success .= "<p><strong>Entry image created and saved.</strong></p> \n";
+				$image_names['entry'] = $process_image->file_dst_name;
+			} else {
+				$error .= "<p><strong>Entry image could not be created and/or saved to the destination folder.</strong></p> \n
+						   <p><strong>Error:</strong> " . $process_image->error . "</p> \n";
+			}
+			
+			// Creates the thumbnail image and saves it to the wp_content/connection_images/ dir.
+			// If needed this will create the upload dir and chmod it.
+			$process_image->auto_create_dir		= true;
+			$process_image->auto_chmod_dir		= true;
+			$process_image->file_safe_name		= true;
+			$process_image->file_auto_rename	= true;
+			$process_image->file_name_body_add= '_thumbnail';
+			$process_image->image_convert		= 'jpg';
+			$process_image->jpeg_quality		= CN_DEFAULT_JPG_QUALITY;
+			$process_image->image_resize		= true;
+			$process_image->image_ratio_crop	= true;
+			$process_image->image_ratio_fill	= true;
+			$process_image->image_y				= CN_DEFAULT_THUMBNAIL_Y;
+			$process_image->image_x				= CN_DEFAULT_THUMBNAIL_X;
+			$process_image->Process(CN_IMAGE_PATH);
+			if ($process_image->processed) {
+				$success .= "<p><strong>Thumbnail image created and saved.</strong></p> \n";
+				$image_names['thumbnail'] = $process_image->file_dst_name;
+			} else {
+				$error .= "<p><strong>Thumbnail image could not be created and/or saved to the destination folder.</strong></p> \n
+						   <p><strong>Error:</strong> " . $process_image->error . "</p> \n";
+			}
+			
+			$serial_image_names = serialize($image_names);
+			$process_image->Clean();
+		} else {
+			$error = "<p><strong>Image could not be uploaded.</strong></p> \n
+					  <p><strong>Error: </strong>" . $process_image->error . "</p> \n";
+		}
+	$results = array('success'=>$success, 'error'=>$error, 'serial_image_names'=>$serial_image_names);
+	return $results;
 }
 
 //Form token function. Function requires (form name as string); returns form token.
@@ -537,7 +680,11 @@ function _build_radio($name, $id, $value_labels, $checked=null) {
 
 //This builds the address input form.
 function _connections_getaddressform($data=null) {
-	    if (!$data) $website = 'http://'; else $website = $data->website;
+		if (!$data->image_names) $img_names = null; else $img_names = unserialize($data->image_names);
+		if ($img_names != null) $img_file_name = $img_names['thumbnail'];
+	    if ($img_names != null) $img_html_block = '<img src="' . CN_IMAGE_BASE_URL . $img_file_name . '" /> <div class="clear"></div>'; else $img_html_block = "";
+		
+		if (!$data) $website = 'http://'; else $website = $data->website;
 		if (!$data->birthday) $birthday_month = null; else $birthday_month = date("m", $data->birthday);
 		if (!$data->birthday) $birthday_day = null; else $birthday_day = date("d", $data->birthday);
 		if (!$data->anniversary) $anniversary_month = null; else $anniversary_month = date("m", $data->anniversary);
@@ -603,7 +750,7 @@ function _connections_getaddressform($data=null) {
 		
 		$visibility = _build_radio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$default_visibility);
 		
-	    $out = 
+	    $out = // This mess needs re-written to following soding style used for the front end output!!!
 		'
 		<div class="form-field connectionsform">
 			<div class="input inputhalfwidth">
@@ -617,18 +764,21 @@ function _connections_getaddressform($data=null) {
 			<div class="clear"></div>
 		</div>
 		
-		<div class="form-field connectionsform">
-
+		<div class="form-field connectionsform">				
 				<label for="title">Title:</label>
 				<input type="text" name="title" value="'.$data->title.'" />
 
 				<label for="organization">Organization:</label>
-				<input type="text" name="organization" value="'.$data->organization.'" />
-
+				<input type="text" name="organization" value="'.$data->organization.'" />		
 		</div>
 		
 		<div class="form-field connectionsform">
-			
+				' . $img_html_block . '
+				<label for="original_image">Select Image:</label>
+				<input type="file" value="" name="original_image" size="25"/>
+		</div>
+		
+		<div class="form-field connectionsform">
 			<span class="selectbox alignright">Type: '.$address_select.'</span>
 			<div class="clear"></div>
 			
@@ -682,8 +832,7 @@ function _connections_getaddressform($data=null) {
 			<div class="clear"></div>
 		</div>
 		
-		<div class="form-field connectionsform">
-
+		<div class="form-field connectionsform">				
 				<label for="homephone">Home Phone:</label>
 				<input type="text" name="homephone" value="'.$data->homephone.'" />
 
@@ -697,45 +846,33 @@ function _connections_getaddressform($data=null) {
 				<input type="text" name="workphone" value="'.$data->workphone.'" />
 
 				<label for="workfax">Work Fax:</label>
-				<input type="text" name="workfax" value="'.$data->workfax.'" />
-
-		</div>
-		<div class="form-field connectionsform">
-
-				<label for="personalemail">Personal Email:</label>
+				<input type="text" name="workfax" value="'.$data->workfax.'" />		</div>
+		<div class="form-field connectionsform">				<label for="personalemail">Personal Email:</label>
 				<input type="text" name="personalemail" value="'.$data->personalemail.'" />
 
 				<label for="workemail">Work Email:</label>
 				<input type="text" name="workemail" value="'.$data->workemail.'" />
-
 		</div>
 
 		<div class="form-field connectionsform">
-			
 				<span class="selectbox">Birthday: '.$bday_month.'</span>
 				<span class="selectbox">'.$bday_day.' </span>
 				<br />
 				<span class="selectbox">Anniversary: '.$ann_month.'</span>
 				<span class="selectbox">'.$ann_day.'</span>
-
 		</div>
 		
 		<div class="form-field connectionsform">
-
 				<label for="website">Website:</label>
 				<input type="text" name="website" value="'.$website.'" />
-
 		</div>
 		<div class="form-field connectionsform">
-
 				<label for="notes">Notes:</label>
 				<textarea name="notes" rows="3">'.$data->notes.'</textarea>
 		</div>
 		
-		<div class="form-field connectionsform">
-				
+		<div class="form-field connectionsform">	
 				<span class="radio_group">'.$visibility.'</span>
-
 		</div>';
 		return $out;
 	}
@@ -778,6 +915,7 @@ function _connections_install() {
 		phone_numbers longtext NOT NULL,
 		email longtext NOT NULL,
 		websites longtext NOT NULL,
+		image_names longtext NOT NULL,
 		visibility tinytext NOT NULL,
         PRIMARY KEY  (id)
     );";
@@ -802,7 +940,7 @@ function _connections_list($atts, $content=null) {
     global $wpdb;
 	$alphaindex = array();
 	$i = 0;
-
+	
 	$atts = shortcode_atts( array(
 			'id' => null,
 			'private_override' => false,
@@ -836,6 +974,10 @@ function _connections_list($atts, $content=null) {
 		$out .= "<div class='connections-list'>";
 		
 		foreach ($results as $row) {
+
+			if (!$row->image_names) $img_names = null; else $img_names = unserialize($row->image_names);
+			if ($img_names != null) $img_file_name = $img_names['entry']; else $img_file_name = null;
+			if ($img_file_name != null) $img_html_block = '<img src="' . CN_IMAGE_BASE_URL . $img_file_name . '" /> <div class="clear"></div>'; else $img_html_block = "";
 			
 			//Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
 			if ($alphaindex[$i] == strtoupper(substr($row->last_name, 0, 1))) {
@@ -874,6 +1016,7 @@ function _connections_list($atts, $content=null) {
 			if ($atts['show_alphaindex']) $out .= $alphaanchor;
 			$out .= "<div class='cnitem' id='cn" .  $row->id . "' style='-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative;'>\n";
 						$out .= "<div style='width:49%; float:left'>";
+							$out .= $img_html_block;
 							$out .= "<span class='name' id='" .  $row->id . "' style='font-size:larger;font-variant: small-caps'><strong>" . $row->first_name . " " . $row->last_name . "</strong></span>\n";
 							if ($row->title) $out .= "<br /><span class='title'>" . $row->title . "</span>\n";
 							if ($row->organization) $out .= "<br /><span class='organization'>" . $row->organization . "</span>\n";
