@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://shazahm.net/
 Description: An address book.
-Version: 0.2.4
+Version: 0.2.7
 Author: Steve. A. Zahm
 Author URI: http://www.shazahm.net/
 
@@ -29,7 +29,7 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 //GPL PHP upload class from http://www.verot.net/php_class_upload.htm
 require_once(WP_PLUGIN_DIR . '/connections/php_class_upload/class.upload.php');
 
-$connections_version = '0.2.6';
+$connections_version = '0.2.7';
 session_start();
 
 // Define a few constants until I can get to creating the options page.
@@ -67,7 +67,7 @@ function connections_main() {
 				<div class="form-wrap" style="width:600px; margin: 0 auto;">
 					<h2><a name="new"></a>Edit Address</h2>
 					
-					<form action="admin.php?page=connections/connections.php&action=editcomplete&id=<?php echo $row->id; ?>" method="post">
+					<form action="admin.php?page=connections/connections.php&action=editcomplete&id=<?php echo $row->id; ?>" method="post" enctype="multipart/form-data">
 					<?php echo _connections_getaddressform($row); ?>
 					<input type="hidden" name="formId" value="edit_address" />
 					<input type="hidden" name="token" value="<?php echo _formtoken("edit_address"); ?>" />
@@ -144,7 +144,10 @@ function connections_main() {
 					
 					if ($_FILES['original_image']['error'] != 4) {
 						$image_proccess_results = _process_images($_FILES);
-						$serial_image_names = $image_proccess_results['serial_image_names'];
+						$options['image']['name'] = $image_proccess_results['image_names'];
+						$options['image']['linked'] = true;
+						$options['image']['use'] = $image_proccess_results['image_names']['source'];
+						$serial_options = serialize($options);
 						$error = $image_proccess_results['error'];
 						$success = $image_proccess_results['success'];
 					}
@@ -181,16 +184,14 @@ function connections_main() {
 						phone_numbers = '".$wpdb->escape($serial_phone_numbers)."',
 						email	      = '".$wpdb->escape($serial_email)."',
 						websites      = '".$wpdb->escape($serial_websites)."',
-						image_names   = '".$wpdb->escape($serial_image_names)."',
+						options   = '".$wpdb->escape($serial_options)."',
 			            notes         = '".$wpdb->escape($_POST['notes'])."'";
 					
 					if (!$error) {
 						$wpdb->query($sql); //Writes the entry to the db if there were no errors with the image processing.
 						echo "<div id='message' class='updated fade'>";
 							echo "<p><strong>Address added.</strong></p> \n";
-							if ($image_proccess_results['success']) {
-								echo $success;
-							}
+							if ($image_proccess_results['success']) echo $success;
 						echo "</div>";
 					} else {
 						echo "<div id='notice' class='error'>";
@@ -242,8 +243,19 @@ function connections_main() {
 					$serial_phone_numbers = serialize($phone_numbers);
 					$serial_email = serialize($email);
 					$serial_websites = serialize($websites);
+					
+					$options = unserialize($row->options);
+					if ($_FILES['original_image']['error'] != 4) {
+						$image_proccess_results = _process_images($_FILES);
+						$options['image']['name'] = $image_proccess_results['image_names'];
+						$options['image']['linked'] = true;
+						$options['image']['use'] = $image_proccess_results['image_names']['source'];
+						$error = $image_proccess_results['error'];
+						$success = $image_proccess_results['success'];
+					}
+					$serial_options = serialize($options);
 				
-					$wpdb->query("UPDATE ".$wpdb->prefix."connections SET
+					$sql = "UPDATE ".$wpdb->prefix."connections SET
 						first_name    = '".$wpdb->escape($_POST['first_name'])."',
 						last_name     = '".$wpdb->escape($_POST['last_name'])."',
 						title    	  = '".$wpdb->escape($_POST['title'])."',
@@ -273,11 +285,25 @@ function connections_main() {
 						phone_numbers = '".$wpdb->escape($serial_phone_numbers)."',
 						email	      = '".$wpdb->escape($serial_email)."',
 						websites      = '".$wpdb->escape($serial_websites)."',
+						options       = '".$wpdb->escape($serial_options)."',
 						notes         = '".$wpdb->escape($_POST['notes'])."',
 						website       = '".$wpdb->escape($_POST['website'])."',
 						visibility    = '".$wpdb->escape($_POST['visibility'])."'
-						WHERE id ='".$wpdb->escape($_GET['id'])."'");
-					echo '<div id="message" class="updated fade"><p><strong>The address has been updated.</strong></p></div>';
+						WHERE id ='".$wpdb->escape($_GET['id'])."'";
+						
+					//$wpdb->query($sql);
+					if (!$error) {
+						$wpdb->query($sql); //Writes the entry to the db if there were no errors with the image processing.
+						echo "<div id='message' class='updated fade'>";
+							echo "<p><strong>The address has been updated.</strong></p> \n";
+							if ($image_proccess_results['success']) echo $success;
+						echo "</div>";
+					} else {
+						echo "<div id='notice' class='error'>";
+							echo $error;
+						echo "</div>";
+					}
+					//echo '<div id="message" class="updated fade"><p><strong>The address has been updated.</strong></p></div>';
 					unset($_SESSION['formTokens']);
 				}
 				
@@ -408,6 +434,7 @@ function connections_main() {
 									}
 																	
 									foreach ($results as $row) {
+										$options = unserialize($row->options);
 										
 										if (!$altrow == "alternate") {
 											$altrow = "alternate";
@@ -470,7 +497,7 @@ function connections_main() {
 												if ($row->notes) echo "<strong>Notes:</strong> " . $row->notes; else echo "&nbsp;";
 											echo "</td>";
 											echo "<td class='".$altrow."'><strong>Entry ID:</strong> " . $row->id;
-												if (!$row->image_names) echo "<br /><strong>Image Attached:</strong> No"; else echo "<br /><strong>Image Attached:</strong> Yes";
+												if (!$options['image']['linked']) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";
 											echo "</td>";
 										echo "</tr>";
 																				
@@ -522,6 +549,7 @@ function _process_images($_FILES) {
 	// Uses the upload.class.php to handle file uploading and image manipulation.
 	
 		$process_image = new Upload($_FILES['original_image']);
+		$image['source'] = $process_image->file_src_name_body;
 		
 		if ($process_image->uploaded) {
 			// Saves the uploaded image with no changes to the wp_content/connection_images/ dir.
@@ -536,7 +564,8 @@ function _process_images($_FILES) {
 			$process_image->Process(CN_IMAGE_PATH);
 			if ($process_image->processed) {
 				$success .= "<p><strong>Uploaded image saved.</strong></p> \n";
-				$image_names['original'] = $process_image->file_dst_name;
+				//$image_names['original'] = $process_image->file_dst_name;
+				$image['original'] = $process_image->file_dst_name;
 			} else {
 				$error .= "<p><strong>Uploaded could not be saved to the destination folder.</strong></p> \n
 						   <p><strong>Error: </strong>" . $process_image->error . "</p> \n";
@@ -559,7 +588,8 @@ function _process_images($_FILES) {
 			$process_image->Process(CN_IMAGE_PATH);
 			if ($process_image->processed) {
 				$success .= "<p><strong>Profile image created and saved.</strong></p> \n";
-				$image_names['profile'] = $process_image->file_dst_name;
+				//$image_names['profile'] = $process_image->file_dst_name;
+				$image['profile'] = $process_image->file_dst_name;
 			} else {
 				$error .= "<p><strong>Profile image could not be created and/or saved to the destination folder.</strong></p> \n
 						   <p><strong>Error:</strong> " . $process_image->error . "</p> \n";
@@ -582,7 +612,8 @@ function _process_images($_FILES) {
 			$process_image->Process(CN_IMAGE_PATH);
 			if ($process_image->processed) {
 				$success .= "<p><strong>Entry image created and saved.</strong></p> \n";
-				$image_names['entry'] = $process_image->file_dst_name;
+				//$image_names['entry'] = $process_image->file_dst_name;
+				$image['entry'] = $process_image->file_dst_name;
 			} else {
 				$error .= "<p><strong>Entry image could not be created and/or saved to the destination folder.</strong></p> \n
 						   <p><strong>Error:</strong> " . $process_image->error . "</p> \n";
@@ -605,19 +636,20 @@ function _process_images($_FILES) {
 			$process_image->Process(CN_IMAGE_PATH);
 			if ($process_image->processed) {
 				$success .= "<p><strong>Thumbnail image created and saved.</strong></p> \n";
-				$image_names['thumbnail'] = $process_image->file_dst_name;
+				//$image_names['thumbnail'] = $process_image->file_dst_name;
+				$image['thumbnail'] = $process_image->file_dst_name;
 			} else {
 				$error .= "<p><strong>Thumbnail image could not be created and/or saved to the destination folder.</strong></p> \n
 						   <p><strong>Error:</strong> " . $process_image->error . "</p> \n";
 			}
 			
-			$serial_image_names = serialize($image_names);
+			//$serial_image_options = serialize($image_options);
 			$process_image->Clean();
 		} else {
 			$error = "<p><strong>Image could not be uploaded.</strong></p> \n
 					  <p><strong>Error: </strong>" . $process_image->error . "</p> \n";
 		}
-	$results = array('success'=>$success, 'error'=>$error, 'serial_image_names'=>$serial_image_names);
+	$results = array('success'=>$success, 'error'=>$error, 'image_names'=>$image);
 	return $results;
 }
 
@@ -678,11 +710,17 @@ function _build_radio($name, $id, $value_labels, $checked=null) {
 	return $radio;
 }
 
-//This builds the address input form.
+//This builds the address input/edit form.
 function _connections_getaddressform($data=null) {
-		if (!$data->image_names) $img_names = null; else $img_names = unserialize($data->image_names);
-		if ($img_names != null) $img_file_name = $img_names['thumbnail'];
-	    if ($img_names != null) $img_html_block = '<img src="' . CN_IMAGE_BASE_URL . $img_file_name . '" /> <div class="clear"></div>'; else $img_html_block = "";
+		if ($data != null) {
+			$options = unserialize($data->options);
+			$post_options = $data->options;
+			if ($options['image']['linked']) {
+				$img_html_block = '<img src="' . CN_IMAGE_BASE_URL . $options['image']['name']['thumbnail'] . '" /> <div class="clear"></div>'; 
+			} else {
+				$img_html_block = "";
+			}
+		}
 		
 		if (!$data) $website = 'http://'; else $website = $data->website;
 		if (!$data->birthday) $birthday_month = null; else $birthday_month = date("m", $data->birthday);
@@ -750,7 +788,7 @@ function _connections_getaddressform($data=null) {
 		
 		$visibility = _build_radio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$default_visibility);
 		
-	    $out = // This mess needs re-written to following soding style used for the front end output!!!
+	    $out = // This mess needs re-written to following coding style used for the front end output!!!
 		'
 		<div class="form-field connectionsform">
 			<div class="input inputhalfwidth">
@@ -915,7 +953,7 @@ function _connections_install() {
 		phone_numbers longtext NOT NULL,
 		email longtext NOT NULL,
 		websites longtext NOT NULL,
-		image_names longtext NOT NULL,
+		options longtext NOT NULL,
 		visibility tinytext NOT NULL,
         PRIMARY KEY  (id)
     );";
@@ -953,9 +991,7 @@ function _connections_list($atts, $content=null) {
 		$visibilityfilter = " WHERE visibility='public' ";
 	}
 	
-	if ($atts['id'] != null) {
-		$visibilityfilter .= " AND id='" . $atts['id'] . "' ";
-	}
+	if ($atts['id'] != null) $visibilityfilter .= " AND id='" . $atts['id'] . "' ";
 		
     $sql = "SELECT * FROM ".$wpdb->prefix."connections " . $visibilityfilter ." ORDER BY last_name, first_name";
     $results = $wpdb->get_results($sql);
@@ -974,11 +1010,8 @@ function _connections_list($atts, $content=null) {
 		$out .= "<div class='connections-list'>";
 		
 		foreach ($results as $row) {
-
-			if (!$row->image_names) $img_names = null; else $img_names = unserialize($row->image_names);
-			if ($img_names != null) $img_file_name = $img_names['entry']; else $img_file_name = null;
-			if ($img_file_name != null) $img_html_block = '<img src="' . CN_IMAGE_BASE_URL . $img_file_name . '" /> <div class="clear"></div>'; else $img_html_block = "";
-			
+			$options = unserialize($row->options);
+	
 			//Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
 			if ($alphaindex[$i] == strtoupper(substr($row->last_name, 0, 1))) {
 				$alphaanchor = "<a name='" . $alphaindex[$i] . "'></a>";
@@ -988,14 +1021,10 @@ function _connections_list($atts, $content=null) {
 			}
 			  
 			//A check to make sure that the birthday column contains a value. If it does, it formats the date into the variable to be used in the output.
-			if ($row->birthday) {
-				$birthday = date("F jS", $row->birthday);
-			}
+			if ($row->birthday) $birthday = date("F jS", $row->birthday);
 			  
 			//A check to make sure that the anniversary column contains a value. If it does, it formats the date into the variable to be used in the output.
-			if ($row->anniversary) {
-				$anniversary = date("F jS", $row->anniversary);
-			}
+			if ($row->anniversary) $anniversary = date("F jS", $row->anniversary);
 			  
 			$age = (int) abs( time() - strtotime( $row->ts ) );
 			if ( $age < 657000 )	// less than one week: red
@@ -1010,13 +1039,13 @@ function _connections_list($atts, $content=null) {
 				$ageStyle = "color:navy";
 			elseif ( $age < 31536000 )	// six months to a year: black
 				$ageStyle = "color:black";
-			else								// more than one year: don't show the update age
+			else						// more than one year: don't show the update age
 				$ageStyle = "display:none";
 			
 			if ($atts['show_alphaindex']) $out .= $alphaanchor;
 			$out .= "<div class='cnitem' id='cn" .  $row->id . "' style='-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative;'>\n";
 						$out .= "<div style='width:49%; float:left'>";
-							$out .= $img_html_block;
+							if ($options['image']['linked']) $out .= '<img src="' . CN_IMAGE_BASE_URL . $options['image']['name']['entry'] . '" /> <div class="clear"></div>';
 							$out .= "<span class='name' id='" .  $row->id . "' style='font-size:larger;font-variant: small-caps'><strong>" . $row->first_name . " " . $row->last_name . "</strong></span>\n";
 							if ($row->title) $out .= "<br /><span class='title'>" . $row->title . "</span>\n";
 							if ($row->organization) $out .= "<br /><span class='organization'>" . $row->organization . "</span>\n";

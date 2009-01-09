@@ -4,7 +4,7 @@ Donate link:
 Tags: addresses, address book, addressbook, contact, contacts, directory, lists, people
 Requires at least: 2.7
 Tested up to: 2.7
-Stable tag: 0.2.4
+Stable tag: 0.2.7
 
 A address book plugin. View and manage addresses in the admin back-end or embedded
 in a post or page.
@@ -142,11 +142,9 @@ Usage:
 
 **Known Issues:**
 
+* **CURRENTLY THERE NO WAY TO REMOVE AN IMAGE LINKED TO AN ENTRY OTHER THAN DELETING THE ENTRY ADN CREATING A NEW ENTRY WITHOUT THE IMAGE**
 * The CSS style sheet is linked on every page in the admin
 * The styles in the output html is hard coded
-
-
-
 
 == Installation ==
 
@@ -158,6 +156,7 @@ Usage:
 
 There is no need to de-activate and then re-activate Connections to upgrade.
 
-== Version History ==
-*0.2.3 First version in the repository
-*0.2.4 Add entry ID to the admin
+== Change Log ==
+* 0.2.3 First version in the repository
+* 0.2.4 Add entry ID to the admin
+* 0.2.7 Added preliminary image support for entries
