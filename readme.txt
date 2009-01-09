@@ -127,7 +127,6 @@ Usage:
 
 **Upcoming features:**
 
-* Picture support with adjustable picture size **The developement version under other versions has preliminary image support**
 * Assign entries to groups and display those groups in a page/post
 * Create "family" connections between entries
 * An update request form
@@ -142,7 +141,7 @@ Usage:
 
 **Known Issues:**
 
-* **CURRENTLY THERE NO WAY TO REMOVE AN IMAGE LINKED TO AN ENTRY OTHER THAN DELETING THE ENTRY ADN CREATING A NEW ENTRY WITHOUT THE IMAGE**
+* **CURRENTLY THERE NO WAY TO REMOVE AN IMAGE LINKED TO AN ENTRY OTHER THAN DELETING THE ENTRY AND CREATING A NEW ENTRY WITHOUT THE IMAGE**
 * The CSS style sheet is linked on every page in the admin
 * The styles in the output html is hard coded
 
