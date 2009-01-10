@@ -160,3 +160,4 @@ There is no need to de-activate and then re-activate Connections to upgrade.
 * 0.2.3 First version in the repository
 * 0.2.4 Add entry ID to the admin
 * 0.2.7 Added preliminary image support for entries
+* 0.2.8 Added the otption of removing a linked image when editing an entry
