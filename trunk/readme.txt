@@ -1,6 +1,6 @@
 === Plugin Name ===
 Contributors: Steven A. Zahm
-Donate link:
+Donate link: 
 Tags: addresses, address book, addressbook, bio, bios, biographies, contact, contacts, connect, connections, directory, list, lists, listings, people, profile, profiles, plugin, user, users
 Requires at least: 2.7
 Tested up to: 2.7
