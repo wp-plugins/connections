@@ -1,0 +1,27 @@
+.connectionsform {
+	-moz-border-radius:4px;
+	background-color:#F1F1F1 !important;
+	border:1px solid;
+	border-color:#E3E3E3;
+	overflow: hidden;
+	}
+
+form div.input {float:left}
+form div.form-field input, form div.form-field textarea {width:100%;}
+form div.inputhalfwidth {width:50%;}
+form div.floatright {float:right;}
+form div.form-field  span.checkbox {background-color:transparent;float:right;font-size:11px;font-weight:bold;}
+form div.form-field  span.checkbox input {width:16px;}
+form div.form-field  span.selectbox {font-size:11px;font-weight:bold;}
+form div.form-field  span.selectbox select {padding:1px !important;vertical-align:middle !important;}
+form div.form-field  span.radio_group input {width:13px;}
+form div.form-field  span.radio_group label {display:inline;padding:2px 40px 2px 2px;}
+form div.form-field  img {float:right}
+form p.submit a.button  {font-style:normal !important;}
+	
+form div.tablenav-pages {height: !important;}
+
+table.connections tr.addressdetails td {border-color:transparent #DFDFDF;}
+table.connections tr.addressnotes td {border-color:transparent #DFDFDF #DFDFDF;}
+table.connections span.detailsbutton {color:#21759B;cursor:pointer;}
+table.connections span.detailsbutton:hover {color:#D54E21;}
