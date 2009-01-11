@@ -451,16 +451,16 @@ function connections_main() {
 										}
 										
 										echo "<tr class='".$altrow."'>";
-											echo "<th class='check-column ".$altrow."' scope='row'><input type='checkbox' value='".$row->id."' name='address[]'/></th>";
+											echo "<th class='check-column ".$altrow."' scope='row'><input type='checkbox' value='".$row->id."' name='address[]'/></th> \n";
 											echo "<td class='".$altrow."' colspan='2'>".$alphaanchor."<a class='row-title' title='Edit ".$row->last_name.", ".$row->first_name."' href='admin.php?page=connections/connections.php&action=edit&id=".$row->id."'> ".$row->last_name.", ".$row->first_name."</a><br />";
 												echo "<div class='row-actions'><span class='detailsbutton' id='detailbutton".$row->id."' onClick='click_contact(this, ".$row->id.")'>Show Details</span> | <a class='editbutton' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'>Edit</a> | <a class='submitdelete' onclick='return confirm(\"You are about to delete this address. Cancel to stop, OK to delete\");' href='admin.php?page=connections/connections.php&action=delete&id=".$row->id."&token="._formtoken("delete_".$row->id)."'>Delete</a> | <a href='#wphead' title='Return to top.'>Up</a></div>";
-											echo "</td>";
-											echo "<td class='".$altrow."'><strong>".ucwords($row->visibility)."</strong></td>";												
-											echo "<td class='".$altrow."'>" . date("m/d/Y",strtotime($row->ts)) . "</td>";											
-										echo "</tr>";
+											echo "</td> \n";
+											echo "<td class='".$altrow."'><strong>".ucwords($row->visibility)."</strong></td> \n";												
+											echo "<td class='".$altrow."'>" . date("m/d/Y",strtotime($row->ts)) . "</td> \n";											
+										echo "</tr> \n";
 										
 										echo "<tr class='".$altrow." addressdetails' id='contact-".$row->id."-detail' style='display:none;'>";
-											echo "<td class='".$altrow."'></td>";
+											echo "<td class='".$altrow."'></td> \n";
 											echo "<td class='".$altrow."' colspan='2'>";
 												if ($row->address_type) echo "<strong>" . ucfirst($row->address_type) . " Address</strong><br />";
 												if ($row->address_line1) echo $row->address_line1."<br />";
@@ -471,7 +471,7 @@ function connections_main() {
 												if ($row->address2_line1) echo $row->address2_line1."<br />";
 												if ($row->address2_line2) echo $row->address2_line2."<br />";
 												if ($row->city2) echo $row->city2.", "; if ($row->state2) echo $row->state2."  "; if ($row->zipcode2) echo $row->zipcode2."<br /><br />";
-											echo "</td>";
+											echo "</td> \n";
 											
 											echo "<td class='".$altrow."'>";
 												if ($row->personalemail) echo "<strong>Personal Email:</strong><br /><a href='mailto:".$row->personalemail."'>".$row->personalemail."</a><br /><br />";
@@ -483,23 +483,23 @@ function connections_main() {
 												if ($row->cellphone) echo "<strong>Cell Phone:</strong> ".$row->cellphone."<br />";
 												if ($row->workphone) echo "<strong>Work Phone:</strong> ".$row->workphone."<br />";
 												if ($row->workfax) echo "<strong>Work Fax:</strong> ".$row->workfax."<br />";
-											echo "</td>";
+											echo "</td> \n";
 																					
 											echo "<td class='".$altrow."'>";
 												if ($row->birthday) echo "<strong>Birthday:</strong><br />".date("F jS", $row->birthday)."<br /><br />";
 												if ($row->anniversary) echo "<strong>Anniversary:</strong><br />".date("F jS", $row->anniversary);
-											echo "</td>";
-										echo "</tr>";
+											echo "</td> \n";
+										echo "</tr> \n";
 										
 										echo "<tr class='".$altrow." addressnotes' id='contact-".$row->id."-detail-notes' style='display:none;'>";
-											echo "<td class='".$altrow."'>&nbsp;</td>";
+											echo "<td class='".$altrow."'>&nbsp;</td> \n";
 											echo "<td class='".$altrow."' colspan='3'>";
 												if ($row->notes) echo "<strong>Notes:</strong> " . $row->notes; else echo "&nbsp;";
-											echo "</td>";
+											echo "</td> \n";
 											echo "<td class='".$altrow."'><strong>Entry ID:</strong> " . $row->id;
 												if (!$options['image']['linked']) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";
-											echo "</td>";
-										echo "</tr>";
+											echo "</td> \n";
+										echo "</tr> \n";
 																				
 									} ?>
 								</tbody>
@@ -668,22 +668,22 @@ function _formtoken($formId) {
 //Builds select drop down. Function requires (name as string, options as an associative string array containing the key and values, OPTIONAL value to be selected by default)
 function _build_select($name, $value_options, $selected=null) {
 	
-	$select = '<select name="' . $name . '">';
+	$select = "<select name='" . $name . "'> \n";
 	foreach($value_options as $key=>$value) {
-		$select .= '<option "';
+		$select .= "<option ";
 		if ($value != null) {
-			$select .= 'value="' . $value . '"';
+			$select .= "value='" . $value . "'";
 		} else {
-			$select .= 'value=""';
+			$select .= "value=''";
 		}
 		if ($selected == $value) {
-			$select .= 'SELECTED';
+			$select .= " SELECTED";
 		}
-		$select .= '>';
+		$select .= ">";
 		$select .= $key;
-		$select .= '</option>';
+		$select .= "</option> \n";
 	}
-	$select .= '</select>';
+	$select .= "</select> \n";
 	
 	return $select;
 }

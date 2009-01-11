@@ -140,6 +140,7 @@ Use this option to define the list title to any text you wish.
 * **CURRENTLY THERE NO WAY TO REMOVE AN IMAGE LINKED TO AN ENTRY OTHER THAN DELETING THE ENTRY AND CREATING A NEW ENTRY WITHOUT THE IMAGE**
 * The CSS style sheet is linked on every page in the admin
 * The styles in the output html is hard coded
+* When deleting an entry the entry list doesn't remember the filter setting
 
 
 == Screenshots ==
@@ -157,7 +158,16 @@ Use this option to define the list title to any text you wish.
 There is no need to de-activate and then re-activate Connections to upgrade.
 
 == Change Log ==
-* 0.2.3 First version in the repository
-* 0.2.4 Add entry ID to the admin
-* 0.2.7 Added preliminary image support for entries
-* 0.2.8 Added the otption of removing a linked image when editing an entry
+
+**0.2.3**
+* First version in the repository
+
+**0.2.4**
+* Add entry ID to the admin
+
+**0.2.7**
+* Added preliminary image support for entries
+
+**0.2.8** 
+* Fix bug that was causing IE to not filter correctly
+* Code cleanup
