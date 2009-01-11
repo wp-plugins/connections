@@ -29,7 +29,7 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 //GPL PHP upload class from http://www.verot.net/php_class_upload.htm
 require_once(WP_PLUGIN_DIR . '/connections/php_class_upload/class.upload.php');
 
-$connections_version = '0.2.7';
+$connections_version = '0.2.8';
 session_start();
 
 // Define a few constants until I can get to creating the options page.
