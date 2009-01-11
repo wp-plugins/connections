@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://shazahm.net/
 Description: An address book.
-Version: 0.2.7
+Version: 0.2.8
 Author: Steve. A. Zahm
 Author URI: http://www.shazahm.net/
 

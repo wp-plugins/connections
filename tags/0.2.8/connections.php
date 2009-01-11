@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://shazahm.net/
 Description: An address book.
-Version: 0.2.7
+Version: 0.2.8
 Author: Steve. A. Zahm
 Author URI: http://www.shazahm.net/
 
@@ -653,10 +653,18 @@ function _process_images($_FILES) {
 	return $results;
 }
 
-//Form token function. Function requires (form name as string); returns form token.
 //Function inspired from:
 //http://www.melbournechapter.net/wordpress/programming-languages/php/cman/2006/06/16/php-form-input-and-cross-site-attacks/
+/**
+ * Adds a random token and timestamp to the $_SESSION variable
+ * @return array
+ * @param string $formId The form ID
+ */
 function _formtoken($formId) {
+	/**
+	 * Random number
+	 * @var integer
+	 */
 	$token = md5(uniqid(rand(), true));
 
 	$_SESSION['formTokens'][$formId]['token'] = $token;
