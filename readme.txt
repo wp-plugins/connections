@@ -4,9 +4,9 @@ Donate link:
 Tags: addresses, address book, addressbook, bio, bios, biographies, contact, contacts, connect, connections, directory, list, lists, listings, people, profile, profiles, plugin, user, users
 Requires at least: 2.7
 Tested up to: 2.7
-Stable tag: 0.2.8
+Stable tag: 0.2.9
 
-A address book plugin. Manage addresses in the admin and use the shortcodes to embed them in a post and/or page. An upcoming list of birthdays and anniversaries can also be embedded in a post and/or page.
+An address book that is managed in the admin and embed them in a post/page. Upcoming birthdays and anniversaries can also be embedded in a post/page.
 
 == Description ==
 
@@ -137,10 +137,11 @@ Use this option to define the list title to any text you wish.
 
 **Known Issues:**
 
-* **CURRENTLY THERE NO WAY TO REMOVE AN IMAGE LINKED TO AN ENTRY OTHER THAN DELETING THE ENTRY AND CREATING A NEW ENTRY WITHOUT THE IMAGE**
+* **Currently when an image linked is removed the files are not deleted**
 * The CSS style sheet is linked on every page in the admin
 * The styles in the output html is hard coded
 * When deleting an entry the entry list doesn't remember the filter setting
+* When an address is added the entry list doesn't remember the filter setting
 
 
 == Screenshots ==
@@ -153,6 +154,9 @@ Use this option to define the list title to any text you wish.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. You can mange addresses by going to the Connections item under the Tools menu.
 
+== Frequently Asked Questions ==
+This plugin is developed and tested in Firefox. If your using IE and something doesn't work, try it again in Firefox.
+
 == Upgrading ==
 
 There is no need to de-activate and then re-activate Connections to upgrade.
@@ -160,14 +164,25 @@ There is no need to de-activate and then re-activate Connections to upgrade.
 == Change Log ==
 
 **0.2.3**
+
 * First version in the repository
 
 **0.2.4**
+
 * Add entry ID to the admin
 
 **0.2.7**
+
 * Added preliminary image support for entries
 
 **0.2.8** 
+
 * Fix bug that was causing IE to not filter correctly
 * Code cleanup
+
+**0.2.9**
+
+* Some more code cleanup
+* Started code documentation
+* Added the ability to choose whether or not a linked image in an entry is displayed when embedded in a page/post
+* Added the ability to remove the linked image from an entry

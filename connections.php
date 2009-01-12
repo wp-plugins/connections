@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Connections
-Plugin URI: http://shazahm.net/
+Plugin URI: http://www.shazahm.net/?page_id=111
 Description: An address book.
-Version: 0.2.8
-Author: Steve. A. Zahm
-Author URI: http://www.shazahm.net/
+Version: 0.2.9
+Author: Steven A. Zahm
+Author URI: http://www.shazahm.net
 
 Connections is based on Little Black Book  1.1.2 by Gerald S. Fuller which was based on
 Little Black Book is based on Addressbook 0.7 by Sam Wilson
@@ -29,7 +29,7 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 //GPL PHP upload class from http://www.verot.net/php_class_upload.htm
 require_once(WP_PLUGIN_DIR . '/connections/php_class_upload/class.upload.php');
 
-$connections_version = '0.2.8';
+$connections_version = '0.2.9';
 session_start();
 
 // Define a few constants until I can get to creating the options page.
@@ -245,14 +245,29 @@ function connections_main() {
 					$serial_websites = serialize($websites);
 					
 					$options = unserialize($row->options);
+					
 					if ($_FILES['original_image']['error'] != 4) {
 						$image_proccess_results = _process_images($_FILES);
 						$options['image']['name'] = $image_proccess_results['image_names'];
 						$options['image']['linked'] = true;
+						$options['image']['display'] = true;
 						$options['image']['use'] = $image_proccess_results['image_names']['source'];
 						$error = $image_proccess_results['error'];
 						$success = $image_proccess_results['success'];
 					}
+					
+					if ($_POST['imgOptions'] == "remove") {
+						$options['image']['linked'] = false;
+					}
+					
+					if ($_POST['imgOptions'] == "hidden") {
+						$options['image']['display'] = false;
+					}
+					
+					if ($_POST['imgOptions'] == "show") {
+						$options['image']['display'] = true;
+					}
+					
 					$serial_options = serialize($options);
 				
 					$sql = "UPDATE ".$wpdb->prefix."connections SET
@@ -498,6 +513,7 @@ function connections_main() {
 											echo "</td> \n";
 											echo "<td class='".$altrow."'><strong>Entry ID:</strong> " . $row->id;
 												if (!$options['image']['linked']) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";
+												if ($options['image']['linked'] && $options['image']['display']) echo "<br /><strong>Display:</strong> Yes"; else echo "<br /><strong>Display:</strong> No";
 											echo "</td> \n";
 										echo "</tr> \n";
 																				
@@ -673,9 +689,19 @@ function _formtoken($formId) {
 	return $token;
 }
 
-//Builds select drop down. Function requires (name as string, options as an associative string array containing the key and values, OPTIONAL value to be selected by default)
+/**
+ * Builds a form select list
+ * @return HTML form select
+ * @param string $name
+ * @param array $value_options Associative array where the key is the name visible in the HTML output and the value is the option attribute value
+ * @param string $selected[optional]
+ */
 function _build_select($name, $value_options, $selected=null) {
 	
+	/**
+	 * HTML output string
+	 * @var string
+	 */
 	$select = "<select name='" . $name . "'> \n";
 	foreach($value_options as $key=>$value) {
 		$select .= "<option ";
@@ -718,13 +744,20 @@ function _build_radio($name, $id, $value_labels, $checked=null) {
 	return $radio;
 }
 
-//This builds the address input/edit form.
+/**
+ * Builds the input/edit form.
+ * @return HTML form
+ * @param object $data[optional]
+ */
 function _connections_getaddressform($data=null) {
 		if ($data != null) {
 			$options = unserialize($data->options);
 			$post_options = $data->options;
 			if ($options['image']['linked']) {
-				$img_html_block = '<img src="' . CN_IMAGE_BASE_URL . $options['image']['name']['thumbnail'] . '" /> <div class="clear"></div>'; 
+				if ($options['image']['display']) $selected = "show"; else $selected = "hidden";
+				
+				$imgOptions = _build_radio("imgOptions", "imgOptionID_", array("Display"=>"show", "Not Displayed"=>"hidden", "Remove"=>"remove"), $selected);
+				$img_html_block .= "<div style='text-align:center'> <img src='" . CN_IMAGE_BASE_URL . $options['image']['name']['entry'] . "' /> <br /> <span class='radio_group'>" . $imgOptions . "</span></div> <br />"; 
 			} else {
 				$img_html_block = "";
 			}
@@ -1053,7 +1086,7 @@ function _connections_list($atts, $content=null) {
 			if ($atts['show_alphaindex']) $out .= $alphaanchor;
 			$out .= "<div class='cnitem' id='cn" .  $row->id . "' style='-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative;'>\n";
 						$out .= "<div style='width:49%; float:left'>";
-							if ($options['image']['linked']) $out .= '<img src="' . CN_IMAGE_BASE_URL . $options['image']['name']['entry'] . '" /> <div class="clear"></div>';
+							if ($options['image']['linked'] && $options['image']['display']) $out .= '<img style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $options['image']['name']['entry'] . '" /> <div class="clear"></div>';
 							$out .= "<span class='name' id='" .  $row->id . "' style='font-size:larger;font-variant: small-caps'><strong>" . $row->first_name . " " . $row->last_name . "</strong></span>\n";
 							if ($row->title) $out .= "<br /><span class='title'>" . $row->title . "</span>\n";
 							if ($row->organization) $out .= "<br /><span class='organization'>" . $row->organization . "</span>\n";
