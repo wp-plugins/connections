@@ -155,7 +155,10 @@ Use this option to define the list title to any text you wish.
 3. You can mange addresses by going to the Connections item under the Tools menu.
 
 == Frequently Asked Questions ==
-This plugin is developed and tested in Firefox. If your using IE and something doesn't work, try it again in Firefox.
+* This plugin is developed and tested in Firefox. If your using IE and something doesn't work, try it again in Firefox.
+* This plugin is also under active developement and as such features and settings could change. You may also have to re-enter or edit your entries after an upgrade. An effort will be made to keep this to a minimum.
+* It also should be mentioned that I am not a web designer nor am I a PHP programmer, this plugin is being developed out of a need and for the learning experience.
+* If support is needed use the forum on the wordpress.org site. Title the post "[Plugin: Connections] Your Problem". Also be sure to tag the post with "connections".
 
 == Upgrading ==
 
