@@ -18,7 +18,8 @@ This plugin was based off LBB, ["Little Black Book"](http://wordpress.org/extend
 * Reduced the amount of scrolling needing when managing a large number of entries.
 * Matched the visual style to fit nicely in the new 2.7 admin interface.
 * Added shortcodes that can be used for embedding contact list and upcoming birthdays/anniversaries in a page and/or post.
-* Added preliminary image support for entries.
+* Added image support for entries.
+* Added support for copying an entry.
 
 **Instructions:**
 
@@ -123,7 +124,6 @@ Use this option to define the list title to any text you wish.
 
 * Assign entries to groups and display those groups in a page/post
 * Create "family" connections between entries
-* Copy an entry
 * Sidebar widget
 * Dashboard widget
 * An update request form
@@ -189,3 +189,7 @@ There is no need to de-activate and then re-activate Connections to upgrade.
 * Started code documentation
 * Added the ability to choose whether or not a linked image in an entry is displayed when embedded in a page/post
 * Added the ability to remove the linked image from an entry
+
+**0.2.10**
+
+* Added the ability to copy an entry
