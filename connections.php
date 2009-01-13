@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111
 Description: An address book.
-Version: 0.2.9
+Version: 0.2.10
 Author: Steven A. Zahm
 Author URI: http://www.shazahm.net
 
@@ -62,17 +62,28 @@ function connections_main() {
 	    if ($_GET['action']=='editform') {
 	        $sql = "SELECT * FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($_GET['id'])."'";
 	        $row = $wpdb->get_row($sql);
+			if ($_GET['copyid']) {
+				$formID = "add_address";
+				$formToken = "add_address";
+				$formAction = "addnew";
+				$inputName = "new";
+			} else {
+				$formID = "edit_address";
+				$formToken = "edit_address";
+				$formAction = "editcomplete";
+				$inputName = "save";
+			}
 ?>
 			<div class="wrap">
 				<div class="form-wrap" style="width:600px; margin: 0 auto;">
 					<h2><a name="new"></a>Edit Address</h2>
 					
-					<form action="admin.php?page=connections/connections.php&action=editcomplete&id=<?php echo $row->id; ?>" method="post" enctype="multipart/form-data">
+					<form action="admin.php?page=connections/connections.php&action=<?php echo $formAction ?>&id=<?php echo $row->id; ?>" method="post" enctype="multipart/form-data">
 					<?php echo _connections_getaddressform($row); ?>
-					<input type="hidden" name="formId" value="edit_address" />
-					<input type="hidden" name="token" value="<?php echo _formtoken("edit_address"); ?>" />
+					<input type="hidden" name="formId" value="<?php echo $formID ?>" />
+					<input type="hidden" name="token" value="<?php echo _formtoken($formToken); ?>" />
 					<p class="submit">
-						<input type="submit" name="save" value="Save" />
+						<input type="submit" name="<?php echo $inputName ?>" value="Save" />
 						<a href="tools.php?page=connections/connections.php" class="button">Cancel</a> <!-- THERE HAS TO BE A BETTER WAY THAN REFERRING DIRECTLY TO THE TOOLS.PHP -->
 					</p>
 					</form>
@@ -100,6 +111,12 @@ function connections_main() {
 				<?php
 				
 				if ($_GET['action']=='addnew' AND $_POST['new'] AND $_SESSION['formTokens']['add_address']['token'] == $_POST['token']) {
+					
+					if ($_GET['id']) {
+						$sql = "SELECT * FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($_GET['id'])."'";
+						$row = $wpdb->get_row($sql);
+						$options = unserialize($row->options);
+					}
 					
 					//I think I should set these to null if no value was input???
 					//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
@@ -147,10 +164,11 @@ function connections_main() {
 						$options['image']['name'] = $image_proccess_results['image_names'];
 						$options['image']['linked'] = true;
 						$options['image']['use'] = $image_proccess_results['image_names']['source'];
-						$serial_options = serialize($options);
 						$error = $image_proccess_results['error'];
 						$success = $image_proccess_results['success'];
 					}
+					
+					$serial_options = serialize($options);
 					
 					$sql = "INSERT INTO ".$wpdb->prefix."connections SET
 			            first_name    = '".$wpdb->escape($_POST['first_name'])."',
@@ -467,8 +485,8 @@ function connections_main() {
 										
 										echo "<tr class='".$altrow."'>";
 											echo "<th class='check-column ".$altrow."' scope='row'><input type='checkbox' value='".$row->id."' name='address[]'/></th> \n";
-											echo "<td class='".$altrow."' colspan='2'>".$alphaanchor."<a class='row-title' title='Edit ".$row->last_name.", ".$row->first_name."' href='admin.php?page=connections/connections.php&action=edit&id=".$row->id."'> ".$row->last_name.", ".$row->first_name."</a><br />";
-												echo "<div class='row-actions'><span class='detailsbutton' id='detailbutton".$row->id."' onClick='click_contact(this, ".$row->id.")'>Show Details</span> | <a class='editbutton' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'>Edit</a> | <a class='submitdelete' onclick='return confirm(\"You are about to delete this address. Cancel to stop, OK to delete\");' href='admin.php?page=connections/connections.php&action=delete&id=".$row->id."&token="._formtoken("delete_".$row->id)."'>Delete</a> | <a href='#wphead' title='Return to top.'>Up</a></div>";
+											echo "<td class='".$altrow."' colspan='2'>".$alphaanchor."<div style='float:right'><a href='#wphead' title='Return to top.'> &uarr; </a></div><a class='row-title' title='Edit ".$row->last_name.", ".$row->first_name."' href='admin.php?page=connections/connections.php&action=edit&id=".$row->id."'> ".$row->last_name.", ".$row->first_name."</a><br />";
+												echo "<div class='row-actions'><span class='detailsbutton' id='detailbutton".$row->id."' onClick='click_contact(this, ".$row->id.")'>Show Details</span> | <a class='editbutton' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'>Edit</a> | <a class='copybutton' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."&copyid=true'>Copy</a> | <a class='submitdelete' onclick='return confirm(\"You are about to delete this address. Cancel to stop, OK to delete\");' href='admin.php?page=connections/connections.php&action=delete&id=".$row->id."&token="._formtoken("delete_".$row->id)."'>Delete</a></div>";
 											echo "</td> \n";
 											echo "<td class='".$altrow."'><strong>".ucwords($row->visibility)."</strong></td> \n";												
 											echo "<td class='".$altrow."'>" . date("m/d/Y",strtotime($row->ts)) . "</td> \n";											
