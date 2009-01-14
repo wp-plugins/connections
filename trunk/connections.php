@@ -485,7 +485,7 @@ function connections_main() {
 										
 										echo "<tr class='".$altrow."'>";
 											echo "<th class='check-column ".$altrow."' scope='row'><input type='checkbox' value='".$row->id."' name='address[]'/></th> \n";
-											echo "<td class='".$altrow."' colspan='2'>".$alphaanchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' alt='Up Arrow' /></a></div><a class='row-title' title='Edit ".$row->last_name.", ".$row->first_name."' href='admin.php?page=connections/connections.php&action=edit&id=".$row->id."'> ".$row->last_name.", ".$row->first_name."</a><br />";
+											echo "<td class='".$altrow."' colspan='2'>".$alphaanchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit ".$row->last_name.", ".$row->first_name."' href='admin.php?page=connections/connections.php&action=edit&id=".$row->id."'> ".$row->last_name.", ".$row->first_name."</a><br />";
 												echo "<div class='row-actions'><span class='detailsbutton' id='detailbutton".$row->id."' onClick='click_contact(this, ".$row->id.")'>Show Details</span> | <a class='editbutton' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'>Edit</a> | <a class='copybutton' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."&copyid=true'>Copy</a> | <a class='submitdelete' onclick='return confirm(\"You are about to delete this address. Cancel to stop, OK to delete\");' href='admin.php?page=connections/connections.php&action=delete&id=".$row->id."&token="._formtoken("delete_".$row->id)."'>Delete</a></div>";
 											echo "</td> \n";
 											echo "<td class='".$altrow."'><strong>".ucwords($row->visibility)."</strong></td> \n";												
@@ -1065,7 +1065,8 @@ function _connections_list($atts, $content=null) {
 			}
 		}
 		
-		if ($atts['show_alphaindex']) $out = "<div class='cnalphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
+		if (!$atts['id']) $out = "<div id='connections-list-head'></div>";
+		if ($atts['show_alphaindex']) $out .= "<div class='cnalphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
 		$out .= "<div class='connections-list'>";
 		
 		foreach ($results as $row) {
@@ -1136,7 +1137,8 @@ function _connections_list($atts, $content=null) {
 							if ($row->website) $out .= "<strong>Website:</strong> <a target='_blank' href='" . $row->website . "'>" . $row->website . "</a><br />\n";
 							if ($row->birthday) $out .= "<br /><span class='birthday'><strong>Birthday:</strong> ".$birthday."</span><br />\n";
 							if ($row->anniversary) $out .= "<span class='anniversary'><strong>Anniversary:</strong> ".$anniversary."</span><br />\n";
-							$out .= "<br /><span style='" . $ageStyle . "; font-size:x-small; font-variant: small-caps; position: absolute; right: 6px; bottom: 8px;'>Updated " . human_time_diff(strtotime($row->ts)) . " ago</span><br />\n";
+							if (!$atts['id']) $out .= "<br /><span style='" . $ageStyle . "; font-size:x-small; font-variant: small-caps; position: absolute; right: 26px; bottom: 8px;'>Updated " . human_time_diff(strtotime($row->ts)) . " ago</span><span style='position: absolute; right: 3px; bottom: 5px;'><a href='#connections-list-head' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></span><br />\n";
+							if ($atts['id']) $out .= "<br /><span style='" . $ageStyle . "; font-size:x-small; font-variant: small-caps; position: absolute; right: 6px; bottom: 8px;'>Updated " . human_time_diff(strtotime($row->ts)) . " ago</span><br />\n";
 						$out .= "</div>\n";
 						$out .= "<div style='clear:both'></div></div>\n";
 		}
