@@ -4,7 +4,7 @@ Donate link:
 Tags: addresses, address book, addressbook, bio, bios, biographies, contact, contacts, connect, connections, directory, list, lists, listings, people, profile, profiles, plugin, user, users
 Requires at least: 2.7
 Tested up to: 2.7
-Stable tag: 0.2.10
+Stable tag: 0.2.11
 
 An address book that is managed in the admin and embed them in a post/page. Upcoming birthdays and anniversaries can also be embedded in a post/page.
 
