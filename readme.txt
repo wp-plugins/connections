@@ -193,3 +193,7 @@ There is no need to de-activate and then re-activate Connections to upgrade.
 **0.2.10**
 
 * Added the ability to copy an entry
+
+**0.2.11**
+
+* Added a nice little up arrow to both the admin and page/post entry list to return to the top of the list
