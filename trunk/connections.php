@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111
 Description: An address book.
-Version: 0.2.11
+Version: 0.2.12
 Author: Steven A. Zahm
 Author URI: http://www.shazahm.net
 
@@ -29,7 +29,7 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 //GPL PHP upload class from http://www.verot.net/php_class_upload.htm
 require_once(WP_PLUGIN_DIR . '/connections/php_class_upload/class.upload.php');
 
-$connections_version = '0.2.11';
+$connections_version = '0.2.12';
 session_start();
 
 // Define a few constants until I can get to creating the options page.
@@ -118,6 +118,8 @@ function connections_main() {
 						$options = unserialize($row->options);
 					}
 					
+					$options['entry']['type'] = $_POST['entry_type'];
+					
 					//I think I should set these to null if no value was input???
 					//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
 					//Did this because most often people don't want to give the year.
@@ -131,6 +133,7 @@ function connections_main() {
 										 city=>$_POST['city'],
 										 state=>$_POST['state'],
 										 zipcode=>$_POST['zipcode'],
+										 country=>$_POST['country'],
 										 visibility=>'unlisted');
 					
 					$addresses[] = array(type=>$_POST['address2_type'],
@@ -139,6 +142,7 @@ function connections_main() {
 										 city=>$_POST['city2'],
 										 state=>$_POST['state2'],
 										 zipcode=>$_POST['zipcode2'],
+										 country=>$_POST['country2'],
 										 visibility=>'unlisted');
 					
 					$phone_numbers[] = array(type=>'home', homephone=>$_POST['homephone'], visibility=>'unlisted');
@@ -155,6 +159,7 @@ function connections_main() {
 					$serial_addresses = serialize($addresses);
 					$serial_phone_numbers = serialize($phone_numbers);
 					$serial_email = serialize($email);
+					$serial_im = serialize($_POST['im']);
 					$serial_websites = serialize($websites);
 					
 					if ($_POST['website'] == "http://") $_POST['website'] = "";
@@ -175,6 +180,7 @@ function connections_main() {
 			            last_name     = '".$wpdb->escape($_POST['last_name'])."',
 						title    	  = '".$wpdb->escape($_POST['title'])."',
 						organization  = '".$wpdb->escape($_POST['organization'])."',
+						department    = '".$wpdb->escape($_POST['department'])."',
 			            personalemail = '".$wpdb->escape($_POST['personalemail'])."',
 			            workemail     = '".$wpdb->escape($_POST['workemail'])."',
 			            website       = '".$wpdb->escape($_POST['website'])."',
@@ -184,12 +190,14 @@ function connections_main() {
 			            city          = '".$wpdb->escape($_POST['city'])."',
 			            state         = '".$wpdb->escape($_POST['state'])."',
 			            zipcode       = '".$wpdb->escape($_POST['zipcode'])."',
+						country       = '".$wpdb->escape($_POST['country'])."',
 						address2_type = '".$wpdb->escape($_POST['address2_type'])."',
 						address2_line1= '".$wpdb->escape($_POST['address2_line1'])."',
 			            address2_line2= '".$wpdb->escape($_POST['address2_line2'])."',
 			            city2         = '".$wpdb->escape($_POST['city2'])."',
 			            state2        = '".$wpdb->escape($_POST['state2'])."',
 			            zipcode2      = '".$wpdb->escape($_POST['zipcode2'])."',
+						country2      = '".$wpdb->escape($_POST['country2'])."',
 			            homephone     = '".$wpdb->escape($_POST['homephone'])."',
 						homefax       = '".$wpdb->escape($_POST['homefax'])."',
 			            cellphone     = '".$wpdb->escape($_POST['cellphone'])."',
@@ -201,8 +209,10 @@ function connections_main() {
 						addresses     = '".$wpdb->escape($serial_addresses)."',
 						phone_numbers = '".$wpdb->escape($serial_phone_numbers)."',
 						email	      = '".$wpdb->escape($serial_email)."',
+						im  	      = '".$wpdb->escape($serial_im)."',
 						websites      = '".$wpdb->escape($serial_websites)."',
-						options   = '".$wpdb->escape($serial_options)."',
+						options       = '".$wpdb->escape($serial_options)."',
+						bio           = '".$wpdb->escape($_POST['bio'])."',
 			            notes         = '".$wpdb->escape($_POST['notes'])."'";
 					
 					if (!$error) {
@@ -210,6 +220,7 @@ function connections_main() {
 						echo "<div id='message' class='updated fade'>";
 							echo "<p><strong>Address added.</strong></p> \n";
 							if ($image_proccess_results['success']) echo $success;
+							//print_r($_POST['im']);
 						echo "</div>";
 					} else {
 						echo "<div id='notice' class='error'>";
@@ -223,6 +234,9 @@ function connections_main() {
 				if ($_GET['action']=='editcomplete' AND $_POST['save'] AND $_SESSION['formTokens']['edit_address']['token'] == $_POST['token']) {
 					$sql = "SELECT * FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($_GET['id'])."'";
 					$row = $wpdb->get_row($sql);
+					
+					$options = unserialize($row->options);
+					$options['entry']['type'] = $_POST['entry_type'];
 				
 					//I think I should set these to null if no value was input???
 					//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them. Did this because most often people don't want to give the year.
@@ -236,6 +250,7 @@ function connections_main() {
 										 city=>$_POST['city'],
 										 state=>$_POST['state'],
 										 zipcode=>$_POST['zipcode'],
+										 country=>$_POST['country'],
 										 visibility=>'unlisted');
 					
 					$addresses[] = array(type=>$_POST['address2_type'],
@@ -244,6 +259,7 @@ function connections_main() {
 										 city=>$_POST['city2'],
 										 state=>$_POST['state2'],
 										 zipcode=>$_POST['zipcode2'],
+										 country2=>$_POST['country2'],
 										 visibility=>'unlisted');
 					
 					$phone_numbers[] = array(type=>'home', homephone=>$_POST['homephone'], visibility=>'unlisted');
@@ -260,9 +276,8 @@ function connections_main() {
 					$serial_addresses = serialize($addresses);
 					$serial_phone_numbers = serialize($phone_numbers);
 					$serial_email = serialize($email);
-					$serial_websites = serialize($websites);
-					
-					$options = unserialize($row->options);
+					$serial_im = serialize($_POST['im']);
+					$serial_websites = serialize($websites);					
 					
 					if ($_FILES['original_image']['error'] != 4) {
 						$image_proccess_results = _process_images($_FILES);
@@ -293,6 +308,7 @@ function connections_main() {
 						last_name     = '".$wpdb->escape($_POST['last_name'])."',
 						title    	  = '".$wpdb->escape($_POST['title'])."',
 						organization  = '".$wpdb->escape($_POST['organization'])."',
+						department    = '".$wpdb->escape($_POST['department'])."',
 						personalemail = '".$wpdb->escape($_POST['personalemail'])."',
 						workemail     = '".$wpdb->escape($_POST['workemail'])."',
 						homephone     = '".$wpdb->escape($_POST['homephone'])."',
@@ -306,19 +322,23 @@ function connections_main() {
 						city          = '".$wpdb->escape($_POST['city'])."',
 						state         = '".$wpdb->escape($_POST['state'])."',
 						zipcode       = '".$wpdb->escape($_POST['zipcode'])."',
+						country       = '".$wpdb->escape($_POST['country'])."',
 						address2_type = '".$wpdb->escape($_POST['address2_type'])."',
 						address2_line1= '".$wpdb->escape($_POST['address2_line1'])."',
 						address2_line2= '".$wpdb->escape($_POST['address2_line2'])."',
 						city2         = '".$wpdb->escape($_POST['city2'])."',
 						state2        = '".$wpdb->escape($_POST['state2'])."',
 						zipcode2      = '".$wpdb->escape($_POST['zipcode2'])."',
+						country2      = '".$wpdb->escape($_POST['country2'])."',
 						birthday      = '".$wpdb->escape($bdaydate)."',
 						anniversary   = '".$wpdb->escape($anndate)."',
 						addresses     = '".$wpdb->escape($serial_addresses)."',
 						phone_numbers = '".$wpdb->escape($serial_phone_numbers)."',
 						email	      = '".$wpdb->escape($serial_email)."',
+						im  	      = '".$wpdb->escape($serial_im)."',
 						websites      = '".$wpdb->escape($serial_websites)."',
 						options       = '".$wpdb->escape($serial_options)."',
+						bio           = '".$wpdb->escape($_POST['bio'])."',
 						notes         = '".$wpdb->escape($_POST['notes'])."',
 						website       = '".$wpdb->escape($_POST['website'])."',
 						visibility    = '".$wpdb->escape($_POST['visibility'])."'
@@ -546,7 +566,7 @@ function connections_main() {
 					<div id="col-left">
 						<div class="col-wrap">
 							<div class="form-wrap">
-							<h3><a name="new"></a>Add Address</h3>
+							<h3><a name="new"></a>Add Entry</h3>
 							
 								<form action="admin.php?page=connections/connections.php&action=addnew" method="post" enctype="multipart/form-data">
 									<?php echo _connections_getaddressform(); ?>
@@ -770,7 +790,8 @@ function _build_radio($name, $id, $value_labels, $checked=null) {
 function _connections_getaddressform($data=null) {
 		if ($data != null) {
 			$options = unserialize($data->options);
-			$post_options = $data->options;
+			$im = unserialize($data->im);
+			$post_options = $data->options; // I don't think I need this???
 			if ($options['image']['linked']) {
 				if ($options['image']['display']) $selected = "show"; else $selected = "hidden";
 				
@@ -846,9 +867,14 @@ function _connections_getaddressform($data=null) {
 		$ann_day = _build_select('anniversary_day',$days,$anniversary_day);
 		
 		$visibility = _build_radio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$default_visibility);
+		$entryType = _build_radio('entry_type','entry_type',array('Individual'=>'individual','Organization'=>'organization'),$options['entry']['type']);
 		
 	    $out = // This mess needs re-written to following coding style used for the front end output!!!
 		'
+		<div class="form-field connectionsform">	
+				<span class="radio_group">'.$entryType.'</span>
+		</div>
+		
 		<div class="form-field connectionsform">
 			<div class="input inputhalfwidth">
 				<label for="first_name">First name:</label>
@@ -866,7 +892,10 @@ function _connections_getaddressform($data=null) {
 				<input type="text" name="title" value="'.$data->title.'" />
 
 				<label for="organization">Organization:</label>
-				<input type="text" name="organization" value="'.$data->organization.'" />		
+				<input type="text" name="organization" value="'.$data->organization.'" />
+				
+				<label for="department">Department:</label>
+				<input type="text" name="department" value="'.$data->department.'" />		
 		</div>
 		
 		<div class="form-field connectionsform">
@@ -885,7 +914,6 @@ function _connections_getaddressform($data=null) {
 			<label for="address_line2">Address Line 2:</label>
 			<input type="text" name="address_line2" value="'.$data->address_line2.'" />
 
-
 			<div class="input" style="width:60%">
 				<label for="city">City:</label>
 				<input type="text" name="city" value="'.$data->city.'" />
@@ -898,7 +926,10 @@ function _connections_getaddressform($data=null) {
 				<label for="zipcode">Zipcode:</label>
 				<input type="text" name="zipcode" value="'.$data->zipcode.'" />
 			</div>
-
+			
+			<label for="country">Country</label>
+			<input type="text" name="country" value="'.$data->country.'" />
+			
 			<div class="clear"></div>
 		</div>
 		
@@ -925,6 +956,9 @@ function _connections_getaddressform($data=null) {
 				<label for="zipcode2">Zipcode:</label>
 				<input type="text" name="zipcode2" value="'.$data->zipcode2.'" />
 			</div>
+			
+			<label for="country2">Country</label>
+			<input type="text" name="country2" value="'.$data->country2.'" />
 
 			<div class="clear"></div>
 		</div>
@@ -943,12 +977,34 @@ function _connections_getaddressform($data=null) {
 				<input type="text" name="workphone" value="'.$data->workphone.'" />
 
 				<label for="workfax">Work Fax:</label>
-				<input type="text" name="workfax" value="'.$data->workfax.'" />		</div>
-		<div class="form-field connectionsform">				<label for="personalemail">Personal Email:</label>
+				<input type="text" name="workfax" value="'.$data->workfax.'" />
+		</div>
+		
+		<div class="form-field connectionsform">
+				<label for="personalemail">Personal Email:</label>
 				<input type="text" name="personalemail" value="'.$data->personalemail.'" />
 
 				<label for="workemail">Work Email:</label>
 				<input type="text" name="workemail" value="'.$data->workemail.'" />
+		</div>
+		
+		<div class="form-field connectionsform">
+				<label for="im">AIM:</label>
+				<input type="text" name="im[aim]" value="' . $im['aim'] . '" />
+
+				<label for="im">Yahoo IM:</label>
+				<input type="text" name="im[yahoo]" value="' . $im['yahoo'] . '" />
+				
+				<label for="im">Jabber / Google Talk:</label>
+				<input type="text" name="im[jabber]" value="' . $im['jabber'] . '" />
+				
+				<label for="im">Messenger:</label>
+				<input type="text" name="im[messenger]" value="' . $im['messenger'] . '" />
+		</div>
+		
+		<div class="form-field connectionsform">
+				<label for="website">Website:</label>
+				<input type="text" name="website" value="'.$website.'" />
 		</div>
 
 		<div class="form-field connectionsform">
@@ -960,9 +1016,10 @@ function _connections_getaddressform($data=null) {
 		</div>
 		
 		<div class="form-field connectionsform">
-				<label for="website">Website:</label>
-				<input type="text" name="website" value="'.$website.'" />
+				<label for="bio">Biographical Info:</label>
+				<textarea name="bio" rows="3">'.$data->bio.'</textarea>
 		</div>
+		
 		<div class="form-field connectionsform">
 				<label for="notes">Notes:</label>
 				<textarea name="notes" rows="3">'.$data->notes.'</textarea>
@@ -985,6 +1042,7 @@ function _connections_install() {
         last_name tinytext NOT NULL,
 		title tinytext NOT NULL,
 		organization tinytext NOT NULL,
+		department tinytext NOT NULL,
         personalemail tinytext NOT NULL,
         workemail tinytext NOT NULL,
         homephone tinytext NOT NULL,
@@ -998,19 +1056,23 @@ function _connections_install() {
         city tinytext NOT NULL,
         zipcode tinytext NOT NULL,
         state tinytext NOT NULL,
+		country tinytext NOT NULL,
 		address2_type tinytext NOT NULL,
 		address2_line1 tinytext NOT NULL,
         address2_line2 tinytext NOT NULL,
         city2 tinytext NOT NULL,
         zipcode2 tinytext NOT NULL,
         state2 tinytext NOT NULL,
+		country2 tinytext NOT NULL,
 		birthday tinytext NOT NULL,
 		anniversary tinytext NOT NULL,
         website VARCHAR(55) NOT NULL,
+		bio tinytext NOT NULL,
         notes tinytext NOT NULL,
 		addresses longtext NOT NULL,
 		phone_numbers longtext NOT NULL,
 		email longtext NOT NULL,
+		im longtext NOT NULL,
 		websites longtext NOT NULL,
 		options longtext NOT NULL,
 		visibility tinytext NOT NULL,
