@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111
 Description: An address book.
-Version: 0.2.12
+Version: 0.2.15
 Author: Steven A. Zahm
 Author URI: http://www.shazahm.net
 
@@ -29,7 +29,7 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 //GPL PHP upload class from http://www.verot.net/php_class_upload.htm
 require_once(WP_PLUGIN_DIR . '/connections/php_class_upload/class.upload.php');
 
-$connections_version = '0.2.12';
+$connections_version = '0.2.15';
 session_start();
 
 // Define a few constants until I can get to creating the options page.
@@ -58,6 +58,7 @@ function connections_menus() {
 
 function connections_main() {
 	    global $wpdb, $connections_version;
+		$connections_options = get_option("connections_options");
 		
 	    if ($_GET['action']=='editform') {
 	        $sql = "SELECT * FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($_GET['id'])."'";
@@ -76,7 +77,7 @@ function connections_main() {
 ?>
 			<div class="wrap">
 				<div class="form-wrap" style="width:600px; margin: 0 auto;">
-					<h2><a name="new"></a>Edit Address</h2>
+					<h2><a name="new"></a>Edit Entry</h2>
 					
 					<form action="admin.php?page=connections/connections.php&action=<?php echo $formAction ?>&id=<?php echo $row->id; ?>" method="post" enctype="multipart/form-data">
 					<?php echo _connections_getaddressform($row); ?>
@@ -93,16 +94,15 @@ function connections_main() {
 		} else {
 	    
 	        $table_name = $wpdb->prefix."connections";
-	        If ($wpdb->get_var("SHOW TABLES LIKE '$table_name'")!=$table_name
-	            || get_option("connections_version")!=$connections_version ) {
+			$connections_options = get_option("connections_options");
+	        If ($wpdb->get_var("SHOW TABLES LIKE '$table_name'")!= $table_name || $connections_options['version']!= $connections_version ) {
 	            // Call the install function here rather than through the more usual
 	            // activate_blah.php action hook so the user doesn't have to worry about
 	            // deactivating then reactivating the plugin.  Should happen seamlessly.
 	            _connections_install();
-	            echo '<div id="message" class="updated fade">
-	                <p><strong>The Connections plugin (version
-	                '.get_option("connections_version").') has been installed or upgraded.</strong></p>
-	            </div>';
+	            echo "<div id='message' class='updated fade'>
+	                <p><strong>The Connections plug-in version " . $connections_version . " has been installed or upgraded.</strong></p>
+	            </div>";
 	        } ?>
 
 			<div class="wrap">
@@ -218,7 +218,7 @@ function connections_main() {
 					if (!$error) {
 						$wpdb->query($sql); //Writes the entry to the db if there were no errors with the image processing.
 						echo "<div id='message' class='updated fade'>";
-							echo "<p><strong>Address added.</strong></p> \n";
+							echo "<p><strong>Entry added.</strong></p> \n";
 							if ($image_proccess_results['success']) echo $success;
 							//print_r($_POST['im']);
 						echo "</div>";
@@ -348,7 +348,7 @@ function connections_main() {
 					if (!$error) {
 						$wpdb->query($sql); //Writes the entry to the db if there were no errors with the image processing.
 						echo "<div id='message' class='updated fade'>";
-							echo "<p><strong>The address has been updated.</strong></p> \n";
+							echo "<p><strong>The entry has been updated.</strong></p> \n";
 							if ($image_proccess_results['success']) echo $success;
 						echo "</div>";
 					} else {
@@ -356,14 +356,14 @@ function connections_main() {
 							echo $error;
 						echo "</div>";
 					}
-					//echo '<div id="message" class="updated fade"><p><strong>The address has been updated.</strong></p></div>';
+					//echo '<div id="message" class="updated fade"><p><strong>The entry has been updated.</strong></p></div>';
 					unset($_SESSION['formTokens']);
 				}
 				
 				if ($_POST['doaction'] AND $_SESSION['formTokens']['do_action']['token'] == $_POST['token']) {
 					if ($_POST['action'] != "") {
 						echo "<div id='message' class='updated fade'>";
-							$checked = $_POST['address'];
+							$checked = $_POST['entry'];
 							
 							foreach ($checked as $id) {
 								$sql = "SELECT * FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($id)."'";
@@ -374,43 +374,53 @@ function connections_main() {
 									WHERE id 		='".$wpdb->escape($id)."'");
 							}
 							
-							echo "<p><strong>Address(es) visibility have been updated.</strong></p>";
+							echo "<p><strong>Entry(ies) visibility have been updated.</strong></p>";
 						echo "</div>";
 						unset($_SESSION['formTokens']);
 					}
 										
-					$filterby = $_POST['filter'];
+					/*$filterby = $_POST['filter'];
 					
 					 if ($filterby != "all") {
-						$visibilityfilter = " WHERE visibility='" . $_POST['filter'] . "' ";
+						$visibilityfilter = " AND visibility='" . $_POST['filter'] . "' ";
 						$visibilityselect = $_POST['filter'];
 					} else {
 						$visibilityfilter = "";
 						$visibilityselect = "all";
-					}
+					}*/
 				}
 				
 				if ($_POST['dofilter']) {
-					$filterby = $_POST['filter'];
+					$connections_options['filter']['visibility'] = $_POST['filter'];
+					//$connections_options['filter']['visibility']['select'] = $_POST['filter'];
+					update_option('connections_options', $connections_options);			
 					
-					 if ($filterby != "all") {
-						$visibilityfilter = " WHERE visibility='" . $_POST['filter'] . "' ";
+					/*$filterby = $_POST['filter'];
+					
+					 if ($filterby != "") {
+						$visibilityfilter = " AND visibility='" . $_POST['filter'] . "' ";
 						$visibilityselect = $_POST['filter'];
 					} else {
 						$visibilityfilter = "";
-						$visibilityselect = "all";
-					}
+						$visibilityselect = "";
+					}*/
 				}
 				
 			    if ($_GET['action']=='delete' AND $_SESSION['formTokens']['delete_'.$_GET['id']]['token'] == $_GET['token']) {
 			        $sql = "SELECT * FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($_GET['id'])."'";
 			        $row = $wpdb->get_row($sql);			        
 					$wpdb->query("DELETE FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($_GET['id'])."'");
-					echo '<div id="message" class="updated fade"><p><strong>The address has been deleted.</strong></p></div>';	
+					echo '<div id="message" class="updated fade"><p><strong>The entry has been deleted.</strong></p></div>';	
 					unset($_SESSION['formTokens']);
 			    }?>
 				
 				
+				<?php
+					//$sql = "SELECT * FROM ".$wpdb->prefix."connections " . $visibilityfilter . "ORDER BY last_name, first_name";
+					if ($connections_options['filter']['visibility'] != "") $filter = " AND visibility='" . $connections_options['filter']['visibility'] . "' ";
+					$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = ''" . $filter . ") UNION (SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $filter . ") ORDER BY order_by, last_name, first_name";
+					$results = $wpdb->get_results($sql);
+				?>
 				<div id="col-container">
 
 					<div id="col-right">
@@ -448,7 +458,7 @@ function connections_main() {
 								</div>
 								
 								<div class="alignleft actions">
-									<?php echo _build_select('filter', array('Show All'=>'all', 'Show Public'=>'public', 'Show Private'=>'private', 'Show Unlisted'=>'unlisted'), $visibilityselect)?>
+									<?php echo _build_select('filter', array('Show All'=>'', 'Show Public'=>'public', 'Show Private'=>'private', 'Show Unlisted'=>'unlisted'), $connections_options['filter']['visibility'])?>
 									<input id="doaction" class="button-secondary action" type="submit" name="dofilter" value="Filter" />
 									<input type="hidden" name="formId" value="do_action" />
 									<input type="hidden" name="token" value="<?php echo _formtoken("do_action"); ?>" />
@@ -471,13 +481,13 @@ function connections_main() {
 						            </tr>
 								</tfoot>
 								<tbody>
-									<?php $sql = "SELECT * FROM ".$wpdb->prefix."connections " . $visibilityfilter . "ORDER BY last_name, first_name";
-									$results = $wpdb->get_results($sql);
+									<?php
+									//$sql = "SELECT * FROM ".$wpdb->prefix."connections " . $visibilityfilter . "ORDER BY last_name, first_name, organization";
+									//$results = $wpdb->get_results($sql);
+									
+									//Builds an alpha array of the first letter of the last names.
 									$alphaindex = array();
 									$i = 0;
-									//unset($_SESSION['formTokens']);
-									//print_r($_SESSION);
-									//Builds an alpha array of the first letter of the last names.
 									foreach ($results as $row) {
 										$letter = strtoupper(substr($row->last_name, 0, 1));
 										if ($letter != $oldletter) {
@@ -504,15 +514,16 @@ function connections_main() {
 										}
 										
 										echo "<tr class='".$altrow."'>";
-											echo "<th class='check-column ".$altrow."' scope='row'><input type='checkbox' value='".$row->id."' name='address[]'/></th> \n";
-											echo "<td class='".$altrow."' colspan='2'>".$alphaanchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit ".$row->last_name.", ".$row->first_name."' href='admin.php?page=connections/connections.php&action=edit&id=".$row->id."'> ".$row->last_name.", ".$row->first_name."</a><br />";
-												echo "<div class='row-actions'><span class='detailsbutton' id='detailbutton".$row->id."' onClick='click_contact(this, ".$row->id.")'>Show Details</span> | <a class='editbutton' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'>Edit</a> | <a class='copybutton' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."&copyid=true'>Copy</a> | <a class='submitdelete' onclick='return confirm(\"You are about to delete this address. Cancel to stop, OK to delete\");' href='admin.php?page=connections/connections.php&action=delete&id=".$row->id."&token="._formtoken("delete_".$row->id)."'>Delete</a></div>";
+											echo "<th class='check-column ".$altrow."' scope='row'><input type='checkbox' value='".$row->id."' name='entry[]'/></th> \n";
+											if ($row->last_name) echo "<td class='".$altrow."' colspan='2'>".$alphaanchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit ".$row->last_name.", ".$row->first_name."' href='admin.php?page=connections/connections.php&action=edit&id=".$row->id."'> ".$row->last_name.", ".$row->first_name."</a><br />";
+											if (!$row->last_name && $row->organization) echo "<td class='".$altrow."' colspan='2'>".$alphaanchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit ".$row->organization."' href='admin.php?page=connections/connections.php&action=edit&id=".$row->id."'> ".$row->organization."</a><br />";
+												echo "<div class='row-actions'><span class='detailsbutton' id='detailbutton".$row->id."' onClick='click_contact(this, ".$row->id.")'>Show Details</span> | <a class='editbutton' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'>Edit</a> | <a class='copybutton' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."&copyid=true'>Copy</a> | <a class='submitdelete' onclick='return confirm(\"You are about to delete this entry. Cancel to stop, OK to delete\");' href='admin.php?page=connections/connections.php&action=delete&id=".$row->id."&token="._formtoken("delete_".$row->id)."'>Delete</a></div>";
 											echo "</td> \n";
 											echo "<td class='".$altrow."'><strong>".ucwords($row->visibility)."</strong></td> \n";												
 											echo "<td class='".$altrow."'>" . date("m/d/Y",strtotime($row->ts)) . "</td> \n";											
 										echo "</tr> \n";
 										
-										echo "<tr class='".$altrow." addressdetails' id='contact-".$row->id."-detail' style='display:none;'>";
+										echo "<tr class='".$altrow." entrydetails' id='contact-".$row->id."-detail' style='display:none;'>";
 											echo "<td class='".$altrow."'></td> \n";
 											echo "<td class='".$altrow."' colspan='2'>";
 												if ($row->address_type) echo "<strong>" . ucfirst($row->address_type) . " Address</strong><br />";
@@ -544,7 +555,7 @@ function connections_main() {
 											echo "</td> \n";
 										echo "</tr> \n";
 										
-										echo "<tr class='".$altrow." addressnotes' id='contact-".$row->id."-detail-notes' style='display:none;'>";
+										echo "<tr class='".$altrow." entrynotes' id='contact-".$row->id."-detail-notes' style='display:none;'>";
 											echo "<td class='".$altrow."'>&nbsp;</td> \n";
 											echo "<td class='".$altrow."' colspan='3'>";
 												if ($row->notes) echo "<strong>Notes:</strong> " . $row->notes; else echo "&nbsp;";
@@ -1080,7 +1091,10 @@ function _connections_install() {
     );";
     require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
     dbDelta($sql);
-    update_option('connections_version', $connections_version);
+	
+	$connections_options['version'] = $connections_version;
+	//$serial_connections_options = $connections_options;
+    update_option('connections_options', $connections_options);
 }
 
 function connections_getselect($name) {
