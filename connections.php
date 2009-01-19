@@ -29,6 +29,9 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 //GPL PHP upload class from http://www.verot.net/php_class_upload.htm
 require_once(WP_PLUGIN_DIR . '/connections/php_class_upload/class.upload.php');
 
+//date objects
+require_once(WP_PLUGIN_DIR . '/connections/date.php');
+
 $connections_version = '0.2.15';
 session_start();
 
@@ -58,6 +61,8 @@ function connections_menus() {
 
 function connections_main() {
 	    global $wpdb, $connections_version;
+		global $current_user;
+		get_currentuserinfo();
 		$connections_options = get_option("connections_options");
 		
 	    if ($_GET['action']=='editform') {
@@ -378,32 +383,12 @@ function connections_main() {
 						echo "</div>";
 						unset($_SESSION['formTokens']);
 					}
-										
-					/*$filterby = $_POST['filter'];
-					
-					 if ($filterby != "all") {
-						$visibilityfilter = " AND visibility='" . $_POST['filter'] . "' ";
-						$visibilityselect = $_POST['filter'];
-					} else {
-						$visibilityfilter = "";
-						$visibilityselect = "all";
-					}*/
 				}
 				
 				if ($_POST['dofilter']) {
-					$connections_options['filter']['visibility'] = $_POST['filter'];
-					//$connections_options['filter']['visibility']['select'] = $_POST['filter'];
+					$connections_options[$current_user->ID]['filter']['visibility_type'] = $_POST['visibility_type'];
+					$connections_options[$current_user->ID]['filter']['entry_type'] = $_POST['entry_type'];
 					update_option('connections_options', $connections_options);			
-					
-					/*$filterby = $_POST['filter'];
-					
-					 if ($filterby != "") {
-						$visibilityfilter = " AND visibility='" . $_POST['filter'] . "' ";
-						$visibilityselect = $_POST['filter'];
-					} else {
-						$visibilityfilter = "";
-						$visibilityselect = "";
-					}*/
 				}
 				
 			    if ($_GET['action']=='delete' AND $_SESSION['formTokens']['delete_'.$_GET['id']]['token'] == $_GET['token']) {
@@ -417,7 +402,7 @@ function connections_main() {
 				
 				<?php
 					//$sql = "SELECT * FROM ".$wpdb->prefix."connections " . $visibilityfilter . "ORDER BY last_name, first_name";
-					if ($connections_options['filter']['visibility'] != "") $filter = " AND visibility='" . $connections_options['filter']['visibility'] . "' ";
+					if ($connections_options[$current_user->ID]['filter']['visibility_type'] != "") $filter = " AND visibility='" . $connections_options[$current_user->ID]['filter']['visibility_type'] . "' ";
 					$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = ''" . $filter . ") UNION (SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $filter . ") ORDER BY order_by, last_name, first_name";
 					$results = $wpdb->get_results($sql);
 				?>
@@ -458,7 +443,8 @@ function connections_main() {
 								</div>
 								
 								<div class="alignleft actions">
-									<?php echo _build_select('filter', array('Show All'=>'', 'Show Public'=>'public', 'Show Private'=>'private', 'Show Unlisted'=>'unlisted'), $connections_options['filter']['visibility'])?>
+									<?php echo _build_select('entry_type', array('Show All Enties'=>'', 'Show Individuals'=>'individual', 'Show Organizations'=>'organization'), $connections_options[$current_user->ID]['filter']['entry_type'])?>
+									<?php echo _build_select('visibility_type', array('Show All'=>'', 'Show Public'=>'public', 'Show Private'=>'private', 'Show Unlisted'=>'unlisted'), $connections_options[$current_user->ID]['filter']['visibility_type'])?>
 									<input id="doaction" class="button-secondary action" type="submit" name="dofilter" value="Filter" />
 									<input type="hidden" name="formId" value="do_action" />
 									<input type="hidden" name="token" value="<?php echo _formtoken("do_action"); ?>" />
@@ -481,10 +467,8 @@ function connections_main() {
 						            </tr>
 								</tfoot>
 								<tbody>
-									<?php
-									//$sql = "SELECT * FROM ".$wpdb->prefix."connections " . $visibilityfilter . "ORDER BY last_name, first_name, organization";
-									//$results = $wpdb->get_results($sql);
 									
+									<?php									
 									//Builds an alpha array of the first letter of the last names.
 									$alphaindex = array();
 									$i = 0;
@@ -495,9 +479,13 @@ function connections_main() {
 											$oldletter = strtoupper(substr($row->last_name, 0, 1));
 										}
 									}
-																	
+													
 									foreach ($results as $row) {
 										$options = unserialize($row->options);
+										
+										if ($connections_options[$current_user->ID]['filter']['entry_type'] != "")	{
+											if ($options['entry']['type'] != $connections_options[$current_user->ID]['filter']['entry_type']) continue;
+										}
 										
 										if (!$altrow == "alternate") {
 											$altrow = "alternate";
@@ -799,6 +787,8 @@ function _build_radio($name, $id, $value_labels, $checked=null) {
  * @param object $data[optional]
  */
 function _connections_getaddressform($data=null) {
+		$date = new date(); //date.php
+		
 		if ($data != null) {
 			$options = unserialize($data->options);
 			$im = unserialize($data->im);
@@ -820,70 +810,26 @@ function _connections_getaddressform($data=null) {
 		if (!$data->anniversary) $anniversary_day = null; else $anniversary_day = date("d", $data->anniversary);
 		if (!$data->visibility) $default_visibility = 'unlisted'; else $default_visibility = $data->visibility;
 		
-		$months = array('Month'=>null,
-						'January'=>'01',
-						'February'=>'02',
-						'March'=>'03',
-						'April'=>'04',
-						'May'=>'05',
-						'June'=>'06',
-						'July'=>'07',
-						'August'=>'08',
-						'September'=>'09',
-						'October'=>'10',
-						'November'=>'11',
-						'December'=>'12');
-		$days = array(	'Day'=>null,
-						'1st'=>'01',
-						'2nd'=>'02',
-						'3rd'=>'03',
-						'4th'=>'04',
-						'5th'=>'05',
-						'6th'=>'06',
-						'7th'=>'07',
-						'8th'=>'08',
-						'9th'=>'09',
-						'10th'=>'10',
-						'11th'=>'11',
-						'12th'=>'12',
-						'13th'=>'13',
-						'14th'=>'14',
-						'15th'=>'15',
-						'16th'=>'16',
-						'17th'=>'17',
-						'18th'=>'18',
-						'19th'=>'19',
-						'20th'=>'20',
-						'21st'=>'21',
-						'22nd'=>'22',
-						'23rd'=>'23',
-						'24th'=>'24',
-						'25th'=>'25',
-						'26th'=>'26',
-						'27th'=>'27',
-						'28th'=>'28',
-						'29th'=>'29',
-						'30th'=>'30',
-						'31st'=>'31',);
-		
 		$address_types = array('Select'=>null,'Home'=>'home','Work'=>'work','School'=>'school','Other'=>'other');
 		
 		$address_select = _build_select('address_type',$address_types,$data->address_type);
 		$address2_select = _build_select('address2_type',$address_types,$data->address2_type);
 		
-		$bday_month = _build_select('birthday_month',$months,$birthday_month);
-		$bday_day = _build_select('birthday_day',$days,$birthday_day);
+		$bday_month = _build_select('birthday_month',$date->months,$birthday_month);
+		$bday_day = _build_select('birthday_day',$date->days,$birthday_day);
 		
-		$ann_month = _build_select('anniversary_month',$months,$anniversary_month);
-		$ann_day = _build_select('anniversary_day',$days,$anniversary_day);
+		$ann_month = _build_select('anniversary_month',$date->months,$anniversary_month);
+		$ann_day = _build_select('anniversary_day',$date->days,$anniversary_day);
 		
+		if (!isset($options['entry']['type'])) $options['entry']['type'] = "individual";
+		
+		$entry_type = _build_radio('entry_type','entry_type',array('Individual'=>'individual','Organization'=>'organization'),$options['entry']['type']);
 		$visibility = _build_radio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$default_visibility);
-		$entryType = _build_radio('entry_type','entry_type',array('Individual'=>'individual','Organization'=>'organization'),$options['entry']['type']);
-		
-	    $out = // This mess needs re-written to following coding style used for the front end output!!!
+				
+	    $out = // This mess needs re-written to follow coding style used for the front end output!!!
 		'
 		<div class="form-field connectionsform">	
-				<span class="radio_group">'.$entryType.'</span>
+				<span class="radio_group">'.$entry_type.'</span>
 		</div>
 		
 		<div class="form-field connectionsform">
