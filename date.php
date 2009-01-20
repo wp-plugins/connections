@@ -81,7 +81,7 @@ class date
 
 	/**
 	 * Returns an associative array of months Jan thru Dec
-	 * @var
+	 * @var array
 	 */
 	var $months = array('Month'=>null,
 						'January'=>'01',
