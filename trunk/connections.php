@@ -31,6 +31,8 @@ require_once(WP_PLUGIN_DIR . '/connections/php_class_upload/class.upload.php');
 
 //date objects
 require_once(WP_PLUGIN_DIR . '/connections/date.php');
+//date objects
+require_once(WP_PLUGIN_DIR . '/connections/entry.php');
 
 $connections_version = '0.2.15';
 session_start();
@@ -45,6 +47,8 @@ define('CN_DEFAULT_THUMBNAIL_X', 80);
 define('CN_DEFAULT_THUMBNAIL_Y', 54);
 define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
 define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
+
+$im_types = array('AIM'=>'aim', 'Yahoo IM'=>'yahoo', 'Jabber / Google Talk'=>'jabber' ,'Messender'=>'messenger');
 
 
 // CSS Styles for the plugin. This adds it to the admin page head.
@@ -160,11 +164,12 @@ function connections_main() {
 					$email[] = array(type=>work, address=>$_POST['workemail'], visibility=>'unlisted');
 					
 					$websites[] = array(type=>'personal', address=>$_POST['website'], visibility=>'unlisted');
-					
+					//print_r($websites);
 					$serial_addresses = serialize($addresses);
 					$serial_phone_numbers = serialize($phone_numbers);
 					$serial_email = serialize($email);
 					$serial_im = serialize($_POST['im']);
+					//print_r($_POST['im']);
 					$serial_websites = serialize($websites);
 					
 					if ($_POST['website'] == "http://") $_POST['website'] = "";
@@ -225,7 +230,6 @@ function connections_main() {
 						echo "<div id='message' class='updated fade'>";
 							echo "<p><strong>Entry added.</strong></p> \n";
 							if ($image_proccess_results['success']) echo $success;
-							//print_r($_POST['im']);
 						echo "</div>";
 					} else {
 						echo "<div id='notice' class='error'>";
@@ -482,8 +486,11 @@ function connections_main() {
 													
 									foreach ($results as $row) {
 										$options = unserialize($row->options);
+										$entry = new entry($row);
+										$imObject = new im();
+										$websites = new website();
 										
-										if ($connections_options[$current_user->ID]['filter']['entry_type'] != "")	{
+										if ($connections_options[$current_user->ID]['filter']['entry_type'] != "" )	{
 											if ($options['entry']['type'] != $connections_options[$current_user->ID]['filter']['entry_type']) continue;
 										}
 										
@@ -528,7 +535,22 @@ function connections_main() {
 											echo "<td class='".$altrow."'>";
 												if ($row->personalemail) echo "<strong>Personal Email:</strong><br /><a href='mailto:".$row->personalemail."'>".$row->personalemail."</a><br /><br />";
 												if ($row->workemail) echo "<strong>Work Email:</strong><br /><a href='mailto:".$row->workemail."'>".$row->workemail."</a><br /><br />";
-												if ($row->website) echo "<strong>Website:</strong><br /><a target='_blank' href='" . $row->website . "'>" . $row->website . "</a><br /><br />";
+												
+												if ($entry->getIm())
+												{
+													foreach ($entry->getIm() as $imID)
+													{
+														if ($imObject->getId($imID) != "") echo "<strong>" . $imObject->getId($imID) . ":</strong> " . $imObject->getId($imID) . "<br />";
+													}
+												}
+												
+												if ($entry->getWebsites())
+												{
+													foreach ($entry->getWebsites() as $website)
+													{
+														echo "<strong>Website:</strong><br /><a target='_blank' href='" . $websites->getAddress($website) . "'>" . $websites->getAddress($website) . "</a><br /><br />";
+													}
+												}
 												
 												if ($row->homephone) echo "<strong>Home Phone:</strong> ".$row->homephone."<br />";
 												if ($row->homefax) echo "<strong>Home Fax:</strong> ".$row->homefax."<br />";
@@ -787,11 +809,14 @@ function _build_radio($name, $id, $value_labels, $checked=null) {
  * @param object $data[optional]
  */
 function _connections_getaddressform($data=null) {
+		global $im_types;
+		//$im = new im(); //entry.php
 		$date = new date(); //date.php
 		
 		if ($data != null) {
 			$options = unserialize($data->options);
 			$im = unserialize($data->im);
+			//print_r($im);
 			$post_options = $data->options; // I don't think I need this???
 			if ($options['image']['linked']) {
 				if ($options['image']['display']) $selected = "show"; else $selected = "hidden";
@@ -802,6 +827,13 @@ function _connections_getaddressform($data=null) {
 				$img_html_block = "";
 			}
 		}
+		
+		/*if (!$data) {
+			foreach ($im_types as $type) {
+				$im->setType($type);
+				$im->setId($id);
+			}
+		}*/
 		
 		if (!$data) $website = 'http://'; else $website = $data->website;
 		if (!$data->birthday) $birthday_month = null; else $birthday_month = date("m", $data->birthday);
@@ -827,164 +859,164 @@ function _connections_getaddressform($data=null) {
 		$visibility = _build_radio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$default_visibility);
 				
 	    $out = // This mess needs re-written to follow coding style used for the front end output!!!
-		'
-		<div class="form-field connectionsform">	
-				<span class="radio_group">'.$entry_type.'</span>
+		"
+		<div class='form-field connectionsform'>	
+				<span class='radio_group'>" . $entry_type . "</span>
 		</div>
 		
-		<div class="form-field connectionsform">
-			<div class="input inputhalfwidth">
-				<label for="first_name">First name:</label>
-				<input type="text" name="first_name" value="'.$data->first_name.'" />
+		<div class='form-field connectionsform'>
+			<div class='input inputhalfwidth'>
+				<label for='first_name'>First name:</label>
+				<input type='text' name='first_name' value='" . $data->first_name . "' />
 			</div>
-			<div class="input inputhalfwidth">
-				<label for="last_name">Last name:</label>
-				<input type="text" name="last_name" value="'.$data->last_name.'" />
+			<div class='input inputhalfwidth'>
+				<label for='last_name'>Last name:</label>
+				<input type='text' name='last_name' value='" . $data->last_name . "' />
 			</div>
-			<div class="clear"></div>
+			<div class='clear'></div>
 		</div>
 		
-		<div class="form-field connectionsform">				
-				<label for="title">Title:</label>
-				<input type="text" name="title" value="'.$data->title.'" />
+		<div class='form-field connectionsform'>				
+				<label for='title'>Title:</label>
+				<input type='text' name='title' value='" . $data->title . "' />
 
-				<label for="organization">Organization:</label>
-				<input type="text" name="organization" value="'.$data->organization.'" />
+				<label for='organization'>Organization:</label>
+				<input type='text' name='organization' value='" . $data->organization . "' />
 				
-				<label for="department">Department:</label>
-				<input type="text" name="department" value="'.$data->department.'" />		
+				<label for='department'>Department:</label>
+				<input type='text' name='department' value='" . $data->department . "' />		
 		</div>
 		
-		<div class="form-field connectionsform">
-				' . $img_html_block . '
-				<label for="original_image">Select Image:</label>
-				<input type="file" value="" name="original_image" size="25"/>
+		<div class='form-field connectionsform'>
+				" . $img_html_block . "
+				<label for='original_image'>Select Image:</label>
+				<input type='file' value='' name='original_image' size='25'/>
 		</div>
 		
-		<div class="form-field connectionsform">
-			<span class="selectbox alignright">Type: '.$address_select.'</span>
-			<div class="clear"></div>
+		<div class='form-field connectionsform'>
+			<span class='selectbox alignright'>Type: " . $address_select . "</span>
+			<div class='clear'></div>
 			
-			<label for="address_line1">Address Line 1:</label>
-			<input type="text" name="address_line1" value="'.$data->address_line1.'" />
+			<label for='address_line1'>Address Line 1:</label>
+			<input type='text' name='address_line1' value='" . $data->address_line1 . "' />
 
-			<label for="address_line2">Address Line 2:</label>
-			<input type="text" name="address_line2" value="'.$data->address_line2.'" />
+			<label for='address_line2'>Address Line 2:</label>
+			<input type='text' name='address_line2' value='" . $data->address_line2 . "' />
 
-			<div class="input" style="width:60%">
-				<label for="city">City:</label>
-				<input type="text" name="city" value="'.$data->city.'" />
+			<div class='input' style='width:60%'>
+				<label for='city'>City:</label>
+				<input type='text' name='city' value='" . $data->city . "' />
 			</div>
-			<div class="input" style="width:15%">
-				<label for="state">State:</label>
-				<input type="text" name="state" value="'.$data->state.'" />
+			<div class='input' style='width:15%'>
+				<label for='state'>State:</label>
+				<input type='text' name='state' value='" . $data->state . "' />
 			</div>
-			<div class="input" style="width:25%">
-				<label for="zipcode">Zipcode:</label>
-				<input type="text" name="zipcode" value="'.$data->zipcode.'" />
-			</div>
-			
-			<label for="country">Country</label>
-			<input type="text" name="country" value="'.$data->country.'" />
-			
-			<div class="clear"></div>
-		</div>
-		
-		<div class="form-field connectionsform">
-
-			<span class="selectbox alignright">Type: '.$address2_select.'</span>
-			<div class="clear"></div>
-			
-			<label for="address2_line1">Address Line 1:</label>
-			<input type="text" name="address2_line1" value="'.$data->address2_line1.'" />
-
-			<label for="address2_line2">Address Line 2:</label>
-			<input type="text" name="address2_line2" value="'.$data->address2_line2.'" />
-
-			<div class="input" style="width:60%">
-				<label for="city2">City:</label>
-				<input type="text" name="city2" value="'.$data->city2.'" />
-			</div>
-			<div class="input" style="width:15%">
-				<label for="state2">State:</label>
-				<input type="text" name="state2" value="'.$data->state2.'" />
-			</div>
-			<div class="input" style="width:25%">
-				<label for="zipcode2">Zipcode:</label>
-				<input type="text" name="zipcode2" value="'.$data->zipcode2.'" />
+			<div class='input' style='width:25%'>
+				<label for='zipcode'>Zipcode:</label>
+				<input type='text' name='zipcode' value='" . $data->zipcode . "' />
 			</div>
 			
-			<label for="country2">Country</label>
-			<input type="text" name="country2" value="'.$data->country2.'" />
-
-			<div class="clear"></div>
+			<label for='country'>Country</label>
+			<input type='text' name='country' value='" . $data->country . "' />
+			
+			<div class='clear'></div>
 		</div>
 		
-		<div class="form-field connectionsform">				
-				<label for="homephone">Home Phone:</label>
-				<input type="text" name="homephone" value="'.$data->homephone.'" />
+		<div class='form-field connectionsform'>
 
-				<label for="homefax">Home Fax:</label>
-				<input type="text" name="homefax" value="'.$data->homefax.'" />
+			<span class='selectbox alignright'>Type: " . $address2_select . "</span>
+			<div class='clear'></div>
+			
+			<label for='address2_line1'>Address Line 1:</label>
+			<input type='text' name='address2_line1' value='" . $data->address2_line1 . "' />
 
-				<label for="cellphone">Cell Phone:</label>
-				<input type="text" name="cellphone" value="'.$data->cellphone.'" />
+			<label for='address2_line2'>Address Line 2:</label>
+			<input type='text' name='address2_line2' value='" . $data->address2_line2 . "' />
 
-				<label for="workphone">Work Phone:</label>
-				<input type="text" name="workphone" value="'.$data->workphone.'" />
+			<div class='input' style='width:60%'>
+				<label for='city2'>City:</label>
+				<input type='text' name='city2' value='" . $data->city2 . "' />
+			</div>
+			<div class='input' style='width:15%'>
+				<label for='state2'>State:</label>
+				<input type='text' name='state2' value='" . $data->state2 . "' />
+			</div>
+			<div class='input' style='width:25%'>
+				<label for='zipcode2'>Zipcode:</label>
+				<input type='text' name='zipcode2' value='" . $data->zipcode2 . "' />
+			</div>
+			
+			<label for='country2'>Country</label>
+			<input type='text' name='country2' value='" . $data->country2 . "' />
 
-				<label for="workfax">Work Fax:</label>
-				<input type="text" name="workfax" value="'.$data->workfax.'" />
+			<div class='clear'></div>
 		</div>
 		
-		<div class="form-field connectionsform">
-				<label for="personalemail">Personal Email:</label>
-				<input type="text" name="personalemail" value="'.$data->personalemail.'" />
+		<div class='form-field connectionsform'>				
+				<label for='homephone'>Home Phone:</label>
+				<input type='text' name='homephone' value='" . $data->homephone . "' />
 
-				<label for="workemail">Work Email:</label>
-				<input type="text" name="workemail" value="'.$data->workemail.'" />
+				<label for='homefax'>Home Fax:</label>
+				<input type='text' name='homefax' value='" . $data->homefax . "' />
+
+				<label for='cellphone'>Cell Phone:</label>
+				<input type='text' name='cellphone' value='" . $data->cellphone . "' />
+
+				<label for='workphone'>Work Phone:</label>
+				<input type='text' name='workphone' value='" . $data->workphone . "' />
+
+				<label for='workfax'>Work Fax:</label>
+				<input type='text' name='workfax' value='" . $data->workfax . "' />
 		</div>
 		
-		<div class="form-field connectionsform">
-				<label for="im">AIM:</label>
-				<input type="text" name="im[aim]" value="' . $im['aim'] . '" />
+		<div class='form-field connectionsform'>
+				<label for='personalemail'>Personal Email:</label>
+				<input type='text' name='personalemail' value='" . $data->personalemail . "' />
 
-				<label for="im">Yahoo IM:</label>
-				<input type="text" name="im[yahoo]" value="' . $im['yahoo'] . '" />
+				<label for='workemail'>Work Email:</label>
+				<input type='text' name='workemail' value='" . $data->workemail . "' />
+		</div>
+		
+		<div class='form-field connectionsform'>
+				<label for='im'>AIM:</label>
+				<input type='text' name='im[][id]' value='" . $im['id'] . "' />
+
+				<label for='im'>Yahoo IM:</label>
+				<input type='text' name='im[][id]' value='" . $im['id'] . "' />
 				
-				<label for="im">Jabber / Google Talk:</label>
-				<input type="text" name="im[jabber]" value="' . $im['jabber'] . '" />
+				<label for='im'>Jabber / Google Talk:</label>
+				<input type='text' name='im[][id]' value='" . $im['id'] . "' />
 				
-				<label for="im">Messenger:</label>
-				<input type="text" name="im[messenger]" value="' . $im['messenger'] . '" />
+				<label for='im'>Messenger:</label>
+				<input type='text' name='im[][id]' value='" . $im['id'] . "' />
 		</div>
 		
-		<div class="form-field connectionsform">
-				<label for="website">Website:</label>
-				<input type="text" name="website" value="'.$website.'" />
+		<div class='form-field connectionsform'>
+				<label for='website'>Website:</label>
+				<input type='text' name='website' value='" . $website . "' />
 		</div>
 
-		<div class="form-field connectionsform">
-				<span class="selectbox">Birthday: '.$bday_month.'</span>
-				<span class="selectbox">'.$bday_day.' </span>
+		<div class='form-field connectionsform'>
+				<span class='selectbox'>Birthday: " . $bday_month . "</span>
+				<span class='selectbox'>" . $bday_day . "</span>
 				<br />
-				<span class="selectbox">Anniversary: '.$ann_month.'</span>
-				<span class="selectbox">'.$ann_day.'</span>
+				<span class='selectbox'>Anniversary: " . $ann_month . "</span>
+				<span class='selectbox'>" . $ann_day . "</span>
 		</div>
 		
-		<div class="form-field connectionsform">
-				<label for="bio">Biographical Info:</label>
-				<textarea name="bio" rows="3">'.$data->bio.'</textarea>
+		<div class='form-field connectionsform'>
+				<label for='bio'>Biographical Info:</label>
+				<textarea name='bio' rows='3'>" . $data->bio . "</textarea>
 		</div>
 		
-		<div class="form-field connectionsform">
-				<label for="notes">Notes:</label>
-				<textarea name="notes" rows="3">'.$data->notes.'</textarea>
+		<div class='form-field connectionsform'>
+				<label for='notes'>Notes:</label>
+				<textarea name='notes' rows='3'>" . $data->notes . "</textarea>
 		</div>
 		
-		<div class="form-field connectionsform">	
-				<span class="radio_group">'.$visibility.'</span>
-		</div>';
+		<div class='form-field connectionsform'>	
+				<span class='radio_group'>" . $visibility . "</span>
+		</div>";
 		return $out;
 	}
 
