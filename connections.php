@@ -30,11 +30,13 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 require_once(WP_PLUGIN_DIR . '/connections/php_class_upload/class.upload.php');
 
 //date objects
-require_once(WP_PLUGIN_DIR . '/connections/date.php');
-//date objects
-require_once(WP_PLUGIN_DIR . '/connections/entry.php');
+require_once(WP_PLUGIN_DIR . '/connections/includes/date.php');
+//entry objects
+require_once(WP_PLUGIN_DIR . '/connections/includes/entry.php');
+//plugin option objects
+require_once(WP_PLUGIN_DIR . '/connections/includes/options.php');
 
-$connections_version = '0.2.15';
+$current_version = "0.2.22";
 session_start();
 
 // Define a few constants until I can get to creating the options page.
@@ -48,8 +50,8 @@ define('CN_DEFAULT_THUMBNAIL_Y', 54);
 define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
 define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
 
-$im_types = array('AIM'=>'aim', 'Yahoo IM'=>'yahoo', 'Jabber / Google Talk'=>'jabber' ,'Messender'=>'messenger');
-
+//$plugin_options = new pluginOptions(get_option("connections_options"));
+$plugin_options = new pluginOptions;
 
 // CSS Styles for the plugin. This adds it to the admin page head.
 add_action('admin_head', 'connections_adminhead');
@@ -64,10 +66,11 @@ function connections_menus() {
 }
 
 function connections_main() {
-	    global $wpdb, $connections_version;
-		global $current_user;
+		global $wpdb, $current_version, $current_user, $plugin_options;
+		
 		get_currentuserinfo();
-		$connections_options = get_option("connections_options");
+		$plugin_options->setOptions(get_option("connections_options"), $current_user->ID);
+		$plugin_options->setCurrentUserID($current_user->ID);
 		
 	    if ($_GET['action']=='editform') {
 	        $sql = "SELECT * FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($_GET['id'])."'";
@@ -103,14 +106,13 @@ function connections_main() {
 		} else {
 	    
 	        $table_name = $wpdb->prefix."connections";
-			$connections_options = get_option("connections_options");
-	        If ($wpdb->get_var("SHOW TABLES LIKE '$table_name'")!= $table_name || $connections_options['version']!= $connections_version ) {
+			if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'")!= $table_name || $plugin_options->getVersion() != $current_version ) {
 	            // Call the install function here rather than through the more usual
 	            // activate_blah.php action hook so the user doesn't have to worry about
 	            // deactivating then reactivating the plugin.  Should happen seamlessly.
 	            _connections_install();
 	            echo "<div id='message' class='updated fade'>
-	                <p><strong>The Connections plug-in version " . $connections_version . " has been installed or upgraded.</strong></p>
+	                <p><strong>The Connections plug-in version " . $plugin_options->getVersion() . " has been installed or upgraded.</strong></p>
 	            </div>";
 	        } ?>
 
@@ -164,12 +166,12 @@ function connections_main() {
 					$email[] = array(type=>work, address=>$_POST['workemail'], visibility=>'unlisted');
 					
 					$websites[] = array(type=>'personal', address=>$_POST['website'], visibility=>'unlisted');
-					//print_r($websites);
+					
 					$serial_addresses = serialize($addresses);
 					$serial_phone_numbers = serialize($phone_numbers);
 					$serial_email = serialize($email);
 					$serial_im = serialize($_POST['im']);
-					//print_r($_POST['im']);
+					
 					$serial_websites = serialize($websites);
 					
 					if ($_POST['website'] == "http://") $_POST['website'] = "";
@@ -390,9 +392,9 @@ function connections_main() {
 				}
 				
 				if ($_POST['dofilter']) {
-					$connections_options[$current_user->ID]['filter']['visibility_type'] = $_POST['visibility_type'];
-					$connections_options[$current_user->ID]['filter']['entry_type'] = $_POST['entry_type'];
-					update_option('connections_options', $connections_options);			
+					$plugin_options->setEntryType($_POST['entry_type']);
+					$plugin_options->setVisibilityType($_POST['visibility_type']);
+					update_option('connections_options', $plugin_options->getOptions());
 				}
 				
 			    if ($_GET['action']=='delete' AND $_SESSION['formTokens']['delete_'.$_GET['id']]['token'] == $_GET['token']) {
@@ -405,8 +407,8 @@ function connections_main() {
 				
 				
 				<?php
-					//$sql = "SELECT * FROM ".$wpdb->prefix."connections " . $visibilityfilter . "ORDER BY last_name, first_name";
-					if ($connections_options[$current_user->ID]['filter']['visibility_type'] != "") $filter = " AND visibility='" . $connections_options[$current_user->ID]['filter']['visibility_type'] . "' ";
+					//print_r($plugin_options->getOptions());
+					if ($plugin_options->getVisibilityType() != "") $filter = " AND visibility='" . $plugin_options->getVisibilityType() . "' ";
 					$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = ''" . $filter . ") UNION (SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $filter . ") ORDER BY order_by, last_name, first_name";
 					$results = $wpdb->get_results($sql);
 				?>
@@ -447,8 +449,8 @@ function connections_main() {
 								</div>
 								
 								<div class="alignleft actions">
-									<?php echo _build_select('entry_type', array('Show All Enties'=>'', 'Show Individuals'=>'individual', 'Show Organizations'=>'organization'), $connections_options[$current_user->ID]['filter']['entry_type'])?>
-									<?php echo _build_select('visibility_type', array('Show All'=>'', 'Show Public'=>'public', 'Show Private'=>'private', 'Show Unlisted'=>'unlisted'), $connections_options[$current_user->ID]['filter']['visibility_type'])?>
+									<?php echo _build_select('entry_type', array('Show All Enties'=>'', 'Show Individuals'=>'individual', 'Show Organizations'=>'organization'), $plugin_options->getEntryType())?>
+									<?php echo _build_select('visibility_type', array('Show All'=>'', 'Show Public'=>'public', 'Show Private'=>'private', 'Show Unlisted'=>'unlisted'), $plugin_options->getVisibilityType())?>
 									<input id="doaction" class="button-secondary action" type="submit" name="dofilter" value="Filter" />
 									<input type="hidden" name="formId" value="do_action" />
 									<input type="hidden" name="token" value="<?php echo _formtoken("do_action"); ?>" />
@@ -488,10 +490,10 @@ function connections_main() {
 										$options = unserialize($row->options);
 										$entry = new entry($row);
 										$imObject = new im();
-										$websites = new website();
+										$websiteObject = new website();
 										
-										if ($connections_options[$current_user->ID]['filter']['entry_type'] != "" )	{
-											if ($options['entry']['type'] != $connections_options[$current_user->ID]['filter']['entry_type']) continue;
+										if ($plugin_options->getEntryType() != "" )	{
+											if ($options['entry']['type'] != $plugin_options->getEntryType()) continue;
 										}
 										
 										if (!$altrow == "alternate") {
@@ -540,7 +542,7 @@ function connections_main() {
 												{
 													foreach ($entry->getIm() as $imID)
 													{
-														if ($imObject->getId($imID) != "") echo "<strong>" . $imObject->getId($imID) . ":</strong> " . $imObject->getId($imID) . "<br />";
+														if ($imObject->getId($imID) != "") echo "<strong>" . $imObject->getName($imID) . ":</strong> " . $imObject->getId($imID) . "<br />";
 													}
 												}
 												
@@ -548,7 +550,7 @@ function connections_main() {
 												{
 													foreach ($entry->getWebsites() as $website)
 													{
-														echo "<strong>Website:</strong><br /><a target='_blank' href='" . $websites->getAddress($website) . "'>" . $websites->getAddress($website) . "</a><br /><br />";
+														echo "<strong>Website:</strong><br /><a target='_blank' href='" . $websiteObject->getAddress($website) . "'>" . $websiteObject->getAddress($website) . "</a><br /><br />";
 													}
 												}
 												
@@ -580,7 +582,7 @@ function connections_main() {
 								</tbody>
 					        </table>
 							</form>
-							<p style='font-size:smaller; text-align:center'>This is version <?php echo get_option("connections_version"); ?> of the Connections.</p>
+							<p style='font-size:smaller; text-align:center'>This is version <?php echo $plugin_options->getVersion(); ?> of Connections.</p>
 						</div>
 			        </div>
 				
@@ -979,16 +981,20 @@ function _connections_getaddressform($data=null) {
 		
 		<div class='form-field connectionsform'>
 				<label for='im'>AIM:</label>
-				<input type='text' name='im[][id]' value='" . $im['id'] . "' />
+				<input type='text' name='im[0][id]' value='" . $im['id'] . "' />
+				<input type='hidden' name='im[0][name]' value='AIM' />
 
 				<label for='im'>Yahoo IM:</label>
-				<input type='text' name='im[][id]' value='" . $im['id'] . "' />
+				<input type='text' name='im[1][id]' value='" . $im['id'] . "' />
+				<input type='hidden' name='im[1][name]' value='Yahoo IM' />
 				
 				<label for='im'>Jabber / Google Talk:</label>
-				<input type='text' name='im[][id]' value='" . $im['id'] . "' />
+				<input type='text' name='im[2][id]' value='" . $im['id'] . "' />
+				<input type='hidden' name='im[2][name]' value='Jabber / Google Talk' />
 				
 				<label for='im'>Messenger:</label>
-				<input type='text' name='im[][id]' value='" . $im['id'] . "' />
+				<input type='text' name='im[3][id]' value='" . $im['id'] . "' />
+				<input type='hidden' name='im[3][name]' value='Messenger' />
 		</div>
 		
 		<div class='form-field connectionsform'>
@@ -1022,7 +1028,8 @@ function _connections_getaddressform($data=null) {
 
 // This installs and/or upgrades the plugin.
 function _connections_install() {
-    global $wpdb, $connections_version;
+	global $wpdb, $current_version, $plugin_options;
+	
     $table_name = $wpdb->prefix."connections";
     $sql = "CREATE TABLE " . $table_name . " (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -1070,9 +1077,8 @@ function _connections_install() {
     require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
     dbDelta($sql);
 	
-	$connections_options['version'] = $connections_version;
-	//$serial_connections_options = $connections_options;
-    update_option('connections_options', $connections_options);
+	$plugin_options->setVersion($current_version);
+	update_option('connections_options', $plugin_options->getOptions());
 }
 
 function connections_getselect($name) {

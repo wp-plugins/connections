@@ -72,6 +72,12 @@ class website
 	private $type;
 	
 	/**
+	 * String: Name
+	 * @var string
+	 */
+	private $name;
+	
+	/**
 	 * String: URL
 	 * @var string
 	 */
@@ -124,6 +130,25 @@ class website
         $this->type = $type;
     }
     
+	    /**
+     * Returns $name.
+     * @see website::$name
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+    
+    /**
+     * Sets $name.
+     * @param object $name
+     * @see website::$name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+	
     /**
      * Returns $visibility.
      * @see website::$visibility
@@ -158,6 +183,12 @@ class im
 	private $type;
 	
 	/**
+	 * String: Name
+	 * @var string
+	 */
+	private $name;
+	
+	/**
 	 * IM ID
 	 * @var
 	 */
@@ -168,26 +199,6 @@ class im
 	 * @var string
 	 */
 	private $visibility;
-
-    /**
-     * Returns $id.
-     * @see im::$id
-     */
-    public function getId($data)
-    {
-        $this->id = $data['id'];
-		return $this->id;
-    }
-    
-    /**
-     * Sets $id.
-     * @param object $id
-     * @see im::$id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
     
     /**
      * Returns $type.
@@ -206,6 +217,46 @@ class im
     public function setType($type)
     {
         $this->type = $type;
+    }
+
+    /**
+     * Returns $name.
+     * @see im::$name
+     */
+    public function getName($data)
+    {
+        $this->name = $data['name'];
+		return $this->name;
+    }
+    
+    /**
+     * Sets $name.
+     * @param object $name
+     * @see im::$name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+	
+	/**
+     * Returns $id.
+     * @see im::$id
+     */
+    public function getId($data)
+    {
+        $this->id = $data['id'];
+		return $this->id;
+    }
+    
+    /**
+     * Sets $id.
+     * @param object $id
+     * @see im::$id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
     }
     
     /**
