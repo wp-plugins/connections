@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111
 Description: An address book.
-Version: 0.2.15
+Version: 0.2.22
 Author: Steven A. Zahm
 Author URI: http://www.shazahm.net
 
@@ -35,6 +35,8 @@ require_once(WP_PLUGIN_DIR . '/connections/includes/date.php');
 require_once(WP_PLUGIN_DIR . '/connections/includes/entry.php');
 //plugin option objects
 require_once(WP_PLUGIN_DIR . '/connections/includes/options.php');
+//plugin option objects
+require_once(WP_PLUGIN_DIR . '/connections/includes/utility.php');
 
 $current_version = "0.2.22";
 session_start();
@@ -475,16 +477,8 @@ function connections_main() {
 								<tbody>
 									
 									<?php									
-									//Builds an alpha array of the first letter of the last names.
-									$alphaindex = array();
-									$i = 0;
-									foreach ($results as $row) {
-										$letter = strtoupper(substr($row->last_name, 0, 1));
-										if ($letter != $oldletter) {
-											$alphaindex[] = strtoupper(substr($row->last_name, 0, 1));
-											$oldletter = strtoupper(substr($row->last_name, 0, 1));
-										}
-									}
+									$ticker = new counter();
+									$ticker->reset();
 													
 									foreach ($results as $row) {
 										$options = unserialize($row->options);
@@ -493,7 +487,7 @@ function connections_main() {
 										$websiteObject = new website();
 										
 										if ($plugin_options->getEntryType() != "" )	{
-											if ($options['entry']['type'] != $plugin_options->getEntryType()) continue;
+											if ($entry->getEntryType() != $plugin_options->getEntryType()) continue;
 										}
 										
 										if (!$altrow == "alternate") {
@@ -503,17 +497,18 @@ function connections_main() {
 										}
 										
 										//Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
-										if ($alphaindex[$i] == strtoupper(substr($row->last_name, 0, 1))) {
-											$alphaanchor = "<a name='" . $alphaindex[$i] . "'></a>";
-											$i++;
+										$letter = strtoupper(substr($entry->getLastName(), 0, 1));
+										if ($letter != $oldLetter) {
+											$alphaanchor = "<a name='" . strtoupper(substr($entry->getLastName(), 0, 1)) . "'></a>";
+											$oldLetter = strtoupper(substr($entry->getLastName(), 0, 1));
+											$ticker->step();
 										} else {
 											$alphaanchor = "";
 										}
 										
 										echo "<tr class='".$altrow."'>";
 											echo "<th class='check-column ".$altrow."' scope='row'><input type='checkbox' value='".$row->id."' name='entry[]'/></th> \n";
-											if ($row->last_name) echo "<td class='".$altrow."' colspan='2'>".$alphaanchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit ".$row->last_name.", ".$row->first_name."' href='admin.php?page=connections/connections.php&action=edit&id=".$row->id."'> ".$row->last_name.", ".$row->first_name."</a><br />";
-											if (!$row->last_name && $row->organization) echo "<td class='".$altrow."' colspan='2'>".$alphaanchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit ".$row->organization."' href='admin.php?page=connections/connections.php&action=edit&id=".$row->id."'> ".$row->organization."</a><br />";
+												echo "<td class='".$altrow."' colspan='2'>".$alphaanchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit " . $entry->getFullFirstLastName() . "' href='admin.php?page=connections/connections.php&action=edit&id=".$row->id."'> " . $entry->getFullLastFirstName(). "</a><br />";
 												echo "<div class='row-actions'><span class='detailsbutton' id='detailbutton".$row->id."' onClick='click_contact(this, ".$row->id.")'>Show Details</span> | <a class='editbutton' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'>Edit</a> | <a class='copybutton' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."&copyid=true'>Copy</a> | <a class='submitdelete' onclick='return confirm(\"You are about to delete this entry. Cancel to stop, OK to delete\");' href='admin.php?page=connections/connections.php&action=delete&id=".$row->id."&token="._formtoken("delete_".$row->id)."'>Delete</a></div>";
 											echo "</td> \n";
 											echo "<td class='".$altrow."'><strong>".ucwords($row->visibility)."</strong></td> \n";												
@@ -540,17 +535,19 @@ function connections_main() {
 												
 												if ($entry->getIm())
 												{
-													foreach ($entry->getIm() as $imID)
+													foreach ($entry->getIm() as $imRow)
 													{
-														if ($imObject->getId($imID) != "") echo "<strong>" . $imObject->getName($imID) . ":</strong> " . $imObject->getId($imID) . "<br />";
+														if ($imObject->getId($imRow) != "") echo "<strong>" . $imObject->getName($imRow) . ":</strong><br />" . $imObject->getId($imRow) . "<br />";
 													}
+													echo "<br />";
+													
 												}
 												
 												if ($entry->getWebsites())
 												{
-													foreach ($entry->getWebsites() as $website)
+													foreach ($entry->getWebsites() as $websiteRow)
 													{
-														echo "<strong>Website:</strong><br /><a target='_blank' href='" . $websiteObject->getAddress($website) . "'>" . $websiteObject->getAddress($website) . "</a><br /><br />";
+														if ($websiteObject->getAddress($websiteRow) != "") echo "<strong>Website:</strong><br /><a target='_blank' href='" . $websiteObject->getAddress($websiteRow) . "'>" . $websiteObject->getAddress($websiteRow) . "</a><br /><br />";
 													}
 												}
 												
@@ -811,14 +808,16 @@ function _build_radio($name, $id, $value_labels, $checked=null) {
  * @param object $data[optional]
  */
 function _connections_getaddressform($data=null) {
-		global $im_types;
-		//$im = new im(); //entry.php
-		$date = new date(); //date.php
+		$entry = new entry($data);
+		$imObject = new im();
+		$websiteObject = new website();
+		$date = new date();
+		$ticker = new counter();
 		
 		if ($data != null) {
 			$options = unserialize($data->options);
 			$im = unserialize($data->im);
-			//print_r($im);
+
 			$post_options = $data->options; // I don't think I need this???
 			if ($options['image']['linked']) {
 				if ($options['image']['display']) $selected = "show"; else $selected = "hidden";
@@ -829,13 +828,6 @@ function _connections_getaddressform($data=null) {
 				$img_html_block = "";
 			}
 		}
-		
-		/*if (!$data) {
-			foreach ($im_types as $type) {
-				$im->setType($type);
-				$im->setId($id);
-			}
-		}*/
 		
 		if (!$data) $website = 'http://'; else $website = $data->website;
 		if (!$data->birthday) $birthday_month = null; else $birthday_month = date("m", $data->birthday);
@@ -979,23 +971,36 @@ function _connections_getaddressform($data=null) {
 				<input type='text' name='workemail' value='" . $data->workemail . "' />
 		</div>
 		
-		<div class='form-field connectionsform'>
-				<label for='im'>AIM:</label>
-				<input type='text' name='im[0][id]' value='" . $im['id'] . "' />
+		<div class='form-field connectionsform'>";
+			if ($data->im != null)
+			{
+				$ticker->reset();
+				foreach ($entry->getIm() as $imRow)
+				{
+					$out .= "<label for='im'>" . $imObject->getName($imRow) . "</label>";
+					$out .= "<input type='text' name='im[" . $ticker->getcount() . "][id]' value='" . $imObject->getId($imRow) . "' />";
+					$out .= "<input type='hidden' name='im[" . $ticker->getcount() . "][name]' value='" . $imObject->getName($imRow) . "' />";
+					$ticker->step();
+				}
+				$ticker->reset();
+			} else {
+				$out .= "<label for='im'>AIM:</label>
+				<input type='text' name='im[0][id]' />
 				<input type='hidden' name='im[0][name]' value='AIM' />
 
 				<label for='im'>Yahoo IM:</label>
-				<input type='text' name='im[1][id]' value='" . $im['id'] . "' />
+				<input type='text' name='im[1][id]' />
 				<input type='hidden' name='im[1][name]' value='Yahoo IM' />
 				
 				<label for='im'>Jabber / Google Talk:</label>
-				<input type='text' name='im[2][id]' value='" . $im['id'] . "' />
+				<input type='text' name='im[2][id]' />
 				<input type='hidden' name='im[2][name]' value='Jabber / Google Talk' />
 				
 				<label for='im'>Messenger:</label>
-				<input type='text' name='im[3][id]' value='" . $im['id'] . "' />
-				<input type='hidden' name='im[3][name]' value='Messenger' />
-		</div>
+				<input type='text' name='im[3][id]' />
+				<input type='hidden' name='im[3][name]' value='Messenger' />";
+			}				
+		$out .= "</div>
 		
 		<div class='form-field connectionsform'>
 				<label for='website'>Website:</label>
@@ -1105,15 +1110,17 @@ function _connections_list($atts, $content=null) {
 			), $atts ) ;
 			
 	if (is_user_logged_in() or $atts['private_override'] != false) { 
-		$visibilityfilter = " WHERE (visibility='private' OR visibility='public') ";
+		$visibilityfilter = " AND (visibility='private' OR visibility='public') ";
 	} else {
-		$visibilityfilter = " WHERE visibility='public' ";
+		$visibilityfilter = " AND visibility='public' ";
 	}
 	
 	if ($atts['id'] != null) $visibilityfilter .= " AND id='" . $atts['id'] . "' ";
 		
-    $sql = "SELECT * FROM ".$wpdb->prefix."connections " . $visibilityfilter ." ORDER BY last_name, first_name";
-    $results = $wpdb->get_results($sql);
+    //$sql = "SELECT * FROM ".$wpdb->prefix."connections " . $visibilityfilter ." ORDER BY last_name, first_name";
+	$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = ''" . $visibilityfilter . ") UNION (SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibilityfilter . ") ORDER BY order_by, last_name, first_name";
+					
+	$results = $wpdb->get_results($sql);
 		
 	if ($results != null) {
 		//Builds an alpha array of the first letter of the last names.
@@ -1130,6 +1137,7 @@ function _connections_list($atts, $content=null) {
 		$out .= "<div class='connections-list'>";
 		
 		foreach ($results as $row) {
+			$entry = new entry($row);
 			$options = unserialize($row->options);
 	
 			//Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
@@ -1166,9 +1174,9 @@ function _connections_list($atts, $content=null) {
 			$out .= "<div class='cnitem' id='cn" .  $row->id . "' style='-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative;'>\n";
 						$out .= "<div style='width:49%; float:left'>";
 							if ($options['image']['linked'] && $options['image']['display']) $out .= '<img style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $options['image']['name']['entry'] . '" /> <div class="clear"></div>';
-							$out .= "<span class='name' id='" .  $row->id . "' style='font-size:larger;font-variant: small-caps'><strong>" . $row->first_name . " " . $row->last_name . "</strong></span>\n";
+							$out .= "<span class='name' id='" .  $row->id . "' style='font-size:larger;font-variant: small-caps'><strong>" . $entry->getFullFirstLastName() . "</strong></span>\n";
 							if ($row->title) $out .= "<br /><span class='title'>" . $row->title . "</span>\n";
-							if ($row->organization) $out .= "<br /><span class='organization'>" . $row->organization . "</span>\n";
+							if ($row->organization && $entry->getEntryType() != "organization") $out .= "<br /><span class='organization'>" . $row->organization . "</span>\n";
 							$out .= "<div class='address'>\n";
 								if ($row->address_type) $out .= "<br /><span class='address_type'><strong>" . ucfirst($row->address_type) . " Address</strong></span><br />\n";
 								$out .= "<span class='address-line1'>" . $row->address_line1 . "</span><br />\n";
@@ -1176,6 +1184,7 @@ function _connections_list($atts, $content=null) {
 								if ($row->city) $out .= "<span class='city'>" . $row->city . ",</span>\n";
 								if ($row->state) $out .= "<span class='state'>" . $row->state . "</span>\n";
 								if ($row->zipcode) $out .= "<span class='zipcode'>" . $row->zipcode . "</span>\n";
+								if ($row->country) $out .= "<br /><span class='country'>" . $row->country . "</span>\n";
 							$out .= "</div>";
 							$out .= "<div class='address2'>\n";
 								if ($row->address2_type) $out .= "<br /><span class='address_type'><strong>" . ucfirst($row->address2_type) . " Address</strong></span><br />\n";
@@ -1184,6 +1193,7 @@ function _connections_list($atts, $content=null) {
 								if ($row->city2) $out .= "<span class='city2'>" . $row->city2 . ",</span>\n";
 								if ($row->state2) $out .= "<span class='state2'>" . $row->state2 . "</span>\n";
 								if ($row->zipcode2) $out .= "<span class='zipcode2'>" . $row->zipcode2 . "</span>\n";
+								if ($row->country2) $out .= "<br /><span class='country'>" . $row->country2 . "</span>\n";
 							$out .= "</div>";
 						$out .= "</div>";
 						$out .= "<div align='right' >";
