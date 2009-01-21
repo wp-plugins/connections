@@ -4,20 +4,26 @@ Donate link: http://www.shazahm.net/?page_id=111
 Tags: addresses, address book, addressbook, bio, bios, biographies, contact, contacts, connect, connections, directory, list, lists, listings, people, profile, profiles, plugin, user, users
 Requires at least: 2.7
 Tested up to: 2.7
-Stable tag: 0.2.11
+Stable tag: 0.2.22
 An address book that is managed in the admin and embed them in a post/page. Upcoming birthdays and anniversaries can also be embedded in a post/page.
 
 == Description ==
 This plugin was based off LBB, ["Little Black Book"](http://wordpress.org/extend/plugins/lbb-little-black-book/); which was based on [Addressbook](http://wordpress.org/extend/plugins/addressbook/), both of which can be found in the Plugin Directory. Though these are great, I needed something a bit more. See the overview list of changes below. With many more to come. **See the instructions under installation, above.**
+This plugin is under active developement, please make sure you have a recent backup of your WordPress database, just in case.
 
 * Added many more fields that include multiple addresses with selectable type; birthday and anniversary
 * Each contact has selectable visibility. You can choose between, public, private and unlisted.
+* Selectable entry type; Individual / Organization to allow this to be used as a business directory as well
+* Added image support for entries.
+* Added support for copying an entry.
+* Bulk actions
+* Entry filters
+* Persistent filter state between sessions
 * Reduced the number of page refreshes when adding or managing the entry list.
 * Reduced the amount of scrolling needing when managing a large number of entries.
 * Matched the visual style to fit nicely in the new 2.7 admin interface.
 * Added shortcodes that can be used for embedding contact list and upcoming birthdays/anniversaries in a page and/or post.
-* Added image support for entries.
-* Added support for copying an entry.
+
 
 **Upcoming features:**
 
@@ -29,10 +35,10 @@ This plugin was based off LBB, ["Little Black Book"](http://wordpress.org/extend
 * A print link for easy printing of the list
 * A print link for printing out a list of birthdays and anniversaries
 * Integration with WP Users to permit users to maintain their own info, mostly likely this will be optional on a per entry instance and an import method
-* Selectable entry type; Individual / Organization to allow this to be used as a business directory as well
 * Alternate views for the contact list; card, condenced and profile
 * Promote the plug-in to a top level menu item and add an option page
-* Option to set custom image sizes* Option to set minimum role permitted to manage the plug-in* Option to manage the address types
+* Option to set custom image sizes* Option to set minimum role permitted to manage the plug-in
+* Option to manage the address types
 * Option to customize the input form
 * Option to manage the relation types
 * Import/Export
@@ -45,8 +51,10 @@ This plugin was based off LBB, ["Little Black Book"](http://wordpress.org/extend
 * **Currently when an image link is removed the files are not deleted from the server**
 * The CSS style sheet is linked on every page in the admin
 * The styles in the output html is hard coded
-* When deleting an entry the entry list doesn't remember the filter setting
-* When an address is added the entry list doesn't remember the filter setting
+* The alpha anchors do not generate if a letter is skipped in the last names that were entered
+* Not all fields that are input appear when output
+* Styling for organization entries needs work
+* Individuals and Organization show in the frontend output list; needs a shortcode to filter
 
 == Screenshots ==
 [Samples and screenshots can be found here](http://www.shazahm.net/?page_id=111)
