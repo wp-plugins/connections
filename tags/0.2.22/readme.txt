@@ -222,7 +222,7 @@ There is no need to de-activate and then re-activate Connections to upgrade.
 
 * Added a nice little up arrow to both the admin and page/post entry list to return to the top of the list
 
-**0.2.11**
+**0.2.22**
 
 * Added Org/Individual options
 * Added IM fields
