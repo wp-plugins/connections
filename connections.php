@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111
 Description: An address book.
-Version: 0.2.22
+Version: 0.2.23
 Author: Steven A. Zahm
 Author URI: http://www.shazahm.net
 
@@ -38,7 +38,7 @@ require_once(WP_PLUGIN_DIR . '/connections/includes/options.php');
 //plugin option objects
 require_once(WP_PLUGIN_DIR . '/connections/includes/utility.php');
 
-$current_version = "0.2.22";
+$current_version = "0.2.23";
 session_start();
 
 // Define a few constants until I can get to creating the options page.
@@ -427,14 +427,20 @@ function connections_main() {
 										document.getElementById('contact-'+id+'-detail').style.display = 'none';
 										document.getElementById('contact-'+id+'-detail-notes').style.display = 'none';
 										document.getElementById('detailbutton'+id).innerHTML='Show Details';
-									}
-									else {
+									} else {
 										document.getElementById('contact-'+id+'-detail').style.display = '';
 										document.getElementById('contact-'+id+'-detail-notes').style.display = '';
 										document.getElementById('detailbutton'+id).innerHTML='Hide Details';
 									}
 									
 								}
+								// http://realin.co.in/tutorials/change-a-css-class-dynamically-using-javascript/ 
+								// Tutorial on changing the CSS class name
+								function changeClass(x)
+						        {
+						            x.className=(x.className=="individual")?"organization":(x.className=="organization")?"individual":"organization";
+						        }
+
 					        </script>
 							
 							<form action="admin.php?page=connections/connections.php" method="post">
@@ -507,17 +513,25 @@ function connections_main() {
 										}
 										
 										echo "<tr class='".$altrow."'>";
-											echo "<th class='check-column ".$altrow."' scope='row'><input type='checkbox' value='".$row->id."' name='entry[]'/></th> \n";
+											echo "<th class='check-column ".$altrow."' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
 												echo "<td class='".$altrow."' colspan='2'>".$alphaanchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit " . $entry->getFullFirstLastName() . "' href='admin.php?page=connections/connections.php&action=edit&id=".$row->id."'> " . $entry->getFullLastFirstName(). "</a><br />";
-												echo "<div class='row-actions'><span class='detailsbutton' id='detailbutton".$row->id."' onClick='click_contact(this, ".$row->id.")'>Show Details</span> | <a class='editbutton' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'>Edit</a> | <a class='copybutton' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."&copyid=true'>Copy</a> | <a class='submitdelete' onclick='return confirm(\"You are about to delete this entry. Cancel to stop, OK to delete\");' href='admin.php?page=connections/connections.php&action=delete&id=".$row->id."&token="._formtoken("delete_".$row->id)."'>Delete</a></div>";
+												echo "<div class='row-actions'>
+															<span class='detailsbutton' id='detailbutton" . $entry->getId() . "' onClick='click_contact(this, " . $entry->getId() . ")'>Show Details</span> | 
+															<a class='editbutton' href='admin.php?page=connections/connections.php&action=editform&id=" . $entry->getId() . "'>Edit</a> | 
+															<a class='copybutton' href='admin.php?page=connections/connections.php&action=editform&id=" . $entry->getId() . "&copyid=true'>Copy</a> | 
+															<a class='submitdelete' onclick='return confirm(\"You are about to delete this entry. Cancel to stop, OK to delete\");' href='admin.php?page=connections/connections.php&action=delete&id=" . $entry->getId() . "&token=" . _formtoken("delete_" . $entry->getId()) . "'>Delete</a>
+													  </div>";
 											echo "</td> \n";
-											echo "<td class='".$altrow."'><strong>".ucwords($row->visibility)."</strong></td> \n";												
-											echo "<td class='".$altrow."'>" . date("m/d/Y",strtotime($row->ts)) . "</td> \n";											
+											echo "<td class='".$altrow."'><strong>" . $entry->displayVisibiltyType() . "</strong></td> \n";												
+											echo "<td class='".$altrow."'>" . $entry->getTimeStamp() . "</td> \n";											
 										echo "</tr> \n";
 										
 										echo "<tr class='".$altrow." entrydetails' id='contact-".$row->id."-detail' style='display:none;'>";
 											echo "<td class='".$altrow."'></td> \n";
 											echo "<td class='".$altrow."' colspan='2'>";
+												if ($entry->getTitle()) echo "<strong>Title:</strong><br />" . $entry->getTitle() . "<br /><br />";
+												if ($entry->getOrganization() && $entry->getEntryType() != "organization" ) echo "<strong>Organization:</strong><br />" . $entry->getOrganization() . "<br /><br />";
+												if ($entry->getDepartment()) echo "<strong>Department:</strong><br />" . $entry->getDepartment() . "<br /><br />";
 												if ($row->address_type) echo "<strong>" . ucfirst($row->address_type) . " Address</strong><br />";
 												if ($row->address_line1) echo $row->address_line1."<br />";
 												if ($row->address_line2) echo $row->address_line2."<br />";
@@ -569,9 +583,9 @@ function connections_main() {
 											echo "<td class='".$altrow."' colspan='3'>";
 												if ($row->notes) echo "<strong>Notes:</strong> " . $row->notes; else echo "&nbsp;";
 											echo "</td> \n";
-											echo "<td class='".$altrow."'><strong>Entry ID:</strong> " . $row->id;
-												if (!$options['image']['linked']) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";
-												if ($options['image']['linked'] && $options['image']['display']) echo "<br /><strong>Display:</strong> Yes"; else echo "<br /><strong>Display:</strong> No";
+											echo "<td class='".$altrow."'><strong>Entry ID:</strong> " . $entry->getId();
+												if (!$entry->getImageLinked()) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";
+												if ($entry->getImageLinked() && $entry->getImageDisply()) echo "<br /><strong>Display:</strong> Yes"; else echo "<br /><strong>Display:</strong> No";
 											echo "</td> \n";
 										echo "</tr> \n";
 																				
@@ -1177,6 +1191,7 @@ function _connections_list($atts, $content=null) {
 							$out .= "<span class='name' id='" .  $row->id . "' style='font-size:larger;font-variant: small-caps'><strong>" . $entry->getFullFirstLastName() . "</strong></span>\n";
 							if ($row->title) $out .= "<br /><span class='title'>" . $row->title . "</span>\n";
 							if ($row->organization && $entry->getEntryType() != "organization") $out .= "<br /><span class='organization'>" . $row->organization . "</span>\n";
+							if ($row->department) $out .= "<br /><span class='department'>" . $entry->getDepartment() . "</span>\n";
 							$out .= "<div class='address'>\n";
 								if ($row->address_type) $out .= "<br /><span class='address_type'><strong>" . ucfirst($row->address_type) . " Address</strong></span><br />\n";
 								$out .= "<span class='address-line1'>" . $row->address_line1 . "</span><br />\n";
