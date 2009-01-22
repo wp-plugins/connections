@@ -229,3 +229,8 @@ There is no need to de-activate and then re-activate Connections to upgrade.
 * Added BIO field
 * Added Org/Individual filter
 * Started to convert the code to OO PHP
+
+**0.2.23**
+
+* Converted more code to use the OO methods
+* Display some of the missing fields in the output

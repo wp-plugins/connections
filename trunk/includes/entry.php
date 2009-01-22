@@ -5,6 +5,18 @@
  */
 class entry
 {	/**
+	 * Interger: Entry ID
+	 * @var integer
+	 */
+	private $id;
+	
+	/**
+	 * Unix timestamp
+	 * @var unix timestamp
+	 */
+	private $timeStamp;
+	
+	/**
 	 * String: First Name
 	 * @var string
 	 */
@@ -53,10 +65,16 @@ class entry
 	private $websites;
 	
 	/**
-	 * Array if instant messengers IDs
+	 * Array of instant messengers IDs
 	 * @var array
 	 */
 	private $im;
+	
+	/**
+	 * String: Visibilty Type; public, private, unlisted
+	 * @var string
+	 */
+	private $visibility;
 	
 	private $options;
 	private $imageLinked;
@@ -64,6 +82,8 @@ class entry
 	private $entryType;
 	
 	function __construct($data)	{
+		$this->id = $data->id;
+		$this->timeStamp = $data->ts;
 		$this->firstName = $data->first_name;
 		$this->lastName = $data->last_name;
 		$this->title = $data->title;
@@ -71,12 +91,50 @@ class entry
 		$this->department = $data->department;
 		$this->websites = unserialize($data->websites);
 		$this->im = unserialize($data->im);
+		$this->visibility = $data->visibility;
 		
 		$this->options = unserialize($data->options);
 		$this->imageLinked = $this->options['image']['linked'];
 		$this->imageDisply = $this->options['image']['display'];
 		$this->entryType = $this->options['entry']['type'];
 	}
+
+    /**
+     * Returns $id.
+     * @see entry::$id
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+    
+    /**
+     * Sets $id.
+     * @param object $id
+     * @see entry::$id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * Timestamp format can be sent as a string variable.
+     * Returns $timeStamp.
+     * @param string $format
+     * @see entry::$timeStamp
+     */
+    public function getTimeStamp($format=null)
+    {
+        if (!$format)
+		{
+			$format = "m/d/Y";
+		}
+		
+		$this->timeStamp = date($format,strtotime($this->timeStamp));
+		
+		return $this->timeStamp;
+    }
 
     /**
      * Returns the entries first name.
@@ -250,6 +308,30 @@ class entry
     {
         $this->im = $im;
     }
+
+    /**
+     * Returns $visibility.
+     * @see entry::$visibility
+     */
+    public function getVisibility()
+    {
+        return $this->visibility;
+    }
+    
+    /**
+     * Sets $visibility.
+     * @param object $visibility
+     * @see entry::$visibility
+     */
+    public function setVisibility($visibility)
+    {
+        $this->visibility = $visibility;
+    }
+	
+	public function displayVisibiltyType()
+	{
+		return ucfirst($this->getVisibility());
+	}
 
     /**
      * Returns $websites.
