@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entry classes
+ * Entry class
  */
 class entry
 {	/**
@@ -59,13 +59,13 @@ class entry
 	private $department;
 	
 	/**
-	 * Array of websites
+	 * Associative array of websites
 	 * @var array
 	 */ 
 	private $websites;
 	
 	/**
-	 * Array of instant messengers IDs
+	 * Associative array of instant messengers IDs
 	 * @var array
 	 */
 	private $im;
@@ -157,7 +157,7 @@ class entry
     }
     
     /**
-     * Returns the entries full name. If entry type is set to organization the method will return the organization name.
+     * The entries full name. If entry type is set to organization the method will return the organization name.
      * Returns $fullFirstLastName.
      * @see entry::$fullFirstLastName
      */
@@ -184,7 +184,7 @@ class entry
     }
     
     /**
-     * Returns the entries full name; last name first. If entry type is set to organization the method will return the organization name.
+     * The entries full name; last name first. If entry type is set to organization the method will return the organization name.
      * Returns $fullLastFirstName.
      * @see entry::$fullLastFirstName
      */
@@ -197,7 +197,6 @@ class entry
 		} else {
 			return $this->organization;
 		}
-        
     }
     
     /**
@@ -432,7 +431,12 @@ class entry
 
 
 /**
- * Extracts a website address entry from an array of website addressess
+ * Extracts a website info and options from an associative array of website addressess
+ * 
+ * $type
+ * $name
+ * $address
+ * $visibility
  */
 class website
 {	/**
@@ -461,6 +465,7 @@ class website
 	
     /**
      * Returns $address.
+     * @param array $data
      * @see website::$address
      */
     public function getAddress($data)
@@ -472,7 +477,7 @@ class website
     /**
      * Sets the website address
      * Sets $address.
-     * @param object $address
+     * @param array $address
      * @see website::$address
      */
     public function setAddress($address)
@@ -492,7 +497,7 @@ class website
     /**
      * Sets the website type
      * Sets $type.
-     * @param object $type
+     * @param string $type
      * @see website::$type
      */
     public function setType($type)
@@ -511,7 +516,7 @@ class website
     
     /**
      * Sets $name.
-     * @param object $name
+     * @param string $name
      * @see website::$name
      */
     public function setName($name)
@@ -531,7 +536,7 @@ class website
     /**
      * Set website visibility
      * Sets $visibility.
-     * @param object $visibility
+     * @param string $visibility public, private, unlisted
      * @see website::$visibility
      */
     public function setVisibility($visibility)
@@ -560,7 +565,7 @@ class im
 	
 	/**
 	 * IM ID
-	 * @var
+	 * @var string
 	 */
 	private $id;
 	
@@ -581,7 +586,7 @@ class im
     
     /**
      * Sets $type.
-     * @param object $type
+     * @param string $type
      * @see im::$type
      */
     public function setType($type)
@@ -601,7 +606,7 @@ class im
     
     /**
      * Sets $name.
-     * @param object $name
+     * @param string $name
      * @see im::$name
      */
     public function setName($name)
@@ -611,6 +616,7 @@ class im
 	
 	/**
      * Returns $id.
+     * @param $data 
      * @see im::$id
      */
     public function getId($data)
@@ -621,7 +627,7 @@ class im
     
     /**
      * Sets $id.
-     * @param object $id
+     * @param string $id
      * @see im::$id
      */
     public function setId($id)
@@ -640,7 +646,7 @@ class im
     
     /**
      * Sets $visibility.
-     * @param object $visibility
+     * @param string $visibility public, private, unlisted
      * @see im::$visibility
      */
     public function setVisibility($visibility)
