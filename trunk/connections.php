@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111
 Description: An address book.
-Version: 0.2.23
+Version: 0.2.24
 Author: Steven A. Zahm
 Author URI: http://www.shazahm.net
 
@@ -38,7 +38,7 @@ require_once(WP_PLUGIN_DIR . '/connections/includes/options.php');
 //plugin option objects
 require_once(WP_PLUGIN_DIR . '/connections/includes/utility.php');
 
-$current_version = "0.2.23";
+$current_version = "0.2.24";
 session_start();
 
 // Define a few constants until I can get to creating the options page.
@@ -482,9 +482,7 @@ function connections_main() {
 								</tfoot>
 								<tbody>
 									
-									<?php									
-									$ticker = new counter();
-									$ticker->reset();
+									<?php
 													
 									foreach ($results as $row) {
 										$options = unserialize($row->options);
@@ -503,18 +501,17 @@ function connections_main() {
 										}
 										
 										//Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
-										$letter = strtoupper(substr($entry->getLastName(), 0, 1));
-										if ($letter != $oldLetter) {
-											$alphaanchor = "<a name='" . strtoupper(substr($entry->getLastName(), 0, 1)) . "'></a>";
-											$oldLetter = strtoupper(substr($entry->getLastName(), 0, 1));
-											$ticker->step();
+										$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
+										if ($currentLetter != $previousLetter) {
+											$setAnchor = "<a name='$currentLetter'></a>";
+											$previousLetter = $currentLetter;
 										} else {
-											$alphaanchor = "";
+											$setAnchor = null;
 										}
 										
 										echo "<tr class='".$altrow."'>";
 											echo "<th class='check-column ".$altrow."' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
-												echo "<td class='".$altrow."' colspan='2'>".$alphaanchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit " . $entry->getFullFirstLastName() . "' href='admin.php?page=connections/connections.php&action=edit&id=".$row->id."'> " . $entry->getFullLastFirstName(). "</a><br />";
+												echo "<td class='".$altrow."' colspan='2'>".$setAnchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit " . $entry->getFullFirstLastName() . "' href='admin.php?page=connections/connections.php&action=edit&id=".$row->id."'> " . $entry->getFullLastFirstName(). "</a><br />";
 												echo "<div class='row-actions'>
 															<span class='detailsbutton' id='detailbutton" . $entry->getId() . "' onClick='click_contact(this, " . $entry->getId() . ")'>Show Details</span> | 
 															<a class='editbutton' href='admin.php?page=connections/connections.php&action=editform&id=" . $entry->getId() . "'>Edit</a> | 
@@ -1121,6 +1118,7 @@ function _connections_list($atts, $content=null) {
 			'id' => null,
 			'private_override' => false,
 			'show_alphaindex' => false,
+			'list_type' => 'all',
 			), $atts ) ;
 			
 	if (is_user_logged_in() or $atts['private_override'] != false) { 
@@ -1130,21 +1128,12 @@ function _connections_list($atts, $content=null) {
 	}
 	
 	if ($atts['id'] != null) $visibilityfilter .= " AND id='" . $atts['id'] . "' ";
-		
-    //$sql = "SELECT * FROM ".$wpdb->prefix."connections " . $visibilityfilter ." ORDER BY last_name, first_name";
+	
 	$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = ''" . $visibilityfilter . ") UNION (SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibilityfilter . ") ORDER BY order_by, last_name, first_name";
 					
 	$results = $wpdb->get_results($sql);
 		
 	if ($results != null) {
-		//Builds an alpha array of the first letter of the last names.
-		foreach ($results as $row) {
-			$letter = strtoupper(substr($row->last_name, 0, 1));
-			if ($letter != $oldletter) {
-				$alphaindex[] = strtoupper(substr($row->last_name, 0, 1));
-				$oldletter = strtoupper(substr($row->last_name, 0, 1));
-			}
-		}
 		
 		if (!$atts['id']) $out = "<div id='connections-list-head'></div>";
 		if ($atts['show_alphaindex']) $out .= "<div class='cnalphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
@@ -1153,13 +1142,20 @@ function _connections_list($atts, $content=null) {
 		foreach ($results as $row) {
 			$entry = new entry($row);
 			$options = unserialize($row->options);
+			
+			if ($atts['list_type'] != 'all') {
+				if ($atts['list_type'] != $entry->getEntryType()) {
+					continue;
+				}
+			}
 	
 			//Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
-			if ($alphaindex[$i] == strtoupper(substr($row->last_name, 0, 1))) {
-				$alphaanchor = "<a name='" . $alphaindex[$i] . "'></a>";
-				$i++;
+			$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
+			if ($currentLetter != $previousLetter && $atts['id'] == null) {
+				$setAnchor = "<a name='$currentLetter'></a>";
+				$previousLetter = $currentLetter;
 			} else {
-				$alphaanchor = "";
+				$setAnchor = null;
 			}
 			  
 			//A check to make sure that the birthday column contains a value. If it does, it formats the date into the variable to be used in the output.
@@ -1184,7 +1180,7 @@ function _connections_list($atts, $content=null) {
 			else						// more than one year: don't show the update age
 				$ageStyle = "display:none";
 			
-			if ($atts['show_alphaindex']) $out .= $alphaanchor;
+			if ($atts['show_alphaindex']) $out .= $setAnchor;
 			$out .= "<div class='cnitem' id='cn" .  $row->id . "' style='-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative;'>\n";
 						$out .= "<div style='width:49%; float:left'>";
 							if ($options['image']['linked'] && $options['image']['display']) $out .= '<img style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $options['image']['name']['entry'] . '" /> <div class="clear"></div>';

@@ -4,7 +4,7 @@ Donate link: http://www.shazahm.net/?page_id=111
 Tags: addresses, address book, addressbook, bio, bios, biographies, contact, contacts, connect, connections, directory, list, lists, listings, people, profile, profiles, plugin, user, users
 Requires at least: 2.7
 Tested up to: 2.7
-Stable tag: 0.2.23
+Stable tag: 0.2.24
 An address book that is managed in the admin and embed them in a post/page. Upcoming birthdays and anniversaries can also be embedded in a post/page.
 
 == Description ==
@@ -18,11 +18,11 @@ This plugin is under active developement, please make sure you have a recent bac
 * Added support for copying an entry.
 * Bulk actions
 * Entry filters
-* Persistent filter state between sessions
+* Persistent filter state per user between sessions
 * Reduced the number of page refreshes when adding or managing the entry list.
 * Reduced the amount of scrolling needing when managing a large number of entries.
 * Matched the visual style to fit nicely in the new 2.7 admin interface.
-* Added shortcodes that can be used for embedding contact list and upcoming birthdays/anniversaries in a page and/or post.
+* Added many shortcodes that can be used for embedding contact list and upcoming birthdays/anniversaries in a page and/or post.
 
 
 **Upcoming features:**
@@ -43,7 +43,6 @@ This plugin is under active developement, please make sure you have a recent bac
 * Option to manage the relation types
 * Import/Export
 * Backup
-* Session view state per user
 * ...and any suggestion that I may receive...
 
 **Known Issues:**
@@ -51,10 +50,8 @@ This plugin is under active developement, please make sure you have a recent bac
 * **Currently when an image link is removed the files are not deleted from the server**
 * The CSS style sheet is linked on every page in the admin
 * The styles in the output html is hard coded
-* The alpha anchors do not generate if a letter is skipped in the last names that were entered
 * Not all fields that are input appear when output
 * Styling for organization entries needs work
-* Individuals and Organization show in the frontend output list; needs a shortcode to filter
 
 == Screenshots ==
 [Samples and screenshots can be found here](http://www.shazahm.net/?page_id=111)
@@ -72,7 +69,6 @@ When adding a new entry in the entry list you have the option of choosing public
 To embed a list in a page/post just enter the shortcode text and any of the options outlined below in the page/post text area.
 
 
-
 `[connections_list]`
 
 To insert a contact list in a page/post use the shortcode.
@@ -83,6 +79,7 @@ This shortcode has three available options:
 1. id
 2. private_override
 3. show_alphaindex
+4. list_type
 
 
 The *id* option allows you to show the contact info for a single entry. Default is to show all public and/or private entries in the list. The ID can be found in the admin by showing the details for an entry. It will be labelled **Entry ID:**
@@ -109,6 +106,18 @@ The *show_alphaindex* option inserts an an A thru Z anchor list at the head of t
 `[connections_list show_alphaindex=true]`
 
 If you have a long list of entries you can use this option to show the option index.
+
+
+The *list_type* option allows you to show all entries or you can choose to show only individuals or organizations.
+
+`[connections_list list_type=all]`
+Use to show all entry types.
+
+`[connections_list list_type=individual]`
+Use to show only entries set as an individual.
+
+`[connections_list list_type=organization]`
+Use to show only entries set as an organization.
 
 
 There is also a second shortcode that can be use for displaying a list of upcoming birthdays and/or anniversaries.
@@ -179,6 +188,10 @@ Use this option to define the list title to any text you wish.
 
 == Frequently Asked Questions ==
 
+= Why don't all individuals show when I use the list_type option in the shortcode? =
+
+Older versions of this plugin didn't set this property to an entry. To fix; edit all entries that should appear in the list by selecting the appropiate type and then save the entry.
+
 * This plugin is developed and tested in Firefox. If your using IE and something doesn't work, try it again in Firefox.
 * This plugin is also under active developement and as such features and settings could change. You may also have to re-enter or edit your entries after an upgrade. An effort will be made to keep this to a minimum.
 * It also should be mentioned that I am not a web designer nor am I a PHP programmer, this plugin is being developed out of a need and for the learning experience.
@@ -234,3 +247,10 @@ There is no need to de-activate and then re-activate Connections to upgrade.
 
 * Converted more code to use the OO methods
 * Display some of the missing fields in the output
+
+**0.2.24**
+
+* Converted more code to use the OO methods
+* Code clean-up and documentation
+* Fixed the alpha index bug not correctly working with organization entry types
+* Added a shortcode to allow showing all entries; individual or organizations entries
