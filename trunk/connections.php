@@ -158,23 +158,24 @@ function connections_main() {
 										 country=>$_POST['country2'],
 										 visibility=>'unlisted');
 					
-					$phone_numbers[] = array(type=>'home', homephone=>$_POST['homephone'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'homefax', homephone=>$_POST['homefax'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'cell', homephone=>$_POST['cellphone'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'work', homephone=>$_POST['workphone'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'workfax', homephone=>$_POST['workfax'], visibility=>'unlisted');
+					/*$phone_numbers[] = array(type=>'homephone', number=>$_POST['homephone'], visibility=>'unlisted');
+					$phone_numbers[] = array(type=>'homefax', number=>$_POST['homefax'], visibility=>'unlisted');
+					$phone_numbers[] = array(type=>'cellphone', number=>$_POST['cellphone'], visibility=>'unlisted');
+					$phone_numbers[] = array(type=>'workphone', number=>$_POST['workphone'], visibility=>'unlisted');
+					$phone_numbers[] = array(type=>'workfax', number=>$_POST['workfax'], visibility=>'unlisted');*/
 					
 					$email[] = array(type=>personal, address=>$_POST['personalemail'], visibility=>'unlisted');
 					$email[] = array(type=>work, address=>$_POST['workemail'], visibility=>'unlisted');
 					
-					$websites[] = array(type=>'personal', address=>$_POST['website'], visibility=>'unlisted');
+					//$websites[] = array(type=>'personal', address=>$_POST['website'], visibility=>'unlisted');
 					
 					$serial_addresses = serialize($addresses);
-					$serial_phone_numbers = serialize($phone_numbers);
+					//$serial_phone_numbers = serialize($phone_numbers);
+					$serial_phone_numbers = serialize($_POST['phone_numbers']);
 					$serial_email = serialize($email);
 					$serial_im = serialize($_POST['im']);
-					
-					$serial_websites = serialize($websites);
+					//$serial_websites = serialize($websites);
+					$serial_websites = serialize($_POST['websites']);
 					
 					if ($_POST['website'] == "http://") $_POST['website'] = "";
 					
@@ -275,22 +276,24 @@ function connections_main() {
 										 country2=>$_POST['country2'],
 										 visibility=>'unlisted');
 					
-					$phone_numbers[] = array(type=>'home', homephone=>$_POST['homephone'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'homefax', homephone=>$_POST['homefax'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'cell', homephone=>$_POST['cellphone'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'work', homephone=>$_POST['workphone'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'workfax', homephone=>$_POST['workfax'], visibility=>'unlisted');
+					/*$phone_numbers[] = array(type=>'homephone', number=>$_POST['homephone'], visibility=>'unlisted');
+					$phone_numbers[] = array(type=>'homefax', number=>$_POST['homefax'], visibility=>'unlisted');
+					$phone_numbers[] = array(type=>'cellphone', number=>$_POST['cellphone'], visibility=>'unlisted');
+					$phone_numbers[] = array(type=>'workphone', number=>$_POST['workphone'], visibility=>'unlisted');
+					$phone_numbers[] = array(type=>'workfax', number=>$_POST['workfax'], visibility=>'unlisted');*/
 					
 					$email[] = array(type=>personal, address=>$_POST['personalemail'], visibility=>'unlisted');
 					$email[] = array(type=>work, address=>$_POST['workemail'], visibility=>'unlisted');
 					
-					$websites[] = array(type=>'personal', address=>$_POST['website'], visibility=>'unlisted');
+					//$websites[] = array(type=>'personal', address=>$_POST['website'], visibility=>'unlisted');
 					
 					$serial_addresses = serialize($addresses);
-					$serial_phone_numbers = serialize($phone_numbers);
+					//$serial_phone_numbers = serialize($phone_numbers);
+					$serial_phone_numbers = serialize($_POST['phone_numbers']);
 					$serial_email = serialize($email);
 					$serial_im = serialize($_POST['im']);
-					$serial_websites = serialize($websites);					
+					//$serial_websites = serialize($websites);
+					$serial_websites = serialize($_POST['websites']);					
 					
 					if ($_FILES['original_image']['error'] != 4) {
 						$image_proccess_results = _process_images($_FILES);
@@ -487,6 +490,7 @@ function connections_main() {
 									foreach ($results as $row) {
 										$options = unserialize($row->options);
 										$entry = new entry($row);
+										$phoneNumberObject = new phoneNumber();
 										$imObject = new im();
 										$websiteObject = new website();
 										
@@ -562,23 +566,27 @@ function connections_main() {
 													}
 												}
 												
-												if ($row->homephone) echo "<strong>Home Phone:</strong> ".$row->homephone."<br />";
-												if ($row->homefax) echo "<strong>Home Fax:</strong> ".$row->homefax."<br />";
-												if ($row->cellphone) echo "<strong>Cell Phone:</strong> ".$row->cellphone."<br />";
-												if ($row->workphone) echo "<strong>Work Phone:</strong> ".$row->workphone."<br />";
-												if ($row->workfax) echo "<strong>Work Fax:</strong> ".$row->workfax."<br />";
+												if ($entry->getPhoneNumbers())
+												{
+													foreach ($entry->getPhoneNumbers() as $phoneNumberRow) 
+													{
+														if ($phoneNumberObject->getNumber($phoneNumberRow) != "") echo "<strong>" . $phoneNumberObject->getName($phoneNumberRow) . "</strong>: " .  $phoneNumberObject->getNumber($phoneNumberRow) . "<br />";
+													}
+												}
+												
 											echo "</td> \n";
 																					
 											echo "<td class='".$altrow."'>";
-												if ($row->birthday) echo "<strong>Birthday:</strong><br />".date("F jS", $row->birthday)."<br /><br />";
-												if ($row->anniversary) echo "<strong>Anniversary:</strong><br />".date("F jS", $row->anniversary);
+												if ($entry->getBirthday()) echo "<strong>Birthday:</strong><br />" . $entry->getBirthday() . "<br /><br />";
+												if ($entry->getAnniversary()) echo "<strong>Anniversary:</strong><br />" . $entry->getAnniversary();
 											echo "</td> \n";
 										echo "</tr> \n";
 										
-										echo "<tr class='".$altrow." entrynotes' id='contact-".$row->id."-detail-notes' style='display:none;'>";
+										echo "<tr class='".$altrow." entrynotes' id='contact-" . $entry->getId() . "-detail-notes' style='display:none;'>";
 											echo "<td class='".$altrow."'>&nbsp;</td> \n";
 											echo "<td class='".$altrow."' colspan='3'>";
-												if ($row->notes) echo "<strong>Notes:</strong> " . $row->notes; else echo "&nbsp;";
+												if ($entry->getBio()) echo "<strong>Bio:</strong> " . $entry->getBio() . "<br />"; else echo "&nbsp;";
+												if ($entry->getNotes()) echo "<strong>Notes:</strong> " . $entry->getNotes(); else echo "&nbsp;";
 											echo "</td> \n";
 											echo "<td class='".$altrow."'><strong>Entry ID:</strong> " . $entry->getId();
 												if (!$entry->getImageLinked()) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";
@@ -820,6 +828,7 @@ function _build_radio($name, $id, $value_labels, $checked=null) {
  */
 function _connections_getaddressform($data=null) {
 		$entry = new entry($data);
+		$phoneNumberObject = new phoneNumber();
 		$imObject = new im();
 		$websiteObject = new website();
 		$date = new date();
@@ -827,7 +836,9 @@ function _connections_getaddressform($data=null) {
 		
 		if ($data != null) {
 			$options = unserialize($data->options);
+			
 			$im = unserialize($data->im);
+			$websites = unserialize($data->websites);
 
 			$post_options = $data->options; // I don't think I need this???
 			if ($options['image']['linked']) {
@@ -957,22 +968,40 @@ function _connections_getaddressform($data=null) {
 			<div class='clear'></div>
 		</div>
 		
-		<div class='form-field connectionsform'>				
-				<label for='homephone'>Home Phone:</label>
-				<input type='text' name='homephone' value='" . $data->homephone . "' />
+		<div class='form-field connectionsform'>";
+			if ($data->phone_numbers)
+			{
+				$ticker->reset();
+				foreach ($entry->getPhoneNumbers() as $phoneNumberRow)
+				{
+					$out .= "<label for='phone_numbers'>" . $phoneNumberObject->getName($phoneNumberRow) . ":</label>";
+					$out .= "<input type='text' name='phone_numbers[" . $ticker->getcount() . "][number]' value='" . $phoneNumberObject->getNumber($phoneNumberRow) . "' />";
+					$out .= "<input type='hidden' name='phone_numbers[" . $ticker->getcount() . "][type]' value='" . $phoneNumberObject->getType($phoneNumberRow) . "' />";
+					$ticker->step();
+				}
+				$ticker->reset();
+			} else {
+				$out .= "<label for='homephone'>Home Phone:</label>
+				<input type='text' name='phone_numbers[0][number]' value='' />
+				<input type='hidden' name='phone_numbers[0][type]' value='homephone' />
 
 				<label for='homefax'>Home Fax:</label>
-				<input type='text' name='homefax' value='" . $data->homefax . "' />
+				<input type='text' name='phone_numbers[1][number]' value='' />
+				<input type='hidden' name='phone_numbers[1][type]' value='homefax' />
 
 				<label for='cellphone'>Cell Phone:</label>
-				<input type='text' name='cellphone' value='" . $data->cellphone . "' />
+				<input type='text' name='phone_numbers[2][number]' value='' />
+				<input type='hidden' name='phone_numbers[2][type]' value='cellphone' />
 
 				<label for='workphone'>Work Phone:</label>
-				<input type='text' name='workphone' value='" . $data->workphone . "' />
+				<input type='text' name='phone_numbers[3][number]' value='' />
+				<input type='hidden' name='phone_numbers[3][type]' value='workphone' />
 
 				<label for='workfax'>Work Fax:</label>
-				<input type='text' name='workfax' value='" . $data->workfax . "' />
-		</div>
+				<input type='text' name='phone_numbers[4][number]' value='' />
+				<input type='hidden' name='phone_numbers[4][type]' value='workfax' />";
+			}
+		$out .= "</div>
 		
 		<div class='form-field connectionsform'>
 				<label for='personalemail'>Personal Email:</label>
@@ -1014,8 +1043,11 @@ function _connections_getaddressform($data=null) {
 		$out .= "</div>
 		
 		<div class='form-field connectionsform'>
-				<label for='website'>Website:</label>
-				<input type='text' name='website' value='" . $website . "' />
+				<label for='websites'>Website:</label>
+				<input type='hidden' name='websites[0][type]' value'personal' />
+				<input type='hidden' name='websites[0][name]' value'Personal' />
+				<input type='text' name='websites[0][address]' value='" . $websiteObject->getAddress($websites[0]) . "' />
+				<input type='hidden' name='websites[0][visibility]' value'public' />
 		</div>
 
 		<div class='form-field connectionsform'>

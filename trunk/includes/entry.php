@@ -59,6 +59,12 @@ class entry
 	private $department;
 	
 	/**
+	 * Associative array of phone numbers
+	 * @var associative arrya
+	 */
+	private $phoneNumbers;
+	
+	/**
 	 * Associative array of websites
 	 * @var array
 	 */ 
@@ -69,6 +75,30 @@ class entry
 	 * @var array
 	 */
 	private $im;
+	
+	/**
+	 * Unix time: Birthday.
+	 * @var unix time
+	 */
+	private $birthday;
+	
+	/**
+	 * Unix time: Anniversary.
+	 * @var unix time
+	 */
+	private $anniversary;
+	
+	/**
+	 * String: Entry notes.
+	 * @var string
+	 */
+	private $bio;
+	
+	/**
+	 * String: Entry biography.
+	 * @var string
+	 */
+	private $notes;
 	
 	/**
 	 * String: Visibilty Type; public, private, unlisted
@@ -89,8 +119,13 @@ class entry
 		$this->title = $data->title;
 		$this->organization = $data->organization;
 		$this->department = $data->department;
-		$this->websites = unserialize($data->websites);
+		$this->phoneNumbers = unserialize($data->phone_numbers);
 		$this->im = unserialize($data->im);
+		$this->websites = unserialize($data->websites);
+		$this->birthday = $data->birthday;
+		$this->anniversary = $data->anniversary;
+		$this->bio = $data->bio;
+		$this->notes = $data->notes;
 		$this->visibility = $data->visibility;
 		
 		$this->options = unserialize($data->options);
@@ -290,6 +325,25 @@ class entry
     }
 
     /**
+     * Returns $phoneNumbers.
+     * @see entry::$phoneNumbers
+     */
+    public function getPhoneNumbers()
+    {
+        return $this->phoneNumbers;
+    }
+    
+    /**
+     * Sets $phoneNumbers.
+     * @param object $phoneNumbers
+     * @see entry::$phoneNumbers
+     */
+    public function setPhoneNumbers($phoneNumbers)
+    {
+        $this->phoneNumbers = $phoneNumbers;
+    }
+
+    /**
      * Returns $im.
      * @see entry::$im
      */
@@ -306,6 +360,102 @@ class entry
     public function setIm($im)
     {
         $this->im = $im;
+    }
+
+    /**
+     * Anniversary as unix time. Format can be sent as string.
+     * @return string
+     * @param string $format[optional]
+     */
+	public function getAnniversary($format=null)
+    {
+        if (!$format)
+		{
+			$format = "F jS";
+		}
+		
+		if ($this->anniversary)
+		{
+			return date($format,$this->anniversary);
+		}
+
+    }
+    
+    /**
+     * Sets $anniversary.
+     * @param object $anniversary
+     * @see entry::$anniversary
+     */
+    public function setAnniversary($anniversary)
+    {
+        $this->anniversary = $anniversary;
+    }
+    
+    /**
+     * Birthday as unix time. Format can be sent as string.
+     * @return string
+     * @param string $format[optional]
+     */
+    public function getBirthday($format=null)
+    {
+        if (!$format)
+		{
+			$format = "F jS";
+		}
+		
+		if ($this->birthday)
+		{
+			return date($format,$this->birthday);
+		}
+
+    }
+    
+    /**
+     * Sets $birthday.
+     * @param object $birthday
+     * @see entry::$birthday
+     */
+    public function setBirthday($birthday)
+    {
+        $this->birthday = $birthday;
+    }
+
+    /**
+     * Returns $bio.
+     * @see entry::$bio
+     */
+    public function getBio()
+    {
+        return $this->bio;
+    }
+    
+    /**
+     * Sets $bio.
+     * @param object $bio
+     * @see entry::$bio
+     */
+    public function setBio($bio)
+    {
+        $this->bio = $bio;
+    }
+    
+    /**
+     * Returns $notes.
+     * @see entry::$notes
+     */
+    public function getNotes()
+    {
+        return $this->notes;
+    }
+    
+    /**
+     * Sets $notes.
+     * @param object $notes
+     * @see entry::$notes
+     */
+    public function setNotes($notes)
+    {
+        $this->notes = $notes;
     }
 
     /**
@@ -429,6 +579,143 @@ class entry
 
 }
 
+/**
+ * Extract phone number details from an associative array of phone numbers
+ * 
+ * $type
+ * $name
+ * $number
+ * $visibility
+ */
+class phoneNumber 
+{	
+	private $type;
+	private $name;
+	private $number;
+	private $visibility;
+
+    /**
+     * Returns $name.
+     * @see phoneNumber::$name
+     */
+    public function getName($data)
+    {
+        //This is here for compatibility for versions 0.2.24 and earlier;
+		switch ($data['type'])
+		{
+			case 'home':
+				$this->name = "Home Phone";
+				break;
+			case 'homephone':
+				$this->name = "Home Phone";
+				break;
+			case 'homefax':
+				$this->name = "Home Fax";
+				break;
+			case 'cell':
+				$this->name = "Cell Phone";
+				break;
+			case 'cellphone':
+				$this->name = "Cell Phone";
+				break;
+			case 'work':
+				$this->name = "Work Phone";
+				break;
+			case 'workphone':
+				$this->name = "Work Phone";
+				break;
+			case 'workfax':
+				$this->name = "Work Fax";
+				break;
+			
+			default:
+				$this->name = $data['name'];
+			break;
+		}
+		
+		return $this->name;
+    }
+    
+    /**
+     * Sets $name.
+     * @param object $name
+     * @see phoneNumber::$name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    
+    /**
+     * Returns $number.
+     * @param array
+     * @see phoneNumber::$number
+     */
+    public function getNumber($data)
+    {
+        //This is here for compatibility for versions 0.2.24 and earlier;
+		if (isset($data['homephone']))
+		{
+        	$this->number = $data['homephone'];
+        }
+		else
+		{
+			$this->number = $data['number'];
+		}
+		
+		return $this->number;
+    }
+    
+    /**
+     * Sets $number.
+     * @param object $number
+     * @see phoneNumber::$number
+     */
+    public function setNumber($number)
+    {
+        $this->number = $number;
+    }
+    
+    /**
+     * Returns $type.
+     * @see phoneNumber::$type
+     */
+    public function getType($data)
+    {
+        $this->type = $data['type'];
+		return $this->type;
+    }
+    
+    /**
+     * Sets $type.
+     * @param object $type
+     * @see phoneNumber::$type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+    
+    /**
+     * Returns $visibility.
+     * @see phoneNumber::$visibility
+     */
+    public function getVisibility($data)
+    {
+        return $this->visibility;
+    }
+    
+    /**
+     * Sets $visibility.
+     * @param object $visibility
+     * @see phoneNumber::$visibility
+     */
+    public function setVisibility($visibility)
+    {
+        $this->visibility = $visibility;
+    }
+
+}
 
 /**
  * Extracts a website info and options from an associative array of website addressess
@@ -548,6 +835,11 @@ class website
 
 /**
  * Extracts IM IDs from an array of instant messanger IDs
+ * 
+ * $type
+ * $name
+ * $id
+ * $visibility
  */
 class im
 {
