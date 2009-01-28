@@ -41,7 +41,7 @@ require_once(WP_PLUGIN_DIR . '/connections/includes/utility.php');
 $current_version = "0.2.24";
 session_start();
 
-// Define a few constants until I can get to creating the options page.
+// Define a few constants and defaults until I can get to creating the options page.
 define('CN_DEFAULT_JPG_QUALITY', 80);
 define('CN_DEFAULT_PROFILE_X', 300);
 define('CN_DEFAULT_PROFILE_Y', 225);
@@ -52,8 +52,98 @@ define('CN_DEFAULT_THUMBNAIL_Y', 54);
 define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
 define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
 
+$defaultPhoneNumberValues	=	array
+								(
+									array
+									(
+										'type'=>'homephone',
+										'name'=>'Home Phone',
+										'number'=>null,
+										'visibility'=>'public'
+									),
+									array
+									(
+										'type'=>'homefax',
+										'name'=>'Home Fax',
+										'number'=>null,
+										'visibility'=>'public'
+									),
+									array
+									(
+										'type'=>'cellphone',
+										'name'=>'Cell Phone',
+										'number'=>null,
+										'visibility'=>'public'
+									),
+									array
+									(
+										'type'=>'workphone',
+										'name'=>'Work Phone',
+										'number'=>null,
+										'visibility'=>'public'
+									),
+									array
+									(
+										'type'=>'workfax',
+										'name'=>'Work Fax',
+										'number'=>null,
+										'visibility'=>'public'
+									),
+								);
+
+$defaultEmailValues = 	array
+						(
+							array
+							(
+								'type'=>'personal',
+								'name'=>'Personal Email',
+								'address'=>null,
+								'visibility'=>'public'
+							),
+							array(
+								'type'=>'work',
+								'name'=>'Work Email',
+								'address'=>null,
+								'visibility'=>'public'
+							 )
+						);
+
+$defaultIMValues =	array
+					(
+						array
+						(
+							'type'=>'personal',
+							'name'=>'AIM',
+							'id'=>null,
+							'visibility'=>'public'
+						),
+						array
+						(
+							'type'=>'personal',
+							'name'=>'Yahoo IM',
+							'id'=>null,
+							'visibility'=>'public'
+						),
+						array
+						(
+							'type'=>'personal',
+							'name'=>'Jabber / Google Talk',
+							'id'=>null,
+							'visibility'=>'public'
+						),
+						array
+						(
+							'type'=>'personal',
+							'name'=>'Messenger',
+							'id'=>null,
+							'visibility'=>'public'
+						),
+					);
+
+
 //$plugin_options = new pluginOptions(get_option("connections_options"));
 $plugin_options = new pluginOptions;
+
 
 // CSS Styles for the plugin. This adds it to the admin page head.
 add_action('admin_head', 'connections_adminhead');
@@ -164,15 +254,16 @@ function connections_main() {
 					$phone_numbers[] = array(type=>'workphone', number=>$_POST['workphone'], visibility=>'unlisted');
 					$phone_numbers[] = array(type=>'workfax', number=>$_POST['workfax'], visibility=>'unlisted');*/
 					
-					$email[] = array(type=>personal, address=>$_POST['personalemail'], visibility=>'unlisted');
-					$email[] = array(type=>work, address=>$_POST['workemail'], visibility=>'unlisted');
+					/*$email[] = array(type=>personal, address=>$_POST['personalemail'], visibility=>'unlisted');
+					$email[] = array(type=>work, address=>$_POST['workemail'], visibility=>'unlisted');*/
 					
 					//$websites[] = array(type=>'personal', address=>$_POST['website'], visibility=>'unlisted');
 					
 					$serial_addresses = serialize($addresses);
 					//$serial_phone_numbers = serialize($phone_numbers);
 					$serial_phone_numbers = serialize($_POST['phone_numbers']);
-					$serial_email = serialize($email);
+					//$serial_email = serialize($email);
+					$serial_email = serialize($_POST['email']);
 					$serial_im = serialize($_POST['im']);
 					//$serial_websites = serialize($websites);
 					$serial_websites = serialize($_POST['websites']);
@@ -282,15 +373,16 @@ function connections_main() {
 					$phone_numbers[] = array(type=>'workphone', number=>$_POST['workphone'], visibility=>'unlisted');
 					$phone_numbers[] = array(type=>'workfax', number=>$_POST['workfax'], visibility=>'unlisted');*/
 					
-					$email[] = array(type=>personal, address=>$_POST['personalemail'], visibility=>'unlisted');
-					$email[] = array(type=>work, address=>$_POST['workemail'], visibility=>'unlisted');
+					/*$email[] = array(type=>personal, address=>$_POST['personalemail'], visibility=>'unlisted');
+					$email[] = array(type=>work, address=>$_POST['workemail'], visibility=>'unlisted');*/
 					
 					//$websites[] = array(type=>'personal', address=>$_POST['website'], visibility=>'unlisted');
 					
 					$serial_addresses = serialize($addresses);
 					//$serial_phone_numbers = serialize($phone_numbers);
 					$serial_phone_numbers = serialize($_POST['phone_numbers']);
-					$serial_email = serialize($email);
+					//$serial_email = serialize($email);
+					$serial_email = serialize($_POST['email']);
 					$serial_im = serialize($_POST['im']);
 					//$serial_websites = serialize($websites);
 					$serial_websites = serialize($_POST['websites']);					
@@ -469,7 +561,7 @@ function connections_main() {
 							</div>
 							<div class="clear"></div>
 							
-					        <table cellspacing="0" class="widefat connections">
+					       	<table cellspacing="0" class="widefat connections">
 								<thead>
 									<tr><th colspan="5" style="text-align:center;"><?php echo _build_alphaindex(); ?></th></tr>
 								</thead>
@@ -491,6 +583,7 @@ function connections_main() {
 										$options = unserialize($row->options);
 										$entry = new entry($row);
 										$phoneNumberObject = new phoneNumber();
+										$emailAddressObject = new email();
 										$imObject = new im();
 										$websiteObject = new website();
 										
@@ -515,7 +608,7 @@ function connections_main() {
 										
 										echo "<tr class='".$altrow."'>";
 											echo "<th class='check-column ".$altrow."' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
-												echo "<td class='".$altrow."' colspan='2'>".$setAnchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit " . $entry->getFullFirstLastName() . "' href='admin.php?page=connections/connections.php&action=edit&id=".$row->id."'> " . $entry->getFullLastFirstName(). "</a><br />";
+												echo "<td class='".$altrow."' colspan='2'>".$setAnchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit " . $entry->getFullFirstLastName() . "' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'> " . $entry->getFullLastFirstName(). "</a><br />";
 												echo "<div class='row-actions'>
 															<span class='detailsbutton' id='detailbutton" . $entry->getId() . "' onClick='click_contact(this, " . $entry->getId() . ")'>Show Details</span> | 
 															<a class='editbutton' href='admin.php?page=connections/connections.php&action=editform&id=" . $entry->getId() . "'>Edit</a> | 
@@ -527,7 +620,7 @@ function connections_main() {
 											echo "<td class='".$altrow."'>" . $entry->getTimeStamp() . "</td> \n";											
 										echo "</tr> \n";
 										
-										echo "<tr class='".$altrow." entrydetails' id='contact-".$row->id."-detail' style='display:none;'>";
+										echo "<tr class='".$altrow." entrydetails' id='contact-" . $entry->getId() . "-detail' style='display:none;'>";
 											echo "<td class='".$altrow."'></td> \n";
 											echo "<td class='".$altrow."' colspan='2'>";
 												if ($entry->getTitle()) echo "<strong>Title:</strong><br />" . $entry->getTitle() . "<br /><br />";
@@ -545,8 +638,13 @@ function connections_main() {
 											echo "</td> \n";
 											
 											echo "<td class='".$altrow."'>";
-												if ($row->personalemail) echo "<strong>Personal Email:</strong><br /><a href='mailto:".$row->personalemail."'>".$row->personalemail."</a><br /><br />";
-												if ($row->workemail) echo "<strong>Work Email:</strong><br /><a href='mailto:".$row->workemail."'>".$row->workemail."</a><br /><br />";
+												if ($entry->getEmailAddresses())
+												{
+													foreach ($entry->getEmailAddresses() as $emailRow)
+													{
+														if ($emailAddressObject->getAddress($emailRow) != null) echo "<strong>" . $emailAddressObject->getName($emailRow) . ":</strong><br /><a href='mailto:" . $emailAddressObject->getAddress($emailRow) . "'>" . $emailAddressObject->getAddress($emailRow) . "</a><br /><br />";
+													}
+												}
 												
 												if ($entry->getIm())
 												{
@@ -827,8 +925,11 @@ function _build_radio($name, $id, $value_labels, $checked=null) {
  * @param object $data[optional]
  */
 function _connections_getaddressform($data=null) {
+		global $defaultEmailValues, $defaultIMValues, $defaultPhoneNumberValues;
+		
 		$entry = new entry($data);
 		$phoneNumberObject = new phoneNumber();
+		$emailObject = new email();
 		$imObject = new im();
 		$websiteObject = new website();
 		$date = new date();
@@ -836,13 +937,9 @@ function _connections_getaddressform($data=null) {
 		
 		if ($data != null) {
 			$options = unserialize($data->options);
-			
-			$im = unserialize($data->im);
-			$websites = unserialize($data->websites);
 
-			$post_options = $data->options; // I don't think I need this???
-			if ($options['image']['linked']) {
-				if ($options['image']['display']) $selected = "show"; else $selected = "hidden";
+			if ($entry->getImageLinked()) {
+				if ($entry->getImageDisply()) $selected = "show"; else $selected = "hidden";
 				
 				$imgOptions = _build_radio("imgOptions", "imgOptionID_", array("Display"=>"show", "Not Displayed"=>"hidden", "Remove"=>"remove"), $selected);
 				$img_html_block .= "<div style='text-align:center'> <img src='" . CN_IMAGE_BASE_URL . $options['image']['name']['entry'] . "' /> <br /> <span class='radio_group'>" . $imgOptions . "</span></div> <br />"; 
@@ -851,7 +948,7 @@ function _connections_getaddressform($data=null) {
 			}
 		}
 		
-		if (!$data) $website = 'http://'; else $website = $data->website;
+		if (!$data) $website = 'http://'; else $website = $websiteObject->getAddress($websites[0]);
 		if (!$data->birthday) $birthday_month = null; else $birthday_month = date("m", $data->birthday);
 		if (!$data->birthday) $birthday_day = null; else $birthday_day = date("d", $data->birthday);
 		if (!$data->anniversary) $anniversary_month = null; else $anniversary_month = date("m", $data->anniversary);
@@ -883,24 +980,24 @@ function _connections_getaddressform($data=null) {
 		<div class='form-field connectionsform'>
 			<div class='input inputhalfwidth'>
 				<label for='first_name'>First name:</label>
-				<input type='text' name='first_name' value='" . $data->first_name . "' />
+				<input type='text' name='first_name' value='" . $entry->getFirstName() . "' />
 			</div>
 			<div class='input inputhalfwidth'>
 				<label for='last_name'>Last name:</label>
-				<input type='text' name='last_name' value='" . $data->last_name . "' />
+				<input type='text' name='last_name' value='" . $entry->getLastName() . "' />
 			</div>
 			<div class='clear'></div>
 		</div>
 		
 		<div class='form-field connectionsform'>				
 				<label for='title'>Title:</label>
-				<input type='text' name='title' value='" . $data->title . "' />
+				<input type='text' name='title' value='" . $entry->getTitle() . "' />
 
 				<label for='organization'>Organization:</label>
-				<input type='text' name='organization' value='" . $data->organization . "' />
+				<input type='text' name='organization' value='" . $entry->getOrganization() . "' />
 				
 				<label for='department'>Department:</label>
-				<input type='text' name='department' value='" . $data->department . "' />		
+				<input type='text' name='department' value='" . $entry->getDepartment() . "' />		
 		</div>
 		
 		<div class='form-field connectionsform'>
@@ -966,87 +1063,61 @@ function _connections_getaddressform($data=null) {
 			<input type='text' name='country2' value='" . $data->country2 . "' />
 
 			<div class='clear'></div>
-		</div>
+		</div>";
 		
-		<div class='form-field connectionsform'>";
-			if ($data->phone_numbers)
+		
+		if ($data->phone_numbers != null) $phoneNumberValues = $entry->getPhoneNumbers(); else $phoneNumberValues = $defaultPhoneNumberValues;
+		$out .= "<div class='form-field connectionsform'>";
+			$ticker->reset();
+			foreach ($phoneNumberValues as $phoneNumberRow)
 			{
-				$ticker->reset();
-				foreach ($entry->getPhoneNumbers() as $phoneNumberRow)
-				{
-					$out .= "<label for='phone_numbers'>" . $phoneNumberObject->getName($phoneNumberRow) . ":</label>";
-					$out .= "<input type='text' name='phone_numbers[" . $ticker->getcount() . "][number]' value='" . $phoneNumberObject->getNumber($phoneNumberRow) . "' />";
-					$out .= "<input type='hidden' name='phone_numbers[" . $ticker->getcount() . "][type]' value='" . $phoneNumberObject->getType($phoneNumberRow) . "' />";
-					$ticker->step();
-				}
-				$ticker->reset();
-			} else {
-				$out .= "<label for='homephone'>Home Phone:</label>
-				<input type='text' name='phone_numbers[0][number]' value='' />
-				<input type='hidden' name='phone_numbers[0][type]' value='homephone' />
-
-				<label for='homefax'>Home Fax:</label>
-				<input type='text' name='phone_numbers[1][number]' value='' />
-				<input type='hidden' name='phone_numbers[1][type]' value='homefax' />
-
-				<label for='cellphone'>Cell Phone:</label>
-				<input type='text' name='phone_numbers[2][number]' value='' />
-				<input type='hidden' name='phone_numbers[2][type]' value='cellphone' />
-
-				<label for='workphone'>Work Phone:</label>
-				<input type='text' name='phone_numbers[3][number]' value='' />
-				<input type='hidden' name='phone_numbers[3][type]' value='workphone' />
-
-				<label for='workfax'>Work Fax:</label>
-				<input type='text' name='phone_numbers[4][number]' value='' />
-				<input type='hidden' name='phone_numbers[4][type]' value='workfax' />";
+				$out .= "<label for='phone_numbers'>" . $phoneNumberObject->getName($phoneNumberRow) . ":</label>";
+				$out .= "<input type='text' name='phone_numbers[" . $ticker->getcount() . "][number]' value='" . $phoneNumberObject->getNumber($phoneNumberRow) . "' />";
+				$out .= "<input type='hidden' name='phone_numbers[" . $ticker->getcount() . "][type]' value='" . $phoneNumberObject->getType($phoneNumberRow) . "' />";
+				$out .= "<input type='hidden' name='phone_numbers[" . $ticker->getcount() . "][visibility]' value='" . $phoneNumberObject->getVisibility($phoneNumberRow) . "' />";
+				$ticker->step();
 			}
-		$out .= "</div>
-		
-		<div class='form-field connectionsform'>
-				<label for='personalemail'>Personal Email:</label>
-				<input type='text' name='personalemail' value='" . $data->personalemail . "' />
+			$ticker->reset();
+		$out .= "</div>";
 
-				<label for='workemail'>Work Email:</label>
-				<input type='text' name='workemail' value='" . $data->workemail . "' />
-		</div>
-		
-		<div class='form-field connectionsform'>";
-			if ($data->im != null)
+
+		if ($data->email != null) $emailValues = $entry->getEmailAddresses(); else $emailValues = $defaultEmailValues;
+		$out .= "<div class='form-field connectionsform'>";
+			$ticker->reset();
+			foreach ($emailValues as $emailRow)
 			{
-				$ticker->reset();
-				foreach ($entry->getIm() as $imRow)
-				{
-					$out .= "<label for='im'>" . $imObject->getName($imRow) . "</label>";
-					$out .= "<input type='text' name='im[" . $ticker->getcount() . "][id]' value='" . $imObject->getId($imRow) . "' />";
-					$out .= "<input type='hidden' name='im[" . $ticker->getcount() . "][name]' value='" . $imObject->getName($imRow) . "' />";
-					$ticker->step();
-				}
-				$ticker->reset();
-			} else {
-				$out .= "<label for='im'>AIM:</label>
-				<input type='text' name='im[0][id]' />
-				<input type='hidden' name='im[0][name]' value='AIM' />
+				$out .= "<label for='email'>" . $emailObject->getName($emailRow) . ":</label>";
+				$out .= "<input type='text' name='email[" . $ticker->getcount() . "][address]' value='" . $emailObject->getAddress($emailRow) . "' />";
+				$out .= "<input type='hidden' name='email[" . $ticker->getcount() . "][name]' value='" . $emailObject->getName($emailRow) . "' />";
+				$out .= "<input type='hidden' name='email[" . $ticker->getcount() . "][type]' value='" . $emailObject->getType($emailRow) . "' />";
+				$out .= "<input type='hidden' name='email[" . $ticker->getcount() . "][visibility]' value='" . $emailObject->getVisibility($emailRow) . "' />";
+				$ticker->step();
+			}
+			$ticker->reset();
+		$out .= "</div>";
 
-				<label for='im'>Yahoo IM:</label>
-				<input type='text' name='im[1][id]' />
-				<input type='hidden' name='im[1][name]' value='Yahoo IM' />
-				
-				<label for='im'>Jabber / Google Talk:</label>
-				<input type='text' name='im[2][id]' />
-				<input type='hidden' name='im[2][name]' value='Jabber / Google Talk' />
-				
-				<label for='im'>Messenger:</label>
-				<input type='text' name='im[3][id]' />
-				<input type='hidden' name='im[3][name]' value='Messenger' />";
-			}				
-		$out .= "</div>
+
+		if ($data->im != null) $imValues = $entry->getIm(); else $imValues = $defaultIMValues;
+		$out .= "<div class='form-field connectionsform'>";
+			$ticker->reset();
+			foreach ($imValues as $imRow)
+			{
+				$out .= "<label for='im'>" . $imObject->getName($imRow) . ":</label>";
+				$out .= "<input type='text' name='im[" . $ticker->getcount() . "][id]' value='" . $imObject->getId($imRow) . "' />";
+				$out .= "<input type='hidden' name='im[" . $ticker->getcount() . "][name]' value='" . $imObject->getName($imRow) . "' />";
+				$out .= "<input type='hidden' name='im[" . $ticker->getcount() . "][type]' value='" . $imObject->getType($imRow) . "' />";
+				$out .= "<input type='hidden' name='im[" . $ticker->getcount() . "][visibility]' value='" . $imObject->getVisibility($imRow) . "' />";
+				$ticker->step();
+			}
+			$ticker->reset();
+		$out .= "</div>";
 		
-		<div class='form-field connectionsform'>
+		
+		$out .= "<div class='form-field connectionsform'>
 				<label for='websites'>Website:</label>
 				<input type='hidden' name='websites[0][type]' value'personal' />
 				<input type='hidden' name='websites[0][name]' value'Personal' />
-				<input type='text' name='websites[0][address]' value='" . $websiteObject->getAddress($websites[0]) . "' />
+				<input type='text' name='websites[0][address]' value='" . $website . "' />
 				<input type='hidden' name='websites[0][visibility]' value'public' />
 		</div>
 
@@ -1060,12 +1131,12 @@ function _connections_getaddressform($data=null) {
 		
 		<div class='form-field connectionsform'>
 				<label for='bio'>Biographical Info:</label>
-				<textarea name='bio' rows='3'>" . $data->bio . "</textarea>
+				<textarea name='bio' rows='3'>" . $entry->getBio() . "</textarea>
 		</div>
 		
 		<div class='form-field connectionsform'>
 				<label for='notes'>Notes:</label>
-				<textarea name='notes' rows='3'>" . $data->notes . "</textarea>
+				<textarea name='notes' rows='3'>" . $entry->getNotes() . "</textarea>
 		</div>
 		
 		<div class='form-field connectionsform'>	
