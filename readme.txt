@@ -192,6 +192,12 @@ Use this option to define the list title to any text you wish.
 
 Older versions of this plugin didn't set this property to an entry. To fix; edit all entries that should appear in the list by selecting the appropiate type and then save the entry.
 
+= =
+
+I get this error upon activation — "Parse error: syntax error, unexpected T_STRING, expecting T_OLD_FUNCTION or T_FUNCTION or T_VAR or '}' in *YOU WP PATH* /wp-content/plugins/connections/includes/date.php on line 11", what is this?
+
+This plugin requires PHP 5. Turn on or ask your web host to turn on PHP 5 support.
+
 * This plugin is developed and tested in Firefox. If your using IE and something doesn't work, try it again in Firefox.
 * This plugin is also under active developement and as such features and settings could change. You may also have to re-enter or edit your entries after an upgrade. An effort will be made to keep this to a minimum.
 * It also should be mentioned that I am not a web designer nor am I a PHP programmer, this plugin is being developed out of a need and for the learning experience.
