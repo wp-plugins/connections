@@ -65,6 +65,12 @@ class entry
 	private $phoneNumbers;
 	
 	/**
+	 * Associative array of email addresses
+	 * @var
+	 */
+	private $emailAddresses;
+	
+	/**
 	 * Associative array of websites
 	 * @var array
 	 */ 
@@ -120,6 +126,7 @@ class entry
 		$this->organization = $data->organization;
 		$this->department = $data->department;
 		$this->phoneNumbers = unserialize($data->phone_numbers);
+		$this->emailAddresses = unserialize($data->email);
 		$this->im = unserialize($data->im);
 		$this->websites = unserialize($data->websites);
 		$this->birthday = $data->birthday;
@@ -341,6 +348,25 @@ class entry
     public function setPhoneNumbers($phoneNumbers)
     {
         $this->phoneNumbers = $phoneNumbers;
+    }
+
+    /**
+     * Returns $emailAddresses.
+     * @see entry::$emailAddresses
+     */
+    public function getEmailAddresses()
+    {
+        return $this->emailAddresses;
+    }
+    
+    /**
+     * Sets $emailAddresses.
+     * @param object $emailAddresses
+     * @see entry::$emailAddresses
+     */
+    public function setEmailAddresses($emailAddresses)
+    {
+        $this->emailAddresses = $emailAddresses;
     }
 
     /**
@@ -702,7 +728,8 @@ class phoneNumber
      */
     public function getVisibility($data)
     {
-        return $this->visibility;
+        $this->visibility = $data['visibility'];
+		return $this->visibility;
     }
     
     /**
@@ -718,6 +745,137 @@ class phoneNumber
 }
 
 /**
+ * Extracts a email address and options from an associative array of email addressess
+ * 
+ * $type
+ * $name
+ * $address
+ * $visibility
+ */
+class email
+{
+	/**
+	 * String: -- need to define
+	 * @var string
+	 */
+	private $type;
+	
+	/**
+	 * String: The email address name
+	 * @var string
+	 */
+	private $name;
+	
+	/**
+	 * String: The email address
+	 * @var string
+	 */
+	private $address;
+	
+	/**
+	 * String: public, private, unlisted
+	 * @var string
+	 */
+	private $visibility;
+
+    /**
+     * Returns $address.
+     * @see email::$address
+     */
+    public function getAddress($data)
+    {
+        $this->address = $data['address'];
+		return $this->address;
+    }
+    
+    /**
+     * Sets $address.
+     * @param object $address
+     * @see email::$address
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+    }
+    
+    /**
+     * Returns $name.
+     * @see email::$name
+     */
+    public function getName($data)
+    {
+        //This is here for compatibility for versions 0.2.24 and earlier;
+		switch ($data['type'])
+		{
+			case 'personal':
+				$this->name = "Personal Email";
+				break;
+			case 'work':
+				$this->name = "Work Email";
+				break;
+			
+			default:
+				$this->name = $data['name'];
+			break;
+		}
+		
+		return $this->name;
+    }
+    
+    /**
+     * Sets $name.
+     * @param object $name
+     * @see email::$name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    
+    /**
+     * Returns $type.
+     * @see email::$type
+     */
+    public function getType($data)
+    {
+        $this->type = $data['type'];
+		return $this->type;
+    }
+    
+    /**
+     * Sets $type.
+     * @param object $type
+     * @see email::$type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+    
+    /**
+     * Returns $visibility.
+     * @see email::$visibility
+     */
+    public function getVisibility($data)
+    {
+        $this->visibility = $data['visibility'];
+		return $this->visibility;
+    }
+    
+    /**
+     * Sets $visibility.
+     * @param object $visibility
+     * @see email::$visibility
+     */
+    public function setVisibility($visibility)
+    {
+        $this->visibility = $visibility;
+    }
+
+}
+
+
+/**
  * Extracts a website info and options from an associative array of website addressess
  * 
  * $type
@@ -728,7 +886,7 @@ class phoneNumber
 class website
 {	/**
 	 * String: type -- need to define
-	 * @var
+	 * @var string
 	 */
 	private $type;
 	
@@ -871,9 +1029,10 @@ class im
      * Returns $type.
      * @see im::$type
      */
-    public function getType()
+    public function getType($data)
     {
-        return $this->type;
+        $this->type = $data['type'];
+		return $this->type;
     }
     
     /**
@@ -931,9 +1090,10 @@ class im
      * Returns $visibility.
      * @see im::$visibility
      */
-    public function getVisibility()
+    public function getVisibility($data)
     {
-        return $this->visibility;
+        $this->visibility = $data['visibility'];
+		return $this->visibility;
     }
     
     /**
