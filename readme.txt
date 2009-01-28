@@ -196,7 +196,7 @@ Older versions of this plugin didn't set this property to an entry. To fix; edit
 
 I get this error upon activation — "Parse error: syntax error, unexpected T_STRING, expecting T_OLD_FUNCTION or T_FUNCTION or T_VAR or '}' in *YOU WP PATH* /wp-content/plugins/connections/includes/date.php on line 11", what is this?
 
-This plugin requires PHP 5. Turn on or ask your web host to turn on PHP 5 support.
+This plugin requires PHP 5. Turn on or ask your web host to turn on PHP 5 support. **OR** because the .php extension defaults to PHP 4 on their web server. The easiest fix is to add a handler that maps .php to PHP 5. If you have cPanel, you can do this easily by clicking on “Apache Handlers” and adding a mapping for “php” to “application/x-httpd-php5″ and that should fix the problem.
 
 * This plugin is developed and tested in Firefox. If your using IE and something doesn't work, try it again in Firefox.
 * This plugin is also under active developement and as such features and settings could change. You may also have to re-enter or edit your entries after an upgrade. An effort will be made to keep this to a minimum.
