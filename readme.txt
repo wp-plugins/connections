@@ -192,9 +192,8 @@ Use this option to define the list title to any text you wish.
 
 Older versions of this plugin didn't set this property to an entry. To fix; edit all entries that should appear in the list by selecting the appropiate type and then save the entry.
 
-= =
 
-I get this error upon activation — "Parse error: syntax error, unexpected T_STRING, expecting T_OLD_FUNCTION or T_FUNCTION or T_VAR or '}' in *YOU WP PATH* /wp-content/plugins/connections/includes/date.php on line 11", what is this?
+= I get this error upon activation — "Parse error: syntax error, unexpected T_STRING, expecting T_OLD_FUNCTION or T_FUNCTION or T_VAR or '}' in *YOU WP PATH* /wp-content/plugins/connections/includes/date.php on line 11", what is this? =
 
 This plugin requires PHP 5. Turn on or ask your web host to turn on PHP 5 support. **OR** because the .php extension defaults to PHP 4 on their web server. The easiest fix is to add a handler that maps .php to PHP 5. If you have cPanel, you can do this easily by clicking on “Apache Handlers” and adding a mapping for “php” to “application/x-httpd-php5″ and that should fix the problem.
 
