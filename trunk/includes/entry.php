@@ -59,6 +59,12 @@ class entry
 	private $department;
 	
 	/**
+	 * Associative array of addresses
+	 * @var associative array
+	 */
+	private $addresses;
+	
+	/**
 	 * Associative array of phone numbers
 	 * @var associative arrya
 	 */
@@ -125,6 +131,7 @@ class entry
 		$this->title = $data->title;
 		$this->organization = $data->organization;
 		$this->department = $data->department;
+		$this->addresses = unserialize($data->addresses);
 		$this->phoneNumbers = unserialize($data->phone_numbers);
 		$this->emailAddresses = unserialize($data->email);
 		$this->im = unserialize($data->im);
@@ -329,6 +336,25 @@ class entry
     public function setDepartment($department)
     {
         $this->department = $department;
+    }
+
+    /**
+     * Returns $addresses.
+     * @see entry::$addresses
+     */
+    public function getAddresses()
+    {
+        return $this->addresses;
+    }
+    
+    /**
+     * Sets $addresses.
+     * @param object $addresses
+     * @see entry::$addresses
+     */
+    public function setAddresses($addresses)
+    {
+        $this->addresses = $addresses;
     }
 
     /**
@@ -989,6 +1015,200 @@ class website
         $this->visibility = $visibility;
     }
 	
+}
+
+class addresses
+{
+	private $type;
+	private $lineOne;
+	private $lineTwo;
+	private $city;
+	private $state;
+	private $zipCode;
+	private $country;
+	private $visibility;
+
+    /**
+     * Returns $city.
+     * @see addresses::$city
+     */
+    public function getCity($data)
+    {
+        $this->city = $data['city'];
+		return $this->city;
+    }
+    
+    /**
+     * Sets $city.
+     * @param object $city
+     * @see addresses::$city
+     */
+    public function setCity($city)
+    {
+        $this->city = $city;
+    }
+    
+    /**
+     * Returns $country.
+     * @see addresses::$country
+     */
+    public function getCountry($data)
+    {
+        $this->country = $data['country'];
+		return $this->country;
+    }
+    
+    /**
+     * Sets $country.
+     * @param object $country
+     * @see addresses::$country
+     */
+    public function setCountry($country)
+    {
+        $this->country = $country;
+    }
+    
+    /**
+     * Returns $lineOne.
+     * @see addresses::$lineOne
+     */
+    public function getLineOne($data)
+    {
+        $this->lineOne = $data['address_line1'];
+		return $this->lineOne;
+    }
+    
+    /**
+     * Sets $lineOne.
+     * @param object $lineOne
+     * @see addresses::$lineOne
+     */
+    public function setLineOne($lineOne)
+    {
+        $this->lineOne = $lineOne;
+    }
+    
+    /**
+     * Returns $lineTwo.
+     * @see addresses::$lineTwo
+     */
+    public function getLineTwo($data)
+    {
+        $this->lineTwo = $data['address_line2'];
+		return $this->lineTwo;
+    }
+    
+    /**
+     * Sets $lineTwo.
+     * @param object $lineTwo
+     * @see addresses::$lineTwo
+     */
+    public function setLineTwo($lineTwo)
+    {
+        $this->lineTwo = $lineTwo;
+    }
+    
+    /**
+     * Returns $state.
+     * @see addresses::$state
+     */
+    public function getState($data)
+    {
+        $this->state = $data['state'];
+		return $this->state;
+    }
+    
+    /**
+     * Sets $state.
+     * @param object $state
+     * @see addresses::$state
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+    }
+    
+    /**
+     * Returns $type.
+     * @see addresses::$type
+     */
+    public function getType($data)
+    {
+        //This is here for compatibility for versions 0.2.24 and earlier;
+		switch ($data['type']) {
+        	/*case "home":
+        		$this->type = "Home Address";
+        	break;
+			
+			case "work":
+        		$this->type = "Work Address";
+        	break;
+			
+			case "school":
+        		$this->type = "School Address";
+        	break;
+			
+			case "other":
+        		$this->type = "Other Address";
+        	break;*/
+        	
+        	default:
+        		$this->type = $data['type'];
+        	break;
+        }	
+		
+		return $this->type;
+    }
+    
+    /**
+     * Sets $type.
+     * @param object $type
+     * @see addresses::$type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+    
+    /**
+     * Returns $visibility.
+     * @see addresses::$visibility
+     */
+    public function getVisibility()
+    {
+        return $this->visibility;
+    }
+    
+    /**
+     * Sets $visibility.
+     * @param object $visibility
+     * @see addresses::$visibility
+     */
+    public function setVisibility($visibility)
+    {
+        $this->visibility = $visibility;
+    }
+    
+    /**
+     * Returns $zipCode.
+     * @see addresses::$zipCode
+     */
+    public function getZipCode($data)
+    {
+        $this->zipCode = $data['zipcode'];
+		return $this->zipCode;
+    }
+    
+    /**
+     * Sets $zipCode.
+     * @param object $zipCode
+     * @see addresses::$zipCode
+     */
+    public function setZipCode($zipCode)
+    {
+        $this->zipCode = $zipCode;
+    }
+
 }
 
 /**
