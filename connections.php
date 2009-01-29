@@ -230,42 +230,10 @@ function connections_main() {
 					//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
 					$anndate = strtotime($_POST['anniversary_day'] . '-' . $_POST['anniversary_month'] . '-' . '1970 00:00:00');
 					
-					$addresses[] = array(type=>$_POST['address_type'],
-										 address_line1=>$_POST['address_line1'],
-										 address_line2=>$_POST['address_line2'],
-										 city=>$_POST['city'],
-										 state=>$_POST['state'],
-										 zipcode=>$_POST['zipcode'],
-										 country=>$_POST['country'],
-										 visibility=>'unlisted');
-					
-					$addresses[] = array(type=>$_POST['address2_type'],
-										 address_line1=>$_POST['address2_line1'],
-										 address_line2=>$_POST['address2_line2'],
-										 city=>$_POST['city2'],
-										 state=>$_POST['state2'],
-										 zipcode=>$_POST['zipcode2'],
-										 country=>$_POST['country2'],
-										 visibility=>'unlisted');
-					
-					/*$phone_numbers[] = array(type=>'homephone', number=>$_POST['homephone'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'homefax', number=>$_POST['homefax'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'cellphone', number=>$_POST['cellphone'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'workphone', number=>$_POST['workphone'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'workfax', number=>$_POST['workfax'], visibility=>'unlisted');*/
-					
-					/*$email[] = array(type=>personal, address=>$_POST['personalemail'], visibility=>'unlisted');
-					$email[] = array(type=>work, address=>$_POST['workemail'], visibility=>'unlisted');*/
-					
-					//$websites[] = array(type=>'personal', address=>$_POST['website'], visibility=>'unlisted');
-					
-					$serial_addresses = serialize($addresses);
-					//$serial_phone_numbers = serialize($phone_numbers);
+					$serial_addresses = serialize($_POST['address']);
 					$serial_phone_numbers = serialize($_POST['phone_numbers']);
-					//$serial_email = serialize($email);
 					$serial_email = serialize($_POST['email']);
 					$serial_im = serialize($_POST['im']);
-					//$serial_websites = serialize($websites);
 					$serial_websites = serialize($_POST['websites']);
 					
 					if ($_POST['website'] == "http://") $_POST['website'] = "";
@@ -349,42 +317,10 @@ function connections_main() {
 					//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
 					$anndate = strtotime($_POST['anniversary_day'] . '-' . $_POST['anniversary_month'] . '-' . '1970 00:00:00');
 					
-					$addresses[] = array(type=>$_POST['address_type'],
-										 address_line1=>$_POST['address_line1'],
-										 address_line2=>$_POST['address_line2'],
-										 city=>$_POST['city'],
-										 state=>$_POST['state'],
-										 zipcode=>$_POST['zipcode'],
-										 country=>$_POST['country'],
-										 visibility=>'unlisted');
-					
-					$addresses[] = array(type=>$_POST['address2_type'],
-										 address_line1=>$_POST['address2_line1'],
-										 address_line2=>$_POST['address2_line2'],
-										 city=>$_POST['city2'],
-										 state=>$_POST['state2'],
-										 zipcode=>$_POST['zipcode2'],
-										 country2=>$_POST['country2'],
-										 visibility=>'unlisted');
-					
-					/*$phone_numbers[] = array(type=>'homephone', number=>$_POST['homephone'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'homefax', number=>$_POST['homefax'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'cellphone', number=>$_POST['cellphone'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'workphone', number=>$_POST['workphone'], visibility=>'unlisted');
-					$phone_numbers[] = array(type=>'workfax', number=>$_POST['workfax'], visibility=>'unlisted');*/
-					
-					/*$email[] = array(type=>personal, address=>$_POST['personalemail'], visibility=>'unlisted');
-					$email[] = array(type=>work, address=>$_POST['workemail'], visibility=>'unlisted');*/
-					
-					//$websites[] = array(type=>'personal', address=>$_POST['website'], visibility=>'unlisted');
-					
-					$serial_addresses = serialize($addresses);
-					//$serial_phone_numbers = serialize($phone_numbers);
+					$serial_addresses = serialize($_POST['address']);
 					$serial_phone_numbers = serialize($_POST['phone_numbers']);
-					//$serial_email = serialize($email);
 					$serial_email = serialize($_POST['email']);
 					$serial_im = serialize($_POST['im']);
-					//$serial_websites = serialize($websites);
 					$serial_websites = serialize($_POST['websites']);					
 					
 					if ($_FILES['original_image']['error'] != 4) {
@@ -580,8 +516,9 @@ function connections_main() {
 									<?php
 													
 									foreach ($results as $row) {
-										$options = unserialize($row->options);
+										//$options = unserialize($row->options);
 										$entry = new entry($row);
+										$addressObject = new addresses();
 										$phoneNumberObject = new phoneNumber();
 										$emailAddressObject = new email();
 										$imObject = new im();
@@ -626,15 +563,23 @@ function connections_main() {
 												if ($entry->getTitle()) echo "<strong>Title:</strong><br />" . $entry->getTitle() . "<br /><br />";
 												if ($entry->getOrganization() && $entry->getEntryType() != "organization" ) echo "<strong>Organization:</strong><br />" . $entry->getOrganization() . "<br /><br />";
 												if ($entry->getDepartment()) echo "<strong>Department:</strong><br />" . $entry->getDepartment() . "<br /><br />";
-												if ($row->address_type) echo "<strong>" . ucfirst($row->address_type) . " Address</strong><br />";
-												if ($row->address_line1) echo $row->address_line1."<br />";
-												if ($row->address_line2) echo $row->address_line2."<br />";
-												if ($row->city) echo $row->city.", "; if ($row->state) echo $row->state."  "; if ($row->zipcode) echo $row->zipcode."<br /><br />";
 												
-												if ($row->address2_type) echo "<strong>" . ucfirst($row->address2_type) . " Address</strong><br />";
-												if ($row->address2_line1) echo $row->address2_line1."<br />";
-												if ($row->address2_line2) echo $row->address2_line2."<br />";
-												if ($row->city2) echo $row->city2.", "; if ($row->state2) echo $row->state2."  "; if ($row->zipcode2) echo $row->zipcode2."<br /><br />";
+												if ($entry->getAddresses())
+												{
+													foreach ($entry->getAddresses() as $addressRow)
+													{
+														echo "<div style='margin-bottom: 10px;'>";
+														if ($addressObject->getType($addressRow) != null) echo "<strong>" . $addressObject->getType($addressRow) . "</strong><br />";
+														if ($addressObject->getLineOne($addressRow) != null) echo $addressObject->getLineOne($addressRow) . "<br />";
+														if ($addressObject->getLineTwo($addressRow) != null) echo $addressObject->getLineTwo($addressRow) . "<br />";
+														if ($addressObject->getCity($addressRow) != null) echo $addressObject->getCity($addressRow) . "&nbsp;";
+														if ($addressObject->getState($addressRow) != null) echo $addressObject->getState($addressRow) . "&nbsp;";
+														if ($addressObject->getZipCode($addressRow) != null) echo $addressObject->getZipCode($addressRow) . "<br />";
+														if ($addressObject->getCountry($addressRow) != null) echo $addressObject->getCountry($addressRow);
+														echo "</div>";														
+													}
+												}
+											
 											echo "</td> \n";
 											
 											echo "<td class='".$altrow."'>";
@@ -928,6 +873,7 @@ function _connections_getaddressform($data=null) {
 		global $defaultEmailValues, $defaultIMValues, $defaultPhoneNumberValues;
 		
 		$entry = new entry($data);
+		$addressObject = new addresses();
 		$phoneNumberObject = new phoneNumber();
 		$emailObject = new email();
 		$imObject = new im();
@@ -1004,67 +950,44 @@ function _connections_getaddressform($data=null) {
 				" . $img_html_block . "
 				<label for='original_image'>Select Image:</label>
 				<input type='file' value='' name='original_image' size='25'/>
-		</div>
-		
-		<div class='form-field connectionsform'>
-			<span class='selectbox alignright'>Type: " . $address_select . "</span>
-			<div class='clear'></div>
-			
-			<label for='address_line1'>Address Line 1:</label>
-			<input type='text' name='address_line1' value='" . $data->address_line1 . "' />
-
-			<label for='address_line2'>Address Line 2:</label>
-			<input type='text' name='address_line2' value='" . $data->address_line2 . "' />
-
-			<div class='input' style='width:60%'>
-				<label for='city'>City:</label>
-				<input type='text' name='city' value='" . $data->city . "' />
-			</div>
-			<div class='input' style='width:15%'>
-				<label for='state'>State:</label>
-				<input type='text' name='state' value='" . $data->state . "' />
-			</div>
-			<div class='input' style='width:25%'>
-				<label for='zipcode'>Zipcode:</label>
-				<input type='text' name='zipcode' value='" . $data->zipcode . "' />
-			</div>
-			
-			<label for='country'>Country</label>
-			<input type='text' name='country' value='" . $data->country . "' />
-			
-			<div class='clear'></div>
-		</div>
-		
-		<div class='form-field connectionsform'>
-
-			<span class='selectbox alignright'>Type: " . $address2_select . "</span>
-			<div class='clear'></div>
-			
-			<label for='address2_line1'>Address Line 1:</label>
-			<input type='text' name='address2_line1' value='" . $data->address2_line1 . "' />
-
-			<label for='address2_line2'>Address Line 2:</label>
-			<input type='text' name='address2_line2' value='" . $data->address2_line2 . "' />
-
-			<div class='input' style='width:60%'>
-				<label for='city2'>City:</label>
-				<input type='text' name='city2' value='" . $data->city2 . "' />
-			</div>
-			<div class='input' style='width:15%'>
-				<label for='state2'>State:</label>
-				<input type='text' name='state2' value='" . $data->state2 . "' />
-			</div>
-			<div class='input' style='width:25%'>
-				<label for='zipcode2'>Zipcode:</label>
-				<input type='text' name='zipcode2' value='" . $data->zipcode2 . "' />
-			</div>
-			
-			<label for='country2'>Country</label>
-			<input type='text' name='country2' value='" . $data->country2 . "' />
-
-			<div class='clear'></div>
 		</div>";
 		
+		if ($data->addresses != null) $addressValues = $entry->getAddresses(); else $addressValues = array(array('null'),array('null'));
+		$ticker->reset();
+		foreach ($addressValues as $addressRow)
+		{
+			$selectName = "address["  . $ticker->getcount() . "][type]";
+			$out .= "<div class='form-field connectionsform'>";
+				$out .= "<span class='selectbox alignright'>Type: " . _build_select($selectName,$address_types,$addressObject->getType($addressRow)) . "</span>";
+				$out .= "<div class='clear'></div>";
+				
+				$out .= "<label for='address'>Address Line 1:</label>";
+				$out .= "<input type='text' name='address[" . $ticker->getcount() . "][address_line1]' value='" . $addressObject->getLineOne($addressRow) . "' />";
+	
+				$out .= "<label for='address'>Address Line 2:</label>";
+				$out .= "<input type='text' name='address[" . $ticker->getcount() . "][address_line2]' value='" . $addressObject->getLineTwo($addressRow) . "' />";
+	
+				$out .= "<div class='input' style='width:60%'>";
+					$out .= "<label for='address'>City:</label>";
+					$out .= "<input type='text' name='address[" . $ticker->getcount() . "][city]' value='" . $addressObject->getCity($addressRow) . "' />";
+				$out .= "</div>";
+				$out .= "<div class='input' style='width:15%'>";
+					$out .= "<label for='address'>State:</label>";
+					$out .= "<input type='text' name='address[" . $ticker->getcount() . "][state]' value='" . $addressObject->getState($addressRow) . "' />";
+				$out .= "</div>";
+				$out .= "<div class='input' style='width:25%'>";
+					$out .= "<label for='address'>Zipcode:</label>";
+					$out .= "<input type='text' name='address[" . $ticker->getcount() . "][zipcode]' value='" . $addressObject->getZipCode($addressRow) . "' />";
+				$out .= "</div>";
+				
+				$out .= "<label for='address'>Country</label>";
+				$out .= "<input type='text' name='address[" . $ticker->getcount() . "][country]' value='" . $addressObject->getCountry($addressRow) . "' />";
+			
+			$out .= "<div class='clear'></div>";
+			$out .= "</div>";
+			$ticker->step();
+		}
+		$ticker->reset();
 		
 		if ($data->phone_numbers != null) $phoneNumberValues = $entry->getPhoneNumbers(); else $phoneNumberValues = $defaultPhoneNumberValues;
 		$out .= "<div class='form-field connectionsform'>";
