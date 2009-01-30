@@ -1,28 +1,7 @@
 <?php
 
-
-
-class date
-{
-    /**
-     * Returns $days.
-     * @see date::$days
-     */
-    public function getDays()
-    {
-        return $this->days;
-    }
-    
-    /**
-     * Sets $days.
-     * @param object $days
-     * @see date::$days
-     */
-    public function setDays($days)
-    {
-        $this->days = $days;
-    }
-
+class dateFunctions
+{
 	/**
 	 * Returns an associative array containing days 1 thru 31
 	 * @var array
@@ -60,25 +39,6 @@ class date
 						'30th'=>'30',
 						'31st'=>'31',);
 
-    /**
-     * Returns $months.
-     * @see month::$months
-     */
-    public function getMonths()
-    {
-        return $this->months;
-    }
-    
-    /**
-     * Sets $months.
-     * @param object $months
-     * @see month::$months
-     */
-    public function setMonths($months)
-    {
-        $this->months = $months;
-    }
-
 	/**
 	 * Returns an associative array of months Jan thru Dec
 	 * @var array
@@ -97,6 +57,17 @@ class date
 						'November'=>'11',
 						'December'=>'12');
 	
+	public function getMonth($data)
+	{
+		$month = date("m", strtotime($data));
+		return $month;
+	}
+	
+	public function getDay($data)
+	{
+		$day = date("d", strtotime($data));
+		return $day;
+	}
 }
 
 ?>
