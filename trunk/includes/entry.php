@@ -1020,6 +1020,7 @@ class website
 class addresses
 {
 	private $type;
+	private $name;
 	private $lineOne;
 	private $lineTwo;
 	private $city;
@@ -1107,6 +1108,48 @@ class addresses
     {
         $this->lineTwo = $lineTwo;
     }
+
+    /**
+     * Returns $name.
+     * @see addresses::$name
+     */
+    public function getName($data)
+    {
+        //This is here for compatibility for versions 0.2.24 and earlier;
+		switch ($data['type']) {
+        	case "home":
+        		$this->name = "Home Address";
+        	break;
+			
+			case "work":
+        		$this->name = "Work Address";
+        	break;
+			
+			case "school":
+        		$this->name = "School Address";
+        	break;
+			
+			case "other":
+        		$this->name = "Other Address";
+        	break;
+        	
+        	default:
+        		$this->name = $data['name'];
+        	break;
+        }	
+		
+		return $this->name;
+    }
+    
+    /**
+     * Sets $name.
+     * @param object $name
+     * @see addresses::$name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
     
     /**
      * Returns $state.
@@ -1134,30 +1177,8 @@ class addresses
      */
     public function getType($data)
     {
-        //This is here for compatibility for versions 0.2.24 and earlier;
-		switch ($data['type']) {
-        	/*case "home":
-        		$this->type = "Home Address";
-        	break;
-			
-			case "work":
-        		$this->type = "Work Address";
-        	break;
-			
-			case "school":
-        		$this->type = "School Address";
-        	break;
-			
-			case "other":
-        		$this->type = "Other Address";
-        	break;*/
-        	
-        	default:
-        		$this->type = $data['type'];
-        	break;
-        }	
-		
-		return $this->type;
+        $this->type = $data['type'];
+        return $this->type;
     }
     
     /**
