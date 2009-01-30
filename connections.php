@@ -52,6 +52,15 @@ define('CN_DEFAULT_THUMBNAIL_Y', 54);
 define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
 define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
 
+$defaultAddressTypes	=	array
+							(
+								'Select'=>null,
+								'Home'=>'home',
+								'Work'=>'work',
+								'School'=>'school',
+								'Other'=>'other'
+							);
+
 $defaultPhoneNumberValues	=	array
 								(
 									array
@@ -255,28 +264,6 @@ function connections_main() {
 						title    	  = '".$wpdb->escape($_POST['title'])."',
 						organization  = '".$wpdb->escape($_POST['organization'])."',
 						department    = '".$wpdb->escape($_POST['department'])."',
-			            personalemail = '".$wpdb->escape($_POST['personalemail'])."',
-			            workemail     = '".$wpdb->escape($_POST['workemail'])."',
-			            website       = '".$wpdb->escape($_POST['website'])."',
-						address_type  = '".$wpdb->escape($_POST['address_type'])."',
-			            address_line1 = '".$wpdb->escape($_POST['address_line1'])."',
-			            address_line2 = '".$wpdb->escape($_POST['address_line2'])."',
-			            city          = '".$wpdb->escape($_POST['city'])."',
-			            state         = '".$wpdb->escape($_POST['state'])."',
-			            zipcode       = '".$wpdb->escape($_POST['zipcode'])."',
-						country       = '".$wpdb->escape($_POST['country'])."',
-						address2_type = '".$wpdb->escape($_POST['address2_type'])."',
-						address2_line1= '".$wpdb->escape($_POST['address2_line1'])."',
-			            address2_line2= '".$wpdb->escape($_POST['address2_line2'])."',
-			            city2         = '".$wpdb->escape($_POST['city2'])."',
-			            state2        = '".$wpdb->escape($_POST['state2'])."',
-			            zipcode2      = '".$wpdb->escape($_POST['zipcode2'])."',
-						country2      = '".$wpdb->escape($_POST['country2'])."',
-			            homephone     = '".$wpdb->escape($_POST['homephone'])."',
-						homefax       = '".$wpdb->escape($_POST['homefax'])."',
-			            cellphone     = '".$wpdb->escape($_POST['cellphone'])."',
-						workphone     = '".$wpdb->escape($_POST['workphone'])."',
-						workfax       = '".$wpdb->escape($_POST['workfax'])."',
 						visibility    = '".$wpdb->escape($_POST['visibility'])."',
 						birthday      = '".$wpdb->escape($bdaydate)."',
 						anniversary   = '".$wpdb->escape($anndate)."',
@@ -353,27 +340,6 @@ function connections_main() {
 						title    	  = '".$wpdb->escape($_POST['title'])."',
 						organization  = '".$wpdb->escape($_POST['organization'])."',
 						department    = '".$wpdb->escape($_POST['department'])."',
-						personalemail = '".$wpdb->escape($_POST['personalemail'])."',
-						workemail     = '".$wpdb->escape($_POST['workemail'])."',
-						homephone     = '".$wpdb->escape($_POST['homephone'])."',
-						homefax       = '".$wpdb->escape($_POST['homefax'])."',
-						cellphone     = '".$wpdb->escape($_POST['cellphone'])."',
-						workphone     = '".$wpdb->escape($_POST['workphone'])."',
-						workfax       = '".$wpdb->escape($_POST['workfax'])."',
-						address_type  = '".$wpdb->escape($_POST['address_type'])."',
-						address_line1 = '".$wpdb->escape($_POST['address_line1'])."',
-						address_line2 = '".$wpdb->escape($_POST['address_line2'])."',
-						city          = '".$wpdb->escape($_POST['city'])."',
-						state         = '".$wpdb->escape($_POST['state'])."',
-						zipcode       = '".$wpdb->escape($_POST['zipcode'])."',
-						country       = '".$wpdb->escape($_POST['country'])."',
-						address2_type = '".$wpdb->escape($_POST['address2_type'])."',
-						address2_line1= '".$wpdb->escape($_POST['address2_line1'])."',
-						address2_line2= '".$wpdb->escape($_POST['address2_line2'])."',
-						city2         = '".$wpdb->escape($_POST['city2'])."',
-						state2        = '".$wpdb->escape($_POST['state2'])."',
-						zipcode2      = '".$wpdb->escape($_POST['zipcode2'])."',
-						country2      = '".$wpdb->escape($_POST['country2'])."',
 						birthday      = '".$wpdb->escape($bdaydate)."',
 						anniversary   = '".$wpdb->escape($anndate)."',
 						addresses     = '".$wpdb->escape($serial_addresses)."',
@@ -384,7 +350,6 @@ function connections_main() {
 						options       = '".$wpdb->escape($serial_options)."',
 						bio           = '".$wpdb->escape($_POST['bio'])."',
 						notes         = '".$wpdb->escape($_POST['notes'])."',
-						website       = '".$wpdb->escape($_POST['website'])."',
 						visibility    = '".$wpdb->escape($_POST['visibility'])."'
 						WHERE id ='".$wpdb->escape($_GET['id'])."'";
 						
@@ -870,7 +835,7 @@ function _build_radio($name, $id, $value_labels, $checked=null) {
  * @param object $data[optional]
  */
 function _connections_getaddressform($data=null) {
-		global $defaultEmailValues, $defaultIMValues, $defaultPhoneNumberValues;
+		global $defaultAddressTypes, $defaultEmailValues, $defaultIMValues, $defaultPhoneNumberValues;
 		
 		$entry = new entry($data);
 		$addressObject = new addresses();
@@ -878,49 +843,17 @@ function _connections_getaddressform($data=null) {
 		$emailObject = new email();
 		$imObject = new im();
 		$websiteObject = new website();
-		$date = new date();
+		$options = unserialize($data->options);
+		$date = new dateFunctions();
 		$ticker = new counter();
 		
-		if ($data != null) {
-			$options = unserialize($data->options);
-
-			if ($entry->getImageLinked()) {
-				if ($entry->getImageDisply()) $selected = "show"; else $selected = "hidden";
+		if (!$data->visibility) $defaultVisibility = 'unlisted'; else $defaultVisibility = $entry->getVisibility();
+		if (!isset($options['entry']['type'])) $defaultEntryType = "individual"; else $defaultEntryType = $entry->getEntryType();
 				
-				$imgOptions = _build_radio("imgOptions", "imgOptionID_", array("Display"=>"show", "Not Displayed"=>"hidden", "Remove"=>"remove"), $selected);
-				$img_html_block .= "<div style='text-align:center'> <img src='" . CN_IMAGE_BASE_URL . $options['image']['name']['entry'] . "' /> <br /> <span class='radio_group'>" . $imgOptions . "</span></div> <br />"; 
-			} else {
-				$img_html_block = "";
-			}
-		}
-		
-		if (!$data) $website = 'http://'; else $website = $websiteObject->getAddress($websites[0]);
-		if (!$data->birthday) $birthday_month = null; else $birthday_month = date("m", $data->birthday);
-		if (!$data->birthday) $birthday_day = null; else $birthday_day = date("d", $data->birthday);
-		if (!$data->anniversary) $anniversary_month = null; else $anniversary_month = date("m", $data->anniversary);
-		if (!$data->anniversary) $anniversary_day = null; else $anniversary_day = date("d", $data->anniversary);
-		if (!$data->visibility) $default_visibility = 'unlisted'; else $default_visibility = $data->visibility;
-		
-		$address_types = array('Select'=>null,'Home'=>'home','Work'=>'work','School'=>'school','Other'=>'other');
-		
-		$address_select = _build_select('address_type',$address_types,$data->address_type);
-		$address2_select = _build_select('address2_type',$address_types,$data->address2_type);
-		
-		$bday_month = _build_select('birthday_month',$date->months,$birthday_month);
-		$bday_day = _build_select('birthday_day',$date->days,$birthday_day);
-		
-		$ann_month = _build_select('anniversary_month',$date->months,$anniversary_month);
-		$ann_day = _build_select('anniversary_day',$date->days,$anniversary_day);
-		
-		if (!isset($options['entry']['type'])) $options['entry']['type'] = "individual";
-		
-		$entry_type = _build_radio('entry_type','entry_type',array('Individual'=>'individual','Organization'=>'organization'),$options['entry']['type']);
-		$visibility = _build_radio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$default_visibility);
-				
-	    $out = // This mess needs re-written to follow coding style used for the front end output!!!
+	    $out =
 		"
 		<div class='form-field connectionsform'>	
-				<span class='radio_group'>" . $entry_type . "</span>
+				<span class='radio_group'>" . _build_radio('entry_type','entry_type',array('Individual'=>'individual','Organization'=>'organization'),$defaultEntryType) . "</span>
 		</div>
 		
 		<div class='form-field connectionsform'>
@@ -946,10 +879,18 @@ function _connections_getaddressform($data=null) {
 				<input type='text' name='department' value='" . $entry->getDepartment() . "' />		
 		</div>
 		
-		<div class='form-field connectionsform'>
-				" . $img_html_block . "
-				<label for='original_image'>Select Image:</label>
+		<div class='form-field connectionsform'>";
+				
+				if ($entry->getImageLinked()) {
+					if ($entry->getImageDisply()) $selected = "show"; else $selected = "hidden";
+					
+					$imgOptions = _build_radio("imgOptions", "imgOptionID_", array("Display"=>"show", "Not Displayed"=>"hidden", "Remove"=>"remove"), $selected);
+					$out .= "<div style='text-align:center'> <img src='" . CN_IMAGE_BASE_URL . $options['image']['name']['entry'] . "' /> <br /> <span class='radio_group'>" . $imgOptions . "</span></div> <br />"; 
+				}
+				
+				$out .= "<label for='original_image'>Select Image:</label>
 				<input type='file' value='' name='original_image' size='25'/>
+				
 		</div>";
 		
 		if ($data->addresses != null) $addressValues = $entry->getAddresses(); else $addressValues = array(array('null'),array('null')); //The empty null is just to make the address section build twice untul jQuery form building can be implemented
@@ -958,7 +899,7 @@ function _connections_getaddressform($data=null) {
 		{
 			$selectName = "address["  . $ticker->getcount() . "][type]";
 			$out .= "<div class='form-field connectionsform'>";
-				$out .= "<span class='selectbox alignright'>Type: " . _build_select($selectName,$address_types,$addressObject->getType($addressRow)) . "</span>";
+				$out .= "<span class='selectbox alignright'>Type: " . _build_select($selectName,$defaultAddressTypes,$addressObject->getType($addressRow)) . "</span>";
 				$out .= "<div class='clear'></div>";
 				
 				$out .= "<label for='address'>Address Line 1:</label>";
@@ -1037,21 +978,27 @@ function _connections_getaddressform($data=null) {
 			$ticker->reset();
 		$out .= "</div>";
 		
-		
-		$out .= "<div class='form-field connectionsform'>
-				<label for='websites'>Website:</label>
-				<input type='hidden' name='websites[0][type]' value'personal' />
-				<input type='hidden' name='websites[0][name]' value'Personal' />
-				<input type='text' name='websites[0][address]' value='" . $website . "' />
-				<input type='hidden' name='websites[0][visibility]' value'public' />
-		</div>
+		if ($data->websites != null) $websiteValues = $entry->getWebsites(); else $websiteValues = array(array()); //Empty array as a place holder
+		$out .= "<div class='form-field connectionsform'>";
+		$ticker->reset();
+		foreach ($websiteValues as $websiteRow)
+		{
+			$out .= "<label for='websites'>Website:</label>";
+			$out .= "<input type='hidden' name='websites[" . $ticker->getcount() . "][type]' value'personal' />";
+			$out .= "<input type='hidden' name='websites[" . $ticker->getcount() . "][name]' value'Personal' />";
+			$out .= "<input type='text' name='websites[" . $ticker->getcount() . "][address]' value='" . $websiteObject->getAddress($websiteRow) . "' />";
+			$out .= "<input type='hidden' name='websites[" . $ticker->getcount() . "][visibility]' value'public' />";
+			$ticker->step();
+		}
+		$ticker->reset();
+		$out .= "</div>";
 
-		<div class='form-field connectionsform'>
-				<span class='selectbox'>Birthday: " . $bday_month . "</span>
-				<span class='selectbox'>" . $bday_day . "</span>
+		$out .= "<div class='form-field connectionsform'>
+				<span class='selectbox'>Birthday: " . _build_select('birthday_month',$date->months,$date->getMonth($entry->getBirthday())) . "</span>
+				<span class='selectbox'>" . _build_select('birthday_day',$date->days,$date->getDay($entry->getBirthday())) . "</span>
 				<br />
-				<span class='selectbox'>Anniversary: " . $ann_month . "</span>
-				<span class='selectbox'>" . $ann_day . "</span>
+				<span class='selectbox'>Anniversary: " . _build_select('anniversary_month',$date->months,$date->getMonth($entry->getAnniversary())) . "</span>
+				<span class='selectbox'>" . _build_select('anniversary_day',$date->days,$date->getDay($entry->getAnniversary())) . "</span>
 		</div>
 		
 		<div class='form-field connectionsform'>
@@ -1065,7 +1012,7 @@ function _connections_getaddressform($data=null) {
 		</div>
 		
 		<div class='form-field connectionsform'>	
-				<span class='radio_group'>" . $visibility . "</span>
+				<span class='radio_group'>" . _build_radio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$defaultVisibility) . "</span>
 		</div>";
 		return $out;
 	}
@@ -1082,31 +1029,9 @@ function _connections_install() {
         last_name tinytext NOT NULL,
 		title tinytext NOT NULL,
 		organization tinytext NOT NULL,
-		department tinytext NOT NULL,
-        personalemail tinytext NOT NULL,
-        workemail tinytext NOT NULL,
-        homephone tinytext NOT NULL,
-		homefax tinytext NOT NULL,
-        cellphone tinytext NOT NULL,
-		workphone tinytext NOT NULL,
-		workfax tinytext NOT NULL,
-		address_type tinytext NOT NULL,
-        address_line1 tinytext NOT NULL,
-        address_line2 tinytext NOT NULL,
-        city tinytext NOT NULL,
-        zipcode tinytext NOT NULL,
-        state tinytext NOT NULL,
-		country tinytext NOT NULL,
-		address2_type tinytext NOT NULL,
-		address2_line1 tinytext NOT NULL,
-        address2_line2 tinytext NOT NULL,
-        city2 tinytext NOT NULL,
-        zipcode2 tinytext NOT NULL,
-        state2 tinytext NOT NULL,
-		country2 tinytext NOT NULL,
+		department tinytext NOT NULL, 
 		birthday tinytext NOT NULL,
 		anniversary tinytext NOT NULL,
-        website VARCHAR(55) NOT NULL,
 		bio tinytext NOT NULL,
         notes tinytext NOT NULL,
 		addresses longtext NOT NULL,
