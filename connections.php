@@ -112,28 +112,28 @@ $defaultIMValues =	array
 					(
 						array
 						(
-							'type'=>'personal',
+							'type'=>'aim',
 							'name'=>'AIM',
 							'id'=>null,
 							'visibility'=>'public'
 						),
 						array
 						(
-							'type'=>'personal',
+							'type'=>'yahoo',
 							'name'=>'Yahoo IM',
 							'id'=>null,
 							'visibility'=>'public'
 						),
 						array
 						(
-							'type'=>'personal',
+							'type'=>'jabber',
 							'name'=>'Jabber / Google Talk',
 							'id'=>null,
 							'visibility'=>'public'
 						),
 						array
 						(
-							'type'=>'personal',
+							'type'=>'messenger',
 							'name'=>'Messenger',
 							'id'=>null,
 							'visibility'=>'public'
@@ -569,7 +569,7 @@ function connections_main() {
 													foreach ($entry->getAddresses() as $addressRow)
 													{
 														echo "<div style='margin-bottom: 10px;'>";
-														if ($addressObject->getType($addressRow) != null) echo "<strong>" . $addressObject->getType($addressRow) . "</strong><br />";
+														if ($addressObject->getName($addressRow) != null || $addressObject->getType($addressRow)) echo "<strong>" . $addressObject->getName($addressRow) . "</strong><br />"; //The OR is for compatiblity for 0.2.24 and under
 														if ($addressObject->getLineOne($addressRow) != null) echo $addressObject->getLineOne($addressRow) . "<br />";
 														if ($addressObject->getLineTwo($addressRow) != null) echo $addressObject->getLineTwo($addressRow) . "<br />";
 														if ($addressObject->getCity($addressRow) != null) echo $addressObject->getCity($addressRow) . "&nbsp;";
@@ -952,7 +952,7 @@ function _connections_getaddressform($data=null) {
 				<input type='file' value='' name='original_image' size='25'/>
 		</div>";
 		
-		if ($data->addresses != null) $addressValues = $entry->getAddresses(); else $addressValues = array(array('null'),array('null'));
+		if ($data->addresses != null) $addressValues = $entry->getAddresses(); else $addressValues = array(array('null'),array('null')); //The empty null is just to make the address section build twice untul jQuery form building can be implemented
 		$ticker->reset();
 		foreach ($addressValues as $addressRow)
 		{
@@ -982,6 +982,8 @@ function _connections_getaddressform($data=null) {
 				
 				$out .= "<label for='address'>Country</label>";
 				$out .= "<input type='text' name='address[" . $ticker->getcount() . "][country]' value='" . $addressObject->getCountry($addressRow) . "' />";
+				
+				$out .= "<input type='hidden' name='phone_numbers[" . $ticker->getcount() . "][visibility]' value='" . $addressObject->getVisibility($addressRow) . "' />";
 			
 			$out .= "<div class='clear'></div>";
 			$out .= "</div>";
