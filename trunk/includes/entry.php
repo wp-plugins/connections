@@ -121,6 +121,10 @@ class entry
 	private $options;
 	private $imageLinked;
 	private $imageDisply;
+	private $imageNameThumbnail;
+	private $imageNameCard;
+	private $imageNameProfile;
+	private $imageNameOriginal;
 	private $entryType;
 	
 	function __construct($data)	{
@@ -145,6 +149,10 @@ class entry
 		$this->options = unserialize($data->options);
 		$this->imageLinked = $this->options['image']['linked'];
 		$this->imageDisply = $this->options['image']['display'];
+		$this->imageNameThumbnail =$this->options['image']['name']['thumbnail'];
+		$this->imageNameCard = $this->options['image']['name']['entry'];
+		$this->imageNameProfile = $this->options['image']['name']['profile'];
+		$this->imageNameOriginal = $this->options['image']['name']['original'];
 		$this->entryType = $this->options['entry']['type'];
 	}
 
@@ -608,6 +616,82 @@ class entry
     public function setImageLinked($imageLinked)
     {
         $this->imageLinked = $imageLinked;
+    }
+
+    /**
+     * Returns $imageNameCard.
+     * @see entry::$imageNameCard
+     */
+    public function getImageNameCard()
+    {
+        return $this->imageNameCard;
+    }
+    
+    /**
+     * Sets $imageNameCard.
+     * @param object $imageNameCard
+     * @see entry::$imageNameCard
+     */
+    public function setImageNameCard($imageNameCard)
+    {
+        $this->imageNameCard = $imageNameCard;
+    }
+    
+    /**
+     * Returns $imageNameProfile.
+     * @see entry::$imageNameProfile
+     */
+    public function getImageNameProfile()
+    {
+        return $this->imageNameProfile;
+    }
+    
+    /**
+     * Sets $imageNameProfile.
+     * @param object $imageNameProfile
+     * @see entry::$imageNameProfile
+     */
+    public function setImageNameProfile($imageNameProfile)
+    {
+        $this->imageNameProfile = $imageNameProfile;
+    }
+    
+    /**
+     * Returns $imageNameThumbnail.
+     * @see entry::$imageNameThumbnail
+     */
+    public function getImageNameThumbnail()
+    {
+        return $this->imageNameThumbnail;
+    }
+    
+    /**
+     * Sets $imageNameThumbnail.
+     * @param object $imageNameThumbnail
+     * @see entry::$imageNameThumbnail
+     */
+    public function setImageNameThumbnail($imageNameThumbnail)
+    {
+        $this->imageNameThumbnail = $imageNameThumbnail;
+    }
+
+    /**
+     * Returns $imageNameOriginal.
+     * @see entry::$imageNameOriginal
+     */
+    public function getImageNameOriginal()
+    {
+        return $this->imageNameOriginal;
+    }
+    
+    /**
+     * Sets $imageNameOriginal.
+     * @param object $imageNameOriginal
+     * @see entry::$imageNameOriginal
+     */
+    public function setImageNameOriginal($imageNameOriginal)
+    {
+        $this->imageNameOriginal = $imageNameOriginal;
     }
     
     /**
