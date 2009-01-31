@@ -155,16 +155,23 @@ $plugin_options = new pluginOptions;
 
 
 // CSS Styles for the plugin. This adds it to the admin page head.
-add_action('admin_head', 'connections_adminhead');
+/*add_action('admin_head', 'connections_adminhead');
 function connections_adminhead() {
+	echo '<link type="text/css" rel="stylesheet" href="' . get_bloginfo('wpurl') . '/wp-content/plugins/connections/css-admin.css" />' . "\n";
+}*/
+
+// This adds the menu to the Tools menu in WordPress and calls the function to load my CSS and JS.
+add_action('admin_menu', 'connections_menus');
+function connections_menus() {
+	$connections_admin = add_management_page('connections', 'Connections', 4, 'connections/connections.php', 'connections_main');
+	add_action( "admin_print_scripts-$connections_admin", 'connections_loadjs_admin_head' );
+}
+
+function connections_loadjs_admin_head() {
+	wp_enqueue_script('loadjs', get_bloginfo('wpurl') . '/wp-content/plugins/connections/js/ui.js');
 	echo '<link type="text/css" rel="stylesheet" href="' . get_bloginfo('wpurl') . '/wp-content/plugins/connections/css-admin.css" />' . "\n";
 }
 
-// This adds the menu to the Tools menu in WordPress.
-add_action('admin_menu', 'connections_menus');
-function connections_menus() {
-	add_management_page('connections', 'Connections', 4, 'connections/connections.php', 'connections_main');
-}
 
 function connections_main() {
 		global $wpdb, $current_version, $current_user, $plugin_options;
@@ -414,30 +421,6 @@ function connections_main() {
 
 					<div id="col-right">
 						<div class="col-wrap">
-					        
-					        <script type="text/javascript">
-								function click_contact(row, id) {
-									
-									if (
-										document.getElementById('contact-'+id+'-detail').style.display != 'none' ) {
-										document.getElementById('contact-'+id+'-detail').style.display = 'none';
-										document.getElementById('contact-'+id+'-detail-notes').style.display = 'none';
-										document.getElementById('detailbutton'+id).innerHTML='Show Details';
-									} else {
-										document.getElementById('contact-'+id+'-detail').style.display = '';
-										document.getElementById('contact-'+id+'-detail-notes').style.display = '';
-										document.getElementById('detailbutton'+id).innerHTML='Hide Details';
-									}
-									
-								}
-								// http://realin.co.in/tutorials/change-a-css-class-dynamically-using-javascript/ 
-								// Tutorial on changing the CSS class name
-								function changeClass(x)
-						        {
-						            x.className=(x.className=="individual")?"organization":(x.className=="organization")?"individual":"organization";
-						        }
-
-					        </script>
 							
 							<form action="admin.php?page=connections/connections.php" method="post">
 							
@@ -885,7 +868,7 @@ function _connections_getaddressform($data=null) {
 					if ($entry->getImageDisply()) $selected = "show"; else $selected = "hidden";
 					
 					$imgOptions = _build_radio("imgOptions", "imgOptionID_", array("Display"=>"show", "Not Displayed"=>"hidden", "Remove"=>"remove"), $selected);
-					$out .= "<div style='text-align:center'> <img src='" . CN_IMAGE_BASE_URL . $options['image']['name']['entry'] . "' /> <br /> <span class='radio_group'>" . $imgOptions . "</span></div> <br />"; 
+					$out .= "<div style='text-align:center'> <img src='" . CN_IMAGE_BASE_URL . $entry->getImageNameProfile() . "' /> <br /> <span class='radio_group'>" . $imgOptions . "</span></div> <br />"; 
 				}
 				
 				$out .= "<label for='original_image'>Select Image:</label>
