@@ -168,6 +168,7 @@ function connections_menus() {
 }
 
 function connections_loadjs_admin_head() {
+	//wp_enqueue_script('jquery');
 	wp_enqueue_script('loadjs', get_bloginfo('wpurl') . '/wp-content/plugins/connections/js/ui.js');
 	echo '<link type="text/css" rel="stylesheet" href="' . get_bloginfo('wpurl') . '/wp-content/plugins/connections/css-admin.css" />' . "\n";
 }
@@ -475,13 +476,7 @@ function connections_main() {
 										if ($plugin_options->getEntryType() != "" )	{
 											if ($entry->getEntryType() != $plugin_options->getEntryType()) continue;
 										}
-										
-										if (!$altrow == "alternate") {
-											$altrow = "alternate";
-										} else {
-											$altrow = "";
-										}
-										
+																				
 										//Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
 										$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
 										if ($currentLetter != $previousLetter) {
@@ -491,23 +486,23 @@ function connections_main() {
 											$setAnchor = null;
 										}
 										
-										echo "<tr class='".$altrow."'>";
-											echo "<th class='check-column ".$altrow."' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
-												echo "<td class='".$altrow."' colspan='2'>".$setAnchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit " . $entry->getFullFirstLastName() . "' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'> " . $entry->getFullLastFirstName(). "</a><br />";
+										echo "<tr id='row" . $entry->getId() . "' class='parent-row'>";
+											echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
+												echo "<td colspan='2'>".$setAnchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit " . $entry->getFullFirstLastName() . "' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'> " . $entry->getFullLastFirstName(). "</a><br />";
 												echo "<div class='row-actions'>
-															<span class='detailsbutton' id='detailbutton" . $entry->getId() . "' onClick='click_contact(this, " . $entry->getId() . ")'>Show Details</span> | 
+															<a class='detailsbutton' id='row-" . $entry->getId() . "'>Show Details</a> | 
 															<a class='editbutton' href='admin.php?page=connections/connections.php&action=editform&id=" . $entry->getId() . "'>Edit</a> | 
 															<a class='copybutton' href='admin.php?page=connections/connections.php&action=editform&id=" . $entry->getId() . "&copyid=true'>Copy</a> | 
 															<a class='submitdelete' onclick='return confirm(\"You are about to delete this entry. Cancel to stop, OK to delete\");' href='admin.php?page=connections/connections.php&action=delete&id=" . $entry->getId() . "&token=" . _formtoken("delete_" . $entry->getId()) . "'>Delete</a>
 													  </div>";
 											echo "</td> \n";
-											echo "<td class='".$altrow."'><strong>" . $entry->displayVisibiltyType() . "</strong></td> \n";												
-											echo "<td class='".$altrow."'>" . $entry->getTimeStamp() . "</td> \n";											
+											echo "<td ><strong>" . $entry->displayVisibiltyType() . "</strong></td> \n";												
+											echo "<td >" . $entry->getFormattedTimeStamp() . "</td> \n";											
 										echo "</tr> \n";
 										
-										echo "<tr class='".$altrow." entrydetails' id='contact-" . $entry->getId() . "-detail' style='display:none;'>";
-											echo "<td class='".$altrow."'></td> \n";
-											echo "<td class='".$altrow."' colspan='2'>";
+										echo "<tr class='child-row-" . $entry->getId() . " entrydetails' id='contact-" . $entry->getId() . "-detail' style='display:none;'>";
+											echo "<td ></td> \n";
+											echo "<td colspan='2'>";
 												if ($entry->getTitle()) echo "<strong>Title:</strong><br />" . $entry->getTitle() . "<br /><br />";
 												if ($entry->getOrganization() && $entry->getEntryType() != "organization" ) echo "<strong>Organization:</strong><br />" . $entry->getOrganization() . "<br /><br />";
 												if ($entry->getDepartment()) echo "<strong>Department:</strong><br />" . $entry->getDepartment() . "<br /><br />";
@@ -530,7 +525,7 @@ function connections_main() {
 											
 											echo "</td> \n";
 											
-											echo "<td class='".$altrow."'>";
+											echo "<td>";
 												if ($entry->getEmailAddresses())
 												{
 													foreach ($entry->getEmailAddresses() as $emailRow)
@@ -567,19 +562,19 @@ function connections_main() {
 												
 											echo "</td> \n";
 																					
-											echo "<td class='".$altrow."'>";
+											echo "<td>";
 												if ($entry->getBirthday()) echo "<strong>Birthday:</strong><br />" . $entry->getBirthday() . "<br /><br />";
 												if ($entry->getAnniversary()) echo "<strong>Anniversary:</strong><br />" . $entry->getAnniversary();
 											echo "</td> \n";
 										echo "</tr> \n";
 										
-										echo "<tr class='".$altrow." entrynotes' id='contact-" . $entry->getId() . "-detail-notes' style='display:none;'>";
-											echo "<td class='".$altrow."'>&nbsp;</td> \n";
-											echo "<td class='".$altrow."' colspan='3'>";
+										echo "<tr class='child-row-" . $entry->getId() . " entrynotes' id='contact-" . $entry->getId() . "-detail-notes' style='display:none;'>";
+											echo "<td>&nbsp;</td> \n";
+											echo "<td colspan='3'>";
 												if ($entry->getBio()) echo "<strong>Bio:</strong> " . $entry->getBio() . "<br />"; else echo "&nbsp;";
 												if ($entry->getNotes()) echo "<strong>Notes:</strong> " . $entry->getNotes(); else echo "&nbsp;";
 											echo "</td> \n";
-											echo "<td class='".$altrow."'><strong>Entry ID:</strong> " . $entry->getId();
+											echo "<td><strong>Entry ID:</strong> " . $entry->getId();
 												if (!$entry->getImageLinked()) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";
 												if ($entry->getImageLinked() && $entry->getImageDisply()) echo "<br /><strong>Display:</strong> Yes"; else echo "<br /><strong>Display:</strong> No";
 											echo "</td> \n";
@@ -838,22 +833,22 @@ function _connections_getaddressform($data=null) {
 		<div class='form-field connectionsform'>	
 				<span class='radio_group'>" . _build_radio('entry_type','entry_type',array('Individual'=>'individual','Organization'=>'organization'),$defaultEntryType) . "</span>
 		</div>
-		
+
 		<div class='form-field connectionsform'>
-			<div class='input inputhalfwidth'>
-				<label for='first_name'>First name:</label>
-				<input type='text' name='first_name' value='" . $entry->getFirstName() . "' />
-			</div>
-			<div class='input inputhalfwidth'>
-				<label for='last_name'>Last name:</label>
-				<input type='text' name='last_name' value='" . $entry->getLastName() . "' />
-			</div>
-			<div class='clear'></div>
-		</div>
-		
-		<div class='form-field connectionsform'>				
-				<label for='title'>Title:</label>
-				<input type='text' name='title' value='" . $entry->getTitle() . "' />
+				<div class='namefield'>
+					<div class='input inputhalfwidth'>
+						<label for='first_name'>First name:</label>
+						<input type='text' name='first_name' value='" . $entry->getFirstName() . "' />
+					</div>
+					<div class='input inputhalfwidth'>
+						<label for='last_name'>Last name:</label>
+						<input type='text' name='last_name' value='" . $entry->getLastName() . "' />
+					</div>
+					<div class='clear'></div>
+						
+					<label for='title'>Title:</label>
+					<input type='text' name='title' value='" . $entry->getTitle() . "' />
+				</div>
 
 				<label for='organization'>Organization:</label>
 				<input type='text' name='organization' value='" . $entry->getOrganization() . "' />
@@ -1047,8 +1042,6 @@ function connections_getselect($name) {
 add_shortcode('connections_list', '_connections_list');
 function _connections_list($atts, $content=null) {
     global $wpdb;
-	$alphaindex = array();
-	$i = 0;
 	
 	$atts = shortcode_atts( array(
 			'id' => null,
@@ -1077,7 +1070,11 @@ function _connections_list($atts, $content=null) {
 		
 		foreach ($results as $row) {
 			$entry = new entry($row);
-			$options = unserialize($row->options);
+			$addressObject = new addresses;
+			$phoneNumberObject = new phoneNumber;
+			$emailAddressObject = new email;
+			$imObject = new im;
+			$websiteObject = new website;
 			
 			if ($atts['list_type'] != 'all') {
 				if ($atts['list_type'] != $entry->getEntryType()) {
@@ -1093,12 +1090,6 @@ function _connections_list($atts, $content=null) {
 			} else {
 				$setAnchor = null;
 			}
-			  
-			//A check to make sure that the birthday column contains a value. If it does, it formats the date into the variable to be used in the output.
-			if ($row->birthday) $birthday = date("F jS", $row->birthday);
-			  
-			//A check to make sure that the anniversary column contains a value. If it does, it formats the date into the variable to be used in the output.
-			if ($row->anniversary) $anniversary = date("F jS", $row->anniversary);
 			  
 			$age = (int) abs( time() - strtotime( $row->ts ) );
 			if ( $age < 657000 )	// less than one week: red
@@ -1117,45 +1108,79 @@ function _connections_list($atts, $content=null) {
 				$ageStyle = "display:none";
 			
 			if ($atts['show_alphaindex']) $out .= $setAnchor;
-			$out .= "<div class='cnitem' id='cn" .  $row->id . "' style='-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative;'>\n";
+			$out .= "<div class='cnitem' id='cn" .  $entry->getId() . "' style='-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative;'>\n";
 						$out .= "<div style='width:49%; float:left'>";
-							if ($options['image']['linked'] && $options['image']['display']) $out .= '<img style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $options['image']['name']['entry'] . '" /> <div class="clear"></div>';
-							$out .= "<span class='name' id='" .  $row->id . "' style='font-size:larger;font-variant: small-caps'><strong>" . $entry->getFullFirstLastName() . "</strong></span>\n";
-							if ($row->title) $out .= "<br /><span class='title'>" . $row->title . "</span>\n";
-							if ($row->organization && $entry->getEntryType() != "organization") $out .= "<br /><span class='organization'>" . $row->organization . "</span>\n";
-							if ($row->department) $out .= "<br /><span class='department'>" . $entry->getDepartment() . "</span>\n";
-							$out .= "<div class='address'>\n";
-								if ($row->address_type) $out .= "<br /><span class='address_type'><strong>" . ucfirst($row->address_type) . " Address</strong></span><br />\n";
-								$out .= "<span class='address-line1'>" . $row->address_line1 . "</span><br />\n";
-								if ($row->address_line2) $out .= "<span class='address-line2'>" . $row->address_line2 . "</span><br />\n";
-								if ($row->city) $out .= "<span class='city'>" . $row->city . ",</span>\n";
-								if ($row->state) $out .= "<span class='state'>" . $row->state . "</span>\n";
-								if ($row->zipcode) $out .= "<span class='zipcode'>" . $row->zipcode . "</span>\n";
-								if ($row->country) $out .= "<br /><span class='country'>" . $row->country . "</span>\n";
+							if ($entry->getImageLinked() && $entry->getImageDisply()) $out .= '<img style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $entry->getImageNameCard() . '" /> <div class="clear"></div>';
+							
+							$out .= "<div style='margin-bottom: 10px;'>";
+							$out .= "<span class='name' id='" .  $entry->getId() . "' style='font-size:larger;font-variant: small-caps'><strong>" . $entry->getFullFirstLastName() . "</strong></span>\n";
+							if ($entry->getTitle()) $out .= "<br /><span class='title'>" . $entry->getTitle() . "</span>\n";
+							if ($entry->getOrganization() && $entry->getEntryType() != "organization") $out .= "<br /><span class='organization'>" . $entry->getOrganization() . "</span>\n";
+							if ($entry->getDepartment()) $out .= "<br /><span class='department'>" . $entry->getDepartment() . "</span><br />\n";
 							$out .= "</div>";
-							$out .= "<div class='address2'>\n";
-								if ($row->address2_type) $out .= "<br /><span class='address_type'><strong>" . ucfirst($row->address2_type) . " Address</strong></span><br />\n";
-								$out .= "<span class='address2-line1'>" . $row->address2_line1 . "</span><br />\n";
-								if ($row->address2_line2) $out .= "<span class='address2-line2'>" . $row->address2_line2 . "</span><br />\n";
-								if ($row->city2) $out .= "<span class='city2'>" . $row->city2 . ",</span>\n";
-								if ($row->state2) $out .= "<span class='state2'>" . $row->state2 . "</span>\n";
-								if ($row->zipcode2) $out .= "<span class='zipcode2'>" . $row->zipcode2 . "</span>\n";
-								if ($row->country2) $out .= "<br /><span class='country'>" . $row->country2 . "</span>\n";
-							$out .= "</div>";
+							
+							if ($entry->getAddresses())
+							{
+								foreach ($entry->getAddresses() as $addressRow)
+								{
+									$out .= "<div class='address' style='margin-bottom: 10px;'>";
+									if ($addressObject->getName($addressRow) != null || $addressObject->getType($addressRow)) $out .= "<strong>" . $addressObject->getName($addressRow) . "</strong><br />"; //The OR is for compatiblity for 0.2.24 and under
+									if ($addressObject->getLineOne($addressRow) != null) $out .= $addressObject->getLineOne($addressRow) . "<br />";
+									if ($addressObject->getLineTwo($addressRow) != null) $out .= $addressObject->getLineTwo($addressRow) . "<br />";
+									if ($addressObject->getCity($addressRow) != null) $out .= $addressObject->getCity($addressRow) . "&nbsp;";
+									if ($addressObject->getState($addressRow) != null) $out .= $addressObject->getState($addressRow) . "&nbsp;";
+									if ($addressObject->getZipCode($addressRow) != null) $out .= $addressObject->getZipCode($addressRow) . "<br />";
+									if ($addressObject->getCountry($addressRow) != null) $out .= $addressObject->getCountry($addressRow);
+									$out .= "</div>";														
+								}
+							}
 						$out .= "</div>";
 						$out .= "<div align='right' >";
-							if ($row->homephone) $out .= "<span class='homephone'><strong>Home Phone:</strong> " . $row->homephone . "</span><br />\n";
-							if ($row->homefax) $out .= "<span class='homefax'><strong>Home Fax:</strong> " . $row->homefax . "</span><br />\n";
-							if ($row->cellphone) $out .= "<span class='cellphone'><strong>Cell Phone:</strong> " . $row->cellphone . "</span><br />\n";
-							if ($row->workphone) $out .= "<span class='workphone'><strong>Work Phone:</strong> " . $row->workphone . "</span><br />\n";
-							if ($row->workfax) $out .= "<span class='workfax'><strong>Work Fax:</strong> " . $row->workfax . "</span><br />\n";
-							if ($row->personalemail) $out .= "<br /><strong>Personal:</strong> <a class='personalemail' href='mailto:" . antispambot($row->personalemail) . "'>" . antispambot($row->personalemail) . "</a><br />\n";
-							if ($row->workemail) $out .= "<strong>Work:</strong> <a class='workemail' href='mailto:" . antispambot($row->workemail) . "'>" . antispambot($row->workemail) . "</a><br />\n";
-							if ($row->website) $out .= "<strong>Website:</strong> <a target='_blank' href='" . $row->website . "'>" . $row->website . "</a><br />\n";
-							if ($row->birthday) $out .= "<br /><span class='birthday'><strong>Birthday:</strong> ".$birthday."</span><br />\n";
-							if ($row->anniversary) $out .= "<span class='anniversary'><strong>Anniversary:</strong> ".$anniversary."</span><br />\n";
-							if (!$atts['id']) $out .= "<br /><span style='" . $ageStyle . "; font-size:x-small; font-variant: small-caps; position: absolute; right: 26px; bottom: 8px;'>Updated " . human_time_diff(strtotime($row->ts)) . " ago</span><span style='position: absolute; right: 3px; bottom: 5px;'><a href='#connections-list-head' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></span><br />\n";
-							if ($atts['id']) $out .= "<br /><span style='" . $ageStyle . "; font-size:x-small; font-variant: small-caps; position: absolute; right: 6px; bottom: 8px;'>Updated " . human_time_diff(strtotime($row->ts)) . " ago</span><br />\n";
+							if ($entry->getPhoneNumbers())
+							{
+								$out .= "<div class='phone_number' style='margin-bottom: 10px;'>";
+								foreach ($entry->getPhoneNumbers() as $phoneNumberRow) 
+								{
+									if ($phoneNumberObject->getNumber($phoneNumberRow) != "") $out .=  "<strong>" . $phoneNumberObject->getName($phoneNumberRow) . "</strong>: " .  $phoneNumberObject->getNumber($phoneNumberRow) . "<br />";
+								}
+								$out .= "</div>";
+							}
+							
+							if ($entry->getEmailAddresses())
+							{
+								$out .= "<div class='email'>";
+								foreach ($entry->getEmailAddresses() as $emailRow)
+								{
+									if ($emailAddressObject->getAddress($emailRow) != null) $out .= "<strong>" . $emailAddressObject->getName($emailRow) . ":</strong><br /><a href='mailto:" . $emailAddressObject->getAddress($emailRow) . "'>" . $emailAddressObject->getAddress($emailRow) . "</a><br /><br />";
+								}
+								$out .= "</div>";
+							}
+							
+							if ($entry->getIm())
+							{
+								$out .= "<div class='im' style='margin-bottom: 10px;'>";
+								foreach ($entry->getIm() as $imRow)
+								{
+									if ($imObject->getId($imRow) != null) $out .= "<strong>" . $imObject->getName($imRow) . ":</strong> " . $imObject->getId($imRow). "</a><br />";
+								}
+								$out .= "</div>";
+							}
+							
+							if ($entry->getWebsites())
+							{
+								$out .= "<div class='websites' style='margin-bottom: 10px;'>";
+								foreach ($entry->getWebsites() as $websiteRow)
+								{
+									if ($websiteObject->getAddress($websiteRow) != null) $out .= "<strong>Website:</strong> <a href='" . $websiteObject->getAddress($websiteRow) . "'>" . $websiteObject->getAddress($websiteRow) . "</a>";
+								}
+								$out .= "</div>";
+							}
+							
+							if ($entry->getBirthday()) $out .= "<strong>Birthday:</strong> " . $entry->getBirthday() . "<br />";
+							if ($entry->getAnniversary()) $out .= "<strong>Anniversary:</strong> " . $entry->getAnniversary() . "<br />";
+							
+							if (!$atts['id']) $out .= "<br /><span style='" . $ageStyle . "; font-size:x-small; font-variant: small-caps; position: absolute; right: 26px; bottom: 8px;'>Updated " . human_time_diff(strtotime($entry->getUnixTimeStamp())) . " ago</span><span style='position: absolute; right: 3px; bottom: 5px;'><a href='#connections-list-head' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></span><br />\n";
+							if ($atts['id']) $out .= "<br /><span style='" . $ageStyle . "; font-size:x-small; font-variant: small-caps; position: absolute; right: 6px; bottom: 8px;'>Updated " . human_time_diff(strtotime($entry->getUnixTimeStamp())) . " ago</span><br />\n";
 						$out .= "</div>\n";
 						$out .= "<div style='clear:both'></div></div>\n";
 		}
