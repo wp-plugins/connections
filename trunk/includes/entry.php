@@ -177,20 +177,32 @@ class entry
 
     /**
      * Timestamp format can be sent as a string variable.
-     * Returns $timeStamp.
+     * Returns $timeStamp
      * @param string $format
      * @see entry::$timeStamp
      */
-    public function getTimeStamp($format=null)
+    public function getFormattedTimeStamp($format=null)
     {
         if (!$format)
 		{
 			$format = "m/d/Y";
 		}
 		
-		$this->timeStamp = date($format,strtotime($this->timeStamp));
+		$formattedTimeStamp = date($format,strtotime($this->timeStamp));
 		
-		return $this->timeStamp;
+		return $formattedTimeStamp;
+    }
+	
+	/**
+     * Timestamp format can be sent as a string variable.
+     * Returns $unixTimeStamp
+     * @see entry::$timeStamp
+     */
+    public function getUnixTimeStamp()
+    {
+        $unixTimeStamp = $this->timeStamp;
+		
+		return $unixTimeStamp;
     }
 
     /**
