@@ -48,7 +48,7 @@ This plugin is under active developement, please make sure you have a recent bac
 **Known Issues:**
 
 * **Currently when an image link is removed the files are not deleted from the server**
-* The CSS style sheet is linked on every page in the admin
+* When edited an entry the form doesn't proper hide the fields based on the entry type
 * The styles in the output html is hard coded
 * Not all fields that are input appear when output
 * Styling for organization entries needs work
@@ -208,39 +208,39 @@ There is no need to de-activate and then re-activate Connections to upgrade.
 
 == Change Log ==
 
-**0.2.3**
+=0.2.3=
 
 * First version in the repository
 
-**0.2.4**
+=0.2.4=
 
 * Add entry ID to the admin
 
-**0.2.7**
+=0.2.7=
 
 * Added preliminary image support for entries
 
-**0.2.8**
+=0.2.8=
 
 * Fix bug that was causing IE to not filter correctly
 * Code cleanup
 
-**0.2.9**
+=0.2.9=
 
 * Some more code cleanup
 * Started code documentation
 * Added the ability to choose whether or not a linked image in an entry is displayed when embedded in a page/post
 * Added the ability to remove the linked image from an entry
 
-**0.2.10**
+=0.2.10=
 
 * Added the ability to copy an entry
 
-**0.2.11**
+=0.2.11=
 
 * Added a nice little up arrow to both the admin and page/post entry list to return to the top of the list
 
-**0.2.22**
+=0.2.22=
 
 * Added Org/Individual options
 * Added IM fields
@@ -248,14 +248,21 @@ There is no need to de-activate and then re-activate Connections to upgrade.
 * Added Org/Individual filter
 * Started to convert the code to OO PHP
 
-**0.2.23**
+=0.2.23=
 
-* Converted more code to use the OO methods
+* Converted more code to use  OO methods
 * Display some of the missing fields in the output
 
-**0.2.24**
+=0.2.24=
 
-* Converted more code to use the OO methods
+* Converted more code to use  OO methods
 * Code clean-up and documentation
 * Fixed the alpha index bug not correctly working with organization entry types
 * Added a shortcode to allow showing all entries; individual or organizations entries
+
+=0.3.1=
+
+* Converted the rest of the code to use  OO methods
+* Started to add jQuery in the admin
+* Fixed the CSS to load only in the Connections page
+* All the fields that can be input are shown in the output
