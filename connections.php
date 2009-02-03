@@ -30,13 +30,15 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 require_once(WP_PLUGIN_DIR . '/connections/php_class_upload/class.upload.php');
 
 //date objects
-require_once(WP_PLUGIN_DIR . '/connections/includes/date.php');
+require_once(WP_PLUGIN_DIR . '/connections/includes/class.date.php');
 //entry objects
-require_once(WP_PLUGIN_DIR . '/connections/includes/entry.php');
+require_once(WP_PLUGIN_DIR . '/connections/includes/class.entry.php');
 //plugin option objects
-require_once(WP_PLUGIN_DIR . '/connections/includes/options.php');
-//plugin option objects
-require_once(WP_PLUGIN_DIR . '/connections/includes/utility.php');
+require_once(WP_PLUGIN_DIR . '/connections/includes/class.options.php');
+//plugin utility objects
+require_once(WP_PLUGIN_DIR . '/connections/includes/class.utility.php');
+//plugin template objects
+require_once(WP_PLUGIN_DIR . '/connections/includes/class.output.php');
 
 $current_version = "0.2.24";
 session_start();
@@ -473,6 +475,8 @@ function connections_main() {
 										$imObject = new im();
 										$websiteObject = new website();
 										
+										$object = new output($row);
+										
 										if ($plugin_options->getEntryType() != "" )	{
 											if ($entry->getEntryType() != $plugin_options->getEntryType()) continue;
 										}
@@ -522,7 +526,7 @@ function connections_main() {
 														echo "</div>";														
 													}
 												}
-											
+											echo $object->getAddressBlock();
 											echo "</td> \n";
 											
 											echo "<td>";
@@ -1076,6 +1080,8 @@ function _connections_list($atts, $content=null) {
 			$imObject = new im;
 			$websiteObject = new website;
 			
+			$object = new output($row);
+			
 			if ($atts['list_type'] != 'all') {
 				if ($atts['list_type'] != $entry->getEntryType()) {
 					continue;
@@ -1119,21 +1125,8 @@ function _connections_list($atts, $content=null) {
 							if ($entry->getDepartment()) $out .= "<br /><span class='department'>" . $entry->getDepartment() . "</span><br />\n";
 							$out .= "</div>";
 							
-							if ($entry->getAddresses())
-							{
-								foreach ($entry->getAddresses() as $addressRow)
-								{
-									$out .= "<div class='address' style='margin-bottom: 10px;'>";
-									if ($addressObject->getName($addressRow) != null || $addressObject->getType($addressRow)) $out .= "<strong>" . $addressObject->getName($addressRow) . "</strong><br />"; //The OR is for compatiblity for 0.2.24 and under
-									if ($addressObject->getLineOne($addressRow) != null) $out .= $addressObject->getLineOne($addressRow) . "<br />";
-									if ($addressObject->getLineTwo($addressRow) != null) $out .= $addressObject->getLineTwo($addressRow) . "<br />";
-									if ($addressObject->getCity($addressRow) != null) $out .= $addressObject->getCity($addressRow) . "&nbsp;";
-									if ($addressObject->getState($addressRow) != null) $out .= $addressObject->getState($addressRow) . "&nbsp;";
-									if ($addressObject->getZipCode($addressRow) != null) $out .= $addressObject->getZipCode($addressRow) . "<br />";
-									if ($addressObject->getCountry($addressRow) != null) $out .= $addressObject->getCountry($addressRow);
-									$out .= "</div>";														
-								}
-							}
+							$out .= $object->getAddressBlock();
+							
 						$out .= "</div>";
 						$out .= "<div align='right' >";
 							if ($entry->getPhoneNumbers())
