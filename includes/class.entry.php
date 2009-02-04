@@ -120,7 +120,7 @@ class entry
 	
 	private $options;
 	private $imageLinked;
-	private $imageDisply;
+	private $imageDisplay;
 	private $imageNameThumbnail;
 	private $imageNameCard;
 	private $imageNameProfile;
@@ -148,7 +148,7 @@ class entry
 		
 		$this->options = unserialize($data->options);
 		$this->imageLinked = $this->options['image']['linked'];
-		$this->imageDisply = $this->options['image']['display'];
+		$this->imageDisplay = $this->options['image']['display'];
 		$this->imageNameThumbnail =$this->options['image']['name']['thumbnail'];
 		$this->imageNameCard = $this->options['image']['name']['entry'];
 		$this->imageNameProfile = $this->options['image']['name']['profile'];
@@ -593,22 +593,22 @@ class entry
     }
     
     /**
-     * Returns $imageDisply.
-     * @see entry::$imageDisply
+     * Returns $imageDisplay.
+     * @see entry::$imageDisplay
      */
-    public function getImageDisply()
+    public function getImageDisplay()
     {
-        return $this->imageDisply;
+        return $this->imageDisplay;
     }
     
     /**
-     * Sets $imageDisply.
-     * @param object $imageDisply
-     * @see entry::$imageDisply
+     * Sets $imageDisplay.
+     * @param object $imageDisplay
+     * @see entry::$imageDisplay
      */
-    public function setImageDisply($imageDisply)
+    public function setImageDisplay($imageDisplay)
     {
-        $this->imageDisply = $imageDisply;
+        $this->imageDisplay = $imageDisplay;
     }
     
     /**
