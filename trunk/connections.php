@@ -580,7 +580,7 @@ function connections_main() {
 											echo "</td> \n";
 											echo "<td><strong>Entry ID:</strong> " . $entry->getId();
 												if (!$entry->getImageLinked()) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";
-												if ($entry->getImageLinked() && $entry->getImageDisply()) echo "<br /><strong>Display:</strong> Yes"; else echo "<br /><strong>Display:</strong> No";
+												if ($entry->getImageLinked() && $entry->getImageDisplay()) echo "<br /><strong>Display:</strong> Yes"; else echo "<br /><strong>Display:</strong> No";
 											echo "</td> \n";
 										echo "</tr> \n";
 																				
@@ -864,7 +864,7 @@ function _connections_getaddressform($data=null) {
 		<div class='form-field connectionsform'>";
 				
 				if ($entry->getImageLinked()) {
-					if ($entry->getImageDisply()) $selected = "show"; else $selected = "hidden";
+					if ($entry->getImageDisplay()) $selected = "show"; else $selected = "hidden";
 					
 					$imgOptions = _build_radio("imgOptions", "imgOptionID_", array("Display"=>"show", "Not Displayed"=>"hidden", "Remove"=>"remove"), $selected);
 					$out .= "<div style='text-align:center'> <img src='" . CN_IMAGE_BASE_URL . $entry->getImageNameProfile() . "' /> <br /> <span class='radio_group'>" . $imgOptions . "</span></div> <br />"; 
@@ -1070,17 +1070,10 @@ function _connections_list($atts, $content=null) {
 		
 		if (!$atts['id']) $out = "<div id='connections-list-head'></div>";
 		if ($atts['show_alphaindex']) $out .= "<div class='cnalphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
-		$out .= "<div class='connections-list'>";
+		echo "<div class='connections-list'>";
 		
 		foreach ($results as $row) {
-			$entry = new entry($row);
-			$addressObject = new addresses;
-			$phoneNumberObject = new phoneNumber;
-			$emailAddressObject = new email;
-			$imObject = new im;
-			$websiteObject = new website;
-			
-			$object = new output($row);
+			$entry = new output($row);
 			
 			if ($atts['list_type'] != 'all') {
 				if ($atts['list_type'] != $entry->getEntryType()) {
@@ -1096,90 +1089,21 @@ function _connections_list($atts, $content=null) {
 			} else {
 				$setAnchor = null;
 			}
-			  
-			$age = (int) abs( time() - strtotime( $row->ts ) );
-			if ( $age < 657000 )	// less than one week: red
-				$ageStyle = "color:red";
-			elseif ( $age < 1314000 )	// one-two weeks: maroon
-				$ageStyle = "color:maroon";
-			elseif ( $age < 2628000 )	// two weeks to one month: green
-				$ageStyle = "color:green";
-			elseif ( $age < 7884000 )	// one - three months: blue
-				$ageStyle = "color:blue";
-			elseif ( $age < 15768000 )	// three to six months: navy
-				$ageStyle = "color:navy";
-			elseif ( $age < 31536000 )	// six months to a year: black
-				$ageStyle = "color:black";
-			else						// more than one year: don't show the update age
-				$ageStyle = "display:none";
 			
 			if ($atts['show_alphaindex']) $out .= $setAnchor;
-			$out .= "<div class='cnitem' id='cn" .  $entry->getId() . "' style='-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative;'>\n";
-						$out .= "<div style='width:49%; float:left'>";
-							if ($entry->getImageLinked() && $entry->getImageDisply()) $out .= '<img style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $entry->getImageNameCard() . '" /> <div class="clear"></div>';
-							
-							$out .= "<div style='margin-bottom: 10px;'>";
-							$out .= "<span class='name' id='" .  $entry->getId() . "' style='font-size:larger;font-variant: small-caps'><strong>" . $entry->getFullFirstLastName() . "</strong></span>\n";
-							if ($entry->getTitle()) $out .= "<br /><span class='title'>" . $entry->getTitle() . "</span>\n";
-							if ($entry->getOrganization() && $entry->getEntryType() != "organization") $out .= "<br /><span class='organization'>" . $entry->getOrganization() . "</span>\n";
-							if ($entry->getDepartment()) $out .= "<br /><span class='department'>" . $entry->getDepartment() . "</span><br />\n";
-							$out .= "</div>";
-							
-							$out .= $object->getAddressBlock();
-							
-						$out .= "</div>";
-						$out .= "<div align='right' >";
-							if ($entry->getPhoneNumbers())
-							{
-								$out .= "<div class='phone_number' style='margin-bottom: 10px;'>";
-								foreach ($entry->getPhoneNumbers() as $phoneNumberRow) 
-								{
-									if ($phoneNumberObject->getNumber($phoneNumberRow) != "") $out .=  "<strong>" . $phoneNumberObject->getName($phoneNumberRow) . "</strong>: " .  $phoneNumberObject->getNumber($phoneNumberRow) . "<br />";
-								}
-								$out .= "</div>";
-							}
-							
-							if ($entry->getEmailAddresses())
-							{
-								$out .= "<div class='email'>";
-								foreach ($entry->getEmailAddresses() as $emailRow)
-								{
-									if ($emailAddressObject->getAddress($emailRow) != null) $out .= "<strong>" . $emailAddressObject->getName($emailRow) . ":</strong><br /><a href='mailto:" . $emailAddressObject->getAddress($emailRow) . "'>" . $emailAddressObject->getAddress($emailRow) . "</a><br /><br />";
-								}
-								$out .= "</div>";
-							}
-							
-							if ($entry->getIm())
-							{
-								$out .= "<div class='im' style='margin-bottom: 10px;'>";
-								foreach ($entry->getIm() as $imRow)
-								{
-									if ($imObject->getId($imRow) != null) $out .= "<strong>" . $imObject->getName($imRow) . ":</strong> " . $imObject->getId($imRow). "</a><br />";
-								}
-								$out .= "</div>";
-							}
-							
-							if ($entry->getWebsites())
-							{
-								$out .= "<div class='websites' style='margin-bottom: 10px;'>";
-								foreach ($entry->getWebsites() as $websiteRow)
-								{
-									if ($websiteObject->getAddress($websiteRow) != null) $out .= "<strong>Website:</strong> <a href='" . $websiteObject->getAddress($websiteRow) . "'>" . $websiteObject->getAddress($websiteRow) . "</a>";
-								}
-								$out .= "</div>";
-							}
-							
-							if ($entry->getBirthday()) $out .= "<strong>Birthday:</strong> " . $entry->getBirthday() . "<br />";
-							if ($entry->getAnniversary()) $out .= "<strong>Anniversary:</strong> " . $entry->getAnniversary() . "<br />";
-							
-							if (!$atts['id']) $out .= "<br /><span style='" . $ageStyle . "; font-size:x-small; font-variant: small-caps; position: absolute; right: 26px; bottom: 8px;'>Updated " . human_time_diff(strtotime($entry->getUnixTimeStamp())) . " ago</span><span style='position: absolute; right: 3px; bottom: 5px;'><a href='#connections-list-head' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></span><br />\n";
-							if ($atts['id']) $out .= "<br /><span style='" . $ageStyle . "; font-size:x-small; font-variant: small-caps; position: absolute; right: 6px; bottom: 8px;'>Updated " . human_time_diff(strtotime($entry->getUnixTimeStamp())) . " ago</span><br />\n";
-						$out .= "</div>\n";
-						$out .= "<div style='clear:both'></div></div>\n";
+			
+			// template
+			$template = WP_PLUGIN_DIR . '/connections/templates/card.php';
+			
+			ob_start();
+		    include($template);
+		    $out .= ob_get_contents();
+		    ob_end_clean();
+
 		}
 		$out .= "</div>\n";
-		return $out;
 	}
+	return $out;
 }
 
 add_shortcode('upcoming_list', '_upcoming_list');

@@ -120,7 +120,7 @@ class entry
 	
 	private $options;
 	private $imageLinked;
-	private $imageDisply;
+	private $imageDisplay;
 	private $entryType;
 	
 	function __construct($data)	{
@@ -573,22 +573,22 @@ class entry
     }
     
     /**
-     * Returns $imageDisply.
-     * @see entry::$imageDisply
+     * Returns $imageDisplay.
+     * @see entry::$imageDisplay
      */
-    public function getImageDisply()
+    public function getImageDisplay()
     {
-        return $this->imageDisply;
+        return $this->imageDisplay;
     }
     
     /**
      * Sets $imageDisply.
-     * @param object $imageDisply
-     * @see entry::$imageDisply
+     * @param object $imageDisplay
+     * @see entry::$imageDisplay
      */
-    public function setImageDisply($imageDisply)
+    public function setImageDisplay($imageDisplay)
     {
-        $this->imageDisply = $imageDisply;
+        $this->imageDisplay = $imageDisplay;
     }
     
     /**
