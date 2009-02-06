@@ -204,7 +204,12 @@ class entry
 		
 		return $unixTimeStamp;
     }
-
+		
+	public function getHumanTimeDiff()
+	{
+		return human_time_diff(strtotime($this->getUnixTimeStamp()));
+	}
+	
     /**
      * Returns the entries first name.
      * Returns $firstName.
