@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111
 Description: An address book.
-Version: 0.2.24
+Version: 0.2.31
 Author: Steven A. Zahm
 Author URI: http://www.shazahm.net
 
@@ -40,7 +40,7 @@ require_once(WP_PLUGIN_DIR . '/connections/includes/class.utility.php');
 //plugin template objects
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.output.php');
 
-$current_version = "0.2.24";
+$current_version = "0.2.31";
 session_start();
 
 // Define a few constants and defaults until I can get to creating the options page.
@@ -1014,8 +1014,8 @@ function _connections_install() {
 		department tinytext NOT NULL, 
 		birthday tinytext NOT NULL,
 		anniversary tinytext NOT NULL,
-		bio tinytext NOT NULL,
-        notes tinytext NOT NULL,
+		bio longtext NOT NULL,
+        notes longtext NOT NULL,
 		addresses longtext NOT NULL,
 		phone_numbers longtext NOT NULL,
 		email longtext NOT NULL,
@@ -1049,12 +1049,13 @@ function _connections_list($atts, $content=null) {
 	
 	$atts = shortcode_atts( array(
 			'id' => null,
-			'private_override' => false,
-			'show_alphaindex' => false,
+			'private_override' => 'false',
+			'show_alphaindex' => 'false',
 			'list_type' => 'all',
+			'template_name' => 'card',
 			), $atts ) ;
 			
-	if (is_user_logged_in() or $atts['private_override'] != false) { 
+	if (is_user_logged_in() or $atts['private_override'] != 'false') { 
 		$visibilityfilter = " AND (visibility='private' OR visibility='public') ";
 	} else {
 		$visibilityfilter = " AND visibility='public' ";
@@ -1069,8 +1070,8 @@ function _connections_list($atts, $content=null) {
 	if ($results != null) {
 		
 		if (!$atts['id']) $out = "<div id='connections-list-head'></div>";
-		if ($atts['show_alphaindex']) $out .= "<div class='cnalphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
-		echo "<div class='connections-list'>";
+		if ($atts['show_alphaindex'] == 'true') $out .= "<div class='cnalphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
+		$out .=  "<div class='connections-list'>";
 		
 		foreach ($results as $row) {
 			$entry = new output($row);
@@ -1090,10 +1091,10 @@ function _connections_list($atts, $content=null) {
 				$setAnchor = null;
 			}
 			
-			if ($atts['show_alphaindex']) $out .= $setAnchor;
+			if ($atts['show_alphaindex'] == 'true') $out .= $setAnchor;
 			
 			// template
-			$template = WP_PLUGIN_DIR . '/connections/templates/card.php';
+			$template = WP_PLUGIN_DIR . '/connections/templates/' .  $atts['template_name'] . '.php';
 			
 			ob_start();
 		    include($template);
