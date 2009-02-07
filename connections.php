@@ -978,7 +978,7 @@ function _connections_getaddressform($data=null) {
 		}
 		$ticker->reset();
 		$out .= "</div>";
-
+		
 		$out .= "<div class='form-field connectionsform celebrate'>
 				<span class='selectbox'>Birthday: " . _build_select('birthday_month',$date->months,$date->getMonth($entry->getBirthday())) . "</span>
 				<span class='selectbox'>" . _build_select('birthday_day',$date->days,$date->getDay($entry->getBirthday())) . "</span>

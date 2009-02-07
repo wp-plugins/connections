@@ -59,14 +59,29 @@ class dateFunctions
 	
 	public function getMonth($data)
 	{
-		$month = date("m", strtotime($data));
+		if ($data != null)
+		{
+			$month = date("m", strtotime($data));
+		}
+		else
+		{
+			$month = null;
+		}
 		return $month;
 	}
 	
 	public function getDay($data)
 	{
-		$day = date("d", strtotime($data));
+		if ($data != null)
+		{
+			$day = date("d", strtotime($data));
+		}
+		else
+		{
+			$day = null;
+		}
 		return $day;
+		
 	}
 }
 
