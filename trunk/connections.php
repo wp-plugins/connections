@@ -526,7 +526,7 @@ function connections_main() {
 														echo "</div>";														
 													}
 												}
-											echo $object->getAddressBlock();
+											//echo $object->getAddressBlock();
 											echo "</td> \n";
 											
 											echo "<td>";
@@ -919,11 +919,13 @@ function _connections_getaddressform($data=null) {
 			$ticker->reset();
 			foreach ($phoneNumberValues as $phoneNumberRow)
 			{
-				$out .= "<label for='phone_numbers'>" . $phoneNumberObject->getName($phoneNumberRow) . ":</label>";
-				$out .= "<input type='text' name='phone_numbers[" . $ticker->getcount() . "][number]' value='" . $phoneNumberObject->getNumber($phoneNumberRow) . "' />";
-				$out .= "<input type='hidden' name='phone_numbers[" . $ticker->getcount() . "][type]' value='" . $phoneNumberObject->getType($phoneNumberRow) . "' />";
-				$out .= "<input type='hidden' name='phone_numbers[" . $ticker->getcount() . "][visibility]' value='" . $phoneNumberObject->getVisibility($phoneNumberRow) . "' />";
-				$ticker->step();
+				$out .= "<div class='" . $phoneNumberObject->getType($phoneNumberRow) . "'>";
+					$out .= "<label for='phone_numbers'>" . $phoneNumberObject->getName($phoneNumberRow) . ":</label>";
+					$out .= "<input type='text' name='phone_numbers[" . $ticker->getcount() . "][number]' value='" . $phoneNumberObject->getNumber($phoneNumberRow) . "' />";
+					$out .= "<input type='hidden' name='phone_numbers[" . $ticker->getcount() . "][type]' value='" . $phoneNumberObject->getType($phoneNumberRow) . "' />";
+					$out .= "<input type='hidden' name='phone_numbers[" . $ticker->getcount() . "][visibility]' value='" . $phoneNumberObject->getVisibility($phoneNumberRow) . "' />";
+					$ticker->step();
+				$out .= "</div>";
 			}
 			$ticker->reset();
 		$out .= "</div>";
@@ -934,19 +936,21 @@ function _connections_getaddressform($data=null) {
 			$ticker->reset();
 			foreach ($emailValues as $emailRow)
 			{
-				$out .= "<label for='email'>" . $emailObject->getName($emailRow) . ":</label>";
-				$out .= "<input type='text' name='email[" . $ticker->getcount() . "][address]' value='" . $emailObject->getAddress($emailRow) . "' />";
-				$out .= "<input type='hidden' name='email[" . $ticker->getcount() . "][name]' value='" . $emailObject->getName($emailRow) . "' />";
-				$out .= "<input type='hidden' name='email[" . $ticker->getcount() . "][type]' value='" . $emailObject->getType($emailRow) . "' />";
-				$out .= "<input type='hidden' name='email[" . $ticker->getcount() . "][visibility]' value='" . $emailObject->getVisibility($emailRow) . "' />";
+				$out .= "<div class='" . $emailObject->getType($emailRow) . "'>";
+					$out .= "<label for='email'>" . $emailObject->getName($emailRow) . ":</label>";
+					$out .= "<input type='text' name='email[" . $ticker->getcount() . "][address]' value='" . $emailObject->getAddress($emailRow) . "' />";
+					$out .= "<input type='hidden' name='email[" . $ticker->getcount() . "][name]' value='" . $emailObject->getName($emailRow) . "' />";
+					$out .= "<input type='hidden' name='email[" . $ticker->getcount() . "][type]' value='" . $emailObject->getType($emailRow) . "' />";
+					$out .= "<input type='hidden' name='email[" . $ticker->getcount() . "][visibility]' value='" . $emailObject->getVisibility($emailRow) . "' />";
 				$ticker->step();
+				$out .= "</div>";
 			}
 			$ticker->reset();
 		$out .= "</div>";
 
 
 		if ($data->im != null) $imValues = $entry->getIm(); else $imValues = $defaultIMValues;
-		$out .= "<div class='form-field connectionsform'>";
+		$out .= "<div class='form-field connectionsform im'>";
 			$ticker->reset();
 			foreach ($imValues as $imRow)
 			{
@@ -975,7 +979,7 @@ function _connections_getaddressform($data=null) {
 		$ticker->reset();
 		$out .= "</div>";
 
-		$out .= "<div class='form-field connectionsform'>
+		$out .= "<div class='form-field connectionsform celebrate'>
 				<span class='selectbox'>Birthday: " . _build_select('birthday_month',$date->months,$date->getMonth($entry->getBirthday())) . "</span>
 				<span class='selectbox'>" . _build_select('birthday_day',$date->days,$date->getDay($entry->getBirthday())) . "</span>
 				<br />
