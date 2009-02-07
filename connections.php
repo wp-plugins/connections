@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111
 Description: An address book.
-Version: 0.2.31
+Version: 0.3.2
 Author: Steven A. Zahm
 Author URI: http://www.shazahm.net
 
@@ -40,7 +40,7 @@ require_once(WP_PLUGIN_DIR . '/connections/includes/class.utility.php');
 //plugin template objects
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.output.php');
 
-$current_version = "0.2.31";
+$current_version = "0.3.2";
 session_start();
 
 // Define a few constants and defaults until I can get to creating the options page.

@@ -371,7 +371,7 @@ This plugin requires PHP 5. Turn on or ask your web host to turn on PHP 5 suppor
 * Fixed the alpha index bug not correctly working with organization entry types
 * Added a shortcode to allow showing all entries; individual or organizations entries
 
-=0.3.1=
+=0.3.2=
 
 * Converted the rest of the code to use OO methods
 * Started to add jQuery in the admin
