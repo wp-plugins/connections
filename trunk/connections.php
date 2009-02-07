@@ -1057,6 +1057,7 @@ function _connections_list($atts, $content=null) {
 			'show_alphaindex' => 'false',
 			'list_type' => 'all',
 			'template_name' => 'card',
+			'custom_template'=>'false',
 			), $atts ) ;
 			
 	if (is_user_logged_in() or $atts['private_override'] != 'false') { 
@@ -1075,7 +1076,7 @@ function _connections_list($atts, $content=null) {
 		
 		if (!$atts['id']) $out = "<div id='connections-list-head'></div>";
 		if ($atts['show_alphaindex'] == 'true') $out .= "<div class='cnalphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
-		$out .=  "<div class='connections-list'>";
+		$out .=  "<div class='connections-list'>\n";
 		
 		foreach ($results as $row) {
 			$entry = new output($row);
@@ -1097,14 +1098,39 @@ function _connections_list($atts, $content=null) {
 			
 			if ($atts['show_alphaindex'] == 'true') $out .= $setAnchor;
 			
-			// template
-			$template = WP_PLUGIN_DIR . '/connections/templates/' .  $atts['template_name'] . '.php';
+			if ($atts['custom_template'] == 'true')
+			{
+				if (is_dir(WP_CONTENT_DIR . '/connections_templates'))
+				{
+					if (file_exists(WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php'))
+					{
+						// Custom Template Name
+						$template = WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php';
+					}
+					else
+					{
+						$out .= '<p style="color:red; font-weight:bold; text-align:center;">ERROR CUSTOM TEMPLATE DOES NOT EXIST</p>';
+					}
+				}
+				else
+				{
+					$out .= '<p style="color:red; font-weight:bold; text-align:center;">ERROR CUSTOM TEMPLATE DIRECTORY DOES NOT EXSIT</p>';
+				}
+			}
+			else
+			{
+				// Use the specified default template
+				$template = WP_PLUGIN_DIR . '/connections/templates/' .  $atts['template_name'] . '.php';
+			}
 			
-			ob_start();
-		    include($template);
-		    $out .= ob_get_contents();
-		    ob_end_clean();
-
+			if (isset($template))
+			{
+				ob_start();
+			    include($template);
+			    $out .= ob_get_contents();
+			    ob_end_clean();
+			}
+						
 		}
 		$out .= "</div>\n";
 	}

@@ -22,9 +22,10 @@ This plugin is under active developement, please make sure you have a recent bac
 * Reduced the number of page refreshes when adding or managing the entry list.
 * Reduced the amount of scrolling needing when managing a large number of entries.
 * Matched the visual style to fit nicely in the new 2.7 admin interface.
-* Added shortcodes that can be used for embedding contact list and upcoming birthdays/anniversaries in a page and/or post with many options.
+* Added shortcodes that can be used for embedding entry list and upcoming birthdays/anniversaries in a page and/or post with many options.
 * **NEW** Added the ability to use custom templates and provided many template tags. See the instructions under Installation.
-* **NEW** Added a alternate list format -- profile view.
+* **NEW** Added a alternate list format / single entry format -- profile view.
+* **NEW** Added a alternate single entry format -- single-card view.
 
 **Upcoming features:**
 
@@ -61,6 +62,7 @@ This plugin is under active developement, please make sure you have a recent bac
 1. Upload the `connections` directory to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. You can mange addresses by going to the Connections item under the Tools menu.
+4. If you wish to create and use custom template besure to create the `./wp-content/connections_templates` directory/folder. This is where you will copy any custom templates you might create.
 
 
 **Instructions:**
@@ -113,17 +115,21 @@ Use to show only entries set as an individual.
 `[connections_list list_type='organization']`
 Use to show only entries set as an organization.
 
-An alternate list view has been provided -- profile view. Use the `template_name` option and set it to profile. See the example below.
+An alternate list view has been provided -- profile view. This view can be used for a single entry or the list. An alternate card view has also been provided -- card-single. This template can be used when you wish to show a single entry. 
+Use the `template_name` option and set to one of the provide alternate templates. See the examples below.
 
 `[connections_list template_name='profile']`
 This will ouput the list in the profile view.
 
-If you create a custom template you need to set two options `custom_template` and `template_name` as such.
+`[connections_list id=2 template_name='card-single']`
+This will ouput entry id 2 using the card-single template.
 
-`[connections_list custom_template=true template_name='the_template_name']`
+If you create a custom template you need to set two options `custom_template` and `template_name` as such. For example, say you create a custom template named my-template.php. The template name you would enter in the option would be "my-template", dropping off the ".php".
+
+`[connections_list custom_template='true' template_name='the_template_name']`
 Both of these must be set in order to use a custom template and the custom template must be saved in the `./wp-content/connections_templates` directory/folder.
 
-There is also a second shortcode that can be use for displaying a list of upcoming birthdays and/or anniversaries.
+There is a second shortcode that can be use for displaying a list of upcoming birthdays and/or anniversaries. Please note that this shortcode, at the moment does not support the use of custom templates. This support will be coming in a future release.
 
 `[upcoming_list]`
 To show the upcoming birthdays use this shortcode. This defaults to showing birthdays for the next 30 days using the this date format: January 15th; and does not show last names. ** NOTE: Custom template is not supported with this shortcode. This will be added to a future version. **
@@ -372,3 +378,4 @@ This plugin requires PHP 5. Turn on or ask your web host to turn on PHP 5 suppor
 * Fixed the CSS to load only in the Connections page
 * All the fields that can be input are shown in the output
 * Added the ability to use custom output templates and a slew of template tags
+* Added a default profile template and a default single entry template
