@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111
 Description: An address book.
-Version: 0.3.2
+Version: 0.3.3
 Author: Steven A. Zahm
 Author URI: http://www.shazahm.net
 
@@ -40,7 +40,7 @@ require_once(WP_PLUGIN_DIR . '/connections/includes/class.utility.php');
 //plugin template objects
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.output.php');
 
-$current_version = "0.3.2";
+$current_version = "0.3.3";
 session_start();
 
 // Define a few constants and defaults until I can get to creating the options page.
@@ -1056,6 +1056,10 @@ function _connections_list($atts, $content=null) {
 			'private_override' => 'false',
 			'show_alphaindex' => 'false',
 			'list_type' => 'all',
+			'last_name' => null,
+			'title' => null,
+			'organization' => null,
+			'department' => null,
 			'template_name' => 'card',
 			'custom_template'=>'false',
 			), $atts ) ;
@@ -1080,12 +1084,27 @@ function _connections_list($atts, $content=null) {
 		
 		foreach ($results as $row) {
 			$entry = new output($row);
+			$continue = false;
 			
 			if ($atts['list_type'] != 'all') {
 				if ($atts['list_type'] != $entry->getEntryType()) {
 					continue;
 				}
 			}
+			
+			switch ($atts)
+			{
+				case ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != null):
+					$continue = true;
+				case ($entry->getTitle() != $atts['title'] && $atts['title'] != null):
+					$continue = true;
+				case ($entry->getOrganization() != $atts['organization'] && $atts['organization'] != null):
+					$continue = true;
+				case ($entry->getDepartment() != $atts['department'] && $atts['department'] != null):
+					$continue = true;
+			}
+			
+			if ($continue == true) continue;
 	
 			//Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
 			$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));

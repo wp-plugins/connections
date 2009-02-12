@@ -26,6 +26,7 @@ This plugin is under active developement, please make sure you have a recent bac
 * **NEW** Added the ability to use custom templates and provided many template tags. See the instructions under Installation.
 * **NEW** Added a alternate list format / single entry format -- profile view.
 * **NEW** Added a alternate single entry format -- single-card view.
+* **NEW** Filter shortcode attributes for filtering the output list. See the instructions under Installation.
 
 **Upcoming features:**
 
@@ -83,6 +84,10 @@ This shortcode has several available options:
 4. list_type
 5. custom_template
 6. template_name
+7. last_name *filter*
+8. title *filter*
+9. organization *filter*
+10. department *filter*
 
 
 The *id* option allows you to show the contact info for a single entry. Default is to show all public and/or private entries in the list. The ID can be found in the admin by showing the details for an entry. It will be labelled **Entry ID:**
@@ -128,6 +133,14 @@ If you create a custom template you need to set two options `custom_template` an
 
 `[connections_list custom_template='true' template_name='the_template_name']`
 Both of these must be set in order to use a custom template and the custom template must be saved in the `./wp-content/connections_templates` directory/folder.
+
+The filter attributes can be used one at a time per list or in combinations per list and are case sensitive. See the examples below.
+
+`[connections_list last_name='Zahm']`
+This will only output a list where the last name is "Zahm". Remember, filters are case sensitive.
+
+`[connections_list organization='ACME' department='Accounting']`
+This will only output a list where the organization is "ACME" AND where the department is "Accounting". Remember, filters are case sensitive.
 
 There is a second shortcode that can be use for displaying a list of upcoming birthdays and/or anniversaries. Please note that this shortcode, at the moment does not support the use of custom templates. This support will be coming in a future release.
 
