@@ -29,18 +29,6 @@ class entry
 	private $lastName;
 	
 	/**
-	 * String: Full Nume
-	 * @var string
-	 */
-	private $fullFirstLastName;
-	
-	/**
-	 * String: Full Name; last name first
-	 * @var
-	 */
-	private $fullLastFirstName;
-	
-	/**
 	 * String: Title
 	 * @var string
 	 */
@@ -231,59 +219,6 @@ class entry
     }
     
     /**
-     * The entries full name. If entry type is set to organization the method will return the organization name.
-     * Returns $fullFirstLastName.
-     * @see entry::$fullFirstLastName
-     */
-    public function getFullFirstLastName()
-    {
-        if ($this->entryType != "organization")
-		{
-			$this->fullFirstLastName = $this->firstName . " " . $this->lastName;
-			return $this->fullFirstLastName;
-		} else {
-			return $this->organization;
-		}
-		
-    }
-    
-    /**
-     * Sets $fullFirstLastName.
-     * @param object $fullFirstLastName
-     * @see entry::$fullFirstLastName
-     */
-    public function setFullFirstLastName($fullFirstLastName)
-    {
-        $this->fullFirstLastName = $fullFirstLastName;
-    }
-    
-    /**
-     * The entries full name; last name first. If entry type is set to organization the method will return the organization name.
-     * Returns $fullLastFirstName.
-     * @see entry::$fullLastFirstName
-     */
-    public function getFullLastFirstName()
-    {
-    	if ($this->entryType != "organization")
-		{
-			$this->fullLastFirstName = $this->lastName . ", " . $this->firstName;
-			return $this->fullLastFirstName;
-		} else {
-			return $this->organization;
-		}
-    }
-    
-    /**
-     * Sets $fullLastFirstName.
-     * @param object $fullLastFirstName
-     * @see entry::$fullLastFirstName
-     */
-    public function setFullLastFirstName($fullLastFirstName)
-    {
-        $this->fullLastFirstName = $fullLastFirstName;
-    }
-    
-    /**
      * Returns the entries last name.
      * Returns $lastName.
      * @see entry::$lastName
@@ -303,6 +238,39 @@ class entry
         $this->lastName = $lastName;
     }
     
+	 /**
+     * The entries full name. If entry type is set to organization the method will return the organization name.
+     * Returns $fullFirstLastName.
+     * @see entry::$fullFirstLastName
+     */
+    public function getFullFirstLastName()
+    {
+        if ($this->getEntryType() != "organization")
+		{
+			$fullFirstLastName = $this->getFirstName() . ' ' . $this->getLastName();
+			return $fullFirstLastName;
+		} else {
+			return $this->getOrganization();
+		}
+		
+    }
+        
+    /**
+     * The entries full name; last name first. If entry type is set to organization the method will return the organization name.
+     * Returns $fullLastFirstName.
+     * @see entry::$fullLastFirstName
+     */
+    public function getFullLastFirstName()
+    {
+    	if ($this->getEntryType() != "organization")
+		{
+			$fullLastFirstName = $this->getLastName() . ', ' . $this->getFirstName();
+			return $fullLastFirstName;
+		} else {
+			return $this->getOrganization();
+		}
+    }
+	
     /**
      * Returns the entries Organization.
      * Returns $organization.
@@ -780,6 +748,9 @@ class phoneNumber
 			case 'workfax':
 				$this->name = "Work Fax";
 				break;
+			case 'fax':
+				$this->name = "Work Fax";
+				break;
 			
 			default:
 				$this->name = $data['name'];
@@ -835,7 +806,42 @@ class phoneNumber
      */
     public function getType($data)
     {
-        $this->type = $data['type'];
+        //This is here for compatibility for versions 0.2.24 and earlier;
+		switch ($data['type'])
+		{
+			case 'home':
+				$this->type = "homephone";
+				break;
+			case 'homephone':
+				$this->type = "homephone";
+				break;
+			case 'homefax':
+				$this->type = "homefax";
+				break;
+			case 'cell':
+				$this->type = "cellphone";
+				break;
+			case 'cellphone':
+				$this->type = "cellphone";
+				break;
+			case 'work':
+				$this->type = "workphone";
+				break;
+			case 'workphone':
+				$this->type = "workphone";
+				break;
+			case 'workfax':
+				$this->type = "workfax";
+				break;
+			case 'fax':
+				$this->type = "workfax";
+				break;
+			
+			default:
+				$this->type = $data['type'];
+			break;
+		}
+		
 		return $this->type;
     }
     

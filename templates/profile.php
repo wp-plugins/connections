@@ -6,8 +6,11 @@
 			<span class="name" id="<?php echo $entry->getId() ?>" style="font-size:larger;font-variant: small-caps"><strong><?php echo $entry->getFullFirstLastName() ?></strong></span><br />
 			<div style="margin-bottom: 20px;">
 				<?php echo $entry->getTitleBlock() ?><br />
-				<?php echo $entry->getOrganizationBlock() ?><br />
-				<?php echo $entry->getDepartmentBlock() ?><br />
+				
+				<div class="org">
+					<?php echo $entry->getOrganizationBlock() ?><br />
+					<?php echo $entry->getDepartmentBlock() ?><br />
+				</div>
 			</div>
 			<?php echo $entry->getBio() ?>
 		</div>

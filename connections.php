@@ -1144,10 +1144,12 @@ function _connections_list($atts, $content=null) {
 			
 			if (isset($template))
 			{
-				ob_start();
-			    include($template);
-			    $out .= ob_get_contents();
-			    ob_end_clean();
+				$out .= '<div id="' . $entry->getFirstName() . '-' . $entry->getLastName() . '" class="vcard">';
+					ob_start();
+				    include($template);
+				    $out .= ob_get_contents();
+				    ob_end_clean();
+				$out .= '</div>';
 			}
 						
 		}

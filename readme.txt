@@ -220,12 +220,6 @@ Returns the first name.
 `entry->getLastName()`
 Returns the last name.
 
-`entry->getFullFirstLastName()`
-Retuns the full name with the first name first. NOTE: if the entry type in an organization this will return the organizations name instead.
-
-`entry->getFullLastFirstName()`
-Retuns the full name with the last name first. NOTE: if the entry type in an organization this will return the organizations name instead.
-
 `entry->getOrganization()`
 Returns the organization.
 
@@ -262,7 +256,7 @@ Returns the biography.
 `entry->getNotes()`
 Returns the notes.
 
-= These tags return some preformatted HTML blocks =
+= These tags return some preformatted HTML blocks and should be used to maintain hCard compatibility. =
 
 `entry->getThumbnailImage()`
 Returns the thumbnail image.
@@ -272,6 +266,12 @@ Returns the card image.
 
 `entry->getProfileImage()`
 Returns the profile image.
+
+`entry->getFullFirstLastName()`
+Retuns the full name with the first name first. NOTE: if the entry type in an organization this will return the organizations name instead.
+
+`entry->getFullLastFirstName()`
+Retuns the full name with the last name first. NOTE: if the entry type in an organization this will return the organizations name instead.
 
 `entry->getTitleBlock()`
 Returns the title in a `<span>` tag.
