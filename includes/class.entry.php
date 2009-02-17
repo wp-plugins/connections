@@ -243,7 +243,7 @@ class entry
      * Returns $fullFirstLastName.
      * @see entry::$fullFirstLastName
      */
-    public function getFullFirstLastName()
+    public function getFullFirstLastNameSTR()
     {
         if ($this->getEntryType() != "organization")
 		{
@@ -260,7 +260,7 @@ class entry
      * Returns $fullLastFirstName.
      * @see entry::$fullLastFirstName
      */
-    public function getFullLastFirstName()
+    public function getFullLastFirstNameSTR()
     {
     	if ($this->getEntryType() != "organization")
 		{

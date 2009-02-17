@@ -3,14 +3,10 @@
 		<?php echo $entry->getCardImage() ?>
 		<div style="clear:both;"></div>
 		<div style="margin-bottom: 10px;">
-			<span id="<?php echo $entry->getId() ?>" style="font-size:larger;font-variant: small-caps"><strong><?php echo $entry->getFullFirstLastName() ?></strong></span><br />
+			<span style="font-size:larger;font-variant: small-caps"><strong><?php echo $entry->getFullFirstLastName() ?></strong></span><br />
 			
 			<?php echo $entry->getTitleBlock() ?><br />
-			
-			<div class="org">
-				<?php echo $entry->getOrganizationBlock() ?><br />
-				<?php echo $entry->getDepartmentBlock() ?><br />
-			</div>
+			<?php echo $entry->getOrganizationBlock() ?><br />
 			
 		</div>
 			

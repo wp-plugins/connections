@@ -1107,9 +1107,9 @@ function _connections_list($atts, $content=null) {
 			if ($continue == true) continue;
 	
 			//Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
-			$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
+			$currentLetter = strtoupper(substr($entry->getFullLastFirstNameSTR(), 0, 1));
 			if ($currentLetter != $previousLetter && $atts['id'] == null) {
-				$setAnchor = "<a name='$currentLetter'></a>";
+				$setAnchor = '<a name="' . $currentLetter . '"></a>';
 				$previousLetter = $currentLetter;
 			} else {
 				$setAnchor = null;

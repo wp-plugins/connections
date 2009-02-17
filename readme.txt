@@ -277,7 +277,7 @@ Retuns the full name with the last name first. NOTE: if the entry type in an org
 Returns the title in a `<span>` tag.
 
 `entry->getOrganizationBlock()`
-Returns the organization in a `<span>` tag. NOTE: this will only ouput if the entry type is not and organization. To get the organization name, use one of the full name template tags.
+Returns the organization ** AND ** the department in a `<div>` tag with each wrapped in a span. NOTE: this will only output the organization if the entry type is not and organization, but will still output the department if applicable. To get the organization name, use one of the full name template tags.
 
 `entry->getDepartmentBlock()`
 Returns the department in a `<span>`.

@@ -62,12 +62,17 @@ class output extends entry
 	
 	public function getOrganizationBlock()
 	{
-		if ($this->getOrganization() && $this->getEntryType() != 'organization') return '<span class="organization-name">' . $this->getOrganization() . '</span>';
+		$out = '<div class="org">';
+			if ($this->getOrganization() && $this->getEntryType() != 'organization') $out .= '<span class="organization-name">' . $this->getOrganization() . '</span><br />';
+			if ($this->getDepartment()) $out .= '<span class="organization-unit">' . $this->getDepartment() . '</span>';
+		$out .= '</div>';
+		
+		return $out;
 	}
 	
 	public function getDepartmentBlock()
 	{
-		if ($this->getDepartment()) return '<span class="organization-unit">' . $this->getDepartment() . '</span>';
+		if ($this->getDepartment()) return '<span class="org"><span class="organization-unit">' . $this->getDepartment() . '</span></span>';
 	}
 	
 	public function getAddressBlock()
@@ -102,12 +107,53 @@ class output extends entry
 			foreach ($this->getPhoneNumbers() as $phoneNumberRow) 
 			{
 				//Type for hCard compatibility. Hidden.
-				if ($phoneNumberObject->getNumber($phoneNumberRow) != null) $out .=  '<strong>' . $phoneNumberObject->getName($phoneNumberRow) . '</strong>: <span class="tel"><span class="type" style="display: none;">' . $phoneNumberObject->getType($phoneNumberRow) . '</span><span class="value">' .  $phoneNumberObject->getNumber($phoneNumberRow) . '</span></span><br />';
+				if ($phoneNumberObject->getNumber($phoneNumberRow) != null) $out .=  '<strong>' . $phoneNumberObject->getName($phoneNumberRow) . '</strong>: <span class="tel">' . $this->gethCardTelType($phoneNumberRow) . '<span class="value">' .  $phoneNumberObject->getNumber($phoneNumberRow) . '</span></span><br />';
 			}
 			$out .= '</div>';
 		}
 		return $out;
 	}
+	
+	public function gethCardTelType($data)
+    {
+        //This is here for compatibility for versions 0.2.24 and earlier;
+		switch ($data['type'])
+		{
+			case 'home':
+				$type = '<span class="type" style="display: none;">home</span>';
+				break;
+			case 'homephone':
+				$type = '<span class="type" style="display: none;">home</span>';
+				break;
+			case 'homefax':
+				$type = '<span class="type" style="display: none;">home</span><span class="type" style="display: none;">fax</span>';
+				break;
+			case 'cell':
+				$type = '<span class="type" style="display: none;">cell</span>';
+				break;
+			case 'cellphone':
+				$type = '<span class="type" style="display: none;">cell</span>';
+				break;
+			case 'work':
+				$type = '<span class="type" style="display: none;">work</span>';
+				break;
+			case 'workphone':
+				$type = '<span class="type" style="display: none;">work</span>';
+				break;
+			case 'workfax':
+				$type = '<span class="type" style="display: none;">work</span><span class="type" style="display: none;">fax</span>';
+				break;
+			case 'fax':
+				$type = '<span class="type" style="display: none;">work</span><span class="type" style="display: none;">fax</span>';
+				break;
+			
+			default:
+				$type = $data['type'];
+			break;
+		}
+		
+		return $type;
+    }
 	
 	public function getEmailAddressBlock()
 	{
@@ -133,7 +179,7 @@ class output extends entry
 			$out .= '<div class="im" style="margin-bottom: 10px;">';
 			foreach ($this->getIm() as $imRow)
 			{
-				if ($imObject->getId($imRow) != null) $out .= '<strong>' . $imObject->getName($imRow) . ':</strong> ' . $imObject->getId($imRow). '</a><br />';
+				if ($imObject->getId($imRow) != null) $out .= '<strong>' . $imObject->getName($imRow) . ':</strong> ' . $imObject->getId($imRow). '<br />';
 			}
 			$out .= '</div>';
 		}
@@ -190,7 +236,7 @@ class output extends entry
 	
 	public function returnToTopAnchor()
 	{
-		return '<a href="#connections-list-head" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" /></a>';
+		return '<a href="#connections-list-head" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" alt="Return to top."/></a>';
 	}
 	
 }
