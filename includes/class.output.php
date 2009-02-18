@@ -180,7 +180,14 @@ class output extends entry
 				break;
 			
 			default:
-				$type = '<span class="type" style="display: none;">home</span>';
+				if ($this->getEntryType() == 'individual')
+				{
+					$type = '<span class="type" style="display: none;">home</span>';
+				}
+				elseif ($this->getEntryType() == 'organization')
+				{
+					$type = '<span class="type" style="display: none;">work</span>';
+				}
 			break;
 		}
 		

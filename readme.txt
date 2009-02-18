@@ -293,7 +293,7 @@ Returns the organization in a `<span>`. If the entry type is an organization, th
 Returns the department in a `<span>`.
 
 `entry->getAddressBlock()`
-Returns all the addresses in a `<div>` and each address item in a `<span>`. NOTE: in order for proper hCard support the address must have a type assign; either work or home. If none is set home address type will be set for hCard support.
+Returns all the addresses in a `<div>` and each address item in a `<span>`. NOTE: in order for proper hCard support the address must have a type assign; either work or home. If none is set, the entry type will be used to set the address type as either home or work.
 
 `entry->getPhoneNumberBlock()`
 Returns all the phone numbers in a `<div>` and each phone number item in a `<span>`.
