@@ -1,4 +1,4 @@
-<div class="cn-entry" id="cn-<?php echo $entry->getId() ?>" style="-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative;">
+<div class="cn-entry" id="entry-<?php echo $entry->getId() ?>" style="-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative;">
 	<div style="width:49%; float:left">
 		<?php echo $entry->getCardImage() ?>
 		<div style="clear:both;"></div>

@@ -1254,9 +1254,9 @@ function _upcoming_list($atts, $content=null) {
 					$current_date = strtotime(date("d", $row->$atts['list_type']) . '-' . date("m", $row->$atts['list_type']) . '-' . date("Y"));
 				}
 				if (!$atts['show_lastname']) {
-					$upcoming_list["<span class='name' id='cn_name" . $row->id . "'>" . $row->first_name . " " . $row->last_name{0} . ".</span>"] .= $current_date;
+					$upcoming_list["<span class='name' id='entry-" . $row->id . "'>" . $row->first_name . " " . $row->last_name{0} . ".</span>"] .= $current_date;
 				} else {
-					$upcoming_list["<span class='name' id='cn_name" . $row->id . "'>" . $row->first_name . " " . $row->last_name . "</span>"] .= $current_date;
+					$upcoming_list["<span class='name' id='entry-" . $row->id . "'>" . $row->first_name . " " . $row->last_name . "</span>"] .= $current_date;
 				}
 			}
 		}
