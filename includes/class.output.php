@@ -25,7 +25,7 @@ class output extends entry
      * Returns $fullFirstLastName.
      * @see entry::$fullFirstLastName
      */
-    public function getFullFirstLastName()
+    public function getFullFirstLastNameBlock()
     {
         if ($this->getEntryType() != "organization")
 		{
@@ -43,7 +43,7 @@ class output extends entry
      * Returns $fullLastFirstName.
      * @see entry::$fullLastFirstName
      */
-    public function getFullLastFirstName()
+    public function getFullLastFirstNameBlock()
     {
     	if ($this->getEntryType() != "organization")
 		{
@@ -60,14 +60,19 @@ class output extends entry
 		if ($this->getTitle()) return '<span class="title">' . $this->getTitle() . '</span>';
 	}
 	
-	public function getOrganizationBlock()
+	public function getOrgUnitBlock()
 	{
 		$out = '<div class="org">';
 			if ($this->getOrganization() && $this->getEntryType() != 'organization') $out .= '<span class="organization-name">' . $this->getOrganization() . '</span><br />';
-			if ($this->getDepartment()) $out .= '<span class="organization-unit">' . $this->getDepartment() . '</span>';
+			if ($this->getDepartment()) $out .= '<span class="organization-unit">' . $this->getDepartment() . '</span><br />';
 		$out .= '</div>';
 		
 		return $out;
+	}
+	
+	public function getOrganizationBlock()
+	{
+		if ($this->getOrganization() && $this->getEntryType() != 'organization') return '<span class="org">' . $this->getOrganization() . '</span>';
 	}
 	
 	public function getDepartmentBlock()
@@ -90,7 +95,8 @@ class output extends entry
 					if ($addressObject->getState($addressRow) != null) $out .= '<span class="region">' . $addressObject->getState($addressRow) . '</span>&nbsp;';
 					if ($addressObject->getZipCode($addressRow) != null) $out .= '<span class="postal-code">' . $addressObject->getZipCode($addressRow) . '</span><br />';
 					if ($addressObject->getCountry($addressRow) != null) $out .= '<span class="country-name">' . $addressObject->getCountry($addressRow) . '</span>';
-					$out .= '<div class="type" style="display: none;">' . $addressObject->getType($addressRow) . '</div>'; //Type for hCard compatibility. Hidden.
+					//$out .= '<div class="type" style="display: none;">' . $addressObject->getType($addressRow) . '</div>'; //Type for hCard compatibility. Hidden.
+					$out .= $this->gethCardAdrType($addressRow);
 				$out .= '</div>';
 															
 			}
@@ -155,6 +161,32 @@ class output extends entry
 		return $type;
     }
 	
+	public function gethCardAdrType($data)
+    {
+        //This is here for compatibility for versions 0.2.24 and earlier;
+		switch ($data['type'])
+		{
+			case 'home':
+				$type = '<span class="type" style="display: none;">home</span>';
+				break;
+			case 'work':
+				$type = '<span class="type" style="display: none;">work</span>';
+				break;
+			case 'school':
+				$type = '<span class="type" style="display: none;">school</span>';
+				break;
+			case 'other':
+				$type = '<span class="type" style="display: none;">other</span>';
+				break;
+			
+			default:
+				$type = '<span class="type" style="display: none;">home</span>';
+			break;
+		}
+		
+		return $type;
+    }
+	
 	public function getEmailAddressBlock()
 	{
 		if ($this->getEmailAddresses())
@@ -203,6 +235,17 @@ class output extends entry
 	
 	public function getBirthdayBlock($format=null)
 	{
+		/*$currentYear = date('Y');
+		
+		if ($this->getBirthday('m') < date('m'))
+		{
+			$nextBDay = strtotime($currentYear . '-' . $this->getBirthday('m') . '-' . $this->getBirthday('d') . '+ 1 year');
+		}
+		else
+		{
+			$nextBDay = strtotime($currentYear . '-' . $this->getBirthday('m') . '-' . $this->getBirthday('d'));
+		}*/
+				
 		//NOTE: The second birthday span [hidden] is for hCard compatibility.
 		if ($this->getBirthday()) $out = '<span class="birthday"><strong>Birthday:</strong> ' . $this->getBirthday($format) . '</span><span class="bday" style="display:none">' . $this->getBirthday('Y-m-d') . '</span><br />';
 		return $out;

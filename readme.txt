@@ -198,6 +198,7 @@ Use this option to define the list title to any text you wish.
 ** Template Tags **
 
 In the version 0.3 series of Connections the ability to use custom output templates with many tags were added that can be used for customizing the template. The template tags are used in nearly the same fashion as the template tags when developing WordPress themes. So if you know a little about HTML and have dabbled in WordPress them developement, creating custom templates for Connections should be very easy. Every tag must be wrapped in a PHP statment and echoed `<?php ?>`. See the example below. Custom templates must be saved in `./wp-content/connections_templates` directory/folder. To tell the Connections to use a custom template you must set the two template options when using the shortcode options mentioned above.
+If these are used you will have to ensure you class the items correctly in order to maintain hCard compatibility. Otherwise use the template tags that output preformatted HTML to maintain hCard compatibility.
 
 `<?php echo entry->getId(); ?>`
 Example of a template tag that return the entry's ID.
@@ -219,6 +220,12 @@ Returns the first name.
 
 `entry->getLastName()`
 Returns the last name.
+
+`entry->getFullFirstLastName()`
+Retuns the full name with the first name first. NOTE: if the entry type in an organization this will return the organizations name instead.
+
+`entry->getFullLastFirstName()`
+Retuns the full name with the last name first. NOTE: if the entry type in an organization this will return the organizations name instead.
 
 `entry->getOrganization()`
 Returns the organization.
@@ -267,23 +274,26 @@ Returns the card image.
 `entry->getProfileImage()`
 Returns the profile image.
 
-`entry->getFullFirstLastName()`
+`entry->getFullFirstLastNameBlock()`
 Retuns the full name with the first name first. NOTE: if the entry type in an organization this will return the organizations name instead.
 
-`entry->getFullLastFirstName()`
+`entry->getFullLastFirstNameBlock()`
 Retuns the full name with the last name first. NOTE: if the entry type in an organization this will return the organizations name instead.
 
 `entry->getTitleBlock()`
 Returns the title in a `<span>` tag.
 
-`entry->getOrganizationBlock()`
+`entry->getOrgUnitBlock()`
 Returns the organization ** AND ** the department in a `<div>` tag with each wrapped in a span. NOTE: this will only output the organization if the entry type is not and organization, but will still output the department if applicable. To get the organization name, use one of the full name template tags.
+
+`entry->getOrganizationBlock()`
+Returns the organization in a `<span>`. If the entry type is an organization, this tag will not output any HTML. You should use one of the full name tags to get the organization name.
 
 `entry->getDepartmentBlock()`
 Returns the department in a `<span>`.
 
 `entry->getAddressBlock()`
-Returns all the addresses in a `<div>` and each address item in a `<span>`.
+Returns all the addresses in a `<div>` and each address item in a `<span>`. NOTE: in order for proper hCard support the address must have a type assign; either work or home. If none is set home address type will be set for hCard support.
 
 `entry->getPhoneNumberBlock()`
 Returns all the phone numbers in a `<div>` and each phone number item in a `<span>`.

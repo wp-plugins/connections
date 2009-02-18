@@ -1078,8 +1078,7 @@ function _connections_list($atts, $content=null) {
 		
 	if ($results != null) {
 		
-		if (!$atts['id']) $out = "<div id='connections-list-head'></div>";
-		if ($atts['show_alphaindex'] == 'true') $out .= "<div class='cnalphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
+		if ($atts['show_alphaindex'] == 'true') $out .= "<div id='connections-list-head' class='cnalphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
 		$out .=  "<div class='connections-list'>\n";
 		
 		foreach ($results as $row) {
@@ -1107,7 +1106,7 @@ function _connections_list($atts, $content=null) {
 			if ($continue == true) continue;
 	
 			//Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
-			$currentLetter = strtoupper(substr($entry->getFullLastFirstNameSTR(), 0, 1));
+			$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
 			if ($currentLetter != $previousLetter && $atts['id'] == null) {
 				$setAnchor = '<a name="' . $currentLetter . '"></a>';
 				$previousLetter = $currentLetter;
@@ -1144,7 +1143,7 @@ function _connections_list($atts, $content=null) {
 			
 			if (isset($template))
 			{
-				$out .= '<div id="' . $entry->getFirstName() . '-' . $entry->getLastName() . '" class="vcard">';
+				$out .= '<div class="vcard">';
 					ob_start();
 				    include($template);
 				    $out .= ob_get_contents();
@@ -1248,15 +1247,15 @@ function _upcoming_list($atts, $content=null) {
 		After a new list is built, it is resorted based on the date.*/
 		foreach ($results as $row) {
 			if ($row->$atts['list_type']) {
-				if (date("m", $row->$atts['list_type']) < date("m")) {
+				if (date("m", $row->$atts['list_type']) <= date("m") && date("d", $row->$atts['list_type']) < date("d")) {
 					$current_date = strtotime(date("d", $row->$atts['list_type']) . '-' . date("m", $row->$atts['list_type']) . '-' . date("Y") . " + 1 year");
 				} else {
 					$current_date = strtotime(date("d", $row->$atts['list_type']) . '-' . date("m", $row->$atts['list_type']) . '-' . date("Y"));
 				}
 				if (!$atts['show_lastname']) {
-					$upcoming_list["<span class='name' id='entry-" . $row->id . "'>" . $row->first_name . " " . $row->last_name{0} . ".</span>"] .= $current_date;
+					$upcoming_list["<span class='name'>" . $row->first_name . " " . $row->last_name{0} . ".</span>"] .= $current_date;
 				} else {
-					$upcoming_list["<span class='name' id='entry-" . $row->id . "'>" . $row->first_name . " " . $row->last_name . "</span>"] .= $current_date;
+					$upcoming_list["<span class='name'>" . $row->first_name . " " . $row->last_name . "</span>"] .= $current_date;
 				}
 			}
 		}

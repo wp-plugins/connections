@@ -243,7 +243,7 @@ class entry
      * Returns $fullFirstLastName.
      * @see entry::$fullFirstLastName
      */
-    public function getFullFirstLastNameSTR()
+    public function getFullFirstLastName()
     {
         if ($this->getEntryType() != "organization")
 		{
@@ -260,7 +260,7 @@ class entry
      * Returns $fullLastFirstName.
      * @see entry::$fullLastFirstName
      */
-    public function getFullLastFirstNameSTR()
+    public function getFullLastFirstName()
     {
     	if ($this->getEntryType() != "organization")
 		{
@@ -421,7 +421,18 @@ class entry
 		
 		if ($this->anniversary)
 		{
-			return date($format,$this->anniversary);
+			$currentYear = date('Y');
+			
+			if (date('m', $this->anniversary) <= date('m') && date('d', $this->anniversary) < date('d'))
+			{
+				$nextADay = strtotime($currentYear . '-' . date('m', $this->anniversary) . '-' . date('d', $this->anniversary) . '+ 1 year');
+			}
+			else
+			{
+				$nextADay = strtotime($currentYear . '-' . date('m', $this->anniversary) . '-' . date('d', $this->anniversary));
+			}
+			
+			return date($format, $nextADay);
 		}
 
     }
@@ -449,8 +460,19 @@ class entry
 		}
 		
 		if ($this->birthday)
-		{
-			return date($format,$this->birthday);
+		{		
+			$currentYear = date('Y');
+			
+			if (date('m', $this->birthday) <= date('m') && date('d', $this->birthday) < date('d'))
+			{
+				$nextBDay = strtotime($currentYear . '-' . date('m', $this->birthday) . '-' . date('d', $this->birthday) . '+ 1 year');
+			}
+			else
+			{
+				$nextBDay = strtotime($currentYear . '-' . date('m', $this->birthday) . '-' . date('d', $this->birthday));
+			}
+			
+			return date($format, $nextBDay);
 		}
 
     }
