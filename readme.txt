@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: Steven A. Zahm
 Donate link: http://www.shazahm.net/?page_id=111
-Tags: addresses, address book, addressbook, bio, bios, biographies, contact, contacts, connect, connections, directory, list, lists, listings, people, profile, profiles, plugin, user, users
+Tags: addresses, address book, addressbook, bio, bios, biographies, contact, contacts, connect, connections, directory, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, user, users, vcard
 Requires at least: 2.7
 Tested up to: 2.7.1
 Stable tag: 0.3.3
@@ -27,6 +27,8 @@ This plugin is under active developement, please make sure you have a recent bac
 * **NEW** Added a alternate list format / single entry format -- profile view.
 * **NEW** Added a alternate single entry format -- single-card view.
 * **NEW** Filter shortcode attributes for filtering the output list. See the instructions under Installation.
+* **NEW** xHTML Transition output.
+* **NEW** Entries output in [hCard](http://microformats.org/wiki/hcard) compatible format.
 
 **Upcoming features:**
 
@@ -51,10 +53,6 @@ This plugin is under active developement, please make sure you have a recent bac
 **Known Issues:**
 
 * **Currently when an image link is removed the files are not deleted from the server**
-* When edited an entry the form doesn't proper hide the fields based on the entry type
-* The styles in the output html is hard coded
-* Not all fields that are input appear when output
-* Styling for organization entries needs work
 
 == Screenshots ==
 [Samples and screenshots can be found here](http://www.shazahm.net/?page_id=111)
@@ -313,6 +311,12 @@ Returns the birthday date in a `<span>`. The format is optional and conforms to 
 `entry->getAnniversaryBlock('FORMAT')`
 Returns the anniversary date in a `<span>`. The format is optional and conforms to the PHP standard, refer to the [PHP Manual](http://us2.php.net/date) for the format characters.
 
+'entry->getNotesBlock()`
+Returns the notes in hCard compatible format wrapped in a `<div>`.
+
+`entry->getRevisionDateBlock()`
+Returns the last revision date in hCard compatible format wrapped in a `<span>`.
+
 `entry->getLastUpdatedStyle()`
 Returns `color: VARIES BY AGE; ` that can be used in then style HTML tag.
 Example usage: `<span style="<?php echo entry->getLastUpdatedStyle() ?>">Updated <?php echo entry->getHumanTimeDiff() ?></span>`
@@ -339,6 +343,9 @@ This plugin requires PHP 5. Turn on or ask your web host to turn on PHP 5 suppor
 * It also should be mentioned that I am not a web designer nor am I a PHP programmer, this plugin is being developed out of a need and for the learning experience.
 * If support is needed use the forum on the wordpress.org site. Title the post "[Plugin: Connections] Your Problem". Also be sure to tag the post with "connections".
 
+= Why do dotted underlines show under the dates? =
+
+Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>` tag is needed for hCalendar event compatibility. To remove this from the styling, add `.vevent abbr{border:0}` to your theme's CSS.
 
 == Change Log ==
 
@@ -402,3 +409,14 @@ This plugin requires PHP 5. Turn on or ask your web host to turn on PHP 5 suppor
 * All the fields that can be input are shown in the output
 * Added the ability to use custom output templates and a slew of template tags
 * Added a default profile template and a default single entry template
+
+=0.3.3=
+
+* Added shortcode filter attributes
+
+=0.3.???=
+
+* Added hCard compatible markup
+* xHTML Transitional valid output
+* Added hCalendar compatible markup for bithdays and anniversaries.
+* Birthday/anniversary will now show the next anniversary/birthday date for the entry.

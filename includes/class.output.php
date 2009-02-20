@@ -242,26 +242,31 @@ class output extends entry
 	
 	public function getBirthdayBlock($format=null)
 	{
-		/*$currentYear = date('Y');
-		
-		if ($this->getBirthday('m') < date('m'))
-		{
-			$nextBDay = strtotime($currentYear . '-' . $this->getBirthday('m') . '-' . $this->getBirthday('d') . '+ 1 year');
-		}
-		else
-		{
-			$nextBDay = strtotime($currentYear . '-' . $this->getBirthday('m') . '-' . $this->getBirthday('d'));
-		}*/
-				
+		//NOTE: The vevent span is for hCalendar compatibility.
 		//NOTE: The second birthday span [hidden] is for hCard compatibility.
-		if ($this->getBirthday()) $out = '<span class="birthday"><strong>Birthday:</strong> ' . $this->getBirthday($format) . '</span><span class="bday" style="display:none">' . $this->getBirthday('Y-m-d') . '</span><br />';
+		//NOTE: The third span series [hidden] is for hCalendar compatibility.
+		if ($this->getBirthday()) $out = '<span class="vevent"><span class="birthday"><strong>Birthday:</strong> <abbr class="dtstart" title="' . $this->getBirthday('Ymd') .'">' . $this->getBirthday($format) . '</abbr></span>' .
+										 '<span class="bday" style="display:none">' . $this->getBirthday('Y-m-d') . '</span>' .
+										 '<span class="summary" style="display:none">Birthday - ' . $this->getFullFirstLastName() . '</span> <span class="uid" style="display:none">' . $this->getBirthday('YmdHis') . '</span> </span><br />' . "\n";
 		return $out;
 	}
 	
 	public function getAnniversaryBlock($format=null)
 	{
-		if ($this->getAnniversary()) $out = '<span class="anniversary"><strong>Anniversary:</strong> ' . $this->getAnniversary($format) . '</span><br />';
+		//NOTE: The vevent span is for hCalendar compatibility.
+		if ($this->getAnniversary()) $out = '<span class="vevent"><span class="anniversary"><strong>Anniversary:</strong> <abbr class="dtstart" title="' . $this->getAnniversary('Ymd') . '">' . $this->getAnniversary($format) . '</abbr></span>' .
+											'<span class="summary" style="display:none">Anniversary - ' . $this->getFullFirstLastName() . '</span> <span class="uid" style="display:none">' . $this->getAnniversary('YmdHis') . '</span> </span><br />' . "\n";
 		return $out;
+	}
+	
+	public function getNotesBlock()
+	{
+		return '<div class="note">' . $this->getNotes() . '</div>';
+	}
+	
+	public function getRevisionDateBlock()
+	{
+		return '<span class="rev">' . date('Y-m-d', strtotime($this->getUnixTimeStamp())) . 'T' . date('H:i:s', strtotime($this->getUnixTimeStamp())) . 'Z' . '</span>';
 	}
 	
 	public function getLastUpdatedStyle()
