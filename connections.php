@@ -39,6 +39,8 @@ require_once(WP_PLUGIN_DIR . '/connections/includes/class.options.php');
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.utility.php');
 //plugin template objects
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.output.php');
+//builds vCard
+require_once(WP_PLUGIN_DIR . '/connections/includes/class.vcard.php');
 
 $current_version = "0.3.3";
 session_start();
@@ -1083,6 +1085,9 @@ function _connections_list($atts, $content=null) {
 		
 		foreach ($results as $row) {
 			$entry = new output($row);
+			$vCard = new vCard($row);
+			$vCard->setvCardData();
+			
 			$continue = false;
 			
 			if ($atts['list_type'] != 'all') {
