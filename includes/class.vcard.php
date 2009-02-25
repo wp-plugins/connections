@@ -3,19 +3,17 @@
 class vCard extends entry
 {
 	private $data;		//array of this vCard data
-	private $filename;	//filename for download file naming
 	private $class;		//PUBLIC, PRIVATE, CONFIDENTIAL
 	private $revisionDate;
 	private $card;
   
-	public function setvCardData($filename = null, $class = null, $revisionDate = null)
+	public function setvCardData($class = null)
 	{
-		$this->filename = $filename;
 		$this->class = $class;
-		$this->revisionDate = $revisionDate;
+		$this->revisionDate = date('Y-m-d H:i:s', strtotime($this->getUnixTimeStamp()));
 		
 		$this->data = array(
-							'display_name'=>null,
+							'display_name'=>$this->getFullFirstLastName(),
 							'first_name'=>$this->getFirstName(),
 							'last_name'=>$this->getLastName(),
 							'additional_name'=>null,
@@ -48,12 +46,13 @@ class vCard extends entry
 							'email1'=>null,
 							'email2'=>null,
 							'url'=>null,
-							'photo'=>null,
-							'birthday'=>null,
+							'photo'=>CN_IMAGE_BASE_URL . $this->getImageNameCard(),
+							'birthday'=>$this->getBirthday('Y-m-d'),
 							'timezone'=>null,
 							'sort_string'=>null,
 							'note'=>$this->getNotes()
 							);
+		$this->setvCardAddresses();
 		$this->buildvCard();
 	}
 
@@ -125,6 +124,24 @@ class vCard extends entry
 		    . $this->data['home_country']."\r\n";
 		}
 		
+		if ($this->data['other_po_box']
+			|| $this->data['other_extended_address']
+			|| $this->data['other_address']
+			|| $this->data['other_city']
+			|| $this->data['other_state']
+			|| $this->data['other_postal_code']
+			|| $this->data['other_country'])
+		{
+			$this->card .= "ADR;TYPE=other:"
+		    . $this->data['other_po_box'].";"
+		    . $this->data['other_extended_address'].";"
+		    . $this->data['other_address'].";"
+		    . $this->data['other_city'].";"
+		    . $this->data['other_state'].";"
+		    . $this->data['other_postal_code'].";"
+		    . $this->data['other_country']."\r\n";
+		}
+		
 		if ($this->data['email1']) { $this->card .= "EMAIL;TYPE=internet,pref:".$this->data['email1']."\r\n"; }
 		if ($this->data['email2']) { $this->card .= "EMAIL;TYPE=internet:".$this->data['email2']."\r\n"; }
 		if ($this->data['office_tel']) { $this->card .= "TEL;TYPE=work,voice:".$this->data['office_tel']."\r\n"; }
@@ -136,23 +153,86 @@ class vCard extends entry
 		if ($this->data['birthday']) { $this->card .= "BDAY:".$this->data['birthday']."\r\n"; }
 		if ($this->data['role']) { $this->card .= "ROLE:".$this->data['role']."\r\n"; }
 		if ($this->data['note']) { $this->card .= "NOTE:".$this->data['note']."\r\n"; }
+		if ($this->data['photo']) { $this->card .= "PHOTO;VALUE=uri:".$this->data['photo']."\r\n"; }
 		$this->card .= "TZ:".$this->data['timezone']."\r\n";
 		$this->card .= "END:VCARD\r\n";
+	}
+	
+	private function setvCardAddresses()
+	{
+		if ($this->getAddresses())
+		{
+			$addressObject = new addresses;
+			foreach ($this->getAddresses() as $addressRow)
+			{
+				switch ($addressObject->getType($addressRow))
+				{
+					case 'home':
+						$this->data['home_address'] = $addressObject->getLineOne($addressRow);
+						$this->data['home_extended_address'] = $addressObject->getLineTwo($addressRow);
+						$this->data['home_city'] = $addressObject->getCity($addressRow);
+						$this->data['home_state'] = $addressObject->getState($addressRow);
+						$this->data['home_postal_code'] = $addressObject->getZipCode($addressRow);
+						$this->data['home_country'] = $addressObject->getCountry($addressRow);
+						break;
+					case 'work':
+						$this->data['work_address'] = $addressObject->getLineOne($addressRow);
+						$this->data['work_extended_address'] = $addressObject->getLineTwo($addressRow);
+						$this->data['work_city'] = $addressObject->getCity($addressRow);
+						$this->data['work_state'] = $addressObject->getState($addressRow);
+						$this->data['work_postal_code'] = $addressObject->getZipCode($addressRow);
+						$this->data['work_country'] = $addressObject->getCountry($addressRow);
+						break;
+					case 'school':
+						
+						break;
+					case 'other':
+						$this->data['other_address'] = $addressObject->getLineOne($addressRow);
+						$this->data['other_extended_address'] = $addressObject->getLineTwo($addressRow);
+						$this->data['other_city'] = $addressObject->getCity($addressRow);
+						$this->data['other_state'] = $addressObject->getState($addressRow);
+						$this->data['other_postal_code'] = $addressObject->getZipCode($addressRow);
+						$this->data['other_country'] = $addressObject->getCountry($addressRow);
+						break;
+					
+					default:
+						if ($this->getEntryType() == 'individual')
+						{
+							$this->data['home_address'] = $addressObject->getLineOne($addressRow);
+							$this->data['home_extended_address'] = $addressObject->getLineTwo($addressRow);
+							$this->data['home_city'] = $addressObject->getCity($addressRow);
+							$this->data['home_state'] = $addressObject->getState($addressRow);
+							$this->data['home_postal_code'] = $addressObject->getZipCode($addressRow);
+							$this->data['home_country'] = $addressObject->getCountry($addressRow);
+						}
+						elseif ($this->getEntryType() == 'organization')
+						{
+							$this->data['work_address'] = $addressObject->getLineOne($addressRow);
+							$this->data['work_extended_address'] = $addressObject->getLineTwo($addressRow);
+							$this->data['work_city'] = $addressObject->getCity($addressRow);
+							$this->data['work_state'] = $addressObject->getState($addressRow);
+							$this->data['work_postal_code'] = $addressObject->getZipCode($addressRow);
+							$this->data['work_country'] = $addressObject->getCountry($addressRow);
+						}
+					break;
+				}
+			}
+		}
 	}
   
 	public function download()
 	{
-		$filename = urlencode(serialize($this->filename));
-		$card = urlencode(serialize($this->card));
+		session_start();
 		
-		return '<a href="http://www.sandbox.nh-online.com/wp-content/plugins/connections/includes/download.vCard.php?filename=' . $filename . '&card=' . $card . '">Add to Address Book</a>';
+		$filename = trim($this->data['display_name']); 
+		$filename = str_replace(" ", "_", $filename);
 		
-		//if (!$this->filename) { $this->filename = trim($this->data['display_name']); }
-		//$this->filename = str_replace(" ", "_", $this->filename);
-			//header("Content-type: text/directory");
-			//header("Content-Disposition: attachment; filename=" . $this->filename . ".vcf");
-			//header("Pragma: public");
-			//echo $this->card;
-		//return true;
+		$token = md5(uniqid(rand(), true));
+		
+		$_SESSION['vcard'][$token]['filename'] = $filename;
+		$_SESSION['vcard'][$token]['data'] = $this->card;
+		
+		return '<a href="http://www.sandbox.nh-online.com/wp-content/plugins/connections/includes/download.vCard.php?uid=' . $token . '">Add to Address Book</a>';
 	}
 }
+?>
