@@ -3,16 +3,12 @@
 class vCard extends entry
 {
 	private $data;		//array of this vCard data
-	private $class;		//PUBLIC, PRIVATE, CONFIDENTIAL
-	private $revisionDate;
 	private $card;
   
-	public function setvCardData($class = null)
+	public function setvCardData()
 	{
-		$this->class = $class;
-		$this->revisionDate = date('Y-m-d H:i:s', strtotime($this->getUnixTimeStamp()));
-		
 		$this->data = array(
+							'class'=>null,
 							'display_name'=>$this->getFullFirstLastName(),
 							'first_name'=>$this->getFirstName(),
 							'last_name'=>$this->getLastName(),
@@ -38,10 +34,18 @@ class vCard extends entry
 							'home_state'=>null,
 							'home_postal_code'=>null,
 							'home_country'=>null,
-							'office_tel'=>null,
+							'other_po_box'=>null,
+							'Other_extended_address'=>null,
+							'other_address'=>null,
+							'other_city'=>null,
+							'other_state'=>null,
+							'other_postal_code'=>null,
+							'other_country'=>null,
+							'work_tel'=>null,
 							'home_tel'=>null,
+							'home_fax'=>null,
 							'cell_tel'=>null,
-							'fax_tel'=>null,
+							'work_fax'=>null,
 							'pager_tel'=>null,
 							'email1'=>null,
 							'email2'=>null,
@@ -49,16 +53,18 @@ class vCard extends entry
 							'photo'=>CN_IMAGE_BASE_URL . $this->getImageNameCard(),
 							'birthday'=>$this->getBirthday('Y-m-d'),
 							'timezone'=>null,
+							'revision_date'=>date('Y-m-d H:i:s', strtotime($this->getUnixTimeStamp())),
 							'sort_string'=>null,
 							'note'=>$this->getNotes()
 							);
 		$this->setvCardAddresses();
+		$this->setvCardPhoneNumbers();
 		$this->buildvCard();
 	}
 
 	private function buildvCard()
 	{
-		if (!$this->class) { $this->class = "PUBLIC"; }
+		if (!$this->data['class']) { $this->data['class'] = "PUBLIC"; }
 		if (!$this->data['display_name'])
 		{
 			$this->data['display_name'] = trim($this->data['first_name']." ".$this->data['last_name']);
@@ -67,13 +73,13 @@ class vCard extends entry
 		if (!$this->data['sort_string']) { $this->data['sort_string'] = $this->data['last_name']; }
 		if (!$this->data['sort_string']) { $this->data['sort_string'] = $this->data['company']; }
 		if (!$this->data['timezone']) { $this->data['timezone'] = date("O"); }
-		if (!$this->revision_date) { $this->revision_date = date('Y-m-d H:i:s'); }
+		if (!$this->data['revision_date']) { $this->data['revision_date'] = date('Y-m-d H:i:s'); }
 		
 		$this->card = "BEGIN:VCARD\r\n";
 		$this->card .= "VERSION:3.0\r\n";
-		$this->card .= "CLASS:".$this->class."\r\n";
-		$this->card .= "PRODID:-//class_vcard from TroyWolf.com//NONSGML Version 1//EN\r\n";
-		$this->card .= "REV:".$this->revisionDate."\r\n";
+		$this->card .= "CLASS:".$this->data['class']."\r\n";
+		$this->card .= "PRODID:-//Connections - WordPress Plug-in//Version 1.0//EN\r\n";
+		$this->card .= "REV:".$this->data['revision_date']."\r\n";
 		$this->card .= "FN:".$this->data['display_name']."\r\n";
 		$this->card .= "N:"
 			. $this->data['last_name'].";"
@@ -144,10 +150,11 @@ class vCard extends entry
 		
 		if ($this->data['email1']) { $this->card .= "EMAIL;TYPE=internet,pref:".$this->data['email1']."\r\n"; }
 		if ($this->data['email2']) { $this->card .= "EMAIL;TYPE=internet:".$this->data['email2']."\r\n"; }
-		if ($this->data['office_tel']) { $this->card .= "TEL;TYPE=work,voice:".$this->data['office_tel']."\r\n"; }
+		if ($this->data['work_tel']) { $this->card .= "TEL;TYPE=work,voice:".$this->data['work_tel']."\r\n"; }
 		if ($this->data['home_tel']) { $this->card .= "TEL;TYPE=home,voice:".$this->data['home_tel']."\r\n"; }
 		if ($this->data['cell_tel']) { $this->card .= "TEL;TYPE=cell,voice:".$this->data['cell_tel']."\r\n"; }
-		if ($this->data['fax_tel']) { $this->card .= "TEL;TYPE=work,fax:".$this->data['fax_tel']."\r\n"; }
+		if ($this->data['work_fax']) { $this->card .= "TEL;TYPE=work,fax:".$this->data['work_fax']."\r\n"; }
+		if ($this->data['home_fax']) { $this->card .= "TEL;TYPE=home,fax:".$this->data['home_fax']."\r\n"; }
 		if ($this->data['pager_tel']) { $this->card .= "TEL;TYPE=work,pager:".$this->data['pager_tel']."\r\n"; }
 		if ($this->data['url']) { $this->card .= "URL;TYPE=work:".$this->data['url']."\r\n"; }
 		if ($this->data['birthday']) { $this->card .= "BDAY:".$this->data['birthday']."\r\n"; }
@@ -174,7 +181,8 @@ class vCard extends entry
 						$this->data['home_state'] = $addressObject->getState($addressRow);
 						$this->data['home_postal_code'] = $addressObject->getZipCode($addressRow);
 						$this->data['home_country'] = $addressObject->getCountry($addressRow);
-						break;
+					break;
+					
 					case 'work':
 						$this->data['work_address'] = $addressObject->getLineOne($addressRow);
 						$this->data['work_extended_address'] = $addressObject->getLineTwo($addressRow);
@@ -182,10 +190,17 @@ class vCard extends entry
 						$this->data['work_state'] = $addressObject->getState($addressRow);
 						$this->data['work_postal_code'] = $addressObject->getZipCode($addressRow);
 						$this->data['work_country'] = $addressObject->getCountry($addressRow);
-						break;
+					break;
+					
 					case 'school':
-						
-						break;
+						$this->data['other_address'] = $addressObject->getLineOne($addressRow);
+						$this->data['other_extended_address'] = $addressObject->getLineTwo($addressRow);
+						$this->data['other_city'] = $addressObject->getCity($addressRow);
+						$this->data['other_state'] = $addressObject->getState($addressRow);
+						$this->data['other_postal_code'] = $addressObject->getZipCode($addressRow);
+						$this->data['other_country'] = $addressObject->getCountry($addressRow);
+					break;
+					
 					case 'other':
 						$this->data['other_address'] = $addressObject->getLineOne($addressRow);
 						$this->data['other_extended_address'] = $addressObject->getLineTwo($addressRow);
@@ -193,32 +208,93 @@ class vCard extends entry
 						$this->data['other_state'] = $addressObject->getState($addressRow);
 						$this->data['other_postal_code'] = $addressObject->getZipCode($addressRow);
 						$this->data['other_country'] = $addressObject->getCountry($addressRow);
-						break;
+					break;
 					
 					default:
-						if ($this->getEntryType() == 'individual')
+						switch ($this->getEntryType())
 						{
-							$this->data['home_address'] = $addressObject->getLineOne($addressRow);
-							$this->data['home_extended_address'] = $addressObject->getLineTwo($addressRow);
-							$this->data['home_city'] = $addressObject->getCity($addressRow);
-							$this->data['home_state'] = $addressObject->getState($addressRow);
-							$this->data['home_postal_code'] = $addressObject->getZipCode($addressRow);
-							$this->data['home_country'] = $addressObject->getCountry($addressRow);
-						}
-						elseif ($this->getEntryType() == 'organization')
-						{
-							$this->data['work_address'] = $addressObject->getLineOne($addressRow);
-							$this->data['work_extended_address'] = $addressObject->getLineTwo($addressRow);
-							$this->data['work_city'] = $addressObject->getCity($addressRow);
-							$this->data['work_state'] = $addressObject->getState($addressRow);
-							$this->data['work_postal_code'] = $addressObject->getZipCode($addressRow);
-							$this->data['work_country'] = $addressObject->getCountry($addressRow);
+							case 'individual':
+								if ($addressObject->getLineOne($addressRow) != null) $this->data['home_address'] = $addressObject->getLineOne($addressRow);
+								if ($addressObject->getLineTwo($addressRow) != null) $this->data['home_extended_address'] = $addressObject->getLineTwo($addressRow);
+								if ($addressObject->getCity($addressRow) != null) $this->data['home_city'] = $addressObject->getCity($addressRow);
+								if ($addressObject->getState($addressRow) != null) $this->data['home_state'] = $addressObject->getState($addressRow);
+								if ($addressObject->getZipCode($addressRow) != null) $this->data['home_postal_code'] = $addressObject->getZipCode($addressRow);
+								if ($addressObject->getCountry($addressRow) != null) $this->data['home_country'] = $addressObject->getCountry($addressRow);
+							break;
+						
+							case 'organization':
+								if ($addressObject->getLineOne($addressRow) != null) $this->data['work_address'] = $addressObject->getLineOne($addressRow);
+								if ($addressObject->getLineTwo($addressRow) != null) $this->data['work_extended_address'] = $addressObject->getLineTwo($addressRow);
+								if ($addressObject->getCity($addressRow) != null) $this->data['work_city'] = $addressObject->getCity($addressRow);
+								if ($addressObject->getState($addressRow) != null) $this->data['work_state'] = $addressObject->getState($addressRow);
+								if ($addressObject->getZipCode($addressRow) != null) $this->data['work_postal_code'] = $addressObject->getZipCode($addressRow);
+								if ($addressObject->getCountry($addressRow) != null) $this->data['work_country'] = $addressObject->getCountry($addressRow);
+							break;
+							
+							default:
+								if ($addressObject->getLineOne($addressRow) != null) $this->data['home_address'] = $addressObject->getLineOne($addressRow);
+								if ($addressObject->getLineTwo($addressRow) != null) $this->data['home_extended_address'] = $addressObject->getLineTwo($addressRow);
+								if ($addressObject->getCity($addressRow) != null) $this->data['home_city'] = $addressObject->getCity($addressRow);
+								if ($addressObject->getState($addressRow) != null) $this->data['home_state'] = $addressObject->getState($addressRow);
+								if ($addressObject->getZipCode($addressRow) != null) $this->data['home_postal_code'] = $addressObject->getZipCode($addressRow);
+								if ($addressObject->getCountry($addressRow) != null) $this->data['home_country'] = $addressObject->getCountry($addressRow);
+							break;
 						}
 					break;
 				}
 			}
 		}
 	}
+	
+	private function setvCardPhoneNumbers()
+    {
+
+		if ($this->getPhoneNumbers())
+		{
+			$phoneNumberObject = new phoneNumber;
+			foreach ($this->getPhoneNumbers() as $phoneNumberRow) 
+			{
+				switch ($phoneNumberObject->getType($phoneNumberRow))
+				{
+					case 'home':
+						$this->data['home_tel'] = $phoneNumberObject->getNumber($phoneNumberRow);
+					break;
+						
+					case 'homephone':
+						$this->data['home_tel'] = $phoneNumberObject->getNumber($phoneNumberRow);
+					break;
+						
+					case 'homefax':
+						$this->data['home_fax'] = $phoneNumberObject->getNumber($phoneNumberRow);
+					break;
+						
+					case 'cell':
+						$this->data['cell_tel'] = $phoneNumberObject->getNumber($phoneNumberRow);
+					break;
+						
+					case 'cellphone':
+						$this->data['cell_tel'] = $phoneNumberObject->getNumber($phoneNumberRow);
+					break;
+						
+					case 'work':
+						$this->data['work_tel'] = $phoneNumberObject->getNumber($phoneNumberRow);
+					break;
+						
+					case 'workphone':
+						$this->data['work_tel'] = $phoneNumberObject->getNumber($phoneNumberRow);
+					break;
+						
+					case 'workfax':
+						$this->data['work_fax'] = $phoneNumberObject->getNumber($phoneNumberRow);
+					break;
+						
+					case 'fax':
+						$this->data['work_fax'] = $phoneNumberObject->getNumber($phoneNumberRow);
+					break;
+				}	
+			}
+		}
+    }
   
 	public function download()
 	{
