@@ -2,10 +2,10 @@
 
 class vCard extends entry
 {
-	private $data;		//array of this vCard data
+	private $data;
 	private $card;
   
-	public function setvCardData()
+	private function setvCardData()
 	{
 		$this->data = array(
 							'class'=>null,
@@ -50,15 +50,25 @@ class vCard extends entry
 							'email1'=>null,
 							'email2'=>null,
 							'url'=>null,
+							'aim'=>null,
+							'messenger'=>null,
+							'yim'=>null,
+							'jabber'=>null,
 							'photo'=>CN_IMAGE_BASE_URL . $this->getImageNameCard(),
 							'birthday'=>$this->getBirthday('Y-m-d'),
+							'anniversary'=>$this->getAnniversary('Y-m-d'),
+							'spouce'=>null,
 							'timezone'=>null,
 							'revision_date'=>date('Y-m-d H:i:s', strtotime($this->getUnixTimeStamp())),
 							'sort_string'=>null,
 							'note'=>$this->getNotes()
 							);
+		
 		$this->setvCardAddresses();
 		$this->setvCardPhoneNumbers();
+		$this->setvCardEmailAddresses();
+		$this->setvCardWebAddresses();
+		$this->setvCardIMIDs();
 		$this->buildvCard();
 	}
 
@@ -148,7 +158,7 @@ class vCard extends entry
 		    . $this->data['other_country']."\r\n";
 		}
 		
-		if ($this->data['email1']) { $this->card .= "EMAIL;TYPE=internet,pref:".$this->data['email1']."\r\n"; }
+		if ($this->data['email1']) { $this->card .= "EMAIL;TYPE=internet:".$this->data['email1']."\r\n"; }
 		if ($this->data['email2']) { $this->card .= "EMAIL;TYPE=internet:".$this->data['email2']."\r\n"; }
 		if ($this->data['work_tel']) { $this->card .= "TEL;TYPE=work,voice:".$this->data['work_tel']."\r\n"; }
 		if ($this->data['home_tel']) { $this->card .= "TEL;TYPE=home,voice:".$this->data['home_tel']."\r\n"; }
@@ -156,8 +166,18 @@ class vCard extends entry
 		if ($this->data['work_fax']) { $this->card .= "TEL;TYPE=work,fax:".$this->data['work_fax']."\r\n"; }
 		if ($this->data['home_fax']) { $this->card .= "TEL;TYPE=home,fax:".$this->data['home_fax']."\r\n"; }
 		if ($this->data['pager_tel']) { $this->card .= "TEL;TYPE=work,pager:".$this->data['pager_tel']."\r\n"; }
-		if ($this->data['url']) { $this->card .= "URL;TYPE=work:".$this->data['url']."\r\n"; }
+		if ($this->data['url']) { $this->card .= "URL:".$this->data['url']."\r\n"; }
+		if ($this->data['aim']) { $this->card .= "IMPP;TYPE=personal:aim:".$this->data['aim']."\r\n"; }
+		if ($this->data['aim']) { $this->card .= "X-AIM:".$this->data['aim']."\r\n"; }
+		if ($this->data['messenger']) { $this->card .= "IMPP;TYPE=personal:msn:".$this->data['messenger']."\r\n"; }
+		if ($this->data['messenger']) { $this->card .= "X-MSN:".$this->data['messenger']."\r\n"; }
+		if ($this->data['yim']) { $this->card .= "IMPP;TYPE=personal:ymsgr:".$this->data['yim']."\r\n"; }
+		if ($this->data['yim']) { $this->card .= "X-YAHOO:".$this->data['yim']."\r\n"; }
+		if ($this->data['jabber']) { $this->card .= "IMPP;TYPE=personal:xmpp:".$this->data['jabber']."\r\n"; }
+		if ($this->data['jabber']) { $this->card .= "X-JABBER:".$this->data['jabber']."\r\n"; }
 		if ($this->data['birthday']) { $this->card .= "BDAY:".$this->data['birthday']."\r\n"; }
+		if ($this->data['anniversary']) { $this->card .= "X-ANNIVERSARY:".$this->data['anniversary']."\r\n"; }
+		if ($this->data['spouse']) { $this->card .= "X-SPOUSE:".$this->data['spouse']."\r\n"; }
 		if ($this->data['role']) { $this->card .= "ROLE:".$this->data['role']."\r\n"; }
 		if ($this->data['note']) { $this->card .= "NOTE:".$this->data['note']."\r\n"; }
 		if ($this->data['photo']) { $this->card .= "PHOTO;VALUE=uri:".$this->data['photo']."\r\n"; }
@@ -295,10 +315,113 @@ class vCard extends entry
 			}
 		}
     }
-  
+
+	private function setvCardEmailAddresses()
+	{
+		if ($this->getEmailAddresses())
+		{
+			$emailAddressObject = new email;
+			
+			foreach ($this->getEmailAddresses() as $emailRow)
+			{
+				switch ($emailAddressObject->getType($emailRow))
+				{
+					case 'personal':
+						$this->data['email1'] = $emailAddressObject->getAddress($emailRow);
+					break;
+					
+					case 'work':
+						$this->data['email2'] = $emailAddressObject->getAddress($emailRow);
+					break;
+					
+					default:
+						$this->data['email1'] = $emailAddressObject->getAddress($emailRow);
+					break;
+				}
+			}
+			
+		}
+	}
+	
+	private function setvCardWebAddresses()
+	{
+		if ($this->getWebsites())
+		{
+			$websiteObject = new website;
+			
+			foreach ($this->getWebsites() as $websiteRow)
+			{
+				switch ($websiteObject->getType($websiteRow))
+				{
+					case 'personal':
+						$this->data['url'] = $websiteObject->getAddress($websiteRow);
+					break;
+					
+					default:
+						$this->data['url'] = $websiteObject->getAddress($websiteRow);
+					break;
+				}
+			}
+			
+		}
+	}
+	
+	private function setvCardIMIDs()
+	{
+		if ($this->getIm())
+		{
+			$imObject = new im;
+			
+			foreach ($this->getIm() as $imRow)
+			{
+				switch ($imObject->getType($imRow))
+				{
+					case 'aim':
+						$this->data['aim'] = $imObject->getId($imRow);
+					break;
+					
+					case 'yahoo':
+						$this->data['yim'] = $imObject->getId($imRow);
+					break;
+					
+					case 'messenger':
+						$this->data['messenger'] = $imObject->getId($imRow);
+					break;
+					
+					case 'jabber':
+						$this->data['jabber'] = $imObject->getId($imRow);
+					break;
+					
+					default:
+						switch ($imObject->getName($imRow))
+						{
+							case 'AIM':
+								$this->data['aim'] = $imObject->getId($imRow);
+							break;
+							
+							case 'Yahoo IM':
+								$this->data['yim'] = $imObject->getId($imRow);
+							break;
+							
+							case 'Messenger':
+								$this->data['messenger'] = $imObject->getId($imRow);
+							break;
+							
+							case 'Jabber / Google Talk':
+								$this->data['jabber'] = $imObject->getId($imRow);
+							break;
+						}
+					break;
+				}
+			}
+			
+		}
+	}
+	
 	public function download()
 	{
 		session_start();
+		$this->setvCardData();
 		
 		$filename = trim($this->data['display_name']); 
 		$filename = str_replace(" ", "_", $filename);

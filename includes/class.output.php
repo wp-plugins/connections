@@ -4,19 +4,19 @@ class output extends entry
 {
 	public function getCardImage()
 	{
-		if ($this->getImageLinked() && $this->getImageDisplay()) $out = '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameCard() . '" />';
+		if ($this->getImageLinked() && $this->getImageDisplay()) $out = '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameCard() . '" />' . "\n";
 		return $out;
 	}
 	
 	public function getProfileImage()
 	{
-		if ($this->getImageLinked() && $this->getImageDisplay()) $out = '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameProfile() . '" />';
+		if ($this->getImageLinked() && $this->getImageDisplay()) $out = '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameProfile() . '" />' . "\n";
 		return $out;
 	}
 	
 	public function getThumbnailImage()
 	{
-		if ($this->getImageLinked() && $this->getImageDisplay()) $out = '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameThumbnail() . '" />';
+		if ($this->getImageLinked() && $this->getImageDisplay()) $out = '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameThumbnail() . '" />' . "\n";
 		return $out;
 	}
 	    
@@ -57,27 +57,27 @@ class output extends entry
 	
 	public function getTitleBlock()
 	{
-		if ($this->getTitle()) return '<span class="title">' . $this->getTitle() . '</span>';
+		if ($this->getTitle()) return '<span class="title">' . $this->getTitle() . '</span>' . "\n";
 	}
 	
 	public function getOrgUnitBlock()
 	{
-		$out = '<div class="org">';
-			if ($this->getOrganization() && $this->getEntryType() != 'organization') $out .= '<span class="organization-name">' . $this->getOrganization() . '</span><br />';
-			if ($this->getDepartment()) $out .= '<span class="organization-unit">' . $this->getDepartment() . '</span><br />';
-		$out .= '</div>';
+		if ($this->getOrganization() || $this->getDepartment()) $out = '<div class="org">' . "\n";
+			if ($this->getOrganization() && $this->getEntryType() != 'organization') $out .= '<span class="organization-name">' . $this->getOrganization() . '</span><br />' . "\n";
+			if ($this->getDepartment()) $out .= '<span class="organization-unit">' . $this->getDepartment() . '</span><br />' . "\n";
+		if ($this->getOrganization() || $this->getDepartment()) $out .= '</div>' . "\n";
 		
 		return $out;
 	}
 	
 	public function getOrganizationBlock()
 	{
-		if ($this->getOrganization() && $this->getEntryType() != 'organization') return '<span class="org">' . $this->getOrganization() . '</span>';
+		if ($this->getOrganization() && $this->getEntryType() != 'organization') return '<span class="org">' . $this->getOrganization() . '</span>' . "\n";
 	}
 	
 	public function getDepartmentBlock()
 	{
-		if ($this->getDepartment()) return '<span class="org"><span class="organization-unit">' . $this->getDepartment() . '</span></span>';
+		if ($this->getDepartment()) return '<span class="org"><span class="organization-unit">' . $this->getDepartment() . '</span></span>' . "\n";
 	}
 	
 	public function getAddressBlock()
@@ -87,17 +87,16 @@ class output extends entry
 			$addressObject = new addresses;
 			foreach ($this->getAddresses() as $addressRow)
 			{
-				$out .= '<div class="adr" style="margin-bottom: 10px;">';
-					if ($addressObject->getName($addressRow) != null || $addressObject->getType($addressRow)) $out .= '<span class="address_name"><strong>' . $addressObject->getName($addressRow) . '</strong></span><br />'; //The OR is for compatiblity for 0.2.24 and under
-					if ($addressObject->getLineOne($addressRow) != null) $out .= '<div class="street-address">' . $addressObject->getLineOne($addressRow) . '</div>';
-					if ($addressObject->getLineTwo($addressRow) != null) $out .= '<div class="extended-address">' . $addressObject->getLineTwo($addressRow) . '</div>';
-					if ($addressObject->getCity($addressRow) != null) $out .= '<span class="locality">' . $addressObject->getCity($addressRow) . '</span>&nbsp;';
-					if ($addressObject->getState($addressRow) != null) $out .= '<span class="region">' . $addressObject->getState($addressRow) . '</span>&nbsp;';
-					if ($addressObject->getZipCode($addressRow) != null) $out .= '<span class="postal-code">' . $addressObject->getZipCode($addressRow) . '</span><br />';
-					if ($addressObject->getCountry($addressRow) != null) $out .= '<span class="country-name">' . $addressObject->getCountry($addressRow) . '</span>';
-					//$out .= '<div class="type" style="display: none;">' . $addressObject->getType($addressRow) . '</div>'; //Type for hCard compatibility. Hidden.
+				$out .= '<div class="adr" style="margin-bottom: 10px;">' . "\n";
+					if ($addressObject->getName($addressRow) != null || $addressObject->getType($addressRow)) $out .= '<span class="address_name"><strong>' . $addressObject->getName($addressRow) . '</strong></span><br />' . "\n"; //The OR is for compatiblity for 0.2.24 and under
+					if ($addressObject->getLineOne($addressRow) != null) $out .= '<div class="street-address">' . $addressObject->getLineOne($addressRow) . '</div>' . "\n";
+					if ($addressObject->getLineTwo($addressRow) != null) $out .= '<div class="extended-address">' . $addressObject->getLineTwo($addressRow) . '</div>' . "\n";
+					if ($addressObject->getCity($addressRow) != null) $out .= '<span class="locality">' . $addressObject->getCity($addressRow) . '</span>&nbsp;' . "\n";
+					if ($addressObject->getState($addressRow) != null) $out .= '<span class="region">' . $addressObject->getState($addressRow) . '</span>&nbsp;' . "\n";
+					if ($addressObject->getZipCode($addressRow) != null) $out .= '<span class="postal-code">' . $addressObject->getZipCode($addressRow) . '</span><br />' . "\n";
+					if ($addressObject->getCountry($addressRow) != null) $out .= '<span class="country-name">' . $addressObject->getCountry($addressRow) . '</span>' . "\n";
 					$out .= $this->gethCardAdrType($addressRow);
-				$out .= '</div>';
+				$out .= '</div>' . "\n\n";
 															
 			}
 		}
@@ -109,13 +108,13 @@ class output extends entry
 		if ($this->getPhoneNumbers())
 		{
 			$phoneNumberObject = new phoneNumber;
-			$out .= '<div class="phone_numbers" style="margin-bottom: 10px;">';
+			$out .= '<div class="phone_numbers" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getPhoneNumbers() as $phoneNumberRow) 
 			{
 				//Type for hCard compatibility. Hidden.
-				if ($phoneNumberObject->getNumber($phoneNumberRow) != null) $out .=  '<strong>' . $phoneNumberObject->getName($phoneNumberRow) . '</strong>: <span class="tel">' . $this->gethCardTelType($phoneNumberRow) . '<span class="value">' .  $phoneNumberObject->getNumber($phoneNumberRow) . '</span></span><br />';
+				if ($phoneNumberObject->getNumber($phoneNumberRow) != null) $out .=  '<strong>' . $phoneNumberObject->getName($phoneNumberRow) . '</strong>: <span class="tel">' . $this->gethCardTelType($phoneNumberRow) . '<span class="value">' .  $phoneNumberObject->getNumber($phoneNumberRow) . '</span></span><br />' . "\n";
 			}
-			$out .= '</div>';
+			$out .= '</div>' . "\n";
 		}
 		return $out;
 	}
@@ -199,13 +198,13 @@ class output extends entry
 		if ($this->getEmailAddresses())
 		{
 			$emailAddressObject = new email;
-			$out .= '<div class="email-addresses">';
+			$out .= '<div class="email-addresses">' . "\n";
 			foreach ($this->getEmailAddresses() as $emailRow)
 			{
 				//Type for hCard compatibility. Hidden.
-				if ($emailAddressObject->getAddress($emailRow) != null) $out .= '<strong>' . $emailAddressObject->getName($emailRow) . ':</strong><br /><span class="email"><span class="type" style="display: none;">INTERNET</span><a class="value" href="mailto:' . $emailAddressObject->getAddress($emailRow) . '">' . $emailAddressObject->getAddress($emailRow) . '</a></span><br /><br />';
+				if ($emailAddressObject->getAddress($emailRow) != null) $out .= '<strong>' . $emailAddressObject->getName($emailRow) . ':</strong><br /><span class="email"><span class="type" style="display: none;">INTERNET</span><a class="value" href="mailto:' . $emailAddressObject->getAddress($emailRow) . '">' . $emailAddressObject->getAddress($emailRow) . '</a></span><br /><br />' . "\n";
 			}
-			$out .= '</div>';
+			$out .= '</div>' . "\n";
 		}
 		return $out;
 	}
@@ -215,12 +214,12 @@ class output extends entry
 		if ($this->getIm())
 		{
 			$imObject = new im;
-			$out .= '<div class="im" style="margin-bottom: 10px;">';
+			$out .= '<div class="im" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getIm() as $imRow)
 			{
-				if ($imObject->getId($imRow) != null) $out .= '<strong>' . $imObject->getName($imRow) . ':</strong> ' . $imObject->getId($imRow). '<br />';
+				if ($imObject->getId($imRow) != null) $out .= '<strong>' . $imObject->getName($imRow) . ':</strong> ' . $imObject->getId($imRow). '<br />' . "\n";
 			}
-			$out .= '</div>';
+			$out .= '</div>' . "\n";
 		}
 		return $out;
 	}
@@ -230,12 +229,12 @@ class output extends entry
 		$websiteObject = new website;
 		if ($this->getWebsites())
 		{
-			$out .= '<div class="websites" style="margin-bottom: 10px;">';
+			$out .= '<div class="websites" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getWebsites() as $websiteRow)
 			{
-				if ($websiteObject->getAddress($websiteRow) != null) $out .= '<strong>Website:</strong> <a class="url" href="' . $websiteObject->getAddress($websiteRow) . '">' . $websiteObject->getAddress($websiteRow) . '</a>';
+				if ($websiteObject->getAddress($websiteRow) != null) $out .= '<strong>Website:</strong> <a class="url" href="' . $websiteObject->getAddress($websiteRow) . '">' . $websiteObject->getAddress($websiteRow) . '</a>' . "\n";
 			}
-			$out .= "</div>";
+			$out .= "</div>" . "\n";
 		}
 		return $out;
 	}
@@ -261,12 +260,12 @@ class output extends entry
 	
 	public function getNotesBlock()
 	{
-		return '<div class="note">' . $this->getNotes() . '</div>';
+		return '<div class="note">' . $this->getNotes() . '</div>' . "\n";
 	}
 	
 	public function getRevisionDateBlock()
 	{
-		return '<span class="rev">' . date('Y-m-d', strtotime($this->getUnixTimeStamp())) . 'T' . date('H:i:s', strtotime($this->getUnixTimeStamp())) . 'Z' . '</span>';
+		return '<span class="rev">' . date('Y-m-d', strtotime($this->getUnixTimeStamp())) . 'T' . date('H:i:s', strtotime($this->getUnixTimeStamp())) . 'Z' . '</span>' . "\n";
 	}
 	
 	public function getLastUpdatedStyle()

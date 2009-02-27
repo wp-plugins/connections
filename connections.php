@@ -1086,7 +1086,6 @@ function _connections_list($atts, $content=null) {
 		foreach ($results as $row) {
 			$entry = new output($row);
 			$vCard = new vCard($row);
-			$vCard->setvCardData();
 			
 			$continue = false;
 			
@@ -1148,12 +1147,12 @@ function _connections_list($atts, $content=null) {
 			
 			if (isset($template))
 			{
-				$out .= '<div class="vcard">';
+				$out .= '<div class="vcard">' . "\n";
 					ob_start();
 				    include($template);
 				    $out .= ob_get_contents();
 				    ob_end_clean();
-				$out .= '</div>';
+				$out .= '</div>' . "\n";
 			}
 						
 		}
