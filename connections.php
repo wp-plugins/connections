@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111

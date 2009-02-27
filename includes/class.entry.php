@@ -1,10 +1,11 @@
-<?php
+﻿<?php
 
 /**
  * Entry class
  */
 class entry
-{	/**
+{
+	/**
 	 * Interger: Entry ID
 	 * @var integer
 	 */
@@ -731,7 +732,8 @@ class entry
  * $visibility
  */
 class phoneNumber 
-{	
+{
+	
 	private $type;
 	private $name;
 	private $number;
@@ -908,7 +910,8 @@ class phoneNumber
  * $visibility
  */
 class email
-{
+{
+
 	/**
 	 * String: -- need to define
 	 * @var string
@@ -1039,7 +1042,8 @@ class email
  * $visibility
  */
 class website
-{	/**
+{
+	/**
 	 * String: type -- need to define
 	 * @var string
 	 */
