@@ -11,7 +11,7 @@
 		</div>
 			
 			<?php echo $entry->getAddressBlock() ?>
-			
+			<?php echo $vCard->download() ?>
 		</div>
 		
 		<div align="right">

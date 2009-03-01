@@ -8,27 +8,25 @@ Stable tag: 0.3.3
 An address book that is managed in the admin and embed them in a post/page. Upcoming birthdays and anniversaries can also be embedded in a post/page.
 
 == Description ==
-This plugin was based off LBB, ["Little Black Book"](http://wordpress.org/extend/plugins/lbb-little-black-book/); which was based on [Addressbook](http://wordpress.org/extend/plugins/addressbook/), both of which can be found in the Plugin Directory. Though these are great, I needed something a bit more. See the overview list of changes below. With many more to come. **See the instructions under installation, above.**
+An address book that is managed in the admin and embedded in a post/page. Upcoming birthdays and anniversaries can also be embedded in a post/page. **See the instructions under installation, above.**
 This plugin is under active developement, please make sure you have a recent backup of your WordPress database, just in case.
 
-* Added many more fields that include multiple addresses with selectable type; birthday and anniversary
-* Each contact has selectable visibility. You can choose between, public, private and unlisted.
+* Many fields that include multiple addresses with selectable type; birthday and anniversary
+* Each entry has selectable visibility. You can choose between, public, private and unlisted
 * Selectable entry type; Individual / Organization to allow this to be used as a business directory as well
-* Added image support for entries.
-* Added support for copying an entry.
+* Image support for entries
+* Copy entries
 * Bulk actions
 * Entry filters
 * Persistent filter state per user between sessions
-* Reduced the number of page refreshes when adding or managing the entry list.
-* Reduced the amount of scrolling needing when managing a large number of entries.
-* Matched the visual style to fit nicely in the new 2.7 admin interface.
-* Added shortcodes that can be used for embedding entry list and upcoming birthdays/anniversaries in a page and/or post with many options.
+* Shortcodes that can be used for embedding entry list and upcoming birthdays/anniversaries in a page and/or post with many options.
 * **NEW** Added the ability to use custom templates and provided many template tags. See the instructions under Installation.
 * **NEW** Added a alternate list format / single entry format -- profile view.
 * **NEW** Added a alternate single entry format -- single-card view.
 * **NEW** Filter shortcode attributes for filtering the output list. See the instructions under Installation.
 * **NEW** xHTML Transition output.
 * **NEW** Entries output in [hCard](http://microformats.org/wiki/hcard) compatible format.
+* **NEW** vCard support via a sownload link.
 
 **Upcoming features:**
 
@@ -37,6 +35,7 @@ This plugin is under active developement, please make sure you have a recent bac
 * Sidebar widget
 * Dashboard widget
 * An update request form
+* Additional filters for the output.
 * A print link for easy printing of the list
 * A print link for printing out a list of birthdays and anniversaries
 * Integration with WP Users to permit users to maintain their own info, mostly likely this will be optional on a per entry instance and an import method
@@ -49,6 +48,13 @@ This plugin is under active developement, please make sure you have a recent bac
 * Import/Export
 * Backup
 * ...and any suggestion that I may receive...
+
+** Credits **
+
+* This plugin was based off LBB, ["Little Black Book"](http://wordpress.org/extend/plugins/lbb-little-black-book/); which was based on [Addressbook](http://wordpress.org/extend/plugins/addressbook/), both of which can be found in the Plugin Directory.
+* vCard class is a modified version by [Troy Wolf](http://www.troywolf.com/articles/php/class_vcard/)
+* Image uploading and processing done by the class.upload.php by [Colin Verot](http://www.verot.net/php_class_upload.htm)
+* Counter class from O'Reilly's [Intro to PHP Objects](http://www.onlamp.com/pub/a/php/2002/07/18/php_foundations.html?page=2)
 
 **Known Issues:**
 
@@ -324,6 +330,9 @@ This will change the color of Updated and the timestamp in human difference time
 
 `$entry->returnToTopAnchor()`
 Returns the HTML anchor to return to the top of the entry list using an up arrow graphic.
+
+`$vCard->download()`
+Returns the HTML anchor to allow downloading the entry in a vCard that can be imported into your preferred email program.
 
 == Frequently Asked Questions ==
 
