@@ -431,7 +431,7 @@ class vCard extends entry
 		$_SESSION['vcard'][$token]['filename'] = $filename;
 		$_SESSION['vcard'][$token]['data'] = $this->card;
 		
-		return '<a href="http://www.sandbox.nh-online.com/wp-content/plugins/connections/includes/download.vCard.php?uid=' . $token . '">Add to Address Book</a>';
+		return '<a href="' . WP_CONTENT_URL . '/plugins/connections/includes/download.vCard.php?uid=' . $token . '">Add to Address Book</a>';
 	}
 }
 ?>
