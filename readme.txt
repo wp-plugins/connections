@@ -59,6 +59,7 @@ This plugin is under active developement, please make sure you have a recent bac
 **Known Issues:**
 
 * **Currently when an image link is removed the files are not deleted from the server**
+* The vCard feature is not compatible with [WP Super Cache](http://wordpress.org/extend/plugins/wp-super-cache/)
 
 == Screenshots ==
 [Samples and screenshots can be found here](http://www.shazahm.net/?page_id=111)
