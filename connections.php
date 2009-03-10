@@ -29,6 +29,8 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 //GPL PHP upload class from http://www.verot.net/php_class_upload.htm
 require_once(WP_PLUGIN_DIR . '/connections/php_class_upload/class.upload.php');
 
+//SQL objects
+require_once(WP_PLUGIN_DIR . '/connections/includes/class.sql.php');
 //date objects
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.date.php');
 //entry objects
@@ -42,7 +44,6 @@ require_once(WP_PLUGIN_DIR . '/connections/includes/class.output.php');
 //builds vCard
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.vcard.php');
 
-$current_version = "0.4.0";
 session_start();
 
 // Define a few constants and defaults until I can get to creating the options page.
@@ -55,6 +56,8 @@ define('CN_DEFAULT_THUMBNAIL_X', 80);
 define('CN_DEFAULT_THUMBNAIL_Y', 54);
 define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
 define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
+define('CN_TABLE_NAME','connections');
+define('CN_CURRENT_VERSION', '0.4.3');
 
 $defaultAddressTypes	=	array
 							(
@@ -157,13 +160,6 @@ $defaultIMValues =	array
 //$plugin_options = new pluginOptions(get_option("connections_options"));
 $plugin_options = new pluginOptions;
 
-
-// CSS Styles for the plugin. This adds it to the admin page head.
-/*add_action('admin_head', 'connections_adminhead');
-function connections_adminhead() {
-	echo '<link type="text/css" rel="stylesheet" href="' . get_bloginfo('wpurl') . '/wp-content/plugins/connections/css-admin.css" />' . "\n";
-}*/
-
 // This adds the menu to the Tools menu in WordPress and calls the function to load my CSS and JS.
 add_action('admin_menu', 'connections_menus');
 function connections_menus() {
@@ -177,17 +173,16 @@ function connections_loadjs_admin_head() {
 	echo '<link type="text/css" rel="stylesheet" href="' . get_bloginfo('wpurl') . '/wp-content/plugins/connections/css-admin.css" />' . "\n";
 }
 
-
 function connections_main() {
-		global $wpdb, $current_version, $current_user, $plugin_options;
+		global $wpdb, $current_user, $plugin_options;
+		$sql = new sql();
 		
 		get_currentuserinfo();
 		$plugin_options->setOptions(get_option("connections_options"), $current_user->ID);
 		$plugin_options->setCurrentUserID($current_user->ID);
 		
 	    if ($_GET['action']=='editform') {
-	        $sql = "SELECT * FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($_GET['id'])."'";
-	        $row = $wpdb->get_row($sql);
+	        $row = $sql->getEntry($_GET['id']);
 			if ($_GET['copyid']) {
 				$formID = "add_address";
 				$formToken = "add_address";
@@ -218,8 +213,8 @@ function connections_main() {
 <?php	
 		} else {
 	    
-	        $table_name = $wpdb->prefix."connections";
-			if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'")!= $table_name || $plugin_options->getVersion() != $current_version ) {
+	        $table_name = $sql->getTableName();
+			if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'")!= $table_name || $plugin_options->getVersion() != CN_CURRENT_VERSION ) {
 	            // Call the install function here rather than through the more usual
 	            // activate_blah.php action hook so the user doesn't have to worry about
 	            // deactivating then reactivating the plugin.  Should happen seamlessly.
@@ -235,150 +230,21 @@ function connections_main() {
 				<?php
 				
 				if ($_GET['action']=='addnew' AND $_POST['new'] AND $_SESSION['formTokens']['add_address']['token'] == $_POST['token']) {
+					//echo $sql->addEntry($_GET, $_POST, $_FILES);
+					$entry = new entry();
 					
-					if ($_GET['id']) {
-						$sql = "SELECT * FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($_GET['id'])."'";
-						$row = $wpdb->get_row($sql);
-						$options = unserialize($row->options);
-					}
+					$entry->setFirstName($_POST['first_name']);
+					$entry->setLastName($_POST['last_name']);
+					$entry->setOrganization($_POST['organization']);
+					$entry->setVisibility($_POST['visibility']);
+					$entry->setEntryType($_POST['entry_type']);
 					
-					$options['entry']['type'] = $_POST['entry_type'];
-					
-					//I think I should set these to null if no value was input???
-					//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
-					//Did this because most often people don't want to give the year.
-					$bdaydate = strtotime($_POST['birthday_day'] . '-' . $_POST['birthday_month'] . '-' . '1970 00:00:00');
-					//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
-					$anndate = strtotime($_POST['anniversary_day'] . '-' . $_POST['anniversary_month'] . '-' . '1970 00:00:00');
-					
-					$serial_addresses = serialize($_POST['address']);
-					$serial_phone_numbers = serialize($_POST['phone_numbers']);
-					$serial_email = serialize($_POST['email']);
-					$serial_im = serialize($_POST['im']);
-					$serial_websites = serialize($_POST['websites']);
-					
-					if ($_POST['website'] == "http://") $_POST['website'] = "";
-					
-					if ($_FILES['original_image']['error'] != 4) {
-						$image_proccess_results = _process_images($_FILES);
-						$options['image']['name'] = $image_proccess_results['image_names'];
-						$options['image']['linked'] = true;
-						$options['image']['use'] = $image_proccess_results['image_names']['source'];
-						$error = $image_proccess_results['error'];
-						$success = $image_proccess_results['success'];
-					}
-					
-					$serial_options = serialize($options);
-					
-					$sql = "INSERT INTO ".$wpdb->prefix."connections SET
-			            first_name    = '".$wpdb->escape($_POST['first_name'])."',
-			            last_name     = '".$wpdb->escape($_POST['last_name'])."',
-						title    	  = '".$wpdb->escape($_POST['title'])."',
-						organization  = '".$wpdb->escape($_POST['organization'])."',
-						department    = '".$wpdb->escape($_POST['department'])."',
-						visibility    = '".$wpdb->escape($_POST['visibility'])."',
-						birthday      = '".$wpdb->escape($bdaydate)."',
-						anniversary   = '".$wpdb->escape($anndate)."',
-						addresses     = '".$wpdb->escape($serial_addresses)."',
-						phone_numbers = '".$wpdb->escape($serial_phone_numbers)."',
-						email	      = '".$wpdb->escape($serial_email)."',
-						im  	      = '".$wpdb->escape($serial_im)."',
-						websites      = '".$wpdb->escape($serial_websites)."',
-						options       = '".$wpdb->escape($serial_options)."',
-						bio           = '".$wpdb->escape($_POST['bio'])."',
-			            notes         = '".$wpdb->escape($_POST['notes'])."'";
-					
-					if (!$error) {
-						$wpdb->query($sql); //Writes the entry to the db if there were no errors with the image processing.
-						echo "<div id='message' class='updated fade'>";
-							echo "<p><strong>Entry added.</strong></p> \n";
-							if ($image_proccess_results['success']) echo $success;
-						echo "</div>";
-					} else {
-						echo "<div id='notice' class='error'>";
-							echo $error;
-						echo "</div>";
-					}
-					
+					$entry->save();
 					unset($_SESSION['formTokens']);
 				}
 				
 				if ($_GET['action']=='editcomplete' AND $_POST['save'] AND $_SESSION['formTokens']['edit_address']['token'] == $_POST['token']) {
-					$sql = "SELECT * FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($_GET['id'])."'";
-					$row = $wpdb->get_row($sql);
-					
-					$options = unserialize($row->options);
-					$options['entry']['type'] = $_POST['entry_type'];
-				
-					//I think I should set these to null if no value was input???
-					//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them. Did this because most often people don't want to give the year.
-					$bdaydate = strtotime($_POST['birthday_day'] . '-' . $_POST['birthday_month'] . '-' . '1970 00:00:00');
-					//Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
-					$anndate = strtotime($_POST['anniversary_day'] . '-' . $_POST['anniversary_month'] . '-' . '1970 00:00:00');
-					
-					$serial_addresses = serialize($_POST['address']);
-					$serial_phone_numbers = serialize($_POST['phone_numbers']);
-					$serial_email = serialize($_POST['email']);
-					$serial_im = serialize($_POST['im']);
-					$serial_websites = serialize($_POST['websites']);					
-					
-					if ($_FILES['original_image']['error'] != 4) {
-						$image_proccess_results = _process_images($_FILES);
-						$options['image']['name'] = $image_proccess_results['image_names'];
-						$options['image']['linked'] = true;
-						$options['image']['display'] = true;
-						$options['image']['use'] = $image_proccess_results['image_names']['source'];
-						$error = $image_proccess_results['error'];
-						$success = $image_proccess_results['success'];
-					}
-					
-					if ($_POST['imgOptions'] == "remove") {
-						$options['image']['linked'] = false;
-					}
-					
-					if ($_POST['imgOptions'] == "hidden") {
-						$options['image']['display'] = false;
-					}
-					
-					if ($_POST['imgOptions'] == "show") {
-						$options['image']['display'] = true;
-					}
-					
-					$serial_options = serialize($options);
-				
-					$sql = "UPDATE ".$wpdb->prefix."connections SET
-						first_name    = '".$wpdb->escape($_POST['first_name'])."',
-						last_name     = '".$wpdb->escape($_POST['last_name'])."',
-						title    	  = '".$wpdb->escape($_POST['title'])."',
-						organization  = '".$wpdb->escape($_POST['organization'])."',
-						department    = '".$wpdb->escape($_POST['department'])."',
-						birthday      = '".$wpdb->escape($bdaydate)."',
-						anniversary   = '".$wpdb->escape($anndate)."',
-						addresses     = '".$wpdb->escape($serial_addresses)."',
-						phone_numbers = '".$wpdb->escape($serial_phone_numbers)."',
-						email	      = '".$wpdb->escape($serial_email)."',
-						im  	      = '".$wpdb->escape($serial_im)."',
-						websites      = '".$wpdb->escape($serial_websites)."',
-						options       = '".$wpdb->escape($serial_options)."',
-						bio           = '".$wpdb->escape($_POST['bio'])."',
-						notes         = '".$wpdb->escape($_POST['notes'])."',
-						visibility    = '".$wpdb->escape($_POST['visibility'])."'
-						WHERE id ='".$wpdb->escape($_GET['id'])."'";
-						
-					//$wpdb->query($sql);
-					if (!$error) {
-						$wpdb->query($sql); //Writes the entry to the db if there were no errors with the image processing.
-						echo "<div id='message' class='updated fade'>";
-							echo "<p><strong>The entry has been updated.</strong></p> \n";
-							if ($image_proccess_results['success']) echo $success;
-						echo "</div>";
-					} else {
-						echo "<div id='notice' class='error'>";
-							echo $error;
-						echo "</div>";
-					}
-					//echo '<div id="message" class="updated fade"><p><strong>The entry has been updated.</strong></p></div>';
-					unset($_SESSION['formTokens']);
+					echo $sql->updateEntry($_GET, $_POST, $_FILES);
 				}
 				
 				if ($_POST['doaction'] AND $_SESSION['formTokens']['do_action']['token'] == $_POST['token']) {
@@ -417,7 +283,6 @@ function connections_main() {
 				
 				
 				<?php
-					//print_r($plugin_options->getOptions());
 					if ($plugin_options->getVisibilityType() != "") $filter = " AND visibility='" . $plugin_options->getVisibilityType() . "' ";
 					$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = ''" . $filter . ") UNION (SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $filter . ") ORDER BY order_by, last_name, first_name";
 					$results = $wpdb->get_results($sql);
@@ -469,7 +334,6 @@ function connections_main() {
 									<?php
 													
 									foreach ($results as $row) {
-										//$options = unserialize($row->options);
 										$entry = new entry($row);
 										$addressObject = new addresses();
 										$phoneNumberObject = new phoneNumber();
@@ -1007,12 +871,12 @@ function _connections_getaddressform($data=null) {
 
 // This installs and/or upgrades the plugin.
 function _connections_install() {
-	global $wpdb, $current_version, $plugin_options;
+	global $wpdb, $plugin_options;
 	
     $table_name = $wpdb->prefix."connections";
     $sql = "CREATE TABLE " . $table_name . " (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
-        ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        ts TIMESTAMP,
         first_name tinytext NOT NULL,
         last_name tinytext NOT NULL,
 		title tinytext NOT NULL,
@@ -1034,7 +898,7 @@ function _connections_install() {
     require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
     dbDelta($sql);
 	
-	$plugin_options->setVersion($current_version);
+	$plugin_options->setVersion(CN_CURRENT_VERSION);
 	update_option('connections_options', $plugin_options->getOptions());
 }
 
@@ -1186,46 +1050,6 @@ function _upcoming_list($atts, $content=null) {
 	} else {
 		$list_title = $atts['list_title'];
 	}
-	
-	//Not 100% sure how this SQL statement works, found it here: http://searchoracle.techtarget.com/expert/KnowledgebaseAnswer/0,289625,sid41_cid458485,00.html
-	/*The part about this problem that's the toughest to figure out is what to do about year boundaries.
-	You get into difficulty if you start by reconstructing the person's birthday this year --
-
-			    select DATE_FORMAT(CURRENT_DATE,'%Y')
-			           + DATE_FORMAT(birthdate,'-%m-%d')
-
-	What if today is December 24 and the birthday is January 5? That's certainly within 14 days, but suddenly the comparison is not so straight-forward -- 
-	maybe you have to use the person's birthday next year, not this year, and do you subtract it from CURRENT_DATE or subtract CURRENT_DATE from the birthday?
-
-	Here's a better approach. My age, considered as an integer, does not go up until my next birthday is reached. If I'm 39 today, and in two weeks I'm 40, then my 
-	birthday must have occurred somewhere within those 14 days. Never mind whether we crossed a year boundary. All we need is a convenient formula for age in years.
-	The MySQL docs give a splendid example --
-
-	To determine how many years old each of your pets is, compute the difference in the year part of the current date and the birth date,
-	then subtract one if the current date occurs earlier in the calendar year than the birth date. The following query shows, for each pet,
-	the birth date, the current date, and the age in years.
-
-			    select ( YEAR(CURRENT_DATE) - YEAR(birth) )
-			           - ( RIGHT(CURRENT_DATE,5) < RIGHT(birth,5) )
-			          as age
-
-	Here, YEAR() pulls out the year part of a date and RIGHT() pulls off the rightmost five characters that represent the MM-DD (calendar year) part of the date.
-	The part of the expression that compares the MM-DD values evaluates to 1 or 0, which adjusts the year difference down a year if CURRENT_DATE occurs earlier in the year than birth.
-
-	Now all we have to do is compare the person's age in 14 days with the age today and Bob's your uncle --
-
-			    select lastname, birthdate
-			      from yourtable
-			     where ( YEAR(DATE_ADD(CURRENT_DATE, INTERVAL 14 DAYS))
-			             - YEAR(birthdate) )
-			           - ( RIGHT(DATE_ADD(CURRENT_DATE, INTERVAL 14 DAYS),5)
-			               < RIGHT(birthdate,5) )
-			         > ( YEAR(CURRENT_DATE)
-			             - YEAR(birthdate) )
-			           - ( RIGHT(CURRENT_DATE,5)
-			               < RIGHT(birthdate,5) ) 
-
-	This problem is also discussed on pages 74-76 of Joe Celko's SQL for Smarties (ISBN 1-55860-323-9). */
 	
 	$sql = "SELECT id, ".$atts['list_type'].", last_name, first_name FROM ".$wpdb->prefix."connections where (YEAR(DATE_ADD(CURRENT_DATE, INTERVAL ".$atts['days']." DAY))"
         . " - YEAR(FROM_UNIXTIME(".$atts['list_type'].")) )"

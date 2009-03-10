@@ -1,27 +1,27 @@
 <?php
 
 class counter {
-     var $step;
-     var $count; 
+     private $step;
+     private $count; 
 
-     function getcount() {
+     public function getcount() {
           return $this->count;
      }
  
-     function getstep() {
+     public function getstep() {
           return $this->step;
      }
 
-     function changestep($newval) {
+     public function changestep($newval) {
           if(is_integer($newval))
           $this->step = $newval;
      }
 
-     function step() {
+     public function step() {
           $this->count += $this->step;
      }
 
-     function reset() {
+     public function reset() {
           $this->count = 0;
           $this->step = 1;
      }

@@ -116,7 +116,7 @@ class entry
 	private $imageNameOriginal;
 	private $entryType;
 	
-	function __construct($data)	{
+	function __construct($data = null)	{
 		$this->id = $data->id;
 		$this->timeStamp = $data->ts;
 		$this->firstName = $data->first_name;
@@ -348,7 +348,7 @@ class entry
      */
     public function setAddresses($addresses)
     {
-        $this->addresses = $addresses;
+        $this->addresses = serialize($addresses);
     }
 
     /**
@@ -367,7 +367,7 @@ class entry
      */
     public function setPhoneNumbers($phoneNumbers)
     {
-        $this->phoneNumbers = $phoneNumbers;
+        $this->phoneNumbers = serialize($phoneNumbers);
     }
 
     /**
@@ -386,7 +386,7 @@ class entry
      */
     public function setEmailAddresses($emailAddresses)
     {
-        $this->emailAddresses = $emailAddresses;
+        $this->emailAddresses = serialize($emailAddresses);
     }
 
     /**
@@ -405,7 +405,7 @@ class entry
      */
     public function setIm($im)
     {
-        $this->im = $im;
+        $this->im = serialize($im);
     }
 
     /**
@@ -445,7 +445,8 @@ class entry
      */
     public function setAnniversary($anniversary)
     {
-        $this->anniversary = $anniversary;
+        //Create the anniversary with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
+		$this->anniversary = strtotime($anniversary['anniversary_day'] . '-' . $anniversary['anniversary_month'] . '-' . '1970 00:00:00');
     }
     
     /**
@@ -485,7 +486,8 @@ class entry
      */
     public function setBirthday($birthday)
     {
-        $this->birthday = $birthday;
+        //Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
+		$this->birthday = strtotime($birthday['birthday_day'] . '-' . $birthday['birthday_month'] . '-' . '1970 00:00:00');
     }
 
     /**
@@ -566,7 +568,7 @@ class entry
      */
     public function setWebsites($websites)
     {
-        $this->websites = $websites;
+        $this->websites = serialize($websites);
     }
 
     /**
@@ -585,7 +587,7 @@ class entry
      */
     public function setEntryType($entryType)
     {
-        $this->entryType = $entryType;
+        $this->options['entry']['type'] = $entryType;
     }
     
     /**
@@ -716,10 +718,37 @@ class entry
      * @param object $options
      * @see entry::$options
      */
-    public function setOptions($options)
+    public function setOptions()
     {
-        $this->options = $options;
+        $this->options = serialize($this->options);
     }
+	
+	public function save()
+	{
+		global$wpdb;
+		
+		$this->setOptions();
+		
+		$sql = "INSERT INTO ".$wpdb->prefix."connections SET
+			first_name    = '".$wpdb->escape($this->firstName)."',
+			last_name     = '".$wpdb->escape($this->lastName)."',
+			title    	  = '".$wpdb->escape($this->title)."',
+			organization  = '".$wpdb->escape($this->organization)."',
+			department    = '".$wpdb->escape($this->department)."',
+			visibility    = '".$wpdb->escape($this->visibility)."',
+			birthday      = '".$wpdb->escape($this->birthday)."',
+			anniversary   = '".$wpdb->escape($this->anniversary)."',
+			addresses     = '".$wpdb->escape($this->addresses)."',
+			phone_numbers = '".$wpdb->escape($this->phoneNumbers)."',
+			email	      = '".$wpdb->escape($this->emailAddresses)."',
+			im  	      = '".$wpdb->escape($this->im)."',
+			websites      = '".$wpdb->escape($this->websites)."',
+			options       = '".$wpdb->escape($this->options)."',
+			bio           = '".$wpdb->escape($this->bio)."',
+			notes         = '".$wpdb->escape($this->notes)."'";
+		
+		return $wpdb->query($sql);
+	}
 
 }
 
