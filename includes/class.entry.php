@@ -708,7 +708,7 @@ class entry
      * Returns $options.
      * @see entry::$options
      */
-    public function getOptions()
+    private function getOptions()
     {
         return $this->options;
     }
@@ -718,7 +718,7 @@ class entry
      * @param object $options
      * @see entry::$options
      */
-    public function setOptions()
+    private function setOptions()
     {
         $this->options = serialize($this->options);
     }
