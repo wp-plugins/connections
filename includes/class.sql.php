@@ -48,9 +48,9 @@ class sql
 			$success = $image_proccess_results['success'];
 		}
 		
-		$serial_options = serialize($options);
+	//-->$serial_options = serialize($options);
 		
-		$sql = "INSERT INTO ".$wpdb->prefix."connections SET
+		/*$sql = "INSERT INTO ".$wpdb->prefix."connections SET
             first_name    = '".$wpdb->escape($postData['first_name'])."',
             last_name     = '".$wpdb->escape($postData['last_name'])."',
 			title    	  = '".$wpdb->escape($postData['title'])."',
@@ -66,7 +66,7 @@ class sql
 			websites      = '".$wpdb->escape($serial_websites)."',
 			options       = '".$wpdb->escape($serial_options)."',
 			bio           = '".$wpdb->escape($postData['bio'])."',
-            notes         = '".$wpdb->escape($postData['notes'])."'";
+            notes         = '".$wpdb->escape($postData['notes'])."'";*/
 		
 		if (!$error) {
 			$wpdb->query($sql); //Writes the entry to the db if there were no errors with the image processing.

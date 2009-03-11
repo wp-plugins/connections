@@ -443,10 +443,10 @@ class entry
      * @param object $anniversary
      * @see entry::$anniversary
      */
-    public function setAnniversary($anniversary)
+    public function setAnniversary($day, $month)
     {
         //Create the anniversary with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
-		$this->anniversary = strtotime($anniversary['anniversary_day'] . '-' . $anniversary['anniversary_month'] . '-' . '1970 00:00:00');
+		$this->anniversary = strtotime($day . '-' . $month . '-' . '1970 00:00:00');
     }
     
     /**
@@ -484,10 +484,10 @@ class entry
      * @param object $birthday
      * @see entry::$birthday
      */
-    public function setBirthday($birthday)
+    public function setBirthday($day, $month)
     {
         //Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
-		$this->birthday = strtotime($birthday['birthday_day'] . '-' . $birthday['birthday_month'] . '-' . '1970 00:00:00');
+		$this->birthday = strtotime($day . '-' . $month . '-' . '1970 00:00:00');
     }
 
     /**

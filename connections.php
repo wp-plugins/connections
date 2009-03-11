@@ -230,17 +230,28 @@ function connections_main() {
 				<?php
 				
 				if ($_GET['action']=='addnew' AND $_POST['new'] AND $_SESSION['formTokens']['add_address']['token'] == $_POST['token']) {
-					//echo $sql->addEntry($_GET, $_POST, $_FILES);
 					$entry = new entry();
 					
+					$entry->setEntryType($_POST['entry_type']);
 					$entry->setFirstName($_POST['first_name']);
 					$entry->setLastName($_POST['last_name']);
+					$entry->setTitle($_POST['title']);
 					$entry->setOrganization($_POST['organization']);
+					$entry->setDepartment($_POST['department']);
+					$entry->setAddresses($_POST['address']);
+					$entry->setPhoneNumbers($_POST['phone_numbers']);
+					$entry->setEmailAddresses($_POST['email']);
+					$entry->setIm($_POST['im']);
+					$entry->setWebsites($_POST['websites']);
+					$entry->setBirthday($_POST['birthday_day'], $_POST['birthday_month']);
+					$entry->setAnniversary($_POST['anniversary_day'], $_POST['anniversary_month']);
+					$entry->setBio($_POST['bio']);
+					$entry->setNotes($_POST['notes']);
 					$entry->setVisibility($_POST['visibility']);
-					$entry->setEntryType($_POST['entry_type']);
 					
 					$entry->save();
 					unset($_SESSION['formTokens']);
+					unset($entry);
 				}
 				
 				if ($_GET['action']=='editcomplete' AND $_POST['save'] AND $_SESSION['formTokens']['edit_address']['token'] == $_POST['token']) {
