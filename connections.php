@@ -249,9 +249,37 @@ function connections_main() {
 					$entry->setNotes($_POST['notes']);
 					$entry->setVisibility($_POST['visibility']);
 					
-					$entry->save();
-					unset($_SESSION['formTokens']);
-					unset($entry);
+					if ($_FILES['original_image']['error'] != 4) {
+						$image_proccess_results = _process_images($_FILES);
+						
+						$entry->setImageLinked(true);
+						$entry->setImageDisplay(true);
+						$entry->setImageNameThumbnail($image_proccess_results['image_names']['thumbnail']);
+						$entry->setImageNameCard($image_proccess_results['image_names']['entry']);
+						$entry->setImageNameProfile($image_proccess_results['image_names']['profile']);
+						$entry->setImageNameOriginal($image_proccess_results['image_names']['original']);
+						
+						$error = $image_proccess_results['error'];
+						$success = $image_proccess_results['success'];
+					}
+					
+					if ($entry->save() === FALSE) $error = '<p><strong>Entry could not be added to the database.</strong></p>';
+					
+					if (!$error) {
+						
+						unset($_SESSION['formTokens']);
+						unset($entry);
+						
+						echo '<div id="message" class="updated fade">';
+							echo '<p><strong>Entry added.</strong></p>' . "\n";
+							if ($image_proccess_results['success']) echo $success;
+						echo '</div>';
+					} else {
+						echo '<div id="notice" class="error">';
+							echo $error;
+						echo '</div>';
+					}
+					
 				}
 				
 				if ($_GET['action']=='editcomplete' AND $_POST['save'] AND $_SESSION['formTokens']['edit_address']['token'] == $_POST['token']) {

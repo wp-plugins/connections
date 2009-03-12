@@ -606,7 +606,7 @@ class entry
      */
     public function setImageDisplay($imageDisplay)
     {
-        $this->imageDisplay = $imageDisplay;
+        $this->options['image']['display'] = $imageDisplay;
     }
     
     /**
@@ -625,7 +625,7 @@ class entry
      */
     public function setImageLinked($imageLinked)
     {
-        $this->imageLinked = $imageLinked;
+        $this->options['image']['linked'] = $imageLinked;
     }
 
     /**
@@ -644,7 +644,7 @@ class entry
      */
     public function setImageNameCard($imageNameCard)
     {
-        $this->imageNameCard = $imageNameCard;
+        $this->options['image']['name']['entry'] = $imageNameCard;
     }
     
     /**
@@ -663,7 +663,7 @@ class entry
      */
     public function setImageNameProfile($imageNameProfile)
     {
-        $this->imageNameProfile = $imageNameProfile;
+        $this->options['image']['name']['profile'] = $imageNameProfile;
     }
     
     /**
@@ -682,7 +682,7 @@ class entry
      */
     public function setImageNameThumbnail($imageNameThumbnail)
     {
-        $this->imageNameThumbnail = $imageNameThumbnail;
+        $this->options['image']['name']['thumbnail'] = $imageNameThumbnail;
     }
 
     /**
@@ -701,7 +701,7 @@ class entry
      */
     public function setImageNameOriginal($imageNameOriginal)
     {
-        $this->imageNameOriginal = $imageNameOriginal;
+        $this->options['image']['name']['original'] = $imageNameOriginal;
     }
     
     /**

@@ -14,8 +14,8 @@ class sql
 	
 	public function addEntry($getData, $postData, $fileData)
 	{
-		global$wpdb;
-		session_start();
+	//-->global$wpdb;
+	//-->session_start();
 		
 		//This query is here to get an entry row data for when en entry is being copied.
 		if ($getData['id']) {
@@ -38,7 +38,7 @@ class sql
 		
 		if ($postData['website'] == "http://") $postData['website'] = "";
 		
-		if ($fileData['original_image']['error'] != 4) {
+		/*if ($fileData['original_image']['error'] != 4) {
 			$image_proccess_results = _process_images($fileData);
 			$options['image']['name'] = $image_proccess_results['image_names'];
 			$options['image']['linked'] = true;
@@ -46,7 +46,7 @@ class sql
 			$options['image']['use'] = $image_proccess_results['image_names']['source'];
 			$error = $image_proccess_results['error'];
 			$success = $image_proccess_results['success'];
-		}
+		}*/
 		
 	//-->$serial_options = serialize($options);
 		
@@ -68,7 +68,7 @@ class sql
 			bio           = '".$wpdb->escape($postData['bio'])."',
             notes         = '".$wpdb->escape($postData['notes'])."'";*/
 		
-		if (!$error) {
+		/*if (!$error) {
 			$wpdb->query($sql); //Writes the entry to the db if there were no errors with the image processing.
 			$out = '<div id="message" class="updated fade">';
 				$out .= '<p><strong>Entry added.</strong></p>' . "\n";
@@ -78,7 +78,7 @@ class sql
 			$out .= '<div id="notice" class="error">';
 				$out .= $error;
 			$out .= '</div>';
-		}
+		}*/
 		
 	//-->unset($_SESSION['formTokens']);
 		
