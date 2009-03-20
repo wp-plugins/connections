@@ -159,7 +159,7 @@ class entry
      * @param object $id
      * @see entry::$id
      */
-    public function setId($id)
+    private function setId($id)
     {
         $this->id = $id;
     }
@@ -348,7 +348,7 @@ class entry
      */
     public function setAddresses($addresses)
     {
-        $this->addresses = serialize($addresses);
+        $this->addresses = $addresses;
     }
 
     /**
@@ -367,7 +367,7 @@ class entry
      */
     public function setPhoneNumbers($phoneNumbers)
     {
-        $this->phoneNumbers = serialize($phoneNumbers);
+        $this->phoneNumbers = $phoneNumbers;
     }
 
     /**
@@ -386,7 +386,7 @@ class entry
      */
     public function setEmailAddresses($emailAddresses)
     {
-        $this->emailAddresses = serialize($emailAddresses);
+        $this->emailAddresses = $emailAddresses;
     }
 
     /**
@@ -405,7 +405,7 @@ class entry
      */
     public function setIm($im)
     {
-        $this->im = serialize($im);
+        $this->im = $im;
     }
 
     /**
@@ -568,7 +568,7 @@ class entry
      */
     public function setWebsites($websites)
     {
-        $this->websites = serialize($websites);
+        $this->websites = $websites;
     }
 
     /**
@@ -723,10 +723,55 @@ class entry
         $this->options = serialize($this->options);
     }
 	
+	public function get($id)
+	{
+		global $wpdb;
+		$data = $wpdb->get_row('SELECT * FROM ' . $wpdb->prefix . 'connections WHERE id="' . $wpdb->escape($id) . '"');
+		$this->__construct($data);
+	}
+	
+	public function update()
+	{
+		global$wpdb;
+		
+		$this->addresses = serialize($this->addresses);
+		$this->phoneNumbers = serialize($this->phoneNumbers);
+		$this->emailAddresses = serialize($this->emailAddresses);
+		$this->im = serialize($this->im);
+		$this->websites = serialize($this->websites);
+		$this->setOptions();
+		
+		$sql = "UPDATE ".$wpdb->prefix."connections SET
+			first_name    = '".$wpdb->escape($this->firstName)."',
+			last_name     = '".$wpdb->escape($this->lastName)."',
+			title    	  = '".$wpdb->escape($this->title)."',
+			organization  = '".$wpdb->escape($this->organization)."',
+			department    = '".$wpdb->escape($this->department)."',
+			visibility    = '".$wpdb->escape($this->visibility)."',
+			birthday      = '".$wpdb->escape($this->birthday)."',
+			anniversary   = '".$wpdb->escape($this->anniversary)."',
+			addresses     = '".$wpdb->escape($this->addresses)."',
+			phone_numbers = '".$wpdb->escape($this->phoneNumbers)."',
+			email	      = '".$wpdb->escape($this->emailAddresses)."',
+			im  	      = '".$wpdb->escape($this->im)."',
+			websites      = '".$wpdb->escape($this->websites)."',
+			options       = '".$wpdb->escape($this->options)."',
+			bio           = '".$wpdb->escape($this->bio)."',
+			notes         = '".$wpdb->escape($this->notes)."'
+			WHERE id ='".$wpdb->escape($this->id)."'";
+		
+		return $wpdb->query($sql);
+	}
+	
 	public function save()
 	{
 		global$wpdb;
 		
+		$this->addresses = serialize($this->addresses);
+		$this->phoneNumbers = serialize($this->phoneNumbers);
+		$this->emailAddresses = serialize($this->emailAddresses);
+		$this->im = serialize($this->im);
+		$this->websites = serialize($this->websites);
 		$this->setOptions();
 		
 		$sql = "INSERT INTO ".$wpdb->prefix."connections SET
@@ -749,7 +794,14 @@ class entry
 		
 		return $wpdb->query($sql);
 	}
-
+	
+	public function delete($id)
+	{
+		global $wpdb;
+		
+		$wpdb->query('DELETE FROM ' . $wpdb->prefix . 'connections WHERE id="' . $wpdb->escape($id) . '"');
+	}
+	
 }
 
 /**

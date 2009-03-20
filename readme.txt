@@ -401,12 +401,12 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 
 =0.2.23=
 
-* Converted more code to use  OO methods
+* Converted more code to use OO methods
 * Display some of the missing fields in the output
 
 =0.2.24=
 
-* Converted more code to use  OO methods
+* Converted more code to use OO methods
 * Code clean-up and documentation
 * Fixed the alpha index bug not correctly working with organization entry types
 * Added a shortcode to allow showing all entries; individual or organizations entries
@@ -424,9 +424,15 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 
 * Added shortcode filter attributes
 
-=0.3.???=
+=0.4.0=
 
 * Added hCard compatible markup
 * xHTML Transitional valid output
-* Added hCalendar compatible markup for bithdays and anniversaries.
+* Added hCalendar compatible markup for birthdays and anniversaries.
 * Birthday/anniversary will now show the next anniversary/birthday date for the entry.
+* Added support for vCard download of an entry.
+
+=0.4.3=
+
+* Adding/Editing/Copying now use the class
+* Added bulk delete

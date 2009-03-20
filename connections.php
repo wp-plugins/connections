@@ -183,15 +183,16 @@ function connections_main() {
 		
 	    if ($_GET['action']=='editform') {
 	        $row = $sql->getEntry($_GET['id']);
-			if ($_GET['copyid']) {
-				$formID = "add_address";
-				$formToken = "add_address";
-				$formAction = "addnew";
-				$inputName = "new";
-			} else {
-				$formID = "edit_address";
-				$formToken = "edit_address";
-				$formAction = "editcomplete";
+			if (isset($_GET['copyid']))
+			{
+				$formID = "entry_form";
+				$formAction = "add";
+				$inputName = "save";
+			}
+			else
+			{
+				$formID = "entry_form";
+				$formAction = "update";
 				$inputName = "save";
 			}
 ?>
@@ -202,7 +203,7 @@ function connections_main() {
 					<form action="admin.php?page=connections/connections.php&action=<?php echo $formAction ?>&id=<?php echo $row->id; ?>" method="post" enctype="multipart/form-data">
 					<?php echo _connections_getaddressform($row); ?>
 					<input type="hidden" name="formId" value="<?php echo $formID ?>" />
-					<input type="hidden" name="token" value="<?php echo _formtoken($formToken); ?>" />
+					<input type="hidden" name="token" value="<?php echo _formtoken($formID); ?>" />
 					<p class="submit">
 						<input type="submit" name="<?php echo $inputName ?>" value="Save" />
 						<a href="tools.php?page=connections/connections.php" class="button">Cancel</a> <!-- THERE HAS TO BE A BETTER WAY THAN REFERRING DIRECTLY TO THE TOOLS.PHP -->
@@ -229,9 +230,17 @@ function connections_main() {
 				
 				<?php
 				
-				if ($_GET['action']=='addnew' AND $_POST['new'] AND $_SESSION['formTokens']['add_address']['token'] == $_POST['token']) {
+				if ($_POST['save'] AND $_SESSION['formTokens']['entry_form']['token'] == $_POST['token'])
+				{
 					$entry = new entry();
 					
+					// If copying/editing an entry, the entry data is loaded into the class 
+					// properties and then properties are overwritten by the POST data as needed.
+					if (isset($_GET['id']))
+					{
+						$entry->get($_GET['id']);
+					}
+										
 					$entry->setEntryType($_POST['entry_type']);
 					$entry->setFirstName($_POST['first_name']);
 					$entry->setLastName($_POST['last_name']);
@@ -248,7 +257,7 @@ function connections_main() {
 					$entry->setBio($_POST['bio']);
 					$entry->setNotes($_POST['notes']);
 					$entry->setVisibility($_POST['visibility']);
-					
+													
 					if ($_FILES['original_image']['error'] != 4) {
 						$image_proccess_results = _process_images($_FILES);
 						
@@ -263,48 +272,121 @@ function connections_main() {
 						$success = $image_proccess_results['success'];
 					}
 					
-					if ($entry->save() === FALSE) $error = '<p><strong>Entry could not be added to the database.</strong></p>';
+					// If copying an entry, the image visibility property is set based on the user's choice.
+					// NOTE: This must come after the image processing.
+					if (isset($_POST['imgOptions']))
+					{
+						switch ($_POST['imgOptions'])
+						{
+							case 'remove':
+								$entry->setImageDisplay(false);
+								$entry->setImageLinked(false);
+							break;
+							
+							case 'hidden':
+								$entry->setImageDisplay(false);
+							break;
+							
+							case 'show':
+								$entry->setImageDisplay(true);
+							break;
+							
+							default:
+								$entry->setImageDisplay(false);
+							break;
+						}
+					}
 					
-					if (!$error) {
+					switch ($_GET['action'])
+					{
+						case 'add':
+							if ($entry->save() === FALSE)
+							{
+								$error = '<p><strong>Entry could not be added.</strong></p>';
+							}
+							
+							$success .= "<p><strong>Entry added.</strong></p> \n";
+						break;
 						
+						case 'update':
+							if ($entry->update() === FALSE)
+							{
+								$error = '<p><strong>Entry could not be updated.</strong></p>';
+							}
+							
+							$success .= "<p><strong>The entry has been updated.</strong></p> \n";
+						break;
+					}
+										
+					if (!$error)
+					{
 						unset($_SESSION['formTokens']);
 						unset($entry);
 						
 						echo '<div id="message" class="updated fade">';
-							echo '<p><strong>Entry added.</strong></p>' . "\n";
-							if ($image_proccess_results['success']) echo $success;
+							echo $success;
 						echo '</div>';
-					} else {
+					}
+					else
+					{
+						unset($_SESSION['formTokens']);
+						unset($entry);
+						
 						echo '<div id="notice" class="error">';
 							echo $error;
 						echo '</div>';
 					}
 					
 				}
-				
-				if ($_GET['action']=='editcomplete' AND $_POST['save'] AND $_SESSION['formTokens']['edit_address']['token'] == $_POST['token']) {
-					echo $sql->updateEntry($_GET, $_POST, $_FILES);
-				}
-				
-				if ($_POST['doaction'] AND $_SESSION['formTokens']['do_action']['token'] == $_POST['token']) {
-					if ($_POST['action'] != "") {
-						echo "<div id='message' class='updated fade'>";
-							$checked = $_POST['entry'];
-							
-							foreach ($checked as $id) {
-								$sql = "SELECT * FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($id)."'";
-								$row = $wpdb->get_row($sql);
 								
-								$wpdb->query("UPDATE ".$wpdb->prefix."connections SET
-									visibility		= '".$wpdb->escape($_POST['action'])."'
-									WHERE id 		='".$wpdb->escape($id)."'");
-							}
+				if ($_POST['doaction'] AND $_SESSION['formTokens']['do_action']['token'] == $_POST['token'])
+				{
+					if ($_POST['action'] != "delete")
+					{
+						$checked = $_POST['entry'];
+						
+						foreach ($checked as $id)
+						{
+							$entry = new entry();
+							$entry->get($id);
 							
+							$entry->setVisibility($_POST['action']);
+							$entry->update();
+							unset($entry);
+						}
+							
+						echo "<div id='message' class='updated fade'>";
 							echo "<p><strong>Entry(ies) visibility have been updated.</strong></p>";
 						echo "</div>";
 						unset($_SESSION['formTokens']);
 					}
+					
+					if ($_POST['action'] == "delete")
+					{
+						$checked = $_POST['entry'];
+						
+						foreach ($checked as $id)
+						{
+							$entry = new entry();
+							$entry->delete($id);
+							unset($entry);
+						}
+							
+						echo "<div id='message' class='updated fade'>";
+							echo "<p><strong>Entry(ies) have been deleted.</strong></p>";
+						echo "</div>";
+						unset($_SESSION['formTokens']);
+					}
 				}
+				
+				if ($_GET['action']=='delete' AND $_SESSION['formTokens']['delete_'.$_GET['id']]['token'] == $_GET['token'])
+				{
+			        $entry = new entry();
+					$entry->delete($_GET['id']);
+					echo '<div id="message" class="updated fade"><p><strong>The entry has been deleted.</strong></p></div>';
+					unset($entry);
+					unset($_SESSION['formTokens']);
+			    }
 				
 				if ($_POST['dofilter']) {
 					$plugin_options->setEntryType($_POST['entry_type']);
@@ -312,13 +394,7 @@ function connections_main() {
 					update_option('connections_options', $plugin_options->getOptions());
 				}
 				
-			    if ($_GET['action']=='delete' AND $_SESSION['formTokens']['delete_'.$_GET['id']]['token'] == $_GET['token']) {
-			        $sql = "SELECT * FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($_GET['id'])."'";
-			        $row = $wpdb->get_row($sql);			        
-					$wpdb->query("DELETE FROM ".$wpdb->prefix."connections WHERE id='".$wpdb->escape($_GET['id'])."'");
-					echo '<div id="message" class="updated fade"><p><strong>The entry has been deleted.</strong></p></div>';	
-					unset($_SESSION['formTokens']);
-			    }?>
+				?>
 				
 				
 				<?php
@@ -340,6 +416,7 @@ function connections_main() {
 										<option value="public">Set Public</option>
 										<option value="private">Set Private</option>
 										<option value="unlisted">Set Unlisted</option>
+										<option value="delete">Delete</option>
 									</select>
 									<input id="doaction" class="button-secondary action" type="submit" name="doaction" value="Apply" />
 								</div>
@@ -398,12 +475,12 @@ function connections_main() {
 										echo "<tr id='row" . $entry->getId() . "' class='parent-row'>";
 											echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
 												echo "<td colspan='2'>".$setAnchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit " . $entry->getFullFirstLastName() . "' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'> " . $entry->getFullLastFirstName(). "</a><br />";
-												echo "<div class='row-actions'>
-															<a class='detailsbutton' id='row-" . $entry->getId() . "'>Show Details</a> | 
-															<a class='editbutton' href='admin.php?page=connections/connections.php&action=editform&id=" . $entry->getId() . "'>Edit</a> | 
-															<a class='copybutton' href='admin.php?page=connections/connections.php&action=editform&id=" . $entry->getId() . "&copyid=true'>Copy</a> | 
-															<a class='submitdelete' onclick='return confirm(\"You are about to delete this entry. Cancel to stop, OK to delete\");' href='admin.php?page=connections/connections.php&action=delete&id=" . $entry->getId() . "&token=" . _formtoken("delete_" . $entry->getId()) . "'>Delete</a>
-													  </div>";
+												echo '<div class="row-actions">
+															<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a> | 
+															<a class="editbutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&editid=true">Edit</a> | 
+															<a class="copybutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&copyid=true">Copy</a> | 
+															<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections/connections.php&action=delete&id=' . $entry->getId() . '&token=' . _formtoken('delete_' . $entry->getId()) . '">Delete</a>
+													  </div>';
 											echo "</td> \n";
 											echo "<td ><strong>" . $entry->displayVisibiltyType() . "</strong></td> \n";												
 											echo "<td >" . $entry->getFormattedTimeStamp() . "</td> \n";											
@@ -502,13 +579,13 @@ function connections_main() {
 							<div class="form-wrap">
 							<h3><a name="new"></a>Add Entry</h3>
 							
-								<form action="admin.php?page=connections/connections.php&action=addnew" method="post" enctype="multipart/form-data">
+								<form action="admin.php?page=connections/connections.php&action=add" method="post" enctype="multipart/form-data">
 									<?php echo _connections_getaddressform(); ?>
-									<input type="hidden" name="formId" value="add_address" />
-									<input type="hidden" name="token" value="<?php echo _formtoken("add_address"); ?>" />
+									<input type="hidden" name="formId" value="entry_form" />
+									<input type="hidden" name="token" value="<?php echo _formtoken("entry_form"); ?>" />
 
 									<p class="submit">
-										<input type="submit" name="new" value="Add Address" />
+										<input type="submit" name="save" value="Add Address" />
 									</p>
 								</form>
 							</div>
@@ -517,6 +594,22 @@ function connections_main() {
 					
 				</div>
 			</div>
+			
+			<script type="text/javascript">
+				/* <![CDATA[ */
+				(function($){
+					$(document).ready(function(){
+						$('#doaction, #doaction2').click(function(){
+							if ( $('select[name^="action"]').val() == 'delete' ) {
+								var m = 'You are about to delete the selected entry(ies).\n  \'Cancel\' to stop, \'OK\' to delete.';
+								return showNotice.warn(m);
+							}
+						});
+					});
+				})(jQuery);
+				/* ]]> */
+			</script>
+
 <?php
 	    }
 	}
