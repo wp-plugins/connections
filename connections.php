@@ -57,7 +57,7 @@ define('CN_DEFAULT_THUMBNAIL_Y', 54);
 define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
 define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
 define('CN_TABLE_NAME','connections');
-define('CN_CURRENT_VERSION', '0.4.3');
+define('CN_CURRENT_VERSION', '0.4.52');
 
 $defaultAddressTypes	=	array
 							(
@@ -163,7 +163,7 @@ $plugin_options = new pluginOptions;
 // This adds the menu to the Tools menu in WordPress and calls the function to load my CSS and JS.
 add_action('admin_menu', 'connections_menus');
 function connections_menus() {
-	$connections_admin = add_management_page('connections', 'Connections', 4, 'connections/connections.php', 'connections_main');
+	$connections_admin = add_management_page('connections', 'Connections', 4, 'connections/connections.php', '_connections_main');
 	add_action( "admin_print_scripts-$connections_admin", 'connections_loadjs_admin_head' );
 }
 
@@ -173,7 +173,7 @@ function connections_loadjs_admin_head() {
 	echo '<link type="text/css" rel="stylesheet" href="' . get_bloginfo('wpurl') . '/wp-content/plugins/connections/css-admin.css" />' . "\n";
 }
 
-function connections_main() {
+function _connections_main() {
 		global $wpdb, $current_user, $plugin_options;
 		$sql = new sql();
 		
@@ -181,8 +181,10 @@ function connections_main() {
 		$plugin_options->setOptions(get_option("connections_options"), $current_user->ID);
 		$plugin_options->setCurrentUserID($current_user->ID);
 		
-	    if ($_GET['action']=='editform') {
-	        $row = $sql->getEntry($_GET['id']);
+	    if ($_GET['action']=='editform')
+		{
+			$row = new entry();
+			$row = $row->get($_GET['id']);
 			if (isset($_GET['copyid']))
 			{
 				$formID = "entry_form";
@@ -212,6 +214,7 @@ function connections_main() {
 				</div>
 			</div>
 <?php	
+			unset($row);
 		} else {
 	    
 	        $table_name = $sql->getTableName();
@@ -238,7 +241,7 @@ function connections_main() {
 					// properties and then properties are overwritten by the POST data as needed.
 					if (isset($_GET['id']))
 					{
-						$entry->get($_GET['id']);
+						$entry->set($_GET['id']);
 					}
 										
 					$entry->setEntryType($_POST['entry_type']);
@@ -247,6 +250,7 @@ function connections_main() {
 					$entry->setTitle($_POST['title']);
 					$entry->setOrganization($_POST['organization']);
 					$entry->setDepartment($_POST['department']);
+					$entry->setGroupName($_POST['connection_group_name']);
 					$entry->setAddresses($_POST['address']);
 					$entry->setPhoneNumbers($_POST['phone_numbers']);
 					$entry->setEmailAddresses($_POST['email']);
@@ -348,7 +352,7 @@ function connections_main() {
 						foreach ($checked as $id)
 						{
 							$entry = new entry();
-							$entry->get($id);
+							$entry->set($id);
 							
 							$entry->setVisibility($_POST['action']);
 							$entry->update();
@@ -557,6 +561,7 @@ function connections_main() {
 										echo "<tr class='child-row-" . $entry->getId() . " entrynotes' id='contact-" . $entry->getId() . "-detail-notes' style='display:none;'>";
 											echo "<td>&nbsp;</td> \n";
 											echo "<td colspan='3'>";
+												echo $entry->getGroupName();
 												if ($entry->getBio()) echo "<strong>Bio:</strong> " . $entry->getBio() . "<br />"; else echo "&nbsp;";
 												if ($entry->getNotes()) echo "<strong>Notes:</strong> " . $entry->getNotes(); else echo "&nbsp;";
 											echo "</td> \n";
@@ -833,7 +838,7 @@ function _connections_getaddressform($data=null) {
 	    $out =
 		"
 		<div class='form-field connectionsform'>	
-				<span class='radio_group'>" . _build_radio('entry_type','entry_type',array('Individual'=>'individual','Organization'=>'organization'),$defaultEntryType) . "</span>
+				<span class='radio_group'>" . _build_radio('entry_type','entry_type',array('Individual'=>'individual','Organization'=>'organization','Connection Group'=>'connection_group'),$defaultEntryType) . "</span>
 		</div>
 
 		<div class='form-field connectionsform'>
@@ -851,12 +856,19 @@ function _connections_getaddressform($data=null) {
 					<label for='title'>Title:</label>
 					<input type='text' name='title' value='" . $entry->getTitle() . "' />
 				</div>
-
-				<label for='organization'>Organization:</label>
-				<input type='text' name='organization' value='" . $entry->getOrganization() . "' />
 				
-				<label for='department'>Department:</label>
-				<input type='text' name='department' value='" . $entry->getDepartment() . "' />		
+				<div class='organization'>
+					<label for='organization'>Organization:</label>
+					<input type='text' name='organization' value='" . $entry->getOrganization() . "' />
+					
+					<label for='department'>Department:</label>
+					<input type='text' name='department' value='" . $entry->getDepartment() . "' />
+				</div>
+				
+				<div id='connection_group'>
+					<label for='connection_group_name'>Connection Group Name:</label>
+					<input type='text' name='connection_group_name' value='' />
+				</div>
 		</div>
 		
 		<div class='form-field connectionsform'>";
@@ -1013,7 +1025,8 @@ function _connections_install() {
         last_name tinytext NOT NULL,
 		title tinytext NOT NULL,
 		organization tinytext NOT NULL,
-		department tinytext NOT NULL, 
+		department tinytext NOT NULL,
+		group_name tinytext NOT NULL,
 		birthday tinytext NOT NULL,
 		anniversary tinytext NOT NULL,
 		bio longtext NOT NULL,

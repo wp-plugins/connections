@@ -48,6 +48,12 @@ class entry
 	private $department;
 	
 	/**
+	 * String: Connection Group Name
+	 * @var string
+	 */
+	private $groupName;
+	
+	/**
 	 * Associative array of addresses
 	 * @var associative array
 	 */
@@ -124,6 +130,7 @@ class entry
 		$this->title = $data->title;
 		$this->organization = $data->organization;
 		$this->department = $data->department;
+		$this->groupName = $data->group_name;
 		$this->addresses = unserialize($data->addresses);
 		$this->phoneNumbers = unserialize($data->phone_numbers);
 		$this->emailAddresses = unserialize($data->email);
@@ -330,6 +337,25 @@ class entry
     public function setDepartment($department)
     {
         $this->department = $department;
+    }
+
+    /**
+     * Returns $groupName.
+     * @see entry::$groupName
+     */
+    public function getGroupName()
+    {
+        return $this->groupName;
+    }
+    
+    /**
+     * Sets $groupName.
+     * @param object $groupName
+     * @see entry::$groupName
+     */
+    public function setGroupName($groupName)
+    {
+        $this->groupName = $groupName;
     }
 
     /**
@@ -726,6 +752,12 @@ class entry
 	public function get($id)
 	{
 		global $wpdb;
+		return $wpdb->get_row('SELECT * FROM ' . $wpdb->prefix . 'connections WHERE id="' . $wpdb->escape($id) . '"');
+	}
+	
+	public function set($id)
+	{
+		global $wpdb;
 		$data = $wpdb->get_row('SELECT * FROM ' . $wpdb->prefix . 'connections WHERE id="' . $wpdb->escape($id) . '"');
 		$this->__construct($data);
 	}
@@ -747,6 +779,7 @@ class entry
 			title    	  = '".$wpdb->escape($this->title)."',
 			organization  = '".$wpdb->escape($this->organization)."',
 			department    = '".$wpdb->escape($this->department)."',
+			group_name	  = '".$wpdb->escape($this->groupName)."',
 			visibility    = '".$wpdb->escape($this->visibility)."',
 			birthday      = '".$wpdb->escape($this->birthday)."',
 			anniversary   = '".$wpdb->escape($this->anniversary)."',
@@ -780,6 +813,7 @@ class entry
 			title    	  = '".$wpdb->escape($this->title)."',
 			organization  = '".$wpdb->escape($this->organization)."',
 			department    = '".$wpdb->escape($this->department)."',
+			group_name	  = '".$wpdb->escape($this->groupName)."',
 			visibility    = '".$wpdb->escape($this->visibility)."',
 			birthday      = '".$wpdb->escape($this->birthday)."',
 			anniversary   = '".$wpdb->escape($this->anniversary)."',

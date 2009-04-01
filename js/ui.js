@@ -8,7 +8,7 @@
 jQuery(document).ready(function(){
 	jQuery('.connections tr:even').addClass('alternate');
 	
-	var $entryType = (jQuery('input[@name=entry_type]:checked').val());
+	/*var $entryType = (jQuery('input[@name=entry_type]:checked').val());
 	
 	if ($entryType == 'organization')
 	{
@@ -19,7 +19,7 @@ jQuery(document).ready(function(){
 		jQuery('.cellphone').slideUp();
 		jQuery('.im').slideUp();
 		jQuery('.celebrate').slideUp();
-	}
+	}*/
 
 	jQuery(function()
 	{
