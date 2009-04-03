@@ -848,8 +848,9 @@ function _connections_getaddressform($data=null) {
 		<div class='form-field connectionsform'>
 				<div id='connection_group'>
 					<label for='connection_group_name'>Connection Group Name:</label>
-					<input type='text' name='connection_group_name' value='" . $entry->getGroupName() . "' />
-				</div>
+					<input type='text' name='connection_group_name' value='" . $entry->getGroupName() . "' />";
+					$out .= _connections_getselect('test');
+				$out .= "</div>
 				
 				<div class='namefield'>
 					<div class='input inputhalfwidth'>
@@ -1051,15 +1052,19 @@ function _connections_install() {
 	update_option('connections_options', $plugin_options->getOptions());
 }
 
-function connections_getselect($name) {
-    global $wpdb;
-    $out = "<select name='$name'>";
-    $rows = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."connections ORDER BY last_name, first_name");
-    foreach($rows as $row) {
-        $out .= "<option value='$row->id'>$row->last_name $row->first_name</option>";
-    }
-    $out .= "</select>";
-    return $out;
+function _connections_getselect($name) {
+	global $wpdb;
+	$results = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "connections ORDER BY last_name, first_name");
+	
+    $out = '<select name="' . $name . '">';
+		foreach($results as $row)
+		{
+			$entry = new entry($row);
+			$out .= '<option value="' . $entry->getId() . '">' . $entry->getFullLastFirstName() . '</option>';
+		}
+	$out .= '</select>';
+	
+	return $out;
 }
 
 add_shortcode('connections_list', '_connections_list');
