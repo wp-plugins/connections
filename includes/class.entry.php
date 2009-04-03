@@ -247,35 +247,76 @@ class entry
     }
     
 	 /**
-     * The entries full name. If entry type is set to organization the method will return the organization name.
+     * The entries full name if the entry type is an individual.
+     * If entry type is set to organization the method will return the organization name.
+     * If entry type is set to connection group the method will return the group name.
      * Returns $fullFirstLastName.
      * @see entry::$fullFirstLastName
      */
     public function getFullFirstLastName()
     {
-        if ($this->getEntryType() != "organization")
+        /*if ($this->getEntryType() != "organization")
 		{
 			$fullFirstLastName = $this->getFirstName() . ' ' . $this->getLastName();
 			return $fullFirstLastName;
 		} else {
 			return $this->getOrganization();
-		}
+		}*/
 		
+		switch ($this->getEntryType())
+		{
+			case 'individual':
+				return $this->getFirstName() . ' ' . $this->getLastName();
+			break;
+			
+			case 'organization':
+				return $this->getOrganization();
+			break;
+			
+			case 'connection_group':
+				return $this->getGroupName();
+			break;
+			
+			default:
+				return $this->getFirstName() . ' ' . $this->getLastName();
+			break;
+		}
     }
         
     /**
-     * The entries full name; last name first. If entry type is set to organization the method will return the organization name.
+     * The entries full name; last name first if the entry type is an individual.
+     * If entry type is set to organization the method will return the organization name.
+     * If entry type is set to connection group the method will return the group name.
      * Returns $fullLastFirstName.
      * @see entry::$fullLastFirstName
      */
     public function getFullLastFirstName()
     {
-    	if ($this->getEntryType() != "organization")
+    	/*if ($this->getEntryType() != "organization")
 		{
 			$fullLastFirstName = $this->getLastName() . ', ' . $this->getFirstName();
 			return $fullLastFirstName;
 		} else {
 			return $this->getOrganization();
+		}*/
+		
+		switch ($this->getEntryType())
+		{
+			case 'individual':
+				return $this->getLastName() . ', ' . $this->getFirstName();
+			break;
+			
+			case 'organization':
+				return $this->getOrganization();;
+			break;
+			
+			case 'connection_group':
+				return $this->getGroupName();
+			break;
+			
+			default:
+				return $this->getLastName() . ', ' . $this->getFirstName();
+			break;
 		}
     }
 	

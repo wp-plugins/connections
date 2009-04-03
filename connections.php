@@ -426,7 +426,7 @@ function _connections_main() {
 								</div>
 								
 								<div class="alignleft actions">
-									<?php echo _build_select('entry_type', array('Show All Enties'=>'', 'Show Individuals'=>'individual', 'Show Organizations'=>'organization'), $plugin_options->getEntryType())?>
+									<?php echo _build_select('entry_type', array('Show All Enties'=>'', 'Show Individuals'=>'individual', 'Show Organizations'=>'organization', 'Show Connection Groups'=>'connection_group'), $plugin_options->getEntryType())?>
 									<?php echo _build_select('visibility_type', array('Show All'=>'', 'Show Public'=>'public', 'Show Private'=>'private', 'Show Unlisted'=>'unlisted'), $plugin_options->getVisibilityType())?>
 									<input id="doaction" class="button-secondary action" type="submit" name="dofilter" value="Filter" />
 									<input type="hidden" name="formId" value="do_action" />
@@ -561,7 +561,6 @@ function _connections_main() {
 										echo "<tr class='child-row-" . $entry->getId() . " entrynotes' id='contact-" . $entry->getId() . "-detail-notes' style='display:none;'>";
 											echo "<td>&nbsp;</td> \n";
 											echo "<td colspan='3'>";
-												echo $entry->getGroupName();
 												if ($entry->getBio()) echo "<strong>Bio:</strong> " . $entry->getBio() . "<br />"; else echo "&nbsp;";
 												if ($entry->getNotes()) echo "<strong>Notes:</strong> " . $entry->getNotes(); else echo "&nbsp;";
 											echo "</td> \n";
@@ -867,7 +866,7 @@ function _connections_getaddressform($data=null) {
 				
 				<div id='connection_group'>
 					<label for='connection_group_name'>Connection Group Name:</label>
-					<input type='text' name='connection_group_name' value='' />
+					<input type='text' name='connection_group_name' value='" . $entry->getGroupName() . "' />
 				</div>
 		</div>
 		
