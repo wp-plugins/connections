@@ -7,19 +7,6 @@
 // See http://chrismeller.com/using-jquery-in-wordpress
 jQuery(document).ready(function(){
 	jQuery('.connections tr:even').addClass('alternate');
-	
-	/*var $entryType = (jQuery('input[@name=entry_type]:checked').val());
-	
-	if ($entryType == 'organization')
-	{
-		jQuery('.namefield').slideUp();
-		jQuery('.homephone').slideUp();
-		jQuery('.homefax').slideUp();
-		jQuery('.personal').slideUp();
-		jQuery('.cellphone').slideUp();
-		jQuery('.im').slideUp();
-		jQuery('.celebrate').slideUp();
-	}*/
 
 	jQuery(function()
 	{
@@ -46,24 +33,11 @@ jQuery(document).ready(function(){
 		return false;
 	});
 	
-	jQuery(function() {
-		jQuery('input#entry_type1')
-			.click(function(){
-				jQuery('.namefield').slideUp();
-				jQuery('.home').slideUp();
-				jQuery('.homephone').slideUp();
-				jQuery('.homefax').slideUp();
-				jQuery('.personal').slideUp();
-				jQuery('.cell').slideUp();
-				jQuery('.cellphone').slideUp();
-				jQuery('.im').slideUp();
-				jQuery('.celebrate').slideUp();
-			});
-	});
 	
 	jQuery(function() {
 		jQuery('input#entry_type0')
 			.click(function(){
+				jQuery('#connection_group').slideUp();
 				jQuery('.namefield').slideDown();
 				jQuery('.home').slideDown();
 				jQuery('.homephone').slideDown();
@@ -77,19 +51,64 @@ jQuery(document).ready(function(){
 	});
 	
 	jQuery(function() {
+		jQuery('input#entry_type1')
+			.click(function(){
+				jQuery('#connection_group').slideUp();
+				jQuery('.namefield').slideUp();
+				jQuery('.home').slideUp();
+				jQuery('.homephone').slideUp();
+				jQuery('.homefax').slideUp();
+				jQuery('.personal').slideUp();
+				jQuery('.cell').slideUp();
+				jQuery('.cellphone').slideUp();
+				jQuery('.im').slideUp();
+				jQuery('.celebrate').slideUp();
+			});
+	});
+	
+	jQuery(function() {
+		jQuery('input#entry_type2')
+			.click(function(){
+				jQuery('#connection_group').slideDown();
+				jQuery('.namefield').slideUp();
+				jQuery('.home').slideDown();
+				jQuery('.homephone').slideDown();
+				jQuery('.homefax').slideDown();
+				jQuery('.personal').slideDown();
+				jQuery('.cell').slideDown();
+				jQuery('.cellphone').slideDown();
+				jQuery('.im').slideDown();
+				jQuery('.celebrate').slideUp();
+			});
+	});
+	
+	
+	jQuery(function() {
 		var $entryType = (jQuery('input[@name=entry_type]:checked').val());
 		
-		if ($entryType == 'organization')
+		switch ($entryType)
 		{
-			jQuery('.namefield').slideUp();
-			jQuery('.home').slideUp();
-			jQuery('.homephone').slideUp();
-			jQuery('.homefax').slideUp();
-			jQuery('.personal').slideUp();
-			jQuery('.cell').slideUp();
-			jQuery('.cellphone').slideUp();
-			jQuery('.im').slideUp();
-			jQuery('.celebrate').slideUp();
+			case 'individual':
+				jQuery('#connection_group').slideUp();
+				break;
+			
+			case 'organization':
+				jQuery('#connection_group').slideUp();
+				jQuery('.namefield').slideUp();
+				jQuery('.home').slideUp();
+				jQuery('.homephone').slideUp();
+				jQuery('.homefax').slideUp();
+				jQuery('.personal').slideUp();
+				jQuery('.cell').slideUp();
+				jQuery('.cellphone').slideUp();
+				jQuery('.im').slideUp();
+				jQuery('.celebrate').slideUp();
+				break;
+			
+			case 'connection_group':
+				jQuery('.namefield').slideUp();
+				jQuery('.celebrate').slideUp();
+				break;
 		}
 	
 	});

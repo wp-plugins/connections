@@ -402,8 +402,13 @@ function _connections_main() {
 				
 				
 				<?php
-					if ($plugin_options->getVisibilityType() != "") $filter = " AND visibility='" . $plugin_options->getVisibilityType() . "' ";
-					$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = ''" . $filter . ") UNION (SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $filter . ") ORDER BY order_by, last_name, first_name";
+					if ($plugin_options->getVisibilityType() != "") $visibility = " AND visibility='" . $plugin_options->getVisibilityType() . "' ";
+					$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = '' AND group_name = ''" . $visibility . ")
+							UNION
+							(SELECT *, group_name AS order_by FROM ".$wpdb->prefix."connections WHERE group_name != ''" . $visibility . ")
+							UNION
+							(SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibility . ")
+							ORDER BY order_by, last_name, first_name";
 					$results = $wpdb->get_results($sql);
 				?>
 				<div id="col-container">
@@ -841,6 +846,11 @@ function _connections_getaddressform($data=null) {
 		</div>
 
 		<div class='form-field connectionsform'>
+				<div id='connection_group'>
+					<label for='connection_group_name'>Connection Group Name:</label>
+					<input type='text' name='connection_group_name' value='" . $entry->getGroupName() . "' />
+				</div>
+				
 				<div class='namefield'>
 					<div class='input inputhalfwidth'>
 						<label for='first_name'>First name:</label>
@@ -862,11 +872,6 @@ function _connections_getaddressform($data=null) {
 					
 					<label for='department'>Department:</label>
 					<input type='text' name='department' value='" . $entry->getDepartment() . "' />
-				</div>
-				
-				<div id='connection_group'>
-					<label for='connection_group_name'>Connection Group Name:</label>
-					<input type='text' name='connection_group_name' value='" . $entry->getGroupName() . "' />
 				</div>
 		</div>
 		
