@@ -61,11 +61,11 @@ define('CN_CURRENT_VERSION', '0.4.52');
 
 $defaultAddressTypes	=	array
 							(
-								'Select'=>null,
-								'Home'=>'home',
-								'Work'=>'work',
-								'School'=>'school',
-								'Other'=>'other'
+								''=>'Select',
+								'home'=>'Home',
+								'work'=>'Work',
+								'school'=>'School',
+								'other'=>'Other'
 							);
 
 $defaultPhoneNumberValues	=	array
@@ -156,6 +156,40 @@ $defaultIMValues =	array
 						),
 					);
 
+$defaultConnectionGroupValues = array(
+										'' =>"Select Relation",
+										'aunt' =>"Aunt",
+										'brother' =>"Brother",
+										'brotherinlaw' =>"Brother-in-law",
+										'cousin' =>"Cousin",
+										'daughter' =>"Daughter",
+										'daughterinlaw' =>"Daughter-in-law",
+										'father' =>"Father",
+										'fatherinlaw' =>"Father-in-law",
+										'granddaughter' =>"Grand Daughter",
+										'grandfather' =>"Grand Father",
+										'grandmother' =>"Grand Mother",
+										'grandson' =>"Grand Son",
+										'greatgrandmother' =>"Great Grand Mother",
+										'greatgrandfather' =>"Great Grand Father",
+										'husband' =>"Husband",
+										'mother' =>"Mother",
+										'motherinlaw' =>"Mother-in-law",
+										'nephew' =>"Nephew",
+										'niece' =>"Niece",
+										'sister' =>"Sister",
+										'sisterinlaw' =>"Sister-in-law",
+										'son' =>"Son",
+										'soninlaw' =>"Son-in-law",
+										'stepbrother' =>"Step Brother",
+										'stepdaughter' =>"Step Daughter",
+										'stepfather' =>"Step Father",
+										'stepmother' =>"Step Mother",
+										'stepsister' =>"Step Sister",
+										'stepson' =>"Step Son",
+										'uncle' =>"Uncle",
+										'wife' =>"Wife"
+										);
 
 //$plugin_options = new pluginOptions(get_option("connections_options"));
 $plugin_options = new pluginOptions;
@@ -168,8 +202,9 @@ function connections_menus() {
 }
 
 function connections_loadjs_admin_head() {
-	//wp_enqueue_script('jquery');
-	wp_enqueue_script('loadjs', get_bloginfo('wpurl') . '/wp-content/plugins/connections/js/ui.js');
+	wp_enqueue_script('jquery');
+	wp_enqueue_script('load_ui_js', get_bloginfo('wpurl') . '/wp-content/plugins/connections/js/ui.js');
+	wp_enqueue_script('load_jquery_plugin', get_bloginfo('wpurl') . '/wp-content/plugins/connections/js/jquery.template.js');
 	echo '<link type="text/css" rel="stylesheet" href="' . get_bloginfo('wpurl') . '/wp-content/plugins/connections/css-admin.css" />' . "\n";
 }
 
@@ -431,8 +466,8 @@ function _connections_main() {
 								</div>
 								
 								<div class="alignleft actions">
-									<?php echo _build_select('entry_type', array('Show All Enties'=>'', 'Show Individuals'=>'individual', 'Show Organizations'=>'organization', 'Show Connection Groups'=>'connection_group'), $plugin_options->getEntryType())?>
-									<?php echo _build_select('visibility_type', array('Show All'=>'', 'Show Public'=>'public', 'Show Private'=>'private', 'Show Unlisted'=>'unlisted'), $plugin_options->getVisibilityType())?>
+									<?php echo _build_select('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $plugin_options->getEntryType())?>
+									<?php echo _build_select('visibility_type', array(''=>'Show All', 'public'=>'Show Public', 'private'=>'Show Private', 'unlisted'=>'Show Unlisted'), $plugin_options->getVisibilityType())?>
 									<input id="doaction" class="button-secondary action" type="submit" name="dofilter" value="Filter" />
 									<input type="hidden" name="formId" value="do_action" />
 									<input type="hidden" name="token" value="<?php echo _formtoken("do_action"); ?>" />
@@ -457,7 +492,7 @@ function _connections_main() {
 								<tbody>
 									
 									<?php
-													
+									
 									foreach ($results as $row) {
 										$entry = new entry($row);
 										$addressObject = new addresses();
@@ -483,7 +518,7 @@ function _connections_main() {
 										
 										echo "<tr id='row" . $entry->getId() . "' class='parent-row'>";
 											echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
-												echo "<td colspan='2'>".$setAnchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit " . $entry->getFullFirstLastName() . "' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'> " . $entry->getFullLastFirstName(). "</a><br />";
+												echo "<td colspan='2'>".$setAnchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit " . $entry->getFullFirstLastName() . "' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'> " . $entry->getFullLastFirstName() . "</a><br />";
 												echo '<div class="row-actions">
 															<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a> | 
 															<a class="editbutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&editid=true">Edit</a> | 
@@ -780,15 +815,15 @@ function _build_select($name, $value_options, $selected=null) {
 	foreach($value_options as $key=>$value) {
 		$select .= "<option ";
 		if ($value != null) {
-			$select .= "value='" . $value . "'";
+			$select .= "value='" . $key . "'";
 		} else {
 			$select .= "value=''";
 		}
-		if ($selected == $value) {
+		if ($selected == $key) {
 			$select .= " SELECTED";
 		}
 		$select .= ">";
-		$select .= $key;
+		$select .= $value;
 		$select .= "</option> \n";
 	}
 	$select .= "</select> \n";
@@ -824,7 +859,7 @@ function _build_radio($name, $id, $value_labels, $checked=null) {
  * @param object $data[optional]
  */
 function _connections_getaddressform($data=null) {
-		global $defaultAddressTypes, $defaultEmailValues, $defaultIMValues, $defaultPhoneNumberValues;
+		global $defaultAddressTypes, $defaultEmailValues, $defaultIMValues, $defaultPhoneNumberValues, $defaultConnectionGroupValues;
 		
 		$entry = new entry($data);
 		$addressObject = new addresses();
@@ -849,7 +884,16 @@ function _connections_getaddressform($data=null) {
 				<div id='connection_group'>
 					<label for='connection_group_name'>Connection Group Name:</label>
 					<input type='text' name='connection_group_name' value='" . $entry->getGroupName() . "' />";
-					$out .= _connections_getselect('test');
+					$out .= '<div id="relations">';
+						$out .= '<div id="relation_row_base" class="relation_row">';
+							$out .= _connections_get_entry_select('entry_select[]');
+							$out .= _build_select('relation[]', $defaultConnectionGroupValues);
+							
+							//$out .= '<textarea id="values">{count:intCount}</textarea>';
+							//$out .= '<textarea id="template"><br /><a class="button">Add</a></textarea>';
+						$out .= '</div>';
+					$out .= '</div';
+					$out .= '<a id="add_button" class="button">Add</a>';
 				$out .= "</div>
 				
 				<div class='namefield'>
@@ -1052,11 +1096,12 @@ function _connections_install() {
 	update_option('connections_options', $plugin_options->getOptions());
 }
 
-function _connections_getselect($name) {
+function _connections_get_entry_select($name) {
 	global $wpdb;
 	$results = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "connections ORDER BY last_name, first_name");
 	
     $out = '<select name="' . $name . '">';
+		$out .= '<option value="">Select Entry</option>';
 		foreach($results as $row)
 		{
 			$entry = new entry($row);
