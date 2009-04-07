@@ -121,6 +121,7 @@ class entry
 	private $imageNameProfile;
 	private $imageNameOriginal;
 	private $entryType;
+	private $connectionGroup;
 	
 	function __construct($data = null)	{
 		$this->id = $data->id;
@@ -150,6 +151,7 @@ class entry
 		$this->imageNameProfile = $this->options['image']['name']['profile'];
 		$this->imageNameOriginal = $this->options['image']['name']['original'];
 		$this->entryType = $this->options['entry']['type'];
+		$this->connectionGroup = $this->options['connection_group'];
 	}
 
     /**
@@ -655,6 +657,25 @@ class entry
     public function setEntryType($entryType)
     {
         $this->options['entry']['type'] = $entryType;
+    }
+
+    /**
+     * Returns $connectionGroup.
+     * @see entry::$connectionGroup
+     */
+    public function getConnectionGroup()
+    {
+        return $this->connectionGroup;
+    }
+    
+    /**
+     * Sets $connectionGroup.
+     * @param object $connectionGroup
+     * @see entry::$connectionGroup
+     */
+    public function setConnectionGroup($connectionGroup)
+    {
+        $this->options['connection_group'] = $connectionGroup;
     }
     
     /**

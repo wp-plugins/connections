@@ -209,7 +209,7 @@ function connections_loadjs_admin_head() {
 }
 
 function _connections_main() {
-		global $wpdb, $current_user, $plugin_options;
+		global $wpdb, $current_user, $plugin_options, $defaultConnectionGroupValues;
 		$sql = new sql();
 		
 		get_currentuserinfo();
@@ -280,6 +280,7 @@ function _connections_main() {
 					}
 										
 					$entry->setEntryType($_POST['entry_type']);
+					$entry->setConnectionGroup($_POST['connection_group']);
 					$entry->setFirstName($_POST['first_name']);
 					$entry->setLastName($_POST['last_name']);
 					$entry->setTitle($_POST['title']);
@@ -603,6 +604,15 @@ function _connections_main() {
 											echo "<td colspan='3'>";
 												if ($entry->getBio()) echo "<strong>Bio:</strong> " . $entry->getBio() . "<br />"; else echo "&nbsp;";
 												if ($entry->getNotes()) echo "<strong>Notes:</strong> " . $entry->getNotes(); else echo "&nbsp;";
+												
+												$connections = $entry->getConnectionGroup();
+												for ($i = 0, $c = count($connections['entry_id']); $i < $c; $i++)
+												{
+													$relation = new entry();
+													$relation->set($connections['entry_id'][$i]);
+													echo '<strong>' . $defaultConnectionGroupValues[$connections['relation'][$i]] . ':</strong> ' . $relation->getFullFirstLastName() . '<br />' . "\n";
+												}
+												
 											echo "</td> \n";
 											echo "<td><strong>Entry ID:</strong> " . $entry->getId();
 												if (!$entry->getImageLinked()) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";
@@ -886,8 +896,8 @@ function _connections_getaddressform($data=null) {
 					<input type='text' name='connection_group_name' value='" . $entry->getGroupName() . "' />";
 					$out .= '<div id="relations">';
 						$out .= '<div id="relation_row_base" class="relation_row">';
-							$out .= _connections_get_entry_select('entry_select[]');
-							$out .= _build_select('relation[]', $defaultConnectionGroupValues);
+							$out .= _connections_get_entry_select('connection_group[entry_id][]');
+							$out .= _build_select('connection_group[relation][]', $defaultConnectionGroupValues);
 							
 							//$out .= '<textarea id="values">{count:intCount}</textarea>';
 							//$out .= '<textarea id="template"><br /><a class="button">Add</a></textarea>';
