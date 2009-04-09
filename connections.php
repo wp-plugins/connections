@@ -611,6 +611,7 @@ function _connections_main() {
 													$relation = new entry();
 													$relation->set($connections['entry_id'][$i]);
 													echo '<strong>' . $defaultConnectionGroupValues[$connections['relation'][$i]] . ':</strong> ' . $relation->getFullFirstLastName() . '<br />' . "\n";
+													unset($relation);
 												}
 												
 											echo "</td> \n";
@@ -895,13 +896,40 @@ function _connections_getaddressform($data=null) {
 					<label for='connection_group_name'>Connection Group Name:</label>
 					<input type='text' name='connection_group_name' value='" . $entry->getGroupName() . "' />";
 					$out .= '<div id="relations">';
-						$out .= '<div id="relation_row_base" class="relation_row">';
-							$out .= _connections_get_entry_select('connection_group[entry_id][]');
-							$out .= _build_select('connection_group[relation][]', $defaultConnectionGroupValues);
 							
-							//$out .= '<textarea id="values">{count:intCount}</textarea>';
-							//$out .= '<textarea id="template"><br /><a class="button">Add</a></textarea>';
-						$out .= '</div>';
+						if (!$entry->getConnectionGroup())
+						{
+							$out .= '<div id="relation_row_base" class="relation_row">';
+								$out .= _connections_get_entry_select('connection_group[entry_id][]');
+								$out .= _build_select('connection_group[relation][]', $defaultConnectionGroupValues);
+							$out .= '</div>';
+						}
+						else
+						{
+							$connections = $entry->getConnectionGroup();
+							for ($i = 0, $c = count($connections['entry_id']); $i < $c; $i++)
+							{
+								$relation = new entry();
+								$relation->set($connections['entry_id'][$i]);
+								$selected = array_search($defaultConnectionGroupValues[$connections['relation'][$i]], $defaultConnectionGroupValues);
+								
+								if ($i > 0)
+								{
+									$out .= '<div id="relation_row_' . $relation->getId() . '">';
+								}
+								else
+								{
+									$out .= '<div id="relation_row_base" class="relation_row">';
+								}
+									$out .= _connections_get_entry_select('connection_group[entry_id][]', $connections['entry_id'][$i]);
+									$out .= _build_select('connection_group[relation][]', $defaultConnectionGroupValues, $selected);
+									if ($i > 0) $out .= '<a href="#" id="remove_button_' . $i . '" class="button" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
+								$out .= '</div>';
+								
+								unset($relation);
+							}
+						}						
+						
 					$out .= '</div';
 					$out .= '<a id="add_button" class="button">Add</a>';
 				$out .= "</div>
@@ -1106,7 +1134,8 @@ function _connections_install() {
 	update_option('connections_options', $plugin_options->getOptions());
 }
 
-function _connections_get_entry_select($name) {
+function _connections_get_entry_select($name,$selected=null)
+{
 	global $wpdb;
 	$results = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "connections ORDER BY last_name, first_name");
 	
@@ -1115,7 +1144,9 @@ function _connections_get_entry_select($name) {
 		foreach($results as $row)
 		{
 			$entry = new entry($row);
-			$out .= '<option value="' . $entry->getId() . '">' . $entry->getFullLastFirstName() . '</option>';
+			$out .= '<option value="' . $entry->getId() . '"';
+			if ($selected == $entry->getId()) $out .= ' SELECTED';
+			$out .= '>' . $entry->getFullLastFirstName() . '</option>';
 		}
 	$out .= '</select>';
 	
