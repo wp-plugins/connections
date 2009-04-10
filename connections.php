@@ -534,6 +534,15 @@ function _connections_main() {
 										echo "<tr class='child-row-" . $entry->getId() . " entrydetails' id='contact-" . $entry->getId() . "-detail' style='display:none;'>";
 											echo "<td ></td> \n";
 											echo "<td colspan='2'>";
+												$connections = $entry->getConnectionGroup();
+												for ($i = 0, $c = count($connections['entry_id']); $i < $c; $i++)
+												{
+													$relation = new entry();
+													$relation->set($connections['entry_id'][$i]);
+													echo '<strong>' . $defaultConnectionGroupValues[$connections['relation'][$i]] . ':</strong> ' . $relation->getFullFirstLastName() . '<br />' . "\n";
+													unset($relation);
+												}
+												
 												if ($entry->getTitle()) echo "<strong>Title:</strong><br />" . $entry->getTitle() . "<br /><br />";
 												if ($entry->getOrganization() && $entry->getEntryType() != "organization" ) echo "<strong>Organization:</strong><br />" . $entry->getOrganization() . "<br /><br />";
 												if ($entry->getDepartment()) echo "<strong>Department:</strong><br />" . $entry->getDepartment() . "<br /><br />";
@@ -604,16 +613,6 @@ function _connections_main() {
 											echo "<td colspan='3'>";
 												if ($entry->getBio()) echo "<strong>Bio:</strong> " . $entry->getBio() . "<br />"; else echo "&nbsp;";
 												if ($entry->getNotes()) echo "<strong>Notes:</strong> " . $entry->getNotes(); else echo "&nbsp;";
-												
-												$connections = $entry->getConnectionGroup();
-												for ($i = 0, $c = count($connections['entry_id']); $i < $c; $i++)
-												{
-													$relation = new entry();
-													$relation->set($connections['entry_id'][$i]);
-													echo '<strong>' . $defaultConnectionGroupValues[$connections['relation'][$i]] . ':</strong> ' . $relation->getFullFirstLastName() . '<br />' . "\n";
-													unset($relation);
-												}
-												
 											echo "</td> \n";
 											echo "<td><strong>Entry ID:</strong> " . $entry->getId();
 												if (!$entry->getImageLinked()) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";

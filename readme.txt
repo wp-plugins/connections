@@ -200,7 +200,7 @@ Use this option to define the list title to any text you wish.
 
 
 
-** Template Tags **
+= Template Tags =
 
 In the version 0.3 series of Connections the ability to use custom output templates with many tags were added that can be used for customizing the template. The template tags are used in nearly the same fashion as the template tags when developing WordPress themes. So if you know a little about HTML and have dabbled in WordPress them developement, creating custom templates for Connections should be very easy. Every tag must be wrapped in a PHP statment and echoed `<?php ?>`. See the example below. Custom templates must be saved in `./wp-content/connections_templates` directory/folder. To tell the Connections to use a custom template you must set the two template options when using the shortcode options mentioned above.
 If these are used you will have to ensure you class the items correctly in order to maintain hCard compatibility. Otherwise use the template tags that output preformatted HTML to maintain hCard compatibility.
@@ -318,7 +318,7 @@ Returns the birthday date in a `<span>`. The format is optional and conforms to 
 `entry->getAnniversaryBlock('FORMAT')`
 Returns the anniversary date in a `<span>`. The format is optional and conforms to the PHP standard, refer to the [PHP Manual](http://us2.php.net/date) for the format characters.
 
-'entry->getNotesBlock()`
+`entry->getNotesBlock()`
 Returns the notes in hCard compatible format wrapped in a `<div>`.
 
 `entry->getRevisionDateBlock()`
@@ -359,39 +359,39 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 
 == Change Log ==
 
-=0.2.3=
+= 0.2.3 =
 
 * First version in the repository
 
-=0.2.4=
+= 0.2.4 =
 
 * Add entry ID to the admin
 
-=0.2.7=
+= 0.2.7 =
 
 * Added preliminary image support for entries
 
-=0.2.8=
+= 0.2.8 =
 
 * Fix bug that was causing IE to not filter correctly
 * Code cleanup
 
-=0.2.9=
+= 0.2.9 =
 
 * Some more code cleanup
 * Started code documentation
 * Added the ability to choose whether or not a linked image in an entry is displayed when embedded in a page/post
 * Added the ability to remove the linked image from an entry
 
-=0.2.10=
+= 0.2.10 =
 
 * Added the ability to copy an entry
 
-=0.2.11=
+= 0.2.11 =
 
 * Added a nice little up arrow to both the admin and page/post entry list to return to the top of the list
 
-=0.2.22=
+= 0.2.22 =
 
 * Added Org/Individual options
 * Added IM fields
@@ -399,19 +399,19 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Added Org/Individual filter
 * Started to convert the code to OO PHP
 
-=0.2.23=
+= 0.2.23 =
 
 * Converted more code to use OO methods
 * Display some of the missing fields in the output
 
-=0.2.24=
+= 0.2.24 =
 
 * Converted more code to use OO methods
 * Code clean-up and documentation
 * Fixed the alpha index bug not correctly working with organization entry types
 * Added a shortcode to allow showing all entries; individual or organizations entries
 
-=0.3.2=
+= 0.3.2 =
 
 * Converted the rest of the code to use OO methods
 * Started to add jQuery in the admin
@@ -420,11 +420,11 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Added the ability to use custom output templates and a slew of template tags
 * Added a default profile template and a default single entry template
 
-=0.3.3=
+= 0.3.3 =
 
 * Added shortcode filter attributes
 
-=0.4.0=
+= 0.4.0 =
 
 * Added hCard compatible markup
 * xHTML Transitional valid output
@@ -432,7 +432,7 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Birthday/anniversary will now show the next anniversary/birthday date for the entry.
 * Added support for vCard download of an entry.
 
-=0.4.3=
+= 0.4.3 =
 
 * Adding/Editing/Copying now use the class
 * Added bulk delete
