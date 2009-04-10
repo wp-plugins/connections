@@ -522,9 +522,9 @@ function _connections_main() {
 												echo "<td colspan='2'>".$setAnchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit " . $entry->getFullFirstLastName() . "' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'> " . $entry->getFullLastFirstName() . "</a><br />";
 												echo '<div class="row-actions">
 															<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a> | 
-															<a class="editbutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&editid=true">Edit</a> | 
-															<a class="copybutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&copyid=true">Copy</a> | 
-															<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections/connections.php&action=delete&id=' . $entry->getId() . '&token=' . _formtoken('delete_' . $entry->getId()) . '">Delete</a>
+															<a class="editbutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&editid=true" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | 
+															<a class="copybutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&copyid=true" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | 
+															<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections/connections.php&action=delete&id=' . $entry->getId() . '&token=' . _formtoken('delete_' . $entry->getId()) . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>
 													  </div>';
 											echo "</td> \n";
 											echo "<td ><strong>" . $entry->displayVisibiltyType() . "</strong></td> \n";												
@@ -539,7 +539,8 @@ function _connections_main() {
 												{
 													$relation = new entry();
 													$relation->set($connections['entry_id'][$i]);
-													echo '<strong>' . $defaultConnectionGroupValues[$connections['relation'][$i]] . ':</strong> ' . $relation->getFullFirstLastName() . '<br />' . "\n";
+													echo '<strong>' . $defaultConnectionGroupValues[$connections['relation'][$i]] . ':</strong> ' . '<a href="admin.php?page=connections/connections.php&action=editform&id=' . $relation->getId() . '&editid=true" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a>' . '<br />' . "\n";
+													if ($c - 1 == $i) echo '<br />'; // Insert a break after all connections are listed.
 													unset($relation);
 												}
 												
@@ -562,7 +563,6 @@ function _connections_main() {
 														echo "</div>";														
 													}
 												}
-											//echo $object->getAddressBlock();
 											echo "</td> \n";
 											
 											echo "<td>";
@@ -578,10 +578,8 @@ function _connections_main() {
 												{
 													foreach ($entry->getIm() as $imRow)
 													{
-														if ($imObject->getId($imRow) != "") echo "<strong>" . $imObject->getName($imRow) . ":</strong><br />" . $imObject->getId($imRow) . "<br />";
+														if ($imObject->getId($imRow) != "") echo "<strong>" . $imObject->getName($imRow) . ":</strong><br />" . $imObject->getId($imRow) . "<br /><br />";
 													}
-													echo "<br />";
-													
 												}
 												
 												if ($entry->getWebsites())
@@ -885,79 +883,81 @@ function _connections_getaddressform($data=null) {
 		if (!isset($options['entry']['type'])) $defaultEntryType = "individual"; else $defaultEntryType = $entry->getEntryType();
 				
 	    $out =
-		"
-		<div class='form-field connectionsform'>	
-				<span class='radio_group'>" . _build_radio('entry_type','entry_type',array('Individual'=>'individual','Organization'=>'organization','Connection Group'=>'connection_group'),$defaultEntryType) . "</span>
+		'
+		<div class="form-field connectionsform">	
+				<span class="radio_group">' . _build_radio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Connection Group"=>"connection_group"),$defaultEntryType) . '</span>
 		</div>
-
-		<div class='form-field connectionsform'>
-				<div id='connection_group'>
-					<label for='connection_group_name'>Connection Group Name:</label>
-					<input type='text' name='connection_group_name' value='" . $entry->getGroupName() . "' />";
-					$out .= '<div id="relations">';
+		
+		<div id="connection_group" class="form-field connectionsform">
+			<div id="connection_group">
+				<label for="connection_group_name">Connection Group Name:</label>
+				<input type="text" name="connection_group_name" value="' . $entry->getGroupName() . '" />';
+				$out .= '<div id="relations">';
+						
+					if (!$entry->getConnectionGroup())
+					{
+						$out .= '<div id="relation_row_base" class="relation_row">';
+							$out .= _connections_get_entry_select('connection_group[entry_id][]');
+							$out .= _build_select('connection_group[relation][]', $defaultConnectionGroupValues);
+						$out .= '</div>';
+					}
+					else
+					{
+						$connections = $entry->getConnectionGroup();
+						for ($i = 0, $c = count($connections['entry_id']); $i < $c; $i++)
+						{
+							$relation = new entry();
+							$relation->set($connections['entry_id'][$i]);
+							$selected = array_search($defaultConnectionGroupValues[$connections['relation'][$i]], $defaultConnectionGroupValues);
 							
-						if (!$entry->getConnectionGroup())
-						{
-							$out .= '<div id="relation_row_base" class="relation_row">';
-								$out .= _connections_get_entry_select('connection_group[entry_id][]');
-								$out .= _build_select('connection_group[relation][]', $defaultConnectionGroupValues);
-							$out .= '</div>';
-						}
-						else
-						{
-							$connections = $entry->getConnectionGroup();
-							for ($i = 0, $c = count($connections['entry_id']); $i < $c; $i++)
+							if ($i > 0)
 							{
-								$relation = new entry();
-								$relation->set($connections['entry_id'][$i]);
-								$selected = array_search($defaultConnectionGroupValues[$connections['relation'][$i]], $defaultConnectionGroupValues);
-								
-								if ($i > 0)
-								{
-									$out .= '<div id="relation_row_' . $relation->getId() . '">';
-								}
-								else
-								{
-									$out .= '<div id="relation_row_base" class="relation_row">';
-								}
-									$out .= _connections_get_entry_select('connection_group[entry_id][]', $connections['entry_id'][$i]);
-									$out .= _build_select('connection_group[relation][]', $defaultConnectionGroupValues, $selected);
-									if ($i > 0) $out .= '<a href="#" id="remove_button_' . $i . '" class="button" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
-								$out .= '</div>';
-								
-								unset($relation);
+								$out .= '<div id="relation_row_' . $relation->getId() . '">';
 							}
-						}						
-						
-					$out .= '</div';
-					$out .= '<a id="add_button" class="button">Add</a>';
-				$out .= "</div>
-				
-				<div class='namefield'>
-					<div class='input inputhalfwidth'>
-						<label for='first_name'>First name:</label>
-						<input type='text' name='first_name' value='" . $entry->getFirstName() . "' />
+							else
+							{
+								$out .= '<div id="relation_row_base" class="relation_row">';
+							}
+								$out .= _connections_get_entry_select('connection_group[entry_id][]', $connections['entry_id'][$i]);
+								$out .= _build_select('connection_group[relation][]', $defaultConnectionGroupValues, $selected);
+								if ($i > 0) $out .= '<a href="#" id="remove_button_' . $i . '" class="button" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
+							$out .= '</div>';
+							
+							unset($relation);
+						}
+					}						
+					
+				$out .= '</div';
+				$out .= '<p class="add"><a id="add_button" class="button">Add</a></p>';
+			$out .= '</div>
+		</div>
+		
+		<div class="form-field connectionsform">
+				<div class="namefield">
+					<div class="input inputhalfwidth">
+						<label for="first_name">First name:</label>
+						<input type="text" name="first_name" value="' . $entry->getFirstName() . '" />
 					</div>
-					<div class='input inputhalfwidth'>
-						<label for='last_name'>Last name:</label>
-						<input type='text' name='last_name' value='" . $entry->getLastName() . "' />
+					<div class="input inputhalfwidth">
+						<label for="last_name">Last name:</label>
+						<input type="text" name="last_name" value="' . $entry->getLastName() . '" />
 					</div>
-					<div class='clear'></div>
+					<div class="clear"></div>
 						
-					<label for='title'>Title:</label>
-					<input type='text' name='title' value='" . $entry->getTitle() . "' />
+					<label for="title">Title:</label>
+					<input type="text" name="title" value="' . $entry->getTitle() . '" />
 				</div>
 				
-				<div class='organization'>
-					<label for='organization'>Organization:</label>
-					<input type='text' name='organization' value='" . $entry->getOrganization() . "' />
+				<div class="organization">
+					<label for="organization">Organization:</label>
+					<input type="text" name="organization" value="' . $entry->getOrganization() . '" />
 					
-					<label for='department'>Department:</label>
-					<input type='text' name='department' value='" . $entry->getDepartment() . "' />
+					<label for="department">Department:</label>
+					<input type="text" name="department" value="' . $entry->getDepartment() . '" />
 				</div>
 		</div>
 		
-		<div class='form-field connectionsform'>";
+		<div class="form-field connectionsform">';
 				
 				if ($entry->getImageLinked()) {
 					if ($entry->getImageDisplay()) $selected = "show"; else $selected = "hidden";
