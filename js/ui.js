@@ -22,11 +22,13 @@ jQuery(document).ready(function(){
 				function() 
 				{
 					jQuery(this).html('Hide Details');
+					jQuery(this).attr("title","Click to hide details.")
 				},
 				
 				function() 
 				{
 					jQuery(this).html('Show Details');
+					jQuery(this).attr("title","Click to show details.")
 				}
 			);
 		//jQuery('tr[@class^=child-]').hide().children('td');
