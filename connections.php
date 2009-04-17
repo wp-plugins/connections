@@ -904,10 +904,8 @@ function _connections_getaddressform($data=null) {
 						
 					// --> Start template for Connection Group <-- \\
 					$out .= '<textarea id="relation_row_base" style="display: none">';
-					
 						$out .= _connections_get_entry_select('connection_group[::FIELD::][entry_id]');
 						$out .= _build_select('connection_group[::FIELD::][relation]', $defaultConnectionGroupValues);
-					
 					$out .= '</textarea>';
 					// --> End template for Connection Group <-- \\
 					
