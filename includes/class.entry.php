@@ -675,7 +675,8 @@ class entry
      */
     public function setConnectionGroup($connectionGroup)
     {
-        $this->options['connection_group'] = $connectionGroup;
+        //$connectionGroup = preg_grep('/^::[a-zA-Z0-9]*::/', $connectionGroup, PREG_GREP_INVERT);
+		$this->options['connection_group'] = $connectionGroup;
     }
     
     /**

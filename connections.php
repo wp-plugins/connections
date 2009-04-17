@@ -197,10 +197,18 @@ $plugin_options = new pluginOptions;
 // This adds the menu to the Tools menu in WordPress and calls the function to load my CSS and JS.
 add_action('admin_menu', 'connections_menus');
 function connections_menus() {
-	$connections_admin = add_management_page('connections', 'Connections', 4, 'connections/connections.php', '_connections_main');
+	//Adds Connections to the top level menu.
+	$connections_admin = add_menu_page('Connections : Administration', 'Connections', 4, 'connections/connections.php', '_connections_main');
+	//Adds the Connections sub-menus.
+	add_submenu_page('connections/connections.php', 'Connections : Settings','Settings', 4,'connections/submenus/settings.php');
+	add_submenu_page('connections/connections.php', 'Connections : Help','Help', 4,'connections/submenus/help.php');
+	// Call the function to add the CSS and JS only on pages related to the Connections plug-in.
 	add_action( "admin_print_scripts-$connections_admin", 'connections_loadjs_admin_head' );
+	add_action( 'admin_print_scripts-connections/submenus/settings.php', 'connections_loadjs_admin_head' );
+	add_action( 'admin_print_scripts-connections/submenus/help.php', 'connections_loadjs_admin_head' );
 }
 
+// The CSS and JS is only loaded on pages related to the Connections plug-in.
 function connections_loadjs_admin_head() {
 	wp_enqueue_script('jquery');
 	wp_enqueue_script('load_ui_js', get_bloginfo('wpurl') . '/wp-content/plugins/connections/js/ui.js');
@@ -280,13 +288,13 @@ function _connections_main() {
 					}
 										
 					$entry->setEntryType($_POST['entry_type']);
+					$entry->setGroupName($_POST['connection_group_name']);
 					$entry->setConnectionGroup($_POST['connection_group']);
 					$entry->setFirstName($_POST['first_name']);
 					$entry->setLastName($_POST['last_name']);
 					$entry->setTitle($_POST['title']);
 					$entry->setOrganization($_POST['organization']);
 					$entry->setDepartment($_POST['department']);
-					$entry->setGroupName($_POST['connection_group_name']);
 					$entry->setAddresses($_POST['address']);
 					$entry->setPhoneNumbers($_POST['phone_numbers']);
 					$entry->setEmailAddresses($_POST['email']);
@@ -344,7 +352,6 @@ function _connections_main() {
 							{
 								$error = '<p><strong>Entry could not be added.</strong></p>';
 							}
-							
 							$success .= "<p><strong>Entry added.</strong></p> \n";
 						break;
 						
@@ -534,12 +541,13 @@ function _connections_main() {
 										echo "<tr class='child-row-" . $entry->getId() . " entrydetails' id='contact-" . $entry->getId() . "-detail' style='display:none;'>";
 											echo "<td ></td> \n";
 											echo "<td colspan='2'>";
+												
 												$connections = $entry->getConnectionGroup();
-												for ($i = 0, $c = count($connections['entry_id']); $i < $c; $i++)
+												foreach ($connections as $key => $value)
 												{
 													$relation = new entry();
-													$relation->set($connections['entry_id'][$i]);
-													echo '<strong>' . $defaultConnectionGroupValues[$connections['relation'][$i]] . ':</strong> ' . '<a href="admin.php?page=connections/connections.php&action=editform&id=' . $relation->getId() . '&editid=true" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a>' . '<br />' . "\n";
+													$relation->set($connections[$key]['entry_id']);
+													echo '<strong>' . $defaultConnectionGroupValues[$connections[$key]['relation']] . ':</strong> ' . '<a href="admin.php?page=connections/connections.php&action=editform&id=' . $relation->getId() . '&editid=true" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a>' . '<br />' . "\n";
 													if ($c - 1 == $i) echo '<br />'; // Insert a break after all connections are listed.
 													unset($relation);
 												}
@@ -894,33 +902,28 @@ function _connections_getaddressform($data=null) {
 				<input type="text" name="connection_group_name" value="' . $entry->getGroupName() . '" />';
 				$out .= '<div id="relations">';
 						
-					if (!$entry->getConnectionGroup())
-					{
-						$out .= '<div id="relation_row_base" class="relation_row">';
-							$out .= _connections_get_entry_select('connection_group[entry_id][]');
-							$out .= _build_select('connection_group[relation][]', $defaultConnectionGroupValues);
-						$out .= '</div>';
-					}
-					else
+					// --> Start template for Connection Group <-- \\
+					$out .= '<textarea id="relation_row_base" style="display: none">';
+					
+						$out .= _connections_get_entry_select('connection_group[::FIELD::][entry_id]');
+						$out .= _build_select('connection_group[::FIELD::][relation]', $defaultConnectionGroupValues);
+					
+					$out .= '</textarea>';
+					// --> End template for Connection Group <-- \\
+					
+					if ($entry->getConnectionGroup())
 					{
 						$connections = $entry->getConnectionGroup();
-						for ($i = 0, $c = count($connections['entry_id']); $i < $c; $i++)
+						foreach ($connections as $key => $value)
 						{
 							$relation = new entry();
-							$relation->set($connections['entry_id'][$i]);
-							$selected = array_search($defaultConnectionGroupValues[$connections['relation'][$i]], $defaultConnectionGroupValues);
+							$relation->set($connections[$key]['entry_id']);
+							$selected = array_search($defaultConnectionGroupValues[$connections[$key]['relation']], $defaultConnectionGroupValues);
 							
-							if ($i > 0)
-							{
-								$out .= '<div id="relation_row_' . $relation->getId() . '">';
-							}
-							else
-							{
-								$out .= '<div id="relation_row_base" class="relation_row">';
-							}
-								$out .= _connections_get_entry_select('connection_group[entry_id][]', $connections['entry_id'][$i]);
-								$out .= _build_select('connection_group[relation][]', $defaultConnectionGroupValues, $selected);
-								if ($i > 0) $out .= '<a href="#" id="remove_button_' . $i . '" class="button" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
+							$out .= '<div id="relation_row_' . $relation->getId() . '" class="relation_row">';
+								$out .= _connections_get_entry_select('connection_group[' . $relation->getId() . '][entry_id]', $connections[$key]['entry_id']);
+								$out .= _build_select('connection_group[' . $relation->getId() . '][relation]', $defaultConnectionGroupValues, $selected);
+								$out .= '<a href="#" id="remove_button_' . $i . '" class="button" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
 							$out .= '</div>';
 							
 							unset($relation);

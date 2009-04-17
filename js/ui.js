@@ -115,13 +115,20 @@ jQuery(document).ready(function(){
 	
 	jQuery(function() {
 		var intCount = 0;
-		var jRelations = (jQuery('#relation_row_base').html());
+		//var jRelations = (jQuery('#relation_row_base').html());
 		
 		jQuery('#add_button')
 			.click(function() {
-				intCount++;
+				var jRelations = (jQuery('#relation_row_base').text());
 				
-				jQuery('#relations').append( '<div id="relation_row_' + intCount + '">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button" onClick="removeRelationRow(\'#relation_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				jRelations = jRelations.replace(
+					new RegExp('::FIELD::', 'gi'),
+					intCount
+					);
+				
+				jQuery('#relations').append( '<div id="relation_row_' + intCount + '" class="relation_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button" onClick="removeRelationRow(\'#relation_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				
+				intCount++;
 			});
 	});
 	
