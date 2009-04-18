@@ -128,7 +128,7 @@ jQuery(document).ready(function(){
 					intCount
 					);
 				
-				jQuery('#relations').append( '<div id="relation_row_' + intCount + '" class="relation_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button" onClick="removeRelationRow(\'#relation_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				jQuery('#relations').append( '<div id="relation_row_' + intCount + '" class="relation_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button swg_warning" onClick="removeRelationRow(\'#relation_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
 				
 				intCount++;
 			});

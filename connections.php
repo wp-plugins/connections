@@ -250,8 +250,8 @@ function _connections_main() {
 					<input type="hidden" name="formId" value="<?php echo $formID ?>" />
 					<input type="hidden" name="token" value="<?php echo _formtoken($formID); ?>" />
 					<p class="submit">
-						<input type="submit" name="<?php echo $inputName ?>" value="Save" />
-						<a href="tools.php?page=connections/connections.php" class="button">Cancel</a> <!-- THERE HAS TO BE A BETTER WAY THAN REFERRING DIRECTLY TO THE TOOLS.PHP -->
+						<input  class="button-primary" type="submit" name="<?php echo $inputName ?>" value="Save" />
+						<a href="tools.php?page=connections/connections.php" class="button swg_warning">Cancel</a> <!-- THERE HAS TO BE A BETTER WAY THAN REFERRING DIRECTLY TO THE TOOLS.PHP -->
 					</p>
 					</form>
 				</div>
@@ -654,7 +654,7 @@ function _connections_main() {
 									<input type="hidden" name="token" value="<?php echo _formtoken("entry_form"); ?>" />
 
 									<p class="submit">
-										<input type="submit" name="save" value="Add Address" />
+										<input class="button-primary" type="submit" name="save" value="Add Address" />
 									</p>
 								</form>
 							</div>
@@ -906,7 +906,7 @@ function _connections_getaddressform($data=null) {
 		</div>
 		
 		<div id="connection_group" class="form-field connectionsform">
-			<div id="connection_group">
+			
 				<label for="connection_group_name">Connection Group Name:</label>
 				<input type="text" name="connection_group_name" value="' . $entry->getGroupName() . '" />';
 				$out .= '<div id="relations">';
@@ -929,16 +929,16 @@ function _connections_getaddressform($data=null) {
 							$out .= '<div id="relation_row_' . $relation->getId() . '" class="relation_row">';
 								$out .= _connections_get_entry_select('connection_group[' . $relation->getId() . '][entry_id]', $key);
 								$out .= _build_select('connection_group[' . $relation->getId() . '][relation]', $defaultConnectionGroupValues, $value);
-								$out .= '<a href="#" id="remove_button_' . $i . '" class="button" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
+								$out .= '<a href="#" id="remove_button_' . $i . '" class="button swg_warning" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
 							$out .= '</div>';
 							
 							unset($relation);
 						}
 					}						
 					
-				$out .= '</div';
+				$out .= '</div>';
 				$out .= '<p class="add"><a id="add_button" class="button">Add Connection</a></p>';
-			$out .= '</div>
+			$out .= '
 		</div>
 		
 		<div class="form-field connectionsform">
