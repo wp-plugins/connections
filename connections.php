@@ -542,14 +542,23 @@ function _connections_main() {
 											echo "<td ></td> \n";
 											echo "<td colspan='2'>";
 												
-												$connections = $entry->getConnectionGroup();
-												foreach ($connections as $key => $value)
+												if ($entry->getConnectionGroup())
 												{
-													$relation = new entry();
-													$relation->set($connections[$key]['entry_id']);
-													echo '<strong>' . $defaultConnectionGroupValues[$connections[$key]['relation']] . ':</strong> ' . '<a href="admin.php?page=connections/connections.php&action=editform&id=' . $relation->getId() . '&editid=true" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a>' . '<br />' . "\n";
-													if ($c - 1 == $i) echo '<br />'; // Insert a break after all connections are listed.
-													unset($relation);
+													$connections = $entry->getConnectionGroup();
+													$count = count($entry->getConnectionGroup());
+													$i = 0;
+													
+													foreach ($connections as $key => $value)
+													{
+														$relation = new entry();
+														$relation->set($key);
+														echo '<strong>' . $defaultConnectionGroupValues[$value] . ':</strong> ' . '<a href="admin.php?page=connections/connections.php&action=editform&id=' . $relation->getId() . '&editid=true" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a>' . '<br />' . "\n";
+														if ($count - 1 == $i) echo '<br />'; // Insert a break after all connections are listed.
+														$i++;
+														unset($relation);
+													}
+													unset($i);
+													unset($count);
 												}
 												
 												if ($entry->getTitle()) echo "<strong>Title:</strong><br />" . $entry->getTitle() . "<br /><br />";
@@ -915,12 +924,11 @@ function _connections_getaddressform($data=null) {
 						foreach ($connections as $key => $value)
 						{
 							$relation = new entry();
-							$relation->set($connections[$key]['entry_id']);
-							$selected = array_search($defaultConnectionGroupValues[$connections[$key]['relation']], $defaultConnectionGroupValues);
+							$relation->set($key);
 							
 							$out .= '<div id="relation_row_' . $relation->getId() . '" class="relation_row">';
-								$out .= _connections_get_entry_select('connection_group[' . $relation->getId() . '][entry_id]', $connections[$key]['entry_id']);
-								$out .= _build_select('connection_group[' . $relation->getId() . '][relation]', $defaultConnectionGroupValues, $selected);
+								$out .= _connections_get_entry_select('connection_group[' . $relation->getId() . '][entry_id]', $key);
+								$out .= _build_select('connection_group[' . $relation->getId() . '][relation]', $defaultConnectionGroupValues, $value);
 								$out .= '<a href="#" id="remove_button_' . $i . '" class="button" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
 							$out .= '</div>';
 							
@@ -929,7 +937,7 @@ function _connections_getaddressform($data=null) {
 					}						
 					
 				$out .= '</div';
-				$out .= '<p class="add"><a id="add_button" class="button">Add</a></p>';
+				$out .= '<p class="add"><a id="add_button" class="button">Add Connection</a></p>';
 			$out .= '</div>
 		</div>
 		
@@ -1137,7 +1145,15 @@ function _connections_install() {
 function _connections_get_entry_select($name,$selected=null)
 {
 	global $wpdb;
-	$results = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "connections ORDER BY last_name, first_name");
+	//$results = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "connections ORDER BY last_name, first_name");
+	
+	$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = '' AND group_name = '')
+			UNION
+			(SELECT *, group_name AS order_by FROM ".$wpdb->prefix."connections WHERE group_name != '')
+			UNION
+			(SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != '')
+			ORDER BY order_by, last_name, first_name";
+	$results = $wpdb->get_results($sql);
 	
     $out = '<select name="' . $name . '">';
 		$out .= '<option value="">Select Entry</option>';
@@ -1178,9 +1194,17 @@ function _connections_list($atts, $content=null) {
 	
 	if ($atts['id'] != null) $visibilityfilter .= " AND id='" . $atts['id'] . "' ";
 	
-	$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = ''" . $visibilityfilter . ") UNION (SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibilityfilter . ") ORDER BY order_by, last_name, first_name";
-					
+	//$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = ''" . $visibilityfilter . ") UNION (SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibilityfilter . ") ORDER BY order_by, last_name, first_name";
+	
+	$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = '' AND group_name = ''" . $visibilityfilter . ")
+			UNION
+			(SELECT *, group_name AS order_by FROM ".$wpdb->prefix."connections WHERE group_name != ''" . $visibilityfilter . ")
+			UNION
+			(SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibilityfilter . ")
+			ORDER BY order_by, last_name, first_name";
 	$results = $wpdb->get_results($sql);
+			
+	//$results = $wpdb->get_results($sql);
 		
 	if ($results != null) {
 		

@@ -21,39 +21,79 @@ class output extends entry
 	}
 	    
     /**
-     * The entries full name. If entry type is set to organization the method will return the organization name.
+     * The entries full name if the entry type is an individual.
+     * If entry type is set to organization the method will return the organization name.
+     * If entry type is set to connection group the method will return the group name.
      * Returns $fullFirstLastName.
      * @see entry::$fullFirstLastName
      */
     public function getFullFirstLastNameBlock()
     {
-        if ($this->getEntryType() != "organization")
+        switch ($this->getEntryType())
 		{
-			$fullFirstLastName = '<span class="fn n">' . '<span class="given-name">' . $this->getFirstName() . '</span>' . ' ' . '<span class="family-name">' . $this->getLastName() . '</span></span>';
-			return $fullFirstLastName;
-		} else {
-			$organization = '<span class="fn org">' . $this->getOrganization() . '</span>';
-			return $organization;
+			case 'individual':
+				return '<span class="fn n">' . '<span class="given-name">' . $this->getFirstName() . '</span>' . ' ' . '<span class="family-name">' . $this->getLastName() . '</span></span>';
+			break;
+			
+			case 'organization':
+				return '<span class="fn org">' . $this->getOrganization() . '</span>';
+			break;
+			
+			case 'connection_group':
+				return '<span class="fn n"><span class="family-name">' . $this->getGroupName() . '</span></span>';
+			break;
+			
+			default:
+				return '<span class="fn n">' . '<span class="given-name">' . $this->getFirstName() . '</span>' . ' ' . '<span class="family-name">' . $this->getLastName() . '</span></span>';
+			break;
 		}
 		
     }
         
     /**
-     * The entries full name; last name first. If entry type is set to organization the method will return the organization name.
+     * The entries full name; last name first if the entry type is an individual.
+     * If entry type is set to organization the method will return the organization name.
+     * If entry type is set to connection group the method will return the group name.
      * Returns $fullLastFirstName.
      * @see entry::$fullLastFirstName
      */
     public function getFullLastFirstNameBlock()
     {
-    	if ($this->getEntryType() != "organization")
+    	switch ($this->getEntryType())
 		{
-			$fullLastFirstName = '<span class="fn n">' . '<span class="family-name">' . $this->getLastName() . '</span>' . ', ' . '<span class="given-name">' . $this->getFirstName() . '</span></span>';
-			return $fullLastFirstName;
-		} else {
-			$organization = '<span class="fn org">' . $this->getOrganization() . '</span>';
-			return $organization;
+			case 'individual':
+				return '<span class="fn n">' . '<span class="family-name">' . $this->getLastName() . '</span>' . ', ' . '<span class="given-name">' . $this->getFirstName() . '</span></span>';
+			break;
+			
+			case 'organization':
+				return '<span class="fn org">' . $this->getOrganization() . '</span>';
+			break;
+			
+			case 'connection_group':
+				return '<span class="fn n"><span class="family-name">' . $this->getGroupName() . '</span></span>';
+			break;
+			
+			default:
+				return '<span class="fn n">' . '<span class="family-name">' . $this->getLastName() . '</span>' . ', ' . '<span class="given-name">' . $this->getFirstName() . '</span></span>';
+			break;
 		}
     }
+	
+	public function getConnectionGroupBlock()
+	{
+		if ($this->getConnectionGroup())
+		{
+			global $defaultConnectionGroupValues;
+			
+			foreach ($this->getConnectionGroup() as $key => $value)
+			{
+				$relation = new entry();
+				$relation->set($key);
+				echo '<span><strong>' . $defaultConnectionGroupValues[$value] . ':</strong> ' . $relation->getFullFirstLastName() . '</span><br />' . "\n";
+				unset($relation);
+			}
+		}
+	}
 	
 	public function getTitleBlock()
 	{

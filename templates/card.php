@@ -16,6 +16,7 @@
 		
 		<div align="right">
 		
+			<?php echo $entry->getConnectionGroupBlock() ?>
 			<?php echo $entry->getPhoneNumberBlock() ?>
 			<?php echo $entry->getEmailAddressBlock() ?>
 			<?php echo $entry->getImBlock() ?>

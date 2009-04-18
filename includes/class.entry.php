@@ -229,13 +229,27 @@ class entry
     }
     
     /**
-     * Returns the entries last name.
+     * The last name if the entry type is an individual.
+     * If entry type is set to connection group the method will return the group name.
      * Returns $lastName.
      * @see entry::$lastName
      */
     public function getLastName()
     {
-        return $this->lastName;
+        switch ($this->getEntryType())
+		{
+			case 'individual':
+				return $this->lastName;
+			break;
+						
+			case 'connection_group':
+				return $this->getGroupName();
+			break;
+			
+			default:
+				return $this->lastName;
+			break;
+		}
     }
     
     /**
@@ -257,15 +271,7 @@ class entry
      */
     public function getFullFirstLastName()
     {
-        /*if ($this->getEntryType() != "organization")
-		{
-			$fullFirstLastName = $this->getFirstName() . ' ' . $this->getLastName();
-			return $fullFirstLastName;
-		} else {
-			return $this->getOrganization();
-		}*/
-		
-		switch ($this->getEntryType())
+        switch ($this->getEntryType())
 		{
 			case 'individual':
 				return $this->getFirstName() . ' ' . $this->getLastName();
@@ -294,15 +300,7 @@ class entry
      */
     public function getFullLastFirstName()
     {
-    	/*if ($this->getEntryType() != "organization")
-		{
-			$fullLastFirstName = $this->getLastName() . ', ' . $this->getFirstName();
-			return $fullLastFirstName;
-		} else {
-			return $this->getOrganization();
-		}*/
-		
-		switch ($this->getEntryType())
+    	switch ($this->getEntryType())
 		{
 			case 'individual':
 				return $this->getLastName() . ', ' . $this->getFirstName();
@@ -665,7 +663,7 @@ class entry
      */
     public function getConnectionGroup()
     {
-        return $this->connectionGroup;
+        return $this->options['connection_group'];
     }
     
     /**
@@ -675,8 +673,14 @@ class entry
      */
     public function setConnectionGroup($connectionGroup)
     {
-        //$connectionGroup = preg_grep('/^::[a-zA-Z0-9]*::/', $connectionGroup, PREG_GREP_INVERT);
-		$this->options['connection_group'] = $connectionGroup;
+		if ($connectionGroup)
+		{
+			foreach($connectionGroup as $connection)
+			{
+				$array[$connection['entry_id']] .= $connection['relation'];
+			}
+		}
+		$this->options['connection_group'] = $array;
     }
     
     /**
