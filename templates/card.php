@@ -11,21 +11,25 @@
 		</div>
 			
 			<?php echo $entry->getAddressBlock() ?>
-			<?php echo $vCard->download() ?>
-		</div>
+	</div>
 		
-		<div align="right">
+	<div align="right">
+	
+		<?php echo $entry->getConnectionGroupBlock() ?>
+		<?php echo $entry->getPhoneNumberBlock() ?>
+		<?php echo $entry->getEmailAddressBlock() ?>
+		<?php echo $entry->getImBlock() ?>
+		<?php echo $entry->getWebsiteBlock() ?>
 		
-			<?php echo $entry->getConnectionGroupBlock() ?>
-			<?php echo $entry->getPhoneNumberBlock() ?>
-			<?php echo $entry->getEmailAddressBlock() ?>
-			<?php echo $entry->getImBlock() ?>
-			<?php echo $entry->getWebsiteBlock() ?>
-			
-			<?php echo $entry->getBirthdayBlock('F j') ?>
-			<?php echo $entry->getAnniversaryBlock() ?>
-			
-			<span style="<?php echo $entry->getLastUpdatedStyle() ?>; font-size:x-small; font-variant: small-caps; position: absolute; right: 26px; bottom: 8px;">Updated <?php echo $entry->getHumanTimeDiff() ?> ago</span><span style="position: absolute; right: 3px; bottom: 5px;"><?php echo $entry->returnToTopAnchor() ?></span><br />
-		</div>
+		<?php echo $entry->getBirthdayBlock('F j') ?>
+		<?php echo $entry->getAnniversaryBlock() ?>
+		
+	</div>
+	
 	<div style="clear:both"></div>
+	<div class="cn_meta" align="left">
+		<span><?php echo $vCard->download() ?></span>
+		<span style="<?php echo $entry->getLastUpdatedStyle() ?>; font-size:x-small; font-variant: small-caps; position: absolute; right: 26px; bottom: 8px;">Updated <?php echo $entry->getHumanTimeDiff() ?> ago</span><span style="position: absolute; right: 3px; bottom: 5px;"><?php echo $entry->returnToTopAnchor() ?></span><br />
+	</div>
+	
 </div>

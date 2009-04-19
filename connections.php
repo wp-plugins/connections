@@ -27,7 +27,7 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 */
 
 //GPL PHP upload class from http://www.verot.net/php_class_upload.htm
-require_once(WP_PLUGIN_DIR . '/connections/php_class_upload/class.upload.php');
+require_once(WP_PLUGIN_DIR . '/connections/includes/php_class_upload/class.upload.php');
 
 //SQL objects
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.sql.php');
@@ -251,7 +251,7 @@ function _connections_main() {
 					<input type="hidden" name="token" value="<?php echo _formtoken($formID); ?>" />
 					<p class="submit">
 						<input  class="button-primary" type="submit" name="<?php echo $inputName ?>" value="Save" />
-						<a href="tools.php?page=connections/connections.php" class="button swg_warning">Cancel</a> <!-- THERE HAS TO BE A BETTER WAY THAN REFERRING DIRECTLY TO THE TOOLS.PHP -->
+						<a href="tools.php?page=connections/connections.php" class="button button-warning">Cancel</a> <!-- THERE HAS TO BE A BETTER WAY THAN REFERRING DIRECTLY TO THE TOOLS.PHP -->
 					</p>
 					</form>
 				</div>
@@ -867,8 +867,9 @@ function _build_radio($name, $id, $value_labels, $checked=null) {
 			$selected = 'CHECKED';
 		}
 		
+		$radio .= '<label for="' . $idplus . '">';
 		$radio .= '<input id="' . $idplus . '" type="radio" name="' . $name . '" value="' . $value . '" ' . $selected . ' />';
-		$radio .= '<label for="' . $idplus . '">' . $label . '</label>';
+		$radio .= $label . '</label>';
 		
 		$selected = null;
 		$idplus = null;
@@ -929,7 +930,7 @@ function _connections_getaddressform($data=null) {
 							$out .= '<div id="relation_row_' . $relation->getId() . '" class="relation_row">';
 								$out .= _connections_get_entry_select('connection_group[' . $relation->getId() . '][entry_id]', $key);
 								$out .= _build_select('connection_group[' . $relation->getId() . '][relation]', $defaultConnectionGroupValues, $value);
-								$out .= '<a href="#" id="remove_button_' . $i . '" class="button swg_warning" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
+								$out .= '<a href="#" id="remove_button_' . $i . '" class="button button-warning" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
 							$out .= '</div>';
 							
 							unset($relation);
