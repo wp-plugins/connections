@@ -470,7 +470,6 @@ function _connections_main() {
 				 * Run a quick check to see if the $_SESSION is started and verify that Connections data isn't being
 				 * overwritten and notify the user of errors.
 				 */
-				print_r($_SESSION);
 				if (!$_SESSION)
 				{
 					echo '<div id="notice" class="error">';
