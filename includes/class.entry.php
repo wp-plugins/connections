@@ -673,6 +673,16 @@ class entry
      */
     public function setConnectionGroup($connectionGroup)
     {
+		/* 
+		 * The form to capture the user IDs and relationship stores the data
+		 * in a two-dementional array as follows:
+		 * 		array[0]
+		 * 			array[entry_id]
+		 * 				 [relation]
+		 * 
+		 * This loop re-writes the data into a sine associative array entry_id => relation.
+		 * That makes it easy to use a foreach as $key => $value.
+		 */
 		if ($connectionGroup)
 		{
 			foreach($connectionGroup as $connection)

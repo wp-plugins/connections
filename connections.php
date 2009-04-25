@@ -45,6 +45,8 @@ require_once(WP_PLUGIN_DIR . '/connections/includes/class.output.php');
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.vcard.php');
 
 session_start();
+$_SESSION['connections']['active'] = true;
+session_write_close();
 
 // Define a few constants and defaults until I can get to creating the options page.
 define('CN_DEFAULT_JPG_QUALITY', 80);
@@ -203,6 +205,11 @@ function connections_menus() {
 	add_submenu_page('connections/connections.php', 'Connections : Settings','Settings', 4,'connections/submenus/settings.php');
 	add_submenu_page('connections/connections.php', 'Connections : Help','Help', 4,'connections/submenus/help.php');
 	// Call the function to add the CSS and JS only on pages related to the Connections plug-in.
+	/* 
+	 * NOTE: I should have been able to call 'connections/connections.php' directly using the
+	 * 		 admin_print_script- hook but it didn't work. I have to assign it to a variable.
+	 * 		 The sub-pages worked as expected.
+	 */
 	add_action( "admin_print_scripts-$connections_admin", 'connections_loadjs_admin_head' );
 	add_action( 'admin_print_scripts-connections/submenus/settings.php', 'connections_loadjs_admin_head' );
 	add_action( 'admin_print_scripts-connections/submenus/help.php', 'connections_loadjs_admin_head' );
@@ -211,9 +218,27 @@ function connections_menus() {
 // The CSS and JS is only loaded on pages related to the Connections plug-in.
 function connections_loadjs_admin_head() {
 	wp_enqueue_script('jquery');
-	wp_enqueue_script('load_ui_js', get_bloginfo('wpurl') . '/wp-content/plugins/connections/js/ui.js');
-	wp_enqueue_script('load_jquery_plugin', get_bloginfo('wpurl') . '/wp-content/plugins/connections/js/jquery.template.js');
-	echo '<link type="text/css" rel="stylesheet" href="' . get_bloginfo('wpurl') . '/wp-content/plugins/connections/css-admin.css" />' . "\n";
+	wp_enqueue_script('load_ui_js', WP_PLUGIN_URL . '/connections/js/ui.js');
+	wp_enqueue_script('load_jquery_plugin', WP_PLUGIN_URL . '/connections/js/jquery.template.js');
+	echo '<link type="text/css" rel="stylesheet" href="' . WP_PLUGIN_URL . '/connections/css-admin.css" />' . "\n";
+}
+
+// Queues up the scripts on the posts/pages.
+add_action('wp_print_scripts', 'connections_loadjs_head');
+function connections_loadjs_head() {
+	wp_enqueue_script('jquery');
+	wp_enqueue_script('thickbox');
+}
+
+// Adds the plug-in CSS to the pages/posts.
+add_action('wp_print_styles', 'connections_loadcss_head');
+function connections_loadcss_head() {
+	/*
+	$styles = WP_PLUGIN_URL . '/connections/css-admin.css';
+	
+	wp_register_style('connections_styles', $styles);
+	wp_enqueue_style('connections_styles');
+	*/
 }
 
 function _connections_main() {
@@ -276,7 +301,7 @@ function _connections_main() {
 				
 				<?php
 				
-				if ($_POST['save'] AND $_SESSION['formTokens']['entry_form']['token'] == $_POST['token'])
+				if ($_POST['save'] AND $_SESSION['connections']['formTokens']['entry_form']['token'] == $_POST['token'])
 				{
 					$entry = new entry();
 					
@@ -367,7 +392,7 @@ function _connections_main() {
 										
 					if (!$error)
 					{
-						unset($_SESSION['formTokens']);
+						unset($_SESSION['connections']['formTokens']);
 						unset($entry);
 						
 						echo '<div id="message" class="updated fade">';
@@ -376,7 +401,7 @@ function _connections_main() {
 					}
 					else
 					{
-						unset($_SESSION['formTokens']);
+						unset($_SESSION['connections']['formTokens']);
 						unset($entry);
 						
 						echo '<div id="notice" class="error">';
@@ -386,7 +411,7 @@ function _connections_main() {
 					
 				}
 								
-				if ($_POST['doaction'] AND $_SESSION['formTokens']['do_action']['token'] == $_POST['token'])
+				if ($_POST['doaction'] AND $_SESSION['connections']['formTokens']['do_action']['token'] == $_POST['token'])
 				{
 					if ($_POST['action'] != "delete")
 					{
@@ -405,7 +430,7 @@ function _connections_main() {
 						echo "<div id='message' class='updated fade'>";
 							echo "<p><strong>Entry(ies) visibility have been updated.</strong></p>";
 						echo "</div>";
-						unset($_SESSION['formTokens']);
+						unset($_SESSION['connections']['formTokens']);
 					}
 					
 					if ($_POST['action'] == "delete")
@@ -422,23 +447,41 @@ function _connections_main() {
 						echo "<div id='message' class='updated fade'>";
 							echo "<p><strong>Entry(ies) have been deleted.</strong></p>";
 						echo "</div>";
-						unset($_SESSION['formTokens']);
+						unset($_SESSION['connections']['formTokens']);
 					}
 				}
 				
-				if ($_GET['action']=='delete' AND $_SESSION['formTokens']['delete_'.$_GET['id']]['token'] == $_GET['token'])
+				if ($_GET['action']=='delete' AND $_SESSION['connections']['formTokens']['delete_'.$_GET['id']]['token'] == $_GET['token'])
 				{
 			        $entry = new entry();
 					$entry->delete($_GET['id']);
 					echo '<div id="message" class="updated fade"><p><strong>The entry has been deleted.</strong></p></div>';
 					unset($entry);
-					unset($_SESSION['formTokens']);
+					unset($_SESSION['connections']['formTokens']);
 			    }
 				
 				if ($_POST['dofilter']) {
 					$plugin_options->setEntryType($_POST['entry_type']);
 					$plugin_options->setVisibilityType($_POST['visibility_type']);
 					update_option('connections_options', $plugin_options->getOptions());
+				}
+				
+				/*
+				 * Run a quick check to see if the $_SESSION is started and verify that Connections data isn't being
+				 * overwritten and notify the user of errors.
+				 */
+				print_r($_SESSION);
+				if (!$_SESSION)
+				{
+					echo '<div id="notice" class="error">';
+						echo '<p><strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in or or site setup is preventing it from being used.</strong></p>';
+					echo '</div>';
+				}
+				elseif (!$_SESSION['connections']['active'] == true)
+				{
+					echo '<div id="notice" class="error">';
+						echo '<p><strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in seems to be overwritting the values for Connections.</strong></p>';
+					echo '</div>';
 				}
 				
 				?>
@@ -816,10 +859,10 @@ function _formtoken($formId) {
 	 * @var integer
 	 */
 	$token = md5(uniqid(rand(), true));
-
-	$_SESSION['formTokens'][$formId]['token'] = $token;
-	$_SESSION['formTokens'][$formId]['token_timestamp'] = time();
-	
+	session_start();
+	$_SESSION['connections']['formTokens'][$formId]['token'] = $token;
+	$_SESSION['connections']['formTokens'][$formId]['token_timestamp'] = time();
+	session_write_close();
 	return $token;
 }
 
