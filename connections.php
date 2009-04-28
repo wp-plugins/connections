@@ -26,6 +26,10 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 ----------------------------------------
 */
 
+session_start();
+$_SESSION['connections']['active'] = true;
+
+
 //GPL PHP upload class from http://www.verot.net/php_class_upload.htm
 require_once(WP_PLUGIN_DIR . '/connections/includes/php_class_upload/class.upload.php');
 
@@ -44,9 +48,7 @@ require_once(WP_PLUGIN_DIR . '/connections/includes/class.output.php');
 //builds vCard
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.vcard.php');
 
-session_start();
-$_SESSION['connections']['active'] = true;
-session_write_close();
+
 
 // Define a few constants and defaults until I can get to creating the options page.
 define('CN_DEFAULT_JPG_QUALITY', 80);
@@ -858,10 +860,10 @@ function _formtoken($formId) {
 	 * @var integer
 	 */
 	$token = md5(uniqid(rand(), true));
-	session_start();
+	@session_start();
 	$_SESSION['connections']['formTokens'][$formId]['token'] = $token;
 	$_SESSION['connections']['formTokens'][$formId]['token_timestamp'] = time();
-	session_write_close();
+	
 	return $token;
 }
 
