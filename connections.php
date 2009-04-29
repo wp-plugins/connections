@@ -28,7 +28,7 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 
 session_start();
 $_SESSION['connections']['active'] = true;
-
+//session_write_close();
 
 //GPL PHP upload class from http://www.verot.net/php_class_upload.htm
 require_once(WP_PLUGIN_DIR . '/connections/includes/php_class_upload/class.upload.php');
@@ -202,7 +202,7 @@ $plugin_options = new pluginOptions;
 add_action('admin_menu', 'connections_menus');
 function connections_menus() {
 	//Adds Connections to the top level menu.
-	$connections_admin = add_menu_page('Connections : Administration', 'Connections', 4, 'connections/connections.php', '_connections_main');
+	$connections_admin = add_menu_page('Connections : Administration', 'Connections', 4, 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
 	//Adds the Connections sub-menus.
 	add_submenu_page('connections/connections.php', 'Connections : Settings','Settings', 4,'connections/submenus/settings.php');
 	add_submenu_page('connections/connections.php', 'Connections : Help','Help', 4,'connections/submenus/help.php');
@@ -276,6 +276,9 @@ function _connections_main() {
 					<?php echo _connections_getaddressform($row); ?>
 					<input type="hidden" name="formId" value="<?php echo $formID ?>" />
 					<input type="hidden" name="token" value="<?php echo _formtoken($formID); ?>" />
+					
+					<?php session_write_close(); ?>
+					
 					<p class="submit">
 						<input  class="button-primary" type="submit" name="<?php echo $inputName ?>" value="Save" />
 						<a href="tools.php?page=connections/connections.php" class="button button-warning">Cancel</a> <!-- THERE HAS TO BE A BETTER WAY THAN REFERRING DIRECTLY TO THE TOOLS.PHP -->
@@ -299,6 +302,7 @@ function _connections_main() {
 	        } ?>
 
 			<div class="wrap">
+				<div class="icon32" id="icon-connections"><br/></div>
 				<h2>Connections Administration</h2>
 				
 				<?php
@@ -683,7 +687,16 @@ function _connections_main() {
 								</tbody>
 					        </table>
 							</form>
-							<p style='font-size:smaller; text-align:center'>This is version <?php echo $plugin_options->getVersion(); ?> of Connections.</p>
+							<p style="font-size:smaller; text-align:center">This is version <?php echo $plugin_options->getVersion(); ?> of Connections.</p>
+							
+							<form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="text-align:center">
+								<input type="hidden" name="cmd" value="_s-xclick">
+								<input type="hidden" name="hosted_button_id" value="5070255">
+								<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+								<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+							</form>
+							
+							
 						</div>
 			        </div>
 				
@@ -696,7 +709,9 @@ function _connections_main() {
 									<?php echo _connections_getaddressform(); ?>
 									<input type="hidden" name="formId" value="entry_form" />
 									<input type="hidden" name="token" value="<?php echo _formtoken("entry_form"); ?>" />
-
+									
+									<?php session_write_close(); ?>
+									
 									<p class="submit">
 										<input class="button-primary" type="submit" name="save" value="Add Address" />
 									</p>

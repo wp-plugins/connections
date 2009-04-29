@@ -1,3 +1,46 @@
+div.wrap ol  {
+	list-style-type: decimal !important;
+	padding-left: 40px !important;
+}
+
+div.wrap ul {
+	list-style-type: disc !important;
+	padding-left: 40px !important;
+}
+
+div#help {margin-right:350px;}
+div#help div#toc {
+	-moz-border-radius-bottomleft:3px;
+	-moz-border-radius-bottomright:3px;
+	-moz-border-radius-topleft:3px;
+	-moz-border-radius-topright:3px;
+	background-color:#FFFBCC;
+	border-color:#E6DB55;
+	border-style:solid;
+	border-width:1px;
+	float: right;
+	padding: 16px;
+	position: fixed;
+	right: 10px;
+	width: 275px;
+}
+
+div#help div#toc ol {
+	padding-left:25px !important;
+}
+
+div#help div#toc form {
+	margin-top: 20px;
+	text-align: center;
+}
+
+#icon-connections {
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	background: transparent url(images/icon.png) no-repeat;
+}
+
 .connectionsform {
 	-moz-border-radius:4px;
 	background-color:#F1F1F1 !important;
