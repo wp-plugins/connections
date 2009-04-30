@@ -61,7 +61,7 @@ define('CN_DEFAULT_THUMBNAIL_Y', 54);
 define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
 define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
 define('CN_TABLE_NAME','connections');
-define('CN_CURRENT_VERSION', '0.4.52');
+define('CN_CURRENT_VERSION', '0.5.0');
 
 $defaultAddressTypes	=	array
 							(
