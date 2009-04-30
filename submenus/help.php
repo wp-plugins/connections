@@ -11,10 +11,10 @@
             "#tocIdInstructions">Instructions</a></li>
 
             	<ol>
-                    <li><a href="#tocIdTemplateTags">Template
-                	Tags</a>
-					<li><a href="#tocIdhCard">hCard
-                    Compatible Tags</a></li>
+                    <li><a href="#tocIdEntryList">Entry list and Options</a></li>
+					<li><a href="#tocIdCelebrateList">Celebrate list and Options</a></li>
+					<li><a href="#tocIdTemplateTags">Template Tags</a></li>
+					<li><a href="#tocIdhCard">hCard Compatible Tags</a></li>
                 </ol>
             
 			<li><a href="#tocIdSupport">Support</a></li>
@@ -66,7 +66,7 @@
 
     <h3><a name="tocIdInstructions"></a>Instructions:</h3>
 
-    <p>To embed a list in a page/post just enter the
+    <p><a name="tocIdEntryList"></a>To embed an entry list in a page/post just enter the
     shortcode text and any of the options outlined below in
     the page/post content area.</p>
 <pre>
@@ -202,7 +202,7 @@
             is "ACME" AND where the department is "Accounting".
             Remember, filters are case sensitive.</p>
 
-            <p>There is a second shortcode that can be use for
+            <p><a name="tocIdCelebrateList"></a>There is a second shortcode that can be use for
             displaying a list of upcoming birthdays and/or
             anniversaries. Please note that this shortcode, at the
             moment does not support the use of custom templates.
@@ -354,15 +354,29 @@
 </pre>
 
             <p>Retuns the full name with the first name first.
-            NOTE: if the entry type in an organization this will
-            return the organizations name instead.</p>
+            NOTE: if the entry type in an Organization or Connection Group 
+			this will return the Organization/Connection Group name instead.</p>
 <pre>
 <code>entry-&gt;getFullLastFirstName()</code>
 </pre>
 
             <p>Retuns the full name with the last name first. NOTE:
-            if the entry type in an organization this will return
-            the organizations name instead.</p>
+            if the entry type in an Organization or Connection Group
+			this will return the Organization/Connection Group name instead.</p>
+
+<pre>
+<code>entry-&gt;getGroupName()</code>
+</pre>
+
+            <p>Returns the Connection Group name.</p>
+
+<pre>
+<code>entry-&gt;getConnectionGroup()</code>
+</pre>
+
+            <p>Returns an associative array containing the relation's entry id 
+			as the key and the relation</p>
+
 <pre>
 <code>entry-&gt;getOrganization()</code>
 </pre>
@@ -435,7 +449,7 @@
 
             <p>Returns the notes.</p>
 
-            <h4 name="tocIdhCard">These tags return some
+            <h4><a name="tocIdhCard"></a>These tags return some
             preformatted HTML blocks and should be used to maintain
             hCard compatibility.</h4>
 <pre>
@@ -457,16 +471,24 @@
 <code>entry-&gt;getFullFirstLastNameBlock()</code>
 </pre>
 
-            <p>Retuns the full name with the first name first.
-            NOTE: if the entry type in an organization this will
-            return the organizations name instead.</p>
+            <p>Returns the full name with the first name first.
+            NOTE: if the entry type in an Organization or a Connection Group
+			this will return the Organization/Connection Group name instead.</p>
 <pre>
 <code>entry-&gt;getFullLastFirstNameBlock()</code>
 </pre>
 
-            <p>Retuns the full name with the last name first. NOTE:
-            if the entry type in an organization this will return
-            the organizations name instead.</p>
+            <p>Returns the full name with the last name first. NOTE:
+            if the entry type in an Organization or a Connection Group
+			this will return the Organization/Connection Group name instead.</p>
+
+<pre>
+<code>entry-&gt;getConnectionGroupBlock()</code>
+</pre>
+
+            <p>Returns the Connection Group items in a <code>&lt;span&gt;</code> tag
+			followed by a <code>&lt;br&gt;</code>.</p>
+
 <pre>
 <code>entry-&gt;getTitleBlock()</code>
 </pre>
@@ -480,7 +502,7 @@
             <p>Returns the organization ** AND ** the department in
             a <code>&lt;div&gt;</code> tag with each wrapped in a
             span. NOTE: this will only output the organization if
-            the entry type is not and organization, but will still
+            the entry type is not an organization, but will still
             output the department if applicable. To get the
             organization name, use one of the full name template
             tags.</p>
