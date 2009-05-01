@@ -35,6 +35,13 @@ This plugin is under active developement, please make sure you have a recent bac
 * **NEW** Added a donate button - a user request.
 * **NEW** Added a spiffy icon for the menu and page headers.
 
+**New features coming in the next version:**
+
+* Option to set custom image sizes
+* Option to set minimum role permitted for administration
+* This feature [here](http://wordpress.org/support/topic/266754)
+* Make the Connection Group relations in the output list clickable to bring up the entries specific details.
+
 **Upcoming features:**
 
 * Assign entries to groups and have the option to display those groups in a page/post
@@ -46,8 +53,6 @@ This plugin is under active developement, please make sure you have a recent bac
 * A print link for printing out a list of birthdays and anniversaries
 * Integration with WP Users to permit users to maintain their own info, mostly likely this will be optional on a per entry instance and an import method
 * Promote the plug-in to a top level menu item and add an option page
-* Option to set custom image sizes
-* Option to set minimum role permitted to manage the plug-in
 * Option to manage the address types
 * Option to customize the input form
 * Option to manage the relation types
@@ -65,7 +70,7 @@ This plugin is under active developement, please make sure you have a recent bac
 **Known Issues:**
 
 * Currently when an image link is removed the files are not deleted from the server
-* The vCard feature is not compatible with [WP Super Cache](http://wordpress.org/extend/plugins/wp-super-cache/)
+* The vCard feature is not compatible with [WP Super Cache](http://wordpress.org/extend/plugins/wp-super-cache/). Make sure the page/post excluded in WP Super Cache.
 
 == Screenshots ==
 [Samples and screenshots can be found here](http://www.shazahm.net/?page_id=111)
