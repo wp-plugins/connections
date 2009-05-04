@@ -5,10 +5,10 @@ Tags: addresses, address book, addressbook, bio, bios, biographies, contact, con
 Requires at least: 2.7
 Tested up to: 2.7.1
 Stable tag: 0.5.0
-An address book that is managed in the admin and embed them in a post/page. Upcoming birthdays and anniversaries can also be embedded in a post/page.
+Connections is a simple to use addressbook that is very customizable. Entry lists and/or birthday/anniversary lists can be embedded in a page/post.
 
 == Description ==
-An address book that is managed in the admin and embedded in a post/page. Upcoming birthdays and anniversaries can also be embedded in a post/page. **See the instructions under installation, above.**
+An address book / addressbook that is managed in the admin and embedded in a post/page. Upcoming birthdays and anniversaries can also be embedded in a post/page. **See the instructions under installation, above.**
 This plugin is under active developement, please make sure you have a recent backup of your WordPress database, just in case.
 
 * Many fields that include multiple addresses with selectable type; birthday and anniversary
