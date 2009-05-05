@@ -28,7 +28,7 @@ This plugin is under active developement, please make sure you have a recent bac
 * Entries output in [hCard](http://microformats.org/wiki/hcard) compatible format.
 * Download vCard of entries for importing into you email application.
 * **NEW** Added bulk delete.
-* **NEW** Added an entry type of Connection Group. This all ows to you create relational links between entries.
+* **NEW** Added an entry type of Connection Group. This allows to you create relational links between entries.
 * **NEW** Moved the plug-in to be a top level menu item.
 * **NEW** Added a help sub-page.
 * **NEW** Added a setting page. Settings will actually be available in the next version.
