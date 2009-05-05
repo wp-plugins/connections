@@ -198,7 +198,7 @@ $defaultConnectionGroupValues = array(
 //$plugin_options = new pluginOptions(get_option("connections_options"));
 $plugin_options = new pluginOptions;
 
-// This adds the menu to the Tools menu in WordPress and calls the function to load my CSS and JS.
+// This adds the menu items WordPress and calls the function to load my CSS and JS.
 add_action('admin_menu', 'connections_menus');
 function connections_menus() {
 	//Adds Connections to the top level menu.
@@ -206,6 +206,7 @@ function connections_menus() {
 	//Adds the Connections sub-menus.
 	add_submenu_page('connections/connections.php', 'Connections : Settings','Settings', 4,'connections/submenus/settings.php');
 	add_submenu_page('connections/connections.php', 'Connections : Help','Help', 4,'connections/submenus/help.php');
+	
 	// Call the function to add the CSS and JS only on pages related to the Connections plug-in.
 	/* 
 	 * NOTE: I should have been able to call 'connections/connections.php' directly using the
@@ -213,16 +214,24 @@ function connections_menus() {
 	 * 		 The sub-pages worked as expected.
 	 */
 	add_action( "admin_print_scripts-$connections_admin", 'connections_loadjs_admin_head' );
+	add_action( "admin_print_styles-$connections_admin", 'connections_loadcss_admin_head' );
+	
 	add_action( 'admin_print_scripts-connections/submenus/settings.php', 'connections_loadjs_admin_head' );
+	
 	add_action( 'admin_print_scripts-connections/submenus/help.php', 'connections_loadjs_admin_head' );
+	add_action( 'admin_print_styles-connections/submenus/help.php', 'connections_loadcss_admin_head' );
 }
 
-// The CSS and JS is only loaded on pages related to the Connections plug-in.
+// The JS is only loaded on admin pages related to the Connections plug-in.
 function connections_loadjs_admin_head() {
 	wp_enqueue_script('jquery');
 	wp_enqueue_script('load_ui_js', WP_PLUGIN_URL . '/connections/js/ui.js');
 	wp_enqueue_script('load_jquery_plugin', WP_PLUGIN_URL . '/connections/js/jquery.template.js');
-	echo '<link type="text/css" rel="stylesheet" href="' . WP_PLUGIN_URL . '/connections/css-admin.css" />' . "\n";
+}
+
+// The CSS is only loaded on admin pages related to the Connections plug-in.
+function connections_loadcss_admin_head() {
+	wp_enqueue_style('load_admin_css', WP_PLUGIN_URL . '/connections/css-admin.css');
 }
 
 // Queues up the scripts on the posts/pages.
@@ -281,7 +290,7 @@ function _connections_main() {
 					
 					<p class="submit">
 						<input  class="button-primary" type="submit" name="<?php echo $inputName ?>" value="Save" />
-						<a href="tools.php?page=connections/connections.php" class="button button-warning">Cancel</a> <!-- THERE HAS TO BE A BETTER WAY THAN REFERRING DIRECTLY TO THE TOOLS.PHP -->
+						<a href="admin.php?page=connections/connections.php" class="button button-warning">Cancel</a> <!-- THERE HAS TO BE A BETTER WAY THAN REFERRING DIRECTLY TO THE TOOLS.PHP -->
 					</p>
 					</form>
 				</div>
