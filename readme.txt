@@ -35,6 +35,10 @@ This plugin is under active developement, please make sure you have a recent bac
 * **NEW** Added a donate button - a user request.
 * **NEW** Added a spiffy icon for the menu and page headers.
 
+* **NEW** Added a shortcode attribute to repeat the alpha index and the beginning of each character change. [User requested.](http://wordpress.org/support/topic/266754)
+* **NEW** Added a shortcode attribute to show the current character at the beginning of each character group. [User requested.](http://wordpress.org/support/topic/266754)
+* **NEW** Added additional filters for addresses. [User requested.](http://wordpress.org/support/topic/248568)
+
 **New features coming in the next version:**
 
 * Option to set custom image sizes
@@ -189,3 +193,9 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Added a setting page. Settings will actually be available in the next version.
 * Added a donate button - a user request.
 * Added a spiffy icon for the menu and page headers.
+
+= 0.x.x =
+
+* Added a shortcode attribute to repeat the alpha index and the beginning of each character change. [User requested.](http://wordpress.org/support/topic/266754)
+* Added a shortcode attribute to show the current character at the beginning of each character group. [User requested.](http://wordpress.org/support/topic/266754)
+* Added additional filters for addresses. [User requested.](http://wordpress.org/support/topic/248568)

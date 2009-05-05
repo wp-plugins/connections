@@ -1237,11 +1237,17 @@ function _connections_list($atts, $content=null) {
 			'id' => null,
 			'private_override' => 'false',
 			'show_alphaindex' => 'false',
+			'repeat_alphaindex' => 'false',
+			'show_alphahead' => 'false',
 			'list_type' => 'all',
 			'last_name' => null,
 			'title' => null,
 			'organization' => null,
 			'department' => null,
+			'city' => null,
+			'state' => null,
+			'zip_code' => null,
+			'country' => null,
 			'template_name' => 'card',
 			'custom_template'=>'false',
 			), $atts ) ;
@@ -1254,8 +1260,6 @@ function _connections_list($atts, $content=null) {
 	
 	if ($atts['id'] != null) $visibilityfilter .= " AND id='" . $atts['id'] . "' ";
 	
-	//$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = ''" . $visibilityfilter . ") UNION (SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibilityfilter . ") ORDER BY order_by, last_name, first_name";
-	
 	$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = '' AND group_name = ''" . $visibilityfilter . ")
 			UNION
 			(SELECT *, group_name AS order_by FROM ".$wpdb->prefix."connections WHERE group_name != ''" . $visibilityfilter . ")
@@ -1264,49 +1268,96 @@ function _connections_list($atts, $content=null) {
 			ORDER BY order_by, last_name, first_name";
 	$results = $wpdb->get_results($sql);
 			
-	//$results = $wpdb->get_results($sql);
 		
 	if ($results != null) {
 		
-		if ($atts['show_alphaindex'] == 'true') $out .= "<div id='connections-list-head' class='cnalphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
+		$out = '<a name="connections-list-head"></a>';
+		
+		/*
+		 * The alpha index is only displayed if set set to true and not set to repeat using the shortcode attributes.
+		 * If a alpha index is set to repeat, that is handled down separately.
+		 */
+		if ($atts['show_alphaindex'] == 'true' && $atts['repeat_alphaindex'] != 'true') $out .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
+		
 		$out .=  "<div class='connections-list'>\n";
 		
 		foreach ($results as $row) {
 			$entry = new output($row);
 			$vCard = new vCard($row);
 			
-			$continue = false;
+			/*
+			 * If any of the following variables are set from a previous iteration
+			 * they are unset.
+			 */
+			if (isset($continue)) unset($continue);
+			if (isset($cities)) unset($cities);
+			if (isset($states)) unset($states);
+			if (isset($zipcodes)) unset($zipcodes);
+			if (isset($countries)) unset($countries);
+			if (isset($setAnchor)) unset($setAnchor);
 			
-			if ($atts['list_type'] != 'all') {
-				if ($atts['list_type'] != $entry->getEntryType()) {
-					continue;
-				}
-			}
-			
-			switch ($atts)
+			/*
+			 * First check to make sure there is data stored in the address array.
+			 * Then cycle thru each address, building separate arrays for city, state, zip and country.
+			 */
+			if ($entry->getAddresses())
 			{
-				case ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != null):
-					$continue = true;
-				case ($entry->getTitle() != $atts['title'] && $atts['title'] != null):
-					$continue = true;
-				case ($entry->getOrganization() != $atts['organization'] && $atts['organization'] != null):
-					$continue = true;
-				case ($entry->getDepartment() != $atts['department'] && $atts['department'] != null):
-					$continue = true;
+				$addressObject = new addresses;
+				foreach ($entry->getAddresses() as $addressRow)
+				{
+					if ($addressObject->getCity($addressRow) != null) $cities[] = $addressObject->getCity($addressRow);
+					if ($addressObject->getState($addressRow) != null) $states[] = $addressObject->getState($addressRow);
+					if ($addressObject->getZipCode($addressRow) != null) $zipcodes[] = $addressObject->getZipCode($addressRow);
+					if ($addressObject->getCountry($addressRow) != null) $countries[] = $addressObject->getCountry($addressRow);
+				}			
 			}
 			
+			/*
+			 * Here we filter out the entries that are wanted based on the
+			 * filter attributes that may have been used in the shortcode.
+			 * 
+			 * NOTE: The '@' operator is used to suppress PHP generated errors. This is done
+			 * because not every entry will have addresses to populate the arrays created above.
+			 */
+			if ($atts['list_type'] != 'all' && $atts['list_type'] != $entry->getEntryType())			$continue = true;
+			if ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != null)				$continue = true;
+			if ($entry->getTitle() != $atts['title'] && $atts['title'] != null)							$continue = true;
+			if ($entry->getOrganization() != $atts['organization'] && $atts['organization'] != null) 	$continue = true;
+			if ($entry->getDepartment() != $atts['department'] && $atts['department'] != null) 			$continue = true;
+			if (@!in_array($atts['city'], $cities) && $atts['city'] != null) 							$continue = true;
+			if (@!in_array($atts['state'], $states) && $atts['state'] != null) 							$continue = true;
+			if (@!in_array($atts['zip_code'], $zipcodes) && $atts['zip_code'] != null) 					$continue = true;
+			if (@!in_array($atts['country'], $countries) && $atts['country'] != null) 					$continue = true;
+			
+			/*
+			 * If any of the above filters returned true, the script will continue to the next entry.
+			 */
 			if ($continue == true) continue;
 	
-			//Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
+			/*
+			 * Checks the first letter of the last name to see if it is the next
+			 * letter in the alpha array and sets the anchor.
+			 * 
+			 * If the alpha index is set to repeat it will append to the anchor.
+			 * 
+			 * If the alpha head set to true it will append the alpha head to the anchor.
+			 */
 			$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
 			if ($currentLetter != $previousLetter && $atts['id'] == null) {
-				$setAnchor = '<a name="' . $currentLetter . '"></a>';
+				if ($atts['show_alphaindex'] == 'true') $setAnchor = '<a name="' . $currentLetter . '"></a>';
+				
+				if ($atts['show_alphaindex'] == 'true' && $atts['repeat_alphaindex'] == 'true') $setAnchor .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
+				
+				if ($atts['show_alphahead'] == 'true') $setAnchor .= '<h4 class="cn-alphahead">' . $currentLetter . '</h4>';
 				$previousLetter = $currentLetter;
 			} else {
 				$setAnchor = null;
 			}
 			
-			if ($atts['show_alphaindex'] == 'true') $out .= $setAnchor;
+			/*
+			 * The anchor and/or the alpha head is displayed if set to true using the shortcode attributes.
+			 */
+			if ($atts['show_alphaindex'] == 'true' || $atts['show_alphahead'] == 'true') $out .= $setAnchor;
 			
 			if ($atts['custom_template'] == 'true')
 			{

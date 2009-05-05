@@ -27,7 +27,7 @@
 	</div>
 	
 	<div style="clear:both"></div>
-	<div class="cn_meta" align="left">
+	<div class="cn-meta" align="left" style="margin-top: 6px">
 		<span><?php echo $vCard->download() ?></span>
 		<span style="<?php echo $entry->getLastUpdatedStyle() ?>; font-size:x-small; font-variant: small-caps; position: absolute; right: 26px; bottom: 8px;">Updated <?php echo $entry->getHumanTimeDiff() ?> ago</span><span style="position: absolute; right: 3px; bottom: 5px;"><?php echo $entry->returnToTopAnchor() ?></span><br />
 	</div>

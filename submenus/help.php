@@ -84,6 +84,10 @@
         <li>private_override</li>
 
         <li>show_alphaindex</li>
+		
+		<li>repeat_alphaindex</li>
+		
+		<li>show_alphahead</li>
 
         <li>list_type</li>
 
@@ -91,13 +95,21 @@
 
         <li>template_name</li>
 
-        <li>last_name <em>filter</em></li>
+        <li>last_name <strong><em>filter</em></strong></li>
 
-        <li>title <em>filter</em></li>
+        <li>title <strong><em>filter</em></strong></li>
 
-        <li>organization <em>filter</em></li>
+        <li>organization <strong><em>filter</em></strong></li>
 
-        <li>department <em>filter</em></li>
+        <li>department <strong><em>filter</em></strong></li>
+		
+		<li>city <strong><em>filter</em></strong></li>
+		
+		<li>state <strong><em>filter</em></strong></li>
+		
+		<li>zip_code <strong><em>filter</em></strong></li>
+		
+		<li>country <strong><em>filter</em></strong></li>
     </ol>
 
     <p>The <em>id</em> option allows you to show the
@@ -127,6 +139,20 @@
             is useful if you have many entries.</p>
 <pre>
 <code>[connections_list show_alphaindex='true']</code>
+</pre>
+
+            <p>The <em>repeat_alphaindex</em> option inserts an A
+            thru Z anchor list at the beginning of every character group.
+			NOTE: the alpha index will only repeat if the <em>show_alphaindex</em>
+			shortcode attribute is set to true</p>
+<pre>
+<code>[connections_list repeat_alphaindex='true']</code>
+</pre>
+
+            <p>The <em>show_alphahead</em> option inserts the current character
+			at the beginning of each character group.</p>
+<pre>
+<code>[connections_list show_alphahead='true']</code>
 </pre>
 
             <p>The <em>list_type</em> option allows you to show all
@@ -204,6 +230,10 @@
             <p>This will only output a list where the organization
             is "ACME" AND where the department is "Accounting".
             Remember, filters are case sensitive.</p>
+			
+			<p>The rest of the filters function identically. NOTE: If you
+			have multiple addresses assigned to an entry, the address filters will
+			search all addresses and will disply the entry if a match is found.</p>
 
             <p><a name="tocIdCelebrateList"></a>There is a second shortcode that can be use for
             displaying a list of upcoming birthdays and/or
