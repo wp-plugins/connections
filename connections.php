@@ -257,8 +257,7 @@ function _connections_main() {
 		$sql = new sql();
 		
 		get_currentuserinfo();
-		$plugin_options->setOptions(get_option("connections_options"), $current_user->ID);
-		$plugin_options->setCurrentUserID($current_user->ID);
+		$plugin_options->setOptions($current_user->ID);
 		
 	    if ($_GET['action']=='editform')
 		{
@@ -478,7 +477,8 @@ function _connections_main() {
 				if ($_POST['dofilter']) {
 					$plugin_options->setEntryType($_POST['entry_type']);
 					$plugin_options->setVisibilityType($_POST['visibility_type']);
-					update_option('connections_options', $plugin_options->getOptions());
+					
+					$plugin_options->saveOptions();
 				}
 				
 				/*
@@ -1208,7 +1208,8 @@ function _connections_install() {
     dbDelta($sql);
 	
 	$plugin_options->setVersion(CN_CURRENT_VERSION);
-	update_option('connections_options', $plugin_options->getOptions());
+	//update_option('connections_options', $plugin_options->getOptions());
+	$plugin_options->saveOptions();
 }
 
 function _connections_get_entry_select($name,$selected=null)

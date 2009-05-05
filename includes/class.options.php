@@ -42,24 +42,36 @@ class pluginOptions
     public function getOptions()
     {
         $this->options['version'] = $this->version;
-		$this->options[$this->getCurrentUserID()]['filter']['entry_type'] = $this->entryType;
-		$this->options[$this->getCurrentUserID()]['filter']['visibility_type'] = $this->visibilityType;
+		//$this->options[$this->getCurrentUserID()]['filter']['entry_type'] = $this->entryType;
+		//$this->options[$this->getCurrentUserID()]['filter']['visibility_type'] = $this->visibilityType;
+		
+		$this->options[$this->currentUserID]['filter']['entry_type'] = $this->entryType;
+		$this->options[$this->currentUserID]['filter']['visibility_type'] = $this->visibilityType;
+		
 		return $this->options;
     }
     
     /**
-     * Sets $options.
-     * @param object $data
+     * Sets up the plug-in options. Required value is the current user's ID.
      * @param integer $userID
-     * @see options::$options
      */
-    public function setOptions($data, $userID)
+    public function setOptions($userID)
     {
-		$this->options = $data;
-		$this->version = $data['version'];
-		$this->entryType = $data[$userID]['filter']['entry_type'];
-		$this->visibilityType = $data[$userID]['filter']['visibility_type'];
+		$this->currentUserID = $userID;
+		
+		$this->options = get_option('connections_options');
+		$this->version = $this->options['version'];
+		$this->entryType = $this->options[$this->currentUserID]['filter']['entry_type'];
+		$this->visibilityType = $this->options[$this->currentUserID]['filter']['visibility_type'];
     }
+	
+	/**
+	 * Saves the plug-in options to the database.
+	 */
+	public function saveOptions()
+	{
+		update_option('connections_options', $this->getOptions());
+	}
 
     /**
      * Returns $entryType.
