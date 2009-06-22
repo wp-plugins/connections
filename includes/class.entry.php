@@ -870,7 +870,7 @@ class entry
 			notes         = '".$wpdb->escape($this->notes)."'
 			WHERE id ='".$wpdb->escape($this->id)."'";
 		
-		return $wpdb->query($sql);
+		return $wpdb->query($wpdb->prepare($sql));
 	}
 	
 	public function save()
@@ -903,14 +903,14 @@ class entry
 			bio           = '".$wpdb->escape($this->bio)."',
 			notes         = '".$wpdb->escape($this->notes)."'";
 		
-		return $wpdb->query($sql);
+		return $wpdb->query($wpdb->prepare($sql));
 	}
 	
 	public function delete($id)
 	{
 		global $wpdb;
 		
-		$wpdb->query('DELETE FROM ' . $wpdb->prefix . 'connections WHERE id="' . $wpdb->escape($id) . '"');
+		$wpdb->query($wpdb->prepare('DELETE FROM ' . $wpdb->prefix . 'connections WHERE id="' . $wpdb->escape($id) . '"'));
 	}
 	
 }

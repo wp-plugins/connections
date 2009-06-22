@@ -3,9 +3,9 @@ Contributors: Steven A. Zahm
 Donate link: http://www.shazahm.net/?page_id=111
 Tags: addresses, address book, addressbook, bio, bios, biographies, contact, contacts, connect, connections, directory, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, user, users, vcard
 Requires at least: 2.7
-Tested up to: 2.7.1
-Stable tag: 0.5.0
-Connections is a simple to use addressbook that is very customizable. Entry lists and/or birthday/anniversary lists can be embedded in a page/post.
+Tested up to: 2.8
+Stable tag: 0.5.1
+Connections is a simple to use addressbook that is highly customizable.
 
 == Description ==
 An address book / addressbook that is managed in the admin and embedded in a post/page. Upcoming birthdays and anniversaries can also be embedded in a post/page. **See the instructions under installation, above.**
@@ -16,25 +16,17 @@ This plugin is under active developement, please make sure you have a recent bac
 * Selectable entry type; Individual / Connection Group / Organization to allow this to be used as a business directory as well
 * Image support for entries
 * Copy entries
-* Bulk actions
-* Entry filters
+* Admin Bulk actions
+* Admin Entry filters
 * Persistent filter state per user between sessions
 * Shortcodes that can be used for embedding entry list and upcoming birthdays/anniversaries in a page and/or post with many options.
 * Use custom templates and provided many template tags. See the instructions under Installation.
-* Alternate list format / single entry format -- profile view.
-* Alternate single entry format -- single-card view.
+* Alternate list formats using the supllied templates — single entry view; profile view.
 * Filter shortcode attributes for filtering the output list. See the instructions under Installation.
 * xHTML Transition output.
 * Entries output in [hCard](http://microformats.org/wiki/hcard) compatible format.
 * Download vCard of entries for importing into you email application.
-* **NEW** Added bulk delete.
-* **NEW** Added an entry type of Connection Group. This allows to you create relational links between entries.
-* **NEW** Moved the plug-in to be a top level menu item.
-* **NEW** Added a help sub-page.
-* **NEW** Added a setting page. Settings will actually be available in the next version.
-* **NEW** Added a donate button - a user request.
-* **NEW** Added a spiffy icon for the menu and page headers.
-
+* Connection Groups. This allows to you create relational links between entries.
 * **NEW** Added a shortcode attribute to repeat the alpha index and the beginning of each character change. [User requested.](http://wordpress.org/support/topic/266754)
 * **NEW** Added a shortcode attribute to show the current character at the beginning of each character group. [User requested.](http://wordpress.org/support/topic/266754)
 * **NEW** Added additional filters for addresses. [User requested.](http://wordpress.org/support/topic/248568)
@@ -75,6 +67,7 @@ This plugin is under active developement, please make sure you have a recent bac
 
 * Currently when an image link is removed the files are not deleted from the server
 * The vCard feature is not compatible with [WP Super Cache](http://wordpress.org/extend/plugins/wp-super-cache/). Make sure the page/post excluded in WP Super Cache.
+* The bulk delete requires two "OK" clicks on the popup dialog.
 
 == Screenshots ==
 [Samples and screenshots can be found here](http://www.shazahm.net/?page_id=111)
@@ -82,7 +75,6 @@ This plugin is under active developement, please make sure you have a recent bac
 == Installation ==
 1. Upload the `connections` directory to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. You can mange addresses by going to the Connections item under the Tools menu.
 4. If you wish to create and use custom template besure to create the `./wp-content/connections_templates` directory/folder. This is where you will copy any custom templates you might create.
 
 
@@ -108,42 +100,34 @@ This plugin requires PHP 5. Turn on or ask your web host to turn on PHP 5 suppor
 
 Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>` tag is needed for hCalendar event compatibility. To remove this from the styling, add `.vevent abbr{border:0}` to your theme's CSS.
 
-== Change Log ==
+== Changelog ==
 
 = 0.2.3 =
-
 * First version in the repository
 
 = 0.2.4 =
-
 * Add entry ID to the admin
 
 = 0.2.7 =
-
 * Added preliminary image support for entries
 
 = 0.2.8 =
-
 * Fix bug that was causing IE to not filter correctly
 * Code cleanup
 
 = 0.2.9 =
-
 * Some more code cleanup
 * Started code documentation
 * Added the ability to choose whether or not a linked image in an entry is displayed when embedded in a page/post
 * Added the ability to remove the linked image from an entry
 
 = 0.2.10 =
-
 * Added the ability to copy an entry
 
 = 0.2.11 =
-
 * Added a nice little up arrow to both the admin and page/post entry list to return to the top of the list
 
 = 0.2.22 =
-
 * Added Org/Individual options
 * Added IM fields
 * Added BIO field
@@ -151,19 +135,16 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Started to convert the code to OO PHP
 
 = 0.2.23 =
-
 * Converted more code to use OO methods
 * Display some of the missing fields in the output
 
 = 0.2.24 =
-
 * Converted more code to use OO methods
 * Code clean-up and documentation
 * Fixed the alpha index bug not correctly working with organization entry types
 * Added a shortcode to allow showing all entries; individual or organizations entries
 
 = 0.3.2 =
-
 * Converted the rest of the code to use OO methods
 * Started to add jQuery in the admin
 * Fixed the CSS to load only in the Connections page
@@ -172,11 +153,9 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Added a default profile template and a default single entry template
 
 = 0.3.3 =
-
 * Added shortcode filter attributes
 
 = 0.4.0 =
-
 * Added hCard compatible markup
 * xHTML Transitional valid output
 * Added hCalendar compatible markup for birthdays and anniversaries.
@@ -184,7 +163,6 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Added support for vCard download of an entry.
 
 = 0.5.0 =
-
 * Adding/Editing/Copying now use the class
 * Added bulk delete.
 * Added an entry type of Connection Group. This all ows to you create relational links between entries.
@@ -194,8 +172,9 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Added a donate button - a user request.
 * Added a spiffy icon for the menu and page headers.
 
-= 0.x.x =
-
+= 0.5.1 =
 * Added a shortcode attribute to repeat the alpha index and the beginning of each character change. [User requested.](http://wordpress.org/support/topic/266754)
 * Added a shortcode attribute to show the current character at the beginning of each character group. [User requested.](http://wordpress.org/support/topic/266754)
 * Added additional filters for addresses. [User requested.](http://wordpress.org/support/topic/248568)
+* Run the SQL queries through the `$wpdb->prepare()` method for security
+* Change the change log so it shows up as a top level tab on the WordPress plug-in page
