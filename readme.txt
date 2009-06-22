@@ -172,7 +172,7 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Added a donate button - a user request.
 * Added a spiffy icon for the menu and page headers.
 
-= 0.5.1 =
+= 0.5.1 6/21/2009 =
 * Added a shortcode attribute to repeat the alpha index and the beginning of each character change. [User requested.](http://wordpress.org/support/topic/266754)
 * Added a shortcode attribute to show the current character at the beginning of each character group. [User requested.](http://wordpress.org/support/topic/266754)
 * Added additional filters for addresses. [User requested.](http://wordpress.org/support/topic/248568)
