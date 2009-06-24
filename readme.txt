@@ -72,8 +72,10 @@ Connections is a simple to use address book or directory that is highly customiz
 == Screenshots ==
 [Samples and screenshots can be found here](http://www.shazahm.net/?page_id=111)
 
-Here are a couple sites using Connections as a business directory.
+Here are a couple of sites using Connections as a business directory.
+
 [Frisco Notary](http://www.frisconotary.com/directory/)
+
 [Tipmasters of Merdian](http://www.tipmasters.biz/index.php/directory/)
 
 == Installation ==

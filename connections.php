@@ -61,7 +61,7 @@ define('CN_DEFAULT_THUMBNAIL_Y', 54);
 define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
 define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
 define('CN_TABLE_NAME','connections');
-define('CN_CURRENT_VERSION', '0.5.1');
+define('CN_CURRENT_VERSION', '0.5.2');
 
 $defaultAddressTypes	=	array
 							(
@@ -195,8 +195,8 @@ $defaultConnectionGroupValues = array(
 										'wife' =>"Wife"
 										);
 
-//$plugin_options = new pluginOptions(get_option("connections_options"));
-$plugin_options = new pluginOptions;
+
+//$plugin_options = new pluginOptions;
 
 // This adds the menu items WordPress and calls the function to load my CSS and JS.
 add_action('admin_menu', 'connections_menus');
@@ -217,6 +217,7 @@ function connections_menus() {
 	add_action( "admin_print_styles-$connections_admin", 'connections_loadcss_admin_head' );
 	
 	add_action( 'admin_print_scripts-connections/submenus/settings.php', 'connections_loadjs_admin_head' );
+	add_action( 'admin_print_styles-connections/submenus/settings.php', 'connections_loadcss_admin_head' );
 	
 	add_action( 'admin_print_scripts-connections/submenus/help.php', 'connections_loadjs_admin_head' );
 	add_action( 'admin_print_styles-connections/submenus/help.php', 'connections_loadcss_admin_head' );
@@ -253,11 +254,12 @@ function connections_loadcss_head() {
 }
 
 function _connections_main() {
-		global $wpdb, $current_user, $plugin_options, $defaultConnectionGroupValues;
+		global $wpdb, $current_user, $defaultConnectionGroupValues;
 		$sql = new sql();
 		
 		get_currentuserinfo();
-		$plugin_options->setOptions($current_user->ID);
+		$plugin_options = new pluginOptions($current_user->ID);
+		//$plugin_options->setOptions($current_user->ID);
 		
 	    if ($_GET['action']=='editform')
 		{
@@ -1179,7 +1181,10 @@ function _connections_getaddressform($data=null) {
 
 // This installs and/or upgrades the plugin.
 function _connections_install() {
-	global $wpdb, $plugin_options;
+	global $wpdb;
+	
+	get_currentuserinfo();
+	$plugin_options = new pluginOptions($current_user->ID);
 	
     $table_name = $wpdb->prefix."connections";
     $sql = "CREATE TABLE " . $table_name . " (

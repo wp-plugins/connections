@@ -36,42 +36,69 @@ class pluginOptions
 	private $currentUserID;
 
     /**
-     * Returns $options.
-     * @see options::$options
+     * Integer: stores the minimum WP role level to access Connections
+     * @var interger
      */
-    public function getOptions()
+	private $roleMain;
+	
+	/**
+	 * Stores all the option properties as an array
+	 * @return array
+	 */
+	private function setupOptionsArray()
     {
         $this->options['version'] = $this->version;
-		//$this->options[$this->getCurrentUserID()]['filter']['entry_type'] = $this->entryType;
-		//$this->options[$this->getCurrentUserID()]['filter']['visibility_type'] = $this->visibilityType;
 		
 		$this->options[$this->currentUserID]['filter']['entry_type'] = $this->entryType;
 		$this->options[$this->currentUserID]['filter']['visibility_type'] = $this->visibilityType;
 		
+		$this->options['roles']['main'] = $this->roleMain;
+		
 		return $this->options;
     }
     
-    /**
-     * Sets up the plug-in options. Required value is the current user's ID.
-     * @param integer $userID
-     */
-    public function setOptions($userID)
-    {
+	/**
+	 * Sets up the plugin option properties. Requires the current WP user ID.
+	 * @param interger $userID
+	 */
+	public function __construct($userID)
+	{
 		$this->currentUserID = $userID;
 		
 		$this->options = get_option('connections_options');
 		$this->version = $this->options['version'];
 		$this->entryType = $this->options[$this->currentUserID]['filter']['entry_type'];
 		$this->visibilityType = $this->options[$this->currentUserID]['filter']['visibility_type'];
-    }
+		
+		$this->roleMain = $this->options['roles']['main'];
+	}
 	
 	/**
 	 * Saves the plug-in options to the database.
 	 */
 	public function saveOptions()
 	{
-		update_option('connections_options', $this->getOptions());
+		update_option('connections_options', $this->setupOptionsArray());
 	}
+
+    /**
+     * Returns $roleMain.
+     * @see pluginOptions::$roleMain
+     */
+    public function getRoleMain()
+    {
+        return $this->roleMain;
+    }
+    
+    /**
+     * Sets $roleMain.
+     * @param object $roleMain
+     * @see pluginOptions::$roleMain
+     */
+    public function setRoleMain($roleMain)
+    {
+        $this->roleMain = $roleMain;
+    }
 
     /**
      * Returns $entryType.
