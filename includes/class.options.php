@@ -41,6 +41,9 @@ class pluginOptions
      */
 	private $roleMain;
 	
+	private $roleChangeSettings;
+	private $roleViewHelp;
+	
 	/**
 	 * Stores all the option properties as an array
 	 * @return array
@@ -53,6 +56,8 @@ class pluginOptions
 		$this->options[$this->currentUserID]['filter']['visibility_type'] = $this->visibilityType;
 		
 		$this->options['roles']['main'] = $this->roleMain;
+		$this->options['roles']['change_settings'] = $this->roleChangeSettings;
+		$this->options['roles']['view_help'] = $this->roleViewHelp;
 		
 		return $this->options;
     }
@@ -71,6 +76,8 @@ class pluginOptions
 		$this->visibilityType = $this->options[$this->currentUserID]['filter']['visibility_type'];
 		
 		$this->roleMain = $this->options['roles']['main'];
+		$this->roleChangeSettings = $this->options['roles']['change_settings'];
+		$this->roleViewHelp = $this->options['roles']['view_help'];
 	}
 	
 	/**
@@ -87,7 +94,9 @@ class pluginOptions
      */
     public function getRoleMain()
     {
-        return $this->roleMain;
+        $level_to_role = array(0=>'subscriber', 1=>'contributer', 2=>'author', 3=>'editor', 8=>'admin');
+		
+		return $level_to_role[$this->roleMain];
     }
     
     /**
@@ -98,6 +107,48 @@ class pluginOptions
     public function setRoleMain($roleMain)
     {
         $this->roleMain = $roleMain;
+    }
+
+    /**
+     * Returns $roleChangeSettings.
+     * @see pluginOptions::$roleChangeSettings
+     */
+    public function getRoleChangeSettings()
+    {
+        $level_to_role = array(0=>'subscriber', 1=>'contributer', 2=>'author', 3=>'editor', 8=>'admin');
+		
+		return $level_to_role[$this->roleChangeSettings];
+    }
+    
+    /**
+     * Sets $roleChangeSettings.
+     * @param object $roleChangeSettings
+     * @see pluginOptions::$roleChangeSettings
+     */
+    public function setRoleChangeSettings($roleChangeSettings)
+    {
+        $this->roleChangeSettings = $roleChangeSettings;
+    }
+
+    /**
+     * Returns $roleViewHelp.
+     * @see pluginOptions::$roleViewHelp
+     */
+    public function getRoleViewHelp()
+    {
+        $level_to_role = array(0=>'subscriber', 1=>'contributer', 2=>'author', 3=>'editor', 8=>'admin');
+		
+		return $level_to_role[$this->roleViewHelp];
+    }
+    
+    /**
+     * Sets $roleViewHelp.
+     * @param object $roleViewHelp
+     * @see pluginOptions::$roleViewHelp
+     */
+    public function setRoleViewHelp($roleViewHelp)
+    {
+        $this->roleViewHelp = $roleViewHelp;
     }
 
     /**
