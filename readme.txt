@@ -72,6 +72,10 @@ Connections is a simple to use address book or directory that is highly customiz
 == Screenshots ==
 [Samples and screenshots can be found here](http://www.shazahm.net/?page_id=111)
 
+Here are a couple sites using Connections as a business directory.
+[Frisco Notary](http://www.frisconotary.com/directory/)
+[Tipmasters of Merdian](http://www.tipmasters.biz/index.php/directory/)
+
 == Installation ==
 1. Upload the `connections` directory to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
