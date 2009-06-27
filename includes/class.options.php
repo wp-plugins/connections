@@ -45,24 +45,6 @@ class pluginOptions
 	private $roleViewHelp;
 	
 	/**
-	 * Stores all the option properties as an array
-	 * @return array
-	 */
-	private function setupOptionsArray()
-    {
-        $this->options['version'] = $this->version;
-		
-		$this->options[$this->currentUserID]['filter']['entry_type'] = $this->entryType;
-		$this->options[$this->currentUserID]['filter']['visibility_type'] = $this->visibilityType;
-		
-		$this->options['roles']['main'] = $this->roleMain;
-		$this->options['roles']['change_settings'] = $this->roleChangeSettings;
-		$this->options['roles']['view_help'] = $this->roleViewHelp;
-		
-		return $this->options;
-    }
-    
-	/**
 	 * Sets up the plugin option properties. Requires the current WP user ID.
 	 * @param interger $userID
 	 */
@@ -85,7 +67,16 @@ class pluginOptions
 	 */
 	public function saveOptions()
 	{
-		update_option('connections_options', $this->setupOptionsArray());
+		$this->options['version'] = $this->version;
+		
+		$this->options[$this->currentUserID]['filter']['entry_type'] = $this->entryType;
+		$this->options[$this->currentUserID]['filter']['visibility_type'] = $this->visibilityType;
+		
+		$this->options['roles']['main'] = $this->roleMain;
+		$this->options['roles']['change_settings'] = $this->roleChangeSettings;
+		$this->options['roles']['view_help'] = $this->roleViewHelp;
+		
+		update_option('connections_options', $this->options);
 	}
 
     /**
@@ -106,7 +97,9 @@ class pluginOptions
      */
     public function setRoleMain($roleMain)
     {
-        $this->roleMain = $roleMain;
+        $role_to_level = array('subscriber'=>0, 'contributer'=>1, 'author'=>2, 'editor'=>3, 'admin'=>8);
+		
+		$this->roleMain = $role_to_level[$roleMain];
     }
 
     /**
@@ -127,7 +120,9 @@ class pluginOptions
      */
     public function setRoleChangeSettings($roleChangeSettings)
     {
-        $this->roleChangeSettings = $roleChangeSettings;
+        $role_to_level = array('subscriber'=>0, 'contributer'=>1, 'author'=>2, 'editor'=>3, 'admin'=>8);
+		
+		$this->roleChangeSettings = $role_to_level[$roleChangeSettings];
     }
 
     /**
@@ -148,7 +143,9 @@ class pluginOptions
      */
     public function setRoleViewHelp($roleViewHelp)
     {
-        $this->roleViewHelp = $roleViewHelp;
+        $role_to_level = array('subscriber'=>0, 'contributer'=>1, 'author'=>2, 'editor'=>3, 'admin'=>8);
+				
+		$this->roleViewHelp = $role_to_level[$roleViewHelp];
     }
 
     /**

@@ -1,22 +1,43 @@
 <?php
 
 	$plugin_options = new pluginOptions($current_user->ID);
-
+	
 	if (isset($_POST['submit']))
 	{
-		$role_to_level = array('subscriber'=>0, 'contributer'=>1, 'author'=>2, 'editor'=>3, 'admin'=>8);
-		
-		$plugin_options->setRoleMain($role_to_level[$_POST['role-main']]);
-		$plugin_options->setRoleChangeSettings($role_to_level[$_POST['role-settings']]);
-		$plugin_options->setRoleViewHelp($role_to_level[$_POST['role-help']]);
-		$plugin_options->saveOptions();
-		
-		//print_r($_POST);
-		
+		if (isset($_POST['roles']))
+		{
+			// Cycle thru each role available because checkboxes do not report a value when not checked.
+			$wpRoleNameArray = $wp_roles->get_names();
+			foreach ($wpRoleNameArray as $role => $name)
+			{
+				if (!isset($_POST['roles'][$role])) continue;
+				
+				foreach ($_POST['roles'][$role]['capabilities'] as $capability => $grant)
+				{
+					// the admininistrator should always have all capabilities
+					if ($role == 'administrator') continue;
+					
+					$wpRoleDataArray = $wp_roles->roles;
+					$wpRoleCaps = $wpRoleDataArray[$role]['capabilities'];
+
+					$wpRole = new WP_Role($role, $wpRoleCaps);
+					if ($grant === 'true')
+					{
+						if (!$wpRole->has_cap($capability)) $wpRole->add_cap($capability);
+					}
+					else
+					{
+						if ($wpRole->has_cap($capability)) $wpRole->remove_cap($capability);
+					}
+					unset($wpRole);
+					unset($wpRoleDataArray);
+					unset($wpRoleCaps);
+				}
+			}
+		}
+
 	}
-//print_r($plugin_options->getRoleMain() . '<br />');
-//print_r($plugin_options->getRoleChangeSettings() . '<br />');
-//print_r($plugin_options->getRoleViewHelp() . '<br />');
+
 ?>
 	<div class="wrap">
 		<div id="icon-connections" class="icon32">
@@ -32,18 +53,36 @@
 		<form action="admin.php?page=connections/submenus/settings.php" method="post">
 		
 		<h3>Roles</h3>
-		<div class="form-field connectionsform">
+		<div class="connectionsform">
 			
 			<table class="form-table">
 				<tbody>
 					<tr valign="top">
 						<th scope="row">
-							<label for="role-main">Main</label>
+							<label for="role-view-entry-list">View Entry List</label>
 						</th>
 						<td>
-							<select id="role-plugin" name="role-main">
-								<?php wp_dropdown_roles($plugin_options->getRoleMain()) ?>
-							</select>
+							<?php
+								$wpRoleNameArray = $wp_roles->get_names();
+								foreach ($wpRoleNameArray as $role => $name)
+								{
+									$wpRoleDataArray = $wp_roles->roles;
+									$wpRoleCaps = $wpRoleDataArray[$role]['capabilities'];
+									$wpRole = new WP_Role($role, $wpRoleCaps);
+									
+									echo '<label for="' . $role . '">';
+									echo '<input type="hidden" name="roles[' . $role . '][capabilities][connections_view_entry_list]" value="false" />';
+									echo '<input type="checkbox" id="' . $role . '" name="roles[' . $role . '][capabilities][connections_view_entry_list]" value="true" '; 
+									if ($wpRole->has_cap('connections_view_entry_list')) echo 'CHECKED ';
+									// the admininistrator should always have all capabilities
+									if ($role == 'administrator') echo 'DISABLED ';
+									echo '/> ' . $name . '</label><br />' . "\n";
+									
+									unset($wpRoleDataArray);
+									unset($wpRoleCaps);
+									unset($wpRole);
+								}
+							?>
 						</td>
 					</tr>
 					
