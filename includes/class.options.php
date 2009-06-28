@@ -34,15 +34,6 @@ class pluginOptions
 	 * @var interger
 	 */
 	private $currentUserID;
-
-    /**
-     * Integer: stores the minimum WP role level to access Connections
-     * @var interger
-     */
-	private $roleMain;
-	
-	private $roleChangeSettings;
-	private $roleViewHelp;
 	
 	/**
 	 * Sets up the plugin option properties. Requires the current WP user ID.
@@ -78,75 +69,46 @@ class pluginOptions
 		
 		update_option('connections_options', $this->options);
 	}
-
-    /**
-     * Returns $roleMain.
-     * @see pluginOptions::$roleMain
-     */
-    public function getRoleMain()
-    {
-        $level_to_role = array(0=>'subscriber', 1=>'contributer', 2=>'author', 3=>'editor', 8=>'admin');
+	
+	/**
+	 * Gets the WordPress roles. Key = role and value = name. 
+	 * @return associative array
+	 */
+	public function getRoles()
+	{
+		global $wp_roles;
+		return $wp_roles->get_names();;
+	}
+	
+	public function hasCapability($role, $cap)
+	{
+		global $wp_roles;		
+		$wpRoleDataArray = $wp_roles->roles;
+		$wpRoleCaps = $wpRoleDataArray[$role]['capabilities'];
+		$wpRole = new WP_Role($role, $wpRoleCaps);
 		
-		return $level_to_role[$this->roleMain];
-    }
-    
-    /**
-     * Sets $roleMain.
-     * @param object $roleMain
-     * @see pluginOptions::$roleMain
-     */
-    public function setRoleMain($roleMain)
-    {
-        $role_to_level = array('subscriber'=>0, 'contributer'=>1, 'author'=>2, 'editor'=>3, 'admin'=>8);
+		return $wpRole->has_cap($cap);
+	}
+	
+	public function addCapability($role, $cap)
+	{
+		global $wp_roles;		
+		$wpRoleDataArray = $wp_roles->roles;
+		$wpRoleCaps = $wpRoleDataArray[$role]['capabilities'];
+		$wpRole = new WP_Role($role, $wpRoleCaps);
 		
-		$this->roleMain = $role_to_level[$roleMain];
-    }
-
-    /**
-     * Returns $roleChangeSettings.
-     * @see pluginOptions::$roleChangeSettings
-     */
-    public function getRoleChangeSettings()
-    {
-        $level_to_role = array(0=>'subscriber', 1=>'contributer', 2=>'author', 3=>'editor', 8=>'admin');
+		$wpRole->add_cap($cap);
+	}
+	
+	public function removeCapability($role, $cap)
+	{
+		global $wp_roles;		
+		$wpRoleDataArray = $wp_roles->roles;
+		$wpRoleCaps = $wpRoleDataArray[$role]['capabilities'];
+		$wpRole = new WP_Role($role, $wpRoleCaps);
 		
-		return $level_to_role[$this->roleChangeSettings];
-    }
-    
-    /**
-     * Sets $roleChangeSettings.
-     * @param object $roleChangeSettings
-     * @see pluginOptions::$roleChangeSettings
-     */
-    public function setRoleChangeSettings($roleChangeSettings)
-    {
-        $role_to_level = array('subscriber'=>0, 'contributer'=>1, 'author'=>2, 'editor'=>3, 'admin'=>8);
-		
-		$this->roleChangeSettings = $role_to_level[$roleChangeSettings];
-    }
-
-    /**
-     * Returns $roleViewHelp.
-     * @see pluginOptions::$roleViewHelp
-     */
-    public function getRoleViewHelp()
-    {
-        $level_to_role = array(0=>'subscriber', 1=>'contributer', 2=>'author', 3=>'editor', 8=>'admin');
-		
-		return $level_to_role[$this->roleViewHelp];
-    }
-    
-    /**
-     * Sets $roleViewHelp.
-     * @param object $roleViewHelp
-     * @see pluginOptions::$roleViewHelp
-     */
-    public function setRoleViewHelp($roleViewHelp)
-    {
-        $role_to_level = array('subscriber'=>0, 'contributer'=>1, 'author'=>2, 'editor'=>3, 'admin'=>8);
-				
-		$this->roleViewHelp = $role_to_level[$roleViewHelp];
-    }
+		$wpRole->remove_cap($cap);
+	}
 
     /**
      * Returns $entryType.

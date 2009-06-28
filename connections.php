@@ -202,10 +202,10 @@ $defaultConnectionGroupValues = array(
 add_action('admin_menu', 'connections_menus');
 function connections_menus() {
 	//Adds Connections to the top level menu.
-	$connections_admin = add_menu_page('Connections : Administration', 'Connections', 4, 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
+	$connections_admin = add_menu_page('Connections : Administration', 'Connections', 'connections_view_entry_list', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
 	//Adds the Connections sub-menus.
-	add_submenu_page('connections/connections.php', 'Connections : Settings','Settings', 4,'connections/submenus/settings.php');
-	add_submenu_page('connections/connections.php', 'Connections : Help','Help', 4,'connections/submenus/help.php');
+	add_submenu_page('connections/connections.php', 'Connections : Settings','Settings', 'connections_change_settings','connections/submenus/settings.php');
+	add_submenu_page('connections/connections.php', 'Connections : Help','Help', 'connections_view_help','connections/submenus/help.php');
 	
 	// Call the function to add the CSS and JS only on pages related to the Connections plug-in.
 	/* 

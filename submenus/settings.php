@@ -7,8 +7,7 @@
 		if (isset($_POST['roles']))
 		{
 			// Cycle thru each role available because checkboxes do not report a value when not checked.
-			$wpRoleNameArray = $wp_roles->get_names();
-			foreach ($wpRoleNameArray as $role => $name)
+			foreach ($plugin_options->getRoles() as $role => $name)
 			{
 				if (!isset($_POST['roles'][$role])) continue;
 				
@@ -17,21 +16,14 @@
 					// the admininistrator should always have all capabilities
 					if ($role == 'administrator') continue;
 					
-					$wpRoleDataArray = $wp_roles->roles;
-					$wpRoleCaps = $wpRoleDataArray[$role]['capabilities'];
-
-					$wpRole = new WP_Role($role, $wpRoleCaps);
-					if ($grant === 'true')
+					if ($grant == 'true')
 					{
-						if (!$wpRole->has_cap($capability)) $wpRole->add_cap($capability);
+						if (!$plugin_options->hasCapability($role, $capability)) $plugin_options->addCapability($role, $capability);
 					}
 					else
 					{
-						if ($wpRole->has_cap($capability)) $wpRole->remove_cap($capability);
+						if ($plugin_options->hasCapability($role, $capability)) $plugin_options->removeCapability($role, $capability);
 					}
-					unset($wpRole);
-					unset($wpRoleDataArray);
-					unset($wpRoleCaps);
 				}
 			}
 		}
@@ -63,24 +55,17 @@
 						</th>
 						<td>
 							<?php
-								$wpRoleNameArray = $wp_roles->get_names();
-								foreach ($wpRoleNameArray as $role => $name)
+								foreach ($plugin_options->getRoles() as $role => $name)
 								{
-									$wpRoleDataArray = $wp_roles->roles;
-									$wpRoleCaps = $wpRoleDataArray[$role]['capabilities'];
-									$wpRole = new WP_Role($role, $wpRoleCaps);
-									
-									echo '<label for="' . $role . '">';
+									echo '<label for="' . $role . '_view_entry_list">';
 									echo '<input type="hidden" name="roles[' . $role . '][capabilities][connections_view_entry_list]" value="false" />';
-									echo '<input type="checkbox" id="' . $role . '" name="roles[' . $role . '][capabilities][connections_view_entry_list]" value="true" '; 
-									if ($wpRole->has_cap('connections_view_entry_list')) echo 'CHECKED ';
+									echo '<input type="checkbox" id="' . $role . '_view_entry_list" name="roles[' . $role . '][capabilities][connections_view_entry_list]" value="true" '; 
+									
+									if ($plugin_options->hasCapability($role, 'connections_view_entry_list')) echo 'CHECKED ';
 									// the admininistrator should always have all capabilities
 									if ($role == 'administrator') echo 'DISABLED ';
 									echo '/> ' . $name . '</label><br />' . "\n";
 									
-									unset($wpRoleDataArray);
-									unset($wpRoleCaps);
-									unset($wpRole);
 								}
 							?>
 						</td>
@@ -88,34 +73,89 @@
 					
 					<tr valign="top">
 						<th scope="row">
-							<label for="role-settings">Change Settings</label>
+							<label for="role-entry-add">Add Entry</label>
 						</th>
 						<td>
-							<select id="role-settings" name="role-settings">
-								<?php wp_dropdown_roles($plugin_options->getRoleChangeSettings()) ?>
-							</select>
+							<?php
+								foreach ($plugin_options->getRoles() as $role => $name)
+								{
+									echo '<label for="' . $role . '_add_entry">';
+									echo '<input type="hidden" name="roles[' . $role . '][capabilities][connections_add_entry]" value="false" />';
+									echo '<input type="checkbox" id="' . $role . '_add_entry" name="roles[' . $role . '][capabilities][connections_add_entry]" value="true" '; 
+									
+									if ($plugin_options->hasCapability($role, 'connections_add_entry')) echo 'CHECKED ';
+									// the admininistrator should always have all capabilities
+									if ($role == 'administrator') echo 'DISABLED ';
+									echo '/> ' . $name . '</label><br />' . "\n";
+									
+								}
+							?>
 						</td>
 					</tr>
 					
 					<tr valign="top">
 						<th scope="row">
-							<label for="role-help">View Help</label>
+							<label for="role-entry-edit">Edit Entry</label>
 						</th>
 						<td>
-							<select id="role-help" name="role-help">
-								<?php wp_dropdown_roles($plugin_options->getRoleViewHelp()) ?>
-							</select>
+							<?php
+								foreach ($plugin_options->getRoles() as $role => $name)
+								{
+									echo '<label for="' . $role . '_edit_entry">';
+									echo '<input type="hidden" name="roles[' . $role . '][capabilities][connections_edit_entry]" value="false" />';
+									echo '<input type="checkbox" id="' . $role . '_edit_entry" name="roles[' . $role . '][capabilities][connections_edit_entry]" value="true" '; 
+									
+									if ($plugin_options->hasCapability($role, 'connections_edit_entry')) echo 'CHECKED ';
+									// the admininistrator should always have all capabilities
+									if ($role == 'administrator') echo 'DISABLED ';
+									echo '/> ' . $name . '</label><br />' . "\n";
+									
+								}
+							?>
 						</td>
 					</tr>
 					
+					<tr valign="top">
+						<th scope="row">
+							<label for="role-entry-delete">Delete Entry</label>
+						</th>
+						<td>
+							<?php
+								foreach ($plugin_options->getRoles() as $role => $name)
+								{
+									echo '<label for="' . $role . '_delete_entry">';
+									echo '<input type="hidden" name="roles[' . $role . '][capabilities][connections_delete_entry]" value="false" />';
+									echo '<input type="checkbox" id="' . $role . '_delete_entry" name="roles[' . $role . '][capabilities][connections_delete_entry]" value="true" '; 
+									
+									if ($plugin_options->hasCapability($role, 'connections_delete_entry')) echo 'CHECKED ';
+									// the admininistrator should always have all capabilities
+									if ($role == 'administrator') echo 'DISABLED ';
+									echo '/> ' . $name . '</label><br />' . "\n";
+									
+								}
+							?>
+						</td>					
+					</tr>
+												
 					<tr valign="top">
 						<th scope="row">
 							<label for="role-entry-view-private">View Private Entries</label>
 						</th>
 						<td>
-							<select id="role-entry-view-private" name="role-entry-view-private">
-								<?php wp_dropdown_roles() ?>
-							</select>
+							<?php
+								foreach ($plugin_options->getRoles() as $role => $name)
+								{
+									echo '<label for="' . $role . '_view_private">';
+									echo '<input type="hidden" name="roles[' . $role . '][capabilities][connections_view_private]" value="false" />';
+									echo '<input type="checkbox" id="' . $role . '_view_private" name="roles[' . $role . '][capabilities][connections_view_private]" value="true" '; 
+									
+									if ($plugin_options->hasCapability($role, 'connections_view_private')) echo 'CHECKED ';
+									// the admininistrator should always have all capabilities
+									if ($role == 'administrator') echo 'DISABLED ';
+									echo '/> ' . $name . '</label><br />' . "\n";
+									
+								}
+							?>
 						</td>
 					</tr>
 					
@@ -124,42 +164,65 @@
 							<label for="role-entry-view-unlisted">View Unlisted Entries</label>
 						</th>
 						<td>
-							<select id="role-entry-view-unlisted" name="role-entry-view-unlisted">
-								<?php wp_dropdown_roles() ?>
-							</select>
+							<?php
+								foreach ($plugin_options->getRoles() as $role => $name)
+								{
+									echo '<label for="' . $role . '_view_unlisted">';
+									echo '<input type="hidden" name="roles[' . $role . '][capabilities][connections_view_unlisted]" value="false" />';
+									echo '<input type="checkbox" id="' . $role . '_view_unlisted" name="roles[' . $role . '][capabilities][connections_view_unlisted]" value="true" '; 
+									
+									if ($plugin_options->hasCapability($role, 'connections_view_unlisted')) echo 'CHECKED ';
+									// the admininistrator should always have all capabilities
+									if ($role == 'administrator') echo 'DISABLED ';
+									echo '/> ' . $name . '</label><br />' . "\n";
+									
+								}
+							?>
 						</td>
 					</tr>
 
+					<tr valign="top">
+						<th scope="row">
+							<label for="role-settings">Change Settings</label>
+						</th>
+						<td>
+							<?php
+								foreach ($plugin_options->getRoles() as $role => $name)
+								{
+									echo '<label for="' . $role . '_change_settings">';
+									echo '<input type="hidden" name="roles[' . $role . '][capabilities][connections_change_settings]" value="false" />';
+									echo '<input type="checkbox" id="' . $role . '_change_settings" name="roles[' . $role . '][capabilities][connections_change_settings]" value="true" '; 
+									
+									if ($plugin_options->hasCapability($role, 'connections_change_settings')) echo 'CHECKED ';
+									// the admininistrator should always have all capabilities
+									if ($role == 'administrator') echo 'DISABLED ';
+									echo '/> ' . $name . '</label><br />' . "\n";
+									
+								}
+							?>
+						</td>
+					</tr>
 					
 					<tr valign="top">
 						<th scope="row">
-							<label for="role-entry-add">Add Entry</label>
+							<label for="role-help">View Help</label>
 						</th>
 						<td>
-							<select id="role-entry-add" name="role-entry-add">
-								<?php wp_dropdown_roles() ?>
-							</select>
+							<?php
+								foreach ($plugin_options->getRoles() as $role => $name)
+								{
+									echo '<label for="' . $role . '_view_help">';
+									echo '<input type="hidden" name="roles[' . $role . '][capabilities][connections_view_help]" value="false" />';
+									echo '<input type="checkbox" id="' . $role . '_view_help" name="roles[' . $role . '][capabilities][connections_view_help]" value="true" '; 
+									
+									if ($plugin_options->hasCapability($role, 'connections_view_help')) echo 'CHECKED ';
+									// the admininistrator should always have all capabilities
+									if ($role == 'administrator') echo 'DISABLED ';
+									echo '/> ' . $name . '</label><br />' . "\n";
+									
+								}
+							?>
 						</td>
-					</tr>
-					<tr valign="top">
-						<th scope="row">
-							<label for="role-entry-edit">Edit Entry</label>
-						</th>
-						<td>
-							<select id="role-entry-edit" name="role-entry-edit">
-								<?php wp_dropdown_roles() ?>
-							</select>
-						</td>
-					</tr>
-					<tr valign="top">
-						<th scope="row">
-							<label for="role-entry-delete">Delete Entry</label>
-						</th>
-						<td>
-							<select id="role-entry-delete" name="role-entry-delete">
-								<?php wp_dropdown_roles() ?>
-							</select>
-						</td>					
 					</tr>
 				</tbody>
 			</table>
