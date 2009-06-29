@@ -515,7 +515,7 @@ function _connections_main() {
 				?>
 				<div id="col-container">
 
-					<div id="col-right">
+					<div id="col-right" <?php /* If the user can not add an entry; set the column width to 100% */ if (!current_user_can('connections_add_entry')) echo 'style="width: 100%"' ?>>
 						<div class="col-wrap">
 							
 							<form action="admin.php?page=connections/connections.php" method="post">
@@ -524,9 +524,16 @@ function _connections_main() {
 								<div class="alignleft actions">
 									<select name="action">
 										<option value="" SELECTED>Bulk Actions</option>
-										<option value="public">Set Public</option>
-										<option value="private">Set Private</option>
-										<option value="unlisted">Set Unlisted</option>
+										<?php
+											if (current_user_can('connections_edit_entry'))
+											{
+										?>
+												<option value="public">Set Public</option>
+												<option value="private">Set Private</option>
+												<option value="unlisted">Set Unlisted</option>
+										<?php
+											}
+										?>
 										<option value="delete">Delete</option>
 									</select>
 									<input id="doaction" class="button-secondary action" type="submit" name="doaction" value="Apply" />
@@ -585,13 +592,25 @@ function _connections_main() {
 										
 										echo "<tr id='row" . $entry->getId() . "' class='parent-row'>";
 											echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
-												echo "<td colspan='2'>".$setAnchor."<div style='float:right'><a href='#wphead' title='Return to top.'><img src='" . WP_PLUGIN_URL . "/connections/images/uparrow.gif' /></a></div><a class='row-title' title='Edit " . $entry->getFullFirstLastName() . "' href='admin.php?page=connections/connections.php&action=editform&id=".$row->id."'> " . $entry->getFullLastFirstName() . "</a><br />";
-												echo '<div class="row-actions">
-															<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a> | 
-															<a class="editbutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&editid=true" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | 
-															<a class="copybutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&copyid=true" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | 
-															<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections/connections.php&action=delete&id=' . $entry->getId() . '&token=' . _formtoken('delete_' . $entry->getId()) . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>
-													  </div>';
+												echo '<td colspan="2">';
+												if ($setAnchor) echo $setAnchor;
+												echo '<div style="float:right"><a href="#wphead" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" /></a></div>';
+													
+													if (current_user_can('connections_edit_entry'))
+													{
+														echo '<a class="row-title" title="Edit ' . $entry->getFullFirstLastName() . '" href="admin.php?page=connections/connections.php&action=editform&id=' . $row->id . '"> ' . $entry->getFullLastFirstName() . '</a><br />';
+													}
+													else
+													{
+														echo $entry->getFullLastFirstName();
+													}
+													
+													echo '<div class="row-actions">';
+														echo '<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a> | ';
+														if (current_user_can('connections_edit_entry')) echo '<a class="editbutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&editid=true" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | ';
+														if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&copyid=true" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
+														echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections/connections.php&action=delete&id=' . $entry->getId() . '&token=' . _formtoken('delete_' . $entry->getId()) . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
+													echo '</div>';
 											echo "</td> \n";
 											echo "<td ><strong>" . $entry->displayVisibiltyType() . "</strong></td> \n";												
 											echo "<td >" . $entry->getFormattedTimeStamp() . "</td> \n";											
@@ -710,7 +729,13 @@ function _connections_main() {
 							
 						</div>
 			        </div>
-				
+					
+					<?php
+					/*
+					 * Check if a user can add an entry and then display the form or not accordingly.
+					 */
+					if (current_user_can('connections_add_entry'))
+					{ ?>
 					<div id="col-left">
 						<div class="col-wrap">
 							<div class="form-wrap">
@@ -730,6 +755,7 @@ function _connections_main() {
 							</div>
 						</div>
 					</div>
+					<?php }	?>
 					
 				</div>
 			</div>
