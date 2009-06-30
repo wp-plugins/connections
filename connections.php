@@ -202,10 +202,10 @@ $defaultConnectionGroupValues = array(
 add_action('admin_menu', 'connections_menus');
 function connections_menus() {
 	//Adds Connections to the top level menu.
-	$connections_admin = add_menu_page('Connections : Administration', 'Connections', 'connections_view_entry_list', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
+	$connections_admin = add_menu_page('Connections : Administration', 'Connections', 'connections_view_entry_list', 'connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
 	//Adds the Connections sub-menus.
-	add_submenu_page('connections/connections.php', 'Connections : Settings','Settings', 'connections_change_settings','connections/submenus/settings.php');
-	add_submenu_page('connections/connections.php', 'Connections : Help','Help', 'connections_view_help','connections/submenus/help.php');
+	add_submenu_page('connections.php', 'Connections : Settings','Settings', 'connections_change_settings','connections/submenus/settings.php');
+	add_submenu_page('connections.php', 'Connections : Help','Help', 'connections_view_help','connections/submenus/help.php');
 	
 	// Call the function to add the CSS and JS only on pages related to the Connections plug-in.
 	/* 
@@ -225,9 +225,9 @@ function connections_menus() {
 
 // The JS is only loaded on admin pages related to the Connections plug-in.
 function connections_loadjs_admin_head() {
-	wp_enqueue_script('jquery');
+	//wp_enqueue_script('jquery');
 	wp_enqueue_script('load_ui_js', WP_PLUGIN_URL . '/connections/js/ui.js');
-	wp_enqueue_script('load_jquery_plugin', WP_PLUGIN_URL . '/connections/js/jquery.template.js');
+	//wp_enqueue_script('load_jquery_plugin', WP_PLUGIN_URL . '/connections/js/jquery.template.js');
 }
 
 // The CSS is only loaded on admin pages related to the Connections plug-in.
@@ -521,23 +521,28 @@ function _connections_main() {
 							<form action="admin.php?page=connections/connections.php" method="post">
 							
 							<div class="tablenav">
-								<div class="alignleft actions">
-									<select name="action">
-										<option value="" SELECTED>Bulk Actions</option>
-										<?php
-											if (current_user_can('connections_edit_entry'))
-											{
-										?>
-												<option value="public">Set Public</option>
-												<option value="private">Set Private</option>
-												<option value="unlisted">Set Unlisted</option>
-										<?php
-											}
-										?>
-										<option value="delete">Delete</option>
-									</select>
-									<input id="doaction" class="button-secondary action" type="submit" name="doaction" value="Apply" />
-								</div>
+								
+								<?php
+								if (current_user_can('connections_edit_entry') || current_user_can('connections_delete_entry'))
+								{
+									echo '<div class="alignleft actions">';
+										echo '<select name="action">';
+											echo '<option value="" SELECTED>Bulk Actions</option>';
+											
+												if (current_user_can('connections_edit_entry'))
+												{
+													echo '<option value="public">Set Public</option>';
+													echo '<option value="private">Set Private</option>';
+													echo '<option value="unlisted">Set Unlisted</option>';
+												}
+												
+												if (current_user_can('connections_delete_entry')) echo '<option value="delete">Delete</option>';
+																						
+										echo '</select>';
+										echo '<input id="doaction" class="button-secondary action" type="submit" name="doaction" value="Apply" />';
+									echo '</div>';
+								}
+								?>
 								
 								<div class="alignleft actions">
 									<?php echo _build_select('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $plugin_options->getEntryType())?>
@@ -602,14 +607,14 @@ function _connections_main() {
 													}
 													else
 													{
-														echo $entry->getFullLastFirstName();
+														echo '<strong>' . $entry->getFullLastFirstName() . '</strong>';
 													}
 													
 													echo '<div class="row-actions">';
 														echo '<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a> | ';
 														if (current_user_can('connections_edit_entry')) echo '<a class="editbutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&editid=true" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | ';
 														if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&copyid=true" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
-														echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections/connections.php&action=delete&id=' . $entry->getId() . '&token=' . _formtoken('delete_' . $entry->getId()) . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
+														if (current_user_can('connections_delete_entry')) echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections/connections.php&action=delete&id=' . $entry->getId() . '&token=' . _formtoken('delete_' . $entry->getId()) . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
 													echo '</div>';
 											echo "</td> \n";
 											echo "<td ><strong>" . $entry->displayVisibiltyType() . "</strong></td> \n";												
@@ -719,13 +724,13 @@ function _connections_main() {
 							</form>
 							<p style="font-size:smaller; text-align:center">This is version <?php echo $plugin_options->getVersion(); ?> of Connections.</p>
 							
+							
 							<form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="text-align:center">
 								<input type="hidden" name="cmd" value="_s-xclick">
 								<input type="hidden" name="hosted_button_id" value="5070255">
 								<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 								<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
 							</form>
-							
 							
 						</div>
 			        </div>
