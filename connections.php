@@ -205,6 +205,7 @@ function connections_menus() {
 	$connections_admin = add_menu_page('Connections : Administration', 'Connections', 'connections_view_entry_list', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
 	//Adds the Connections sub-menus.
 	add_submenu_page('connections/connections.php', 'Connections : Settings','Settings', 'connections_change_settings','connections/submenus/settings.php');
+	add_submenu_page('connections/connections.php', 'Connections : Roles','Roles', 'connections_change_roles','connections/submenus/roles.php');
 	add_submenu_page('connections/connections.php', 'Connections : Help','Help', 'connections_view_help','connections/submenus/help.php');
 	
 	// Call the function to add the CSS and JS only on pages related to the Connections plug-in.
@@ -218,6 +219,9 @@ function connections_menus() {
 	
 	add_action( 'admin_print_scripts-connections/submenus/settings.php', 'connections_loadjs_admin_head' );
 	add_action( 'admin_print_styles-connections/submenus/settings.php', 'connections_loadcss_admin_head' );
+	
+	add_action( 'admin_print_scripts-connections/submenus/roles.php', 'connections_loadjs_admin_head' );
+	add_action( 'admin_print_styles-connections/submenus/roles.php', 'connections_loadcss_admin_head' );
 	
 	add_action( 'admin_print_scripts-connections/submenus/help.php', 'connections_loadjs_admin_head' );
 	add_action( 'admin_print_styles-connections/submenus/help.php', 'connections_loadcss_admin_head' );
@@ -263,6 +267,26 @@ function _connections_main() {
 		
 	    if ($_GET['action']=='editform')
 		{
+			
+			/*
+			 * Check whether user can edit or copy/add an entry
+			 */
+			if (!current_user_can('connections_edit_entry') || !current_user_can('connections_add_entry'))
+			{
+				wp_die('<p id="error-page" style="-moz-background-clip:border;
+						-moz-border-radius:11px;
+						background:#FFFFFF none repeat scroll 0 0;
+						border:1px solid #DFDFDF;
+						color:#333333;
+						display:block;
+						font-size:12px;
+						line-height:18px;
+						margin:25px auto 20px;
+						padding:1em 2em;
+						text-align:center;
+						width:700px">You do not have sufficient permissions to access this page.</p>');
+			}
+			
 			$row = new entry();
 			$row = $row->get($_GET['id']);
 			if (isset($_GET['copyid']))
@@ -299,7 +323,25 @@ function _connections_main() {
 <?php	
 			unset($row);
 		} else {
-	    
+	    	
+			/*
+			 * Check whether user can view the entry list
+			 */
+			if(!current_user_can('connections_view_entry_list')) {
+				wp_die('<p id="error-page" style="-moz-background-clip:border;
+						-moz-border-radius:11px;
+						background:#FFFFFF none repeat scroll 0 0;
+						border:1px solid #DFDFDF;
+						color:#333333;
+						display:block;
+						font-size:12px;
+						line-height:18px;
+						margin:25px auto 20px;
+						padding:1em 2em;
+						text-align:center;
+						width:700px">You do not have sufficient permissions to access this page.</p>');
+			}
+			
 	        $table_name = $sql->getTableName();
 			if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'")!= $table_name || $plugin_options->getVersion() != CN_CURRENT_VERSION ) {
 	            // Call the install function here rather than through the more usual

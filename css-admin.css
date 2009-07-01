@@ -26,7 +26,7 @@ div#help div#toc {
 }
 
 div#help div#toc ol {
-	padding-left:25px !important;
+	padding-left:5px !important;
 }
 
 div#help div#toc form {
@@ -75,3 +75,16 @@ form div.tablenav-pages {height: !important;}
 
 table.connections tr.entrydetails td {border-color:transparent #DFDFDF;}
 table.connections tr.entrynotes td {border-color:transparent #DFDFDF #DFDFDF;}
+
+/*
+ * Might need these two style to fix the display. we'll see after 2.8.1 is released.
+ */
+/*
+.widefat {
+	border-collapse: separate !important;
+}
+
+#col-right {
+	overflow:visible !important;
+}
+*/

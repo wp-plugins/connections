@@ -6,7 +6,7 @@
 // http://ipaulpro.com/blog/tutorials/2008/08/jquery-and-wordpress-getting-started/
 // See http://chrismeller.com/using-jquery-in-wordpress
 jQuery(document).ready(function(){
-	jQuery('.connections tr:even').addClass('alternate');
+	//jQuery('.connections tr:even').addClass('alternate');
 
 	jQuery(function()
 	{
