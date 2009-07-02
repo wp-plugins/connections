@@ -22,7 +22,7 @@ else
 {
 	global $wp_roles;
 	$plugin_options = new pluginOptions($current_user->ID);
-	$plugin_options->setDefaultCapabilities();
+	//$plugin_options->setDefaultCapabilities();
 						
 	if (isset($_POST['submit']))
 	{
