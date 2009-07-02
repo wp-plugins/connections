@@ -35,6 +35,19 @@ class pluginOptions
 	 */
 	private $currentUserID;
 	
+	private $defaultCapabilities = array(
+								'connections_view_entry_list' => 'View Entry List',
+								'connections_add_entry' => 'Add Entry',
+								'connections_edit_entry' => 'Edit Entry',
+								'connections_delete_entry' => 'Delete Entry',
+								'connections_view_public' => 'View Public Entries',
+								'connections_view_private' => 'View Private Entries',
+								'connections_view_unlisted' => 'View Unlisted Entries',
+								'connections_change_settings' => 'Change Settings',
+								'connections_change_roles' => 'Change Role Capabilities',
+								'connections_view_help' => 'View Help'
+							);
+	
 	/**
 	 * Sets up the plugin option properties. Requires the current WP user ID.
 	 * @param interger $userID
@@ -70,16 +83,6 @@ class pluginOptions
 		update_option('connections_options', $this->options);
 	}
 	
-	/**
-	 * Gets the WordPress roles. Key = role and value = name. 
-	 * @return associative array
-	 */
-	public function getRoles()
-	{
-		global $wp_roles;
-		return $wp_roles->get_names();;
-	}
-	
 	public function hasCapability($role, $cap)
 	{
 		global $wp_roles;		
@@ -92,24 +95,47 @@ class pluginOptions
 	
 	public function addCapability($role, $cap)
 	{
-		global $wp_roles;		
-		$wpRoleDataArray = $wp_roles->roles;
-		$wpRoleCaps = $wpRoleDataArray[$role]['capabilities'];
-		$wpRole = new WP_Role($role, $wpRoleCaps);
-		
+		$wpRole = get_role($role);
 		$wpRole->add_cap($cap);
 	}
 	
 	public function removeCapability($role, $cap)
 	{
-		global $wp_roles;		
-		$wpRoleDataArray = $wp_roles->roles;
-		$wpRoleCaps = $wpRoleDataArray[$role]['capabilities'];
-		$wpRole = new WP_Role($role, $wpRoleCaps);
-		
+		$wpRole = get_role($role);
 		$wpRole->remove_cap($cap);
 	}
-
+	
+	public function getDefaultCapabilities()
+	{
+		return $this->defaultCapabilities;
+	}
+	
+	public function setDefaultCapabilities()
+	{
+		global $wp_roles;
+		$defaultRoles = array('administrator', 'editor', 'author');
+		
+		foreach ($wp_roles->get_names() as $role => $name)
+		{
+			$wpRole = get_role($role);
+			
+			if (in_array($role, $defaultRoles))
+			{
+				foreach ($this->defaultCapabilities as $cap => $name)
+				{
+					if (!$this->hasCapability($role, $cap)) $wpRole->add_cap($cap);
+				}
+			}
+			else
+			{
+				foreach ($this->defaultCapabilities as $cap => $name)
+				{
+					if ($this->hasCapability($role, $cap)) $wpRole->remove_cap($cap);
+				}
+			}
+		}
+	}
+	
     /**
      * Returns $entryType.
      * @see options::$entryType

@@ -271,7 +271,7 @@ function _connections_main() {
 			/*
 			 * Check whether user can edit or copy/add an entry
 			 */
-			if (!current_user_can('connections_edit_entry') || !current_user_can('connections_add_entry'))
+			if (!current_user_can('connections_edit_entry') && !current_user_can('connections_add_entry'))
 			{
 				wp_die('<p id="error-page" style="-moz-background-clip:border;
 						-moz-border-radius:11px;
