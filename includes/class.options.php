@@ -96,13 +96,13 @@ class pluginOptions
 	public function addCapability($role, $cap)
 	{
 		$wpRole = get_role($role);
-		$wpRole->add_cap($cap);
+		if (!$this->hasCapability($role, $cap)) $wpRole->add_cap($cap);
 	}
 	
 	public function removeCapability($role, $cap)
 	{
 		$wpRole = get_role($role);
-		$wpRole->remove_cap($cap);
+		if ($this->hasCapability($role, $cap)) $wpRole->remove_cap($cap);
 	}
 	
 	public function getDefaultCapabilities()

@@ -40,11 +40,11 @@ else
 					
 					if ($grant == 'true')
 					{
-						if (!$plugin_options->hasCapability($role, $capability)) $plugin_options->addCapability($role, $capability);
+						$plugin_options->addCapability($role, $capability);
 					}
 					else
 					{
-						if ($plugin_options->hasCapability($role, $capability)) $plugin_options->removeCapability($role, $capability);
+						$plugin_options->removeCapability($role, $capability);
 					}
 				}
 			}
