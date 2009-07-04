@@ -49,7 +49,11 @@ else
 				}
 			}
 		}
-
+		
+		if (isset($_POST['reset'])) $plugin_options->setDefaultCapabilities($_POST['reset']);
+		
+		if (isset($_POST['reset_all'])) $plugin_options->setDefaultCapabilities();
+		
 	}
 
 ?>
@@ -97,12 +101,29 @@ else
 										echo '/> ' . $capabilityName . '</label><br />' . "\n";
 										
 									}
+									
+									echo '<label for="' . $role . '_reset_capabilities">';
+									echo '<input type="checkbox" id="' . $role . '_reset_capabilities" name="reset[' . $role . ']" value="' . $name . '" ';
+									echo '/> Reset ' . $name . ' Capabilities</label><br />' . "\n";
+										
 								echo '</td>';
-							echo '</tr>';									
+							echo '</tr>';								
 						}
 					
 					?>
-
+					
+					<tr valign="top" style="background-color:#FFFBCC;">
+						<th scope="row">
+							Reset
+						</th>
+						<td>
+							<label for="reset_all_roles">
+								<input type="checkbox" id="reset_all_roles" name="reset_all" value="true">
+								Reset All Role Capabilities
+							</label>
+						</td>
+					</tr>
+					
 				</tbody>
 			</table>
 			

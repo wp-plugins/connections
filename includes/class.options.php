@@ -36,6 +36,7 @@ class pluginOptions
 	private $currentUserID;
 	
 	private $defaultCapabilities = array(
+								'connections_access' => 'Access Connections',
 								'connections_view_entry_list' => 'View Entry List',
 								'connections_add_entry' => 'Add Entry',
 								'connections_edit_entry' => 'Edit Entry',
@@ -110,12 +111,24 @@ class pluginOptions
 		return $this->defaultCapabilities;
 	}
 	
-	public function setDefaultCapabilities()
+	public function setDefaultCapabilities($rolesToReset = null)
 	{
 		global $wp_roles;
+		
+		/**
+		 * These are the roles that will default to having full access
+		 * to all capabilites. This is to maintain plugin behavior that
+		 * exisited prior to adding role/capability support.
+		 */
 		$defaultRoles = array('administrator', 'editor', 'author');
 		
-		foreach ($wp_roles->get_names() as $role => $name)
+		/**
+		 * If no roles are supplied to the method to reset; the method
+		 * will reset the capabilies of all roles defined.
+		 */
+		if (!isset($rolesToReset)) $rolesToReset = $wp_roles->get_names();
+		
+		foreach ($rolesToReset as $role => $name)
 		{
 			$wpRole = get_role($role);
 			

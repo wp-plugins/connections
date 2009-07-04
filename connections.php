@@ -202,7 +202,7 @@ $defaultConnectionGroupValues = array(
 add_action('admin_menu', 'connections_menus');
 function connections_menus() {
 	//Adds Connections to the top level menu.
-	$connections_admin = add_menu_page('Connections : Administration', 'Connections', 'connections_view_entry_list', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
+	$connections_admin = add_menu_page('Connections : Administration', 'Connections', 'connections_access', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
 	//Adds the Connections sub-menus.
 	add_submenu_page('connections/connections.php', 'Connections : Settings','Settings', 'connections_change_settings','connections/submenus/settings.php');
 	add_submenu_page('connections/connections.php', 'Connections : Roles','Roles', 'connections_change_roles','connections/submenus/roles.php');
@@ -325,9 +325,9 @@ function _connections_main() {
 		} else {
 	    	
 			/*
-			 * Check whether user can view the entry list
+			 * Check whether user can access Connections
 			 */
-			if(!current_user_can('connections_view_entry_list')) {
+			if(!current_user_can('connections_access')) {
 				wp_die('<p id="error-page" style="-moz-background-clip:border;
 						-moz-border-radius:11px;
 						background:#FFFFFF none repeat scroll 0 0;
@@ -556,7 +556,14 @@ function _connections_main() {
 					$results = $wpdb->get_results($sql);
 				?>
 				<div id="col-container">
-
+					
+					<?php
+					/*
+					 * Check whether user can view the entry list
+					 */
+					if(current_user_can('connections_view_entry_list'))
+					{
+					?>
 					<div id="col-right" <?php /* If the user can not add an entry; set the column width to 100% */ if (!current_user_can('connections_add_entry')) echo 'style="width: 100%"' ?>>
 						<div class="col-wrap">
 							
@@ -778,6 +785,7 @@ function _connections_main() {
 			        </div>
 					
 					<?php
+					}
 					/*
 					 * Check if a user can add an entry and then display the form or not accordingly.
 					 */
