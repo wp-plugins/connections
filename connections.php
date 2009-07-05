@@ -546,7 +546,45 @@ function _connections_main() {
 				
 				
 				<?php
+					/**
+					 * The stored visibility filter for the current user is checked against
+					 * the current user's capabilites; if the stored visibility filter is not
+					 * permitted by the current user's capabilities the filter is set to NULL
+					 * which will query all entries which then are filtered out based on the
+					 * current user's capabilities individually further down in the code.
+					 */
+					/**
+					 * @TODO Modify the query to query only the entries the current users can
+					 * access rather than filtering them out in the loop further down in the code.
+					 */
+					switch ($plugin_options->getVisibilityType())
+					{
+						case 'public':
+							if (!current_user_can('connections_view_public'))
+							{
+								$visibility = '';
+								$plugin_options->setVisibilityType('');
+							}
+						break;
+						
+						case 'private':
+							if (!current_user_can('connections_view_private'))
+							{
+								$visibility = '';
+								$plugin_options->setVisibilityType('');
+							}
+						break;
+						
+						case 'unlisted':
+							if (!current_user_can('connections_view_unlisted'))
+							{
+								$visibility = '';
+								$plugin_options->setVisibilityType('');
+							}
+						break;
+					}
 					if ($plugin_options->getVisibilityType() != "") $visibility = " AND visibility='" . $plugin_options->getVisibilityType() . "' ";
+					
 					$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = '' AND group_name = ''" . $visibility . ")
 							UNION
 							(SELECT *, group_name AS order_by FROM ".$wpdb->prefix."connections WHERE group_name != ''" . $visibility . ")
@@ -595,7 +633,22 @@ function _connections_main() {
 								
 								<div class="alignleft actions">
 									<?php echo _build_select('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $plugin_options->getEntryType())?>
-									<?php echo _build_select('visibility_type', array(''=>'Show All', 'public'=>'Show Public', 'private'=>'Show Private', 'unlisted'=>'Show Unlisted'), $plugin_options->getVisibilityType())?>
+									
+									<?php
+										/**
+										 * Builds the visibilty select list base on current user capabilities.
+										 */
+										if (current_user_can('connections_view_public'))	$visibilitySelect['public'] = 'Show Public';
+										if (current_user_can('connections_view_private'))	$visibilitySelect['private'] = 'Show Private';
+										if (current_user_can('connections_view_unlisted'))	$visibilitySelect['unlisted'] = 'Show Unlisted';
+										
+										if (isset($visibilitySelect))
+										{
+											$showAll[''] = 'Show All';
+											$visibilitySelect = $showAll + $visibilitySelect;
+											echo _build_select('visibility_type', $visibilitySelect, $plugin_options->getVisibilityType());
+										}
+									?>
 									<input id="doaction" class="button-secondary action" type="submit" name="dofilter" value="Filter" />
 									<input type="hidden" name="formId" value="do_action" />
 									<input type="hidden" name="token" value="<?php echo _formtoken("do_action"); ?>" />
@@ -631,9 +684,20 @@ function _connections_main() {
 										
 										$object = new output($row);
 										
+										/**
+										 * This is to skip any entries that are not of the selected type when being filtered.
+										 */
 										if ($plugin_options->getEntryType() != "" )	{
 											if ($entry->getEntryType() != $plugin_options->getEntryType()) continue;
 										}
+										
+										/**
+										 * Check whether the current user is permitted to view public, private or unlisted entries
+										 * and filter those out where permission has not been granted.
+										 */
+										if ($entry->getVisibility() == 'public' && !current_user_can('connections_view_public')) continue;
+										if ($entry->getVisibility() == 'private' && !current_user_can('connections_view_private')) continue;
+										if ($entry->getVisibility() == 'unlisted' && !current_user_can('connections_view_unlisted')) continue;
 																				
 										//Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
 										$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
