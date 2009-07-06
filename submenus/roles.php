@@ -70,6 +70,7 @@ else
 				<tbody>
 					
 					<?php
+					
 						foreach ($wp_roles->get_names() as $role => $name)
 						{
 							
@@ -91,6 +92,9 @@ else
 									
 									foreach ($capabilies as $capability => $capabilityName)
 									{
+										// if unregistered users are permitted to view the entry list there is no need for setting this capability
+										if ($capability == 'connections_view_public' && $plugin_options->getAllowPublic() == true) continue;
+										
 										echo '<label for="' . $role . '_' . $capability . '">';
 										echo '<input type="hidden" name="roles[' . $role . '][capabilities][' . $capability . ']" value="false" />';
 										echo '<input type="checkbox" id="' . $role . '_' . $capability . '" name="roles[' . $role . '][capabilities][' . $capability . ']" value="true" '; 

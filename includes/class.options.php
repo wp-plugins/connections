@@ -49,6 +49,8 @@ class pluginOptions
 								'connections_view_help' => 'View Help'
 							);
 	
+	private $allowPublic;
+	
 	/**
 	 * Sets up the plugin option properties. Requires the current WP user ID.
 	 * @param interger $userID
@@ -62,9 +64,7 @@ class pluginOptions
 		$this->entryType = $this->options[$this->currentUserID]['filter']['entry_type'];
 		$this->visibilityType = $this->options[$this->currentUserID]['filter']['visibility_type'];
 		
-		$this->roleMain = $this->options['roles']['main'];
-		$this->roleChangeSettings = $this->options['roles']['change_settings'];
-		$this->roleViewHelp = $this->options['roles']['view_help'];
+		$this->allowPublic = $this->options['settings']['allow_public'];
 	}
 	
 	/**
@@ -77,12 +77,29 @@ class pluginOptions
 		$this->options[$this->currentUserID]['filter']['entry_type'] = $this->entryType;
 		$this->options[$this->currentUserID]['filter']['visibility_type'] = $this->visibilityType;
 		
-		$this->options['roles']['main'] = $this->roleMain;
-		$this->options['roles']['change_settings'] = $this->roleChangeSettings;
-		$this->options['roles']['view_help'] = $this->roleViewHelp;
+		$this->options['settings']['allow_public'] = $this->allowPublic;
 		
 		update_option('connections_options', $this->options);
 	}
+
+    /**
+     * Returns $allowPublic.
+     * @see pluginOptions::$allowPublic
+     */
+    public function getAllowPublic()
+    {
+        return $this->allowPublic;
+    }
+    
+    /**
+     * Sets $allowPublic.
+     * @param object $allowPublic
+     * @see pluginOptions::$allowPublic
+     */
+    public function setAllowPublic($allowPublic)
+    {
+        $this->allowPublic = $allowPublic;
+    }
 	
 	public function hasCapability($role, $cap)
 	{
