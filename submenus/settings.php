@@ -63,7 +63,7 @@ else
 										/>
 										Allow unregistered visitors and users not logged in
 									</label>
-									NOTE: This setting has precedents over the private override shortcode attribute.
+									NOTE: This setting has precedent over the private override shortcode attribute.
 								</td>
 							</tr>
 							
