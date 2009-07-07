@@ -1485,7 +1485,7 @@ function _connections_list($atts, $content=null) {
 				if (is_user_logged_in())
 				{
 					if ($entry->getVisibility() == 'public' && !current_user_can('connections_view_public') && !$plugin_options->getAllowPublic()) continue;
-					if ($entry->getVisibility() == 'private' && !current_user_can('connections_view_private')) continue;
+					if ($entry->getVisibility() == 'private' && !current_user_can('connections_view_private') && $atts['private_override'] == 'false') continue;
 					if ($entry->getVisibility() == 'unlisted' && !current_user_can('connections_view_unlisted')) continue;
 				}
 				else
