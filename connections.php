@@ -1391,12 +1391,19 @@ function _connections_get_entry_select($name,$selected=null)
 
 add_shortcode('connections_list', '_connections_list');
 function _connections_list($atts, $content=null) {
-	global $wpdb;
+	global $wpdb, $current_user;
 	
-	// Setting the plugin options with a NULL because it may not be known what the user ID is
-	$plugin_options = new pluginOptions(null);
+	// Setting the plugin options with a NULL if a user in not logged in
+	if (is_user_logged_in())
+	{
+		$plugin_options = new pluginOptions($current_user->ID);
+	}
+	else
+	{
+		$plugin_options = new pluginOptions(null);
+	}
 	
-	// Check whether the public permitted to see the enty list
+	// Check whether the public permitted to see the entry list
 	if (!$plugin_options->getAllowPublic() && !is_user_logged_in())
 	{
 		return '<p style="-moz-background-clip:border;
@@ -1432,13 +1439,13 @@ function _connections_list($atts, $content=null) {
 				'custom_template'=>'false',
 				), $atts ) ;
 				
-		if (is_user_logged_in() or $atts['private_override'] != 'false') { 
+		/*if (is_user_logged_in() or $atts['private_override'] != 'false') { 
 			$visibilityfilter = " AND (visibility='private' OR visibility='public') ";
 		} else {
 			$visibilityfilter = " AND visibility='public' ";
-		}
+		}*/
 		
-		if ($atts['id'] != null) $visibilityfilter .= " AND id='" . $atts['id'] . "' ";
+		if ($atts['id'] != null) $visibilityfilter = " AND id='" . $atts['id'] . "' ";
 		
 		$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = '' AND group_name = ''" . $visibilityfilter . ")
 				UNION
@@ -1461,9 +1468,31 @@ function _connections_list($atts, $content=null) {
 			
 			$out .=  "<div class='connections-list'>\n";
 			
-			foreach ($results as $row) {
+			foreach ($results as $row)
+			{
 				$entry = new output($row);
 				$vCard = new vCard($row);
+				
+				/**
+				 * Check whether the current user, if logged in, is permitted to view public, private
+				 * or unlisted entries and filter those where permission has not been granted. If unregistered
+				 * visitors and users not logged in are permitted to view public entries so should a logged in
+				 * user regardless of the set capability
+				 * 
+				 * If unregistered visitors and users not logged in; private and unlisted entries are not displayed
+				 * unless the private override attribute is set to true then private entries will be displayed.
+				 */
+				if (is_user_logged_in())
+				{
+					if ($entry->getVisibility() == 'public' && !current_user_can('connections_view_public') && !$plugin_options->getAllowPublic()) continue;
+					if ($entry->getVisibility() == 'private' && !current_user_can('connections_view_private')) continue;
+					if ($entry->getVisibility() == 'unlisted' && !current_user_can('connections_view_unlisted')) continue;
+				}
+				else
+				{
+					if ($entry->getVisibility() == 'private' && $atts['private_override'] == 'false') continue;
+					if ($entry->getVisibility() == 'unlisted') continue;
+				}
 				
 				/*
 				 * If any of the following variables are set from a previous iteration

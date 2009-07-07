@@ -53,7 +53,7 @@ else
 						
 							<tr valign="top">
 								<th scope="row">
-									View Public Entries
+									Public Entries
 								</th>
 								<td>
 									<label for="view_public_entries">
@@ -63,6 +63,7 @@ else
 										/>
 										Allow unregistered visitors and users not logged in
 									</label>
+									NOTE: This setting has precedents over the private override shortcode attribute.
 								</td>
 							</tr>
 							
