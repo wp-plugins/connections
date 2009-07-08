@@ -20,7 +20,6 @@ if (!current_user_can('connections_change_settings'))
 else
 {
 	$plugin_options = new pluginOptions($current_user->ID);
-	//print_r($plugin_options);
 	
 	if (isset($_POST['submit']))
 	{
@@ -68,7 +67,7 @@ else
 									<label for="allow_public">
 										<input type="hidden" value="false" name="settings[allow_public]"/>
 										<input type="checkbox" value="true" name="settings[allow_public]" id="allow_public" 
-											<?php if ($plugin_options->getAllowPublic() == true) echo CHECKED ?>
+											<?php if ($plugin_options->getAllowPublic()) echo 'CHECKED ' ?>
 										/>
 										Allow unregistered visitors and users not logged in
 									</label>
@@ -76,8 +75,8 @@ else
 									<label for="allow_public_override">
 										<input type="hidden" value="false" name="settings[allow_public_override]"/>
 										<input type="checkbox" value="true" name="settings[allow_public_override]" id="allow_public_override" 
-											<?php if ($plugin_options->getAllowPublicOverride() == true) echo 'CHECKED ' ?>
-											<?php if ($plugin_options->getAllowPublic() == true) echo 'DISABLED ' ?>
+											<?php if ($plugin_options->getAllowPublicOverride()) echo 'CHECKED ' ?>
+											<?php if ($plugin_options->getAllowPublic()) echo 'DISABLED ' ?>
 										/>
 										Allow shortcode attribute override
 									</label>
