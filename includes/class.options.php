@@ -50,6 +50,7 @@ class pluginOptions
 							);
 	
 	private $allowPublic;
+	private $allowPublicOverride;
 	
 	/**
 	 * Sets up the plugin option properties. Requires the current WP user ID.
@@ -65,6 +66,7 @@ class pluginOptions
 		$this->visibilityType = $this->options[$this->currentUserID]['filter']['visibility_type'];
 		
 		$this->allowPublic = $this->options['settings']['allow_public'];
+		$this->allowPublicOverride = $this->options['settings']['allow_public_override'];
 	}
 	
 	/**
@@ -78,6 +80,7 @@ class pluginOptions
 		$this->options[$this->currentUserID]['filter']['visibility_type'] = $this->visibilityType;
 		
 		$this->options['settings']['allow_public'] = $this->allowPublic;
+		$this->options['settings']['allow_public_override'] = $this->allowPublicOverride;
 		
 		update_option('connections_options', $this->options);
 	}
@@ -99,6 +102,25 @@ class pluginOptions
     public function setAllowPublic($allowPublic)
     {
         $this->allowPublic = $allowPublic;
+    }
+
+    /**
+     * Returns $allowPublicOverride.
+     * @see pluginOptions::$allowPublicOverride
+     */
+    public function getAllowPublicOverride()
+    {
+        return $this->allowPublicOverride;
+    }
+    
+    /**
+     * Sets $allowPublicOverride.
+     * @param object $allowPublicOverride
+     * @see pluginOptions::$allowPublicOverride
+     */
+    public function setAllowPublicOverride($allowPublicOverride)
+    {
+        $this->allowPublicOverride = $allowPublicOverride;
     }
 	
 	public function hasCapability($role, $cap)

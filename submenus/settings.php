@@ -24,16 +24,25 @@ else
 	
 	if (isset($_POST['submit']))
 	{
-		if (isset($_POST['settings']['view_public_entries']) && $_POST['settings']['view_public_entries'] == 'true')
+		if (isset($_POST['settings']['allow_public']) && $_POST['settings']['allow_public'] == 'true')
 		{
 			$plugin_options->setAllowPublic(true);
-			$plugin_options->saveOptions();
 		}
 		else
 		{
 			$plugin_options->setAllowPublic(false);
-			$plugin_options->saveOptions();
 		}
+		
+		if (isset($_POST['settings']['allow_public_override']) && $_POST['settings']['allow_public_override'] == 'true' && !$plugin_options->getAllowPublic())
+		{
+			$plugin_options->setAllowPublicOverride(true);
+		}
+		else
+		{
+			$plugin_options->setAllowPublicOverride(false);
+		}
+		
+		$plugin_options->saveOptions();
 	}
 	
 ?>
@@ -56,14 +65,22 @@ else
 									Public Entries
 								</th>
 								<td>
-									<label for="view_public_entries">
-										<input type="hidden" value="false" name="settings[view_public_entries"/>
-										<input type="checkbox" value="true" name="settings[view_public_entries]" id="view_public_entries" 
+									<label for="allow_public">
+										<input type="hidden" value="false" name="settings[allow_public]"/>
+										<input type="checkbox" value="true" name="settings[allow_public]" id="allow_public" 
 											<?php if ($plugin_options->getAllowPublic() == true) echo CHECKED ?>
 										/>
 										Allow unregistered visitors and users not logged in
 									</label>
-									NOTE: This setting has precedent over the private override shortcode attribute.
+									
+									<label for="allow_public_override">
+										<input type="hidden" value="false" name="settings[allow_public_override]"/>
+										<input type="checkbox" value="true" name="settings[allow_public_override]" id="allow_public_override" 
+											<?php if ($plugin_options->getAllowPublicOverride() == true) echo 'CHECKED ' ?>
+											<?php if ($plugin_options->getAllowPublic() == true) echo 'DISABLED ' ?>
+										/>
+										Allow shortcode attribute override
+									</label>
 								</td>
 							</tr>
 							

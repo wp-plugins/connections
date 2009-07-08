@@ -1393,34 +1393,8 @@ add_shortcode('connections_list', '_connections_list');
 function _connections_list($atts, $content=null) {
 	global $wpdb, $current_user;
 	
-	// Setting the plugin options with a NULL if a user in not logged in
-	if (is_user_logged_in())
-	{
-		$plugin_options = new pluginOptions($current_user->ID);
-	}
-	else
-	{
-		$plugin_options = new pluginOptions(null);
-	}
-	
-	// Check whether the public permitted to see the entry list
-	if (!$plugin_options->getAllowPublic() && !is_user_logged_in())
-	{
-		return '<p style="-moz-background-clip:border;
-				-moz-border-radius:11px;
-				background:#FFFFFF none repeat scroll 0 0;
-				border:1px solid #DFDFDF;
-				color:#333333;
-				display:block;
-				font-size:12px;
-				line-height:18px;
-				margin:25px auto 20px;
-				padding:1em 2em;
-				text-align:center">You do not have sufficient permissions to access this page.</p>';
-	}
-	else
-	{	
-		$atts = shortcode_atts( array(
+	$atts = shortcode_atts( array(
+				'allow_public_override' => 'false',
 				'id' => null,
 				'private_override' => 'false',
 				'show_alphaindex' => 'false',
@@ -1438,7 +1412,46 @@ function _connections_list($atts, $content=null) {
 				'template_name' => 'card',
 				'custom_template'=>'false',
 				), $atts ) ;
-				
+	
+	// Setting the plugin options with a NULL if a user in not logged in
+	if (is_user_logged_in())
+	{
+		$plugin_options = new pluginOptions($current_user->ID);
+	}
+	else
+	{
+		$plugin_options = new pluginOptions(null);
+	}
+	
+	/**
+	 * If the view public entries override shortcode attribute is not permitted the attribute is unset
+	 * to ensure that only possible way the next expression will not equal false and give access to the
+	 * entries is for $atts['allow_public_override'] to be set and it's value be true
+	 */
+	if (!$plugin_options->getAllowPublicOverride()) unset($atts['allow_public_override']);
+	
+	/**
+	 * Check whether the public is permitted to see the entry list based on if the user is logged in,
+	 * if the the settings are set to allow public entries to be listed for a user that is not logged in
+	 * and if the shortcode attribute for the override is set and it's value is true. If any of these 
+	 * are false access will not be granted.
+	 */
+	if (!$plugin_options->getAllowPublic() && !is_user_logged_in() && $atts['allow_public_override'] != 'true')
+	{
+		return '<p style="-moz-background-clip:border;
+				-moz-border-radius:11px;
+				background:#FFFFFF none repeat scroll 0 0;
+				border:1px solid #DFDFDF;
+				color:#333333;
+				display:block;
+				font-size:12px;
+				line-height:18px;
+				margin:25px auto 20px;
+				padding:1em 2em;
+				text-align:center">You do not have sufficient permissions to view these entries.</p>';
+	}
+	else
+	{	
 		/*if (is_user_logged_in() or $atts['private_override'] != 'false') { 
 			$visibilityfilter = " AND (visibility='private' OR visibility='public') ";
 		} else {
