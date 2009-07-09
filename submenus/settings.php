@@ -41,6 +41,18 @@ else
 			$plugin_options->setAllowPublicOverride(false);
 		}
 		
+		$plugin_options->setImgThumbQuality($_POST['image_thumbnail_quality']);
+		$plugin_options->setImgThumbX($_POST['image_thumbnail_x']);
+		$plugin_options->setImgThumbY($_POST['image_thumbnail_y']);
+		
+		$plugin_options->setImgEntryQuality($_POST['image_entry_quality']);
+		$plugin_options->setImgEntryX($_POST['image_entry_x']);
+		$plugin_options->setImgEntryY($_POST['image_entry_y']);
+		
+		$plugin_options->setImgProfileQuality($_POST['image_profile_quality']);
+		$plugin_options->setImgProfileX($_POST['image_profile_x']);
+		$plugin_options->setImgProfileY($_POST['image_profile_y']);
+		
 		$plugin_options->saveOptions();
 	}
 	
@@ -93,10 +105,19 @@ else
 							
 							<tr valign="top">
 								<th scope="row">
+									<label for="image_thumbnail_quality">Thumbnail JPEG Quality</label>
+								</th>
+								<td>
+									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgThumbQuality() ?>" id="image_thumbnail_quality" name="image_thumbnail_quality"/>%
+								</td>
+							</tr>
+							
+							<tr valign="top">
+								<th scope="row">
 									<label for="image_thumbnail_x">Thumbnail Width</label>
 								</th>
 								<td>
-									<input type="text" class="small-text" value="" id="image_thumbnail_x" name="image_thumbnail_x"/>px
+									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgThumbX() ?>" id="image_thumbnail_x" name="image_thumbnail_x"/>px
 								</td>
 							</tr>				
 							
@@ -105,7 +126,16 @@ else
 									<label for="image_thumbnail_y">Thumbnail Height</label>
 								</th>
 								<td>
-									<input type="text" class="small-text" value="" id="image_thumbnail_y" name="image_thumbnail_y"/>px
+									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgThumbY() ?>" id="image_thumbnail_y" name="image_thumbnail_y"/>px
+								</td>
+							</tr>
+							
+							<tr valign="top">
+								<th scope="row">
+									<label for="image_entry_quality">Entry JPEG Quality</label>
+								</th>
+								<td>
+									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgEntryQuality() ?>" id="image_entry_quality" name="image_entry_quality"/>%
 								</td>
 							</tr>
 							
@@ -114,7 +144,7 @@ else
 									<label for="image_entry_x">Entry Width</label>
 								</th>
 								<td>
-									<input type="text" class="small-text" value="" id="image_entry_x" name="image_entry_x"/>px
+									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgEntryX() ?>" id="image_entry_x" name="image_entry_x"/>px
 								</td>
 							</tr>				
 							
@@ -123,7 +153,16 @@ else
 									<label for="image_entry_y">Entry Height</label>
 								</th>
 								<td>
-									<input type="text" class="small-text" value="" id="image_entry_y" name="image_entry_y"/>px
+									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgEntryY() ?>" id="image_entry_y" name="image_entry_y"/>px
+								</td>
+							</tr>
+							
+							<tr valign="top">
+								<th scope="row">
+									<label for="image_profile_quality">Profile JPEG Quality</label>
+								</th>
+								<td>
+									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgProfileQuality() ?>" id="image_profile_quality" name="image_profile_quality"/>%
 								</td>
 							</tr>
 							
@@ -132,7 +171,7 @@ else
 									<label for="image_profile_x">Profile Width</label>
 								</th>
 								<td>
-									<input type="text" class="small-text" value="" id="image_profile_x" name="image_profile_x"/>px
+									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgProfileX() ?>" id="image_profile_x" name="image_profile_x"/>px
 								</td>
 							</tr>				
 							
@@ -141,7 +180,7 @@ else
 									<label for="image_profile_y">Profile Height</label>
 								</th>
 								<td>
-									<input type="text" class="small-text" value="" id="image_profile_y" name="image_profile_y"/>px
+									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgProfileY() ?>" id="image_profile_y" name="image_profile_y"/>px
 								</td>
 							</tr>
 						

@@ -52,6 +52,18 @@ class pluginOptions
 	private $allowPublic;
 	private $allowPublicOverride;
 	
+	private $imgThumbQuality;
+	private $imgThumbX;
+	private $imgThumbY;
+	
+	private $imgEntryQuality;
+	private $imgEntryX;
+	private $imgEntryY;
+	
+	private $imgProfileQuality;
+	private $imgProfileX;
+	private $imgProfileY;
+	
 	/**
 	 * Sets up the plugin option properties. Requires the current WP user ID.
 	 * @param interger $userID
@@ -67,6 +79,18 @@ class pluginOptions
 		
 		$this->allowPublic = $this->options['settings']['allow_public'];
 		$this->allowPublicOverride = $this->options['settings']['allow_public_override'];
+		
+		$this->imgThumbQuality = $this->options['settings']['image']['thumbnail']['quality'];
+		$this->imgThumbX = $this->options['settings']['image']['thumbnail']['x'];
+		$this->imgThumbY = $this->options['settings']['image']['thumbnail']['y'];
+		
+		$this->imgEntryQuality = $this->options['settings']['image']['entry']['quality'];
+		$this->imgEntryX = $this->options['settings']['image']['entry']['x'];
+		$this->imgEntryY = $this->options['settings']['image']['entry']['y'];
+		
+		$this->imgProfileQuality = $this->options['settings']['image']['profile']['quality'];
+		$this->imgProfileX = $this->options['settings']['image']['profile']['x'];
+		$this->imgProfileY = $this->options['settings']['image']['profile']['y'];
 	}
 	
 	/**
@@ -81,6 +105,18 @@ class pluginOptions
 		
 		$this->options['settings']['allow_public'] = $this->allowPublic;
 		$this->options['settings']['allow_public_override'] = $this->allowPublicOverride;
+		
+		$this->options['settings']['image']['thumbnail']['quality'] = $this->imgThumbQuality;
+		$this->options['settings']['image']['thumbnail']['x'] = $this->imgThumbX;
+		$this->options['settings']['image']['thumbnail']['y'] = $this->imgThumbY;
+		
+		$this->options['settings']['image']['entry']['quality'] = $this->imgEntryQuality;
+		$this->options['settings']['image']['entry']['x'] = $this->imgEntryX;
+		$this->options['settings']['image']['entry']['y'] = $this->imgEntryY;
+		
+		$this->options['settings']['image']['profile']['quality'] = $this->imgProfileQuality;
+		$this->options['settings']['image']['profile']['x'] = $this->imgProfileX;
+		$this->options['settings']['image']['profile']['y'] = $this->imgProfileY;
 		
 		update_option('connections_options', $this->options);
 	}
@@ -262,6 +298,214 @@ class pluginOptions
     public function setCurrentUserID($currentUserID)
     {
         $this->currentUserID = $currentUserID;
+    }
+	
+	/**
+	 * Set the image default settings
+	 */
+	public function setDefaultImageSettings()
+	{
+		$this->imgThumbQuality = 80;
+		$this->imgThumbX = 80;
+		$this->imgThumbY = 54;
+		
+		$this->imgEntryQuality = 80;
+		$this->imgEntryX = 225;
+		$this->imgEntryY = 150;
+		
+		$this->imgProfileQuality = 80;
+		$this->imgProfileX = 300;
+		$this->imgProfileY = 225;
+	}
+	
+    /**
+     * Returns $imgEntryQuality.
+     * @see pluginOptions::$imgEntryQuality
+     */
+    public function getImgEntryQuality()
+    {
+        return $this->imgEntryQuality;
+    }
+    
+    /**
+     * Sets $imgEntryQuality.
+     * @param object $imgEntryQuality
+     * @see pluginOptions::$imgEntryQuality
+     */
+    public function setImgEntryQuality($imgEntryQuality)
+    {
+        $this->imgEntryQuality = $imgEntryQuality;
+    }
+    
+    /**
+     * Returns $imgEntryX.
+     * @see pluginOptions::$imgEntryX
+     */
+    public function getImgEntryX()
+    {
+        return $this->imgEntryX;
+    }
+    
+    /**
+     * Sets $imgEntryX.
+     * @param object $imgEntryX
+     * @see pluginOptions::$imgEntryX
+     */
+    public function setImgEntryX($imgEntryX)
+    {
+        $this->imgEntryX = $imgEntryX;
+    }
+    
+    /**
+     * Returns $imgEntryY.
+     * @see pluginOptions::$imgEntryY
+     */
+    public function getImgEntryY()
+    {
+        return $this->imgEntryY;
+    }
+    
+    /**
+     * Sets $imgEntryY.
+     * @param object $imgEntryY
+     * @see pluginOptions::$imgEntryY
+     */
+    public function setImgEntryY($imgEntryY)
+    {
+        $this->imgEntryY = $imgEntryY;
+    }
+    
+    /**
+     * Returns $imgProfileQuality.
+     * @see pluginOptions::$imgProfileQuality
+     */
+    public function getImgProfileQuality()
+    {
+        return $this->imgProfileQuality;
+    }
+    
+    /**
+     * Sets $imgProfileQuality.
+     * @param object $imgProfileQuality
+     * @see pluginOptions::$imgProfileQuality
+     */
+    public function setImgProfileQuality($imgProfileQuality)
+    {
+        $this->imgProfileQuality = $imgProfileQuality;
+    }
+    
+    /**
+     * Returns $imgProfileX.
+     * @see pluginOptions::$imgProfileX
+     */
+    public function getImgProfileX()
+    {
+        return $this->imgProfileX;
+    }
+    
+    /**
+     * Sets $imgProfileX.
+     * @param object $imgProfileX
+     * @see pluginOptions::$imgProfileX
+     */
+    public function setImgProfileX($imgProfileX)
+    {
+        $this->imgProfileX = $imgProfileX;
+    }
+    
+    /**
+     * Returns $imgProfileY.
+     * @see pluginOptions::$imgProfileY
+     */
+    public function getImgProfileY()
+    {
+        return $this->imgProfileY;
+    }
+    
+    /**
+     * Sets $imgProfileY.
+     * @param object $imgProfileY
+     * @see pluginOptions::$imgProfileY
+     */
+    public function setImgProfileY($imgProfileY)
+    {
+        $this->imgProfileY = $imgProfileY;
+    }
+    
+    /**
+     * Returns $imgThumbQuality.
+     * @see pluginOptions::$imgThumbQuality
+     */
+    public function getImgThumbQuality()
+    {
+        return $this->imgThumbQuality;
+    }
+    
+    /**
+     * Sets $imgThumbQuality.
+     * @param object $imgThumbQuality
+     * @see pluginOptions::$imgThumbQuality
+     */
+    public function setImgThumbQuality($imgThumbQuality)
+    {
+        $this->imgThumbQuality = $imgThumbQuality;
+    }
+    
+    /**
+     * Returns $imgThumbX.
+     * @see pluginOptions::$imgThumbX
+     */
+    public function getImgThumbX()
+    {
+        return $this->imgThumbX;
+    }
+    
+    /**
+     * Sets $imgThumbX.
+     * @param object $imgThumbX
+     * @see pluginOptions::$imgThumbX
+     */
+    public function setImgThumbX($imgThumbX)
+    {
+        $this->imgThumbX = $imgThumbX;
+    }
+    
+    /**
+     * Returns $imgThumbY.
+     * @see pluginOptions::$imgThumbY
+     */
+    public function getImgThumbY()
+    {
+        return $this->imgThumbY;
+    }
+    
+    /**
+     * Sets $imgThumbY.
+     * @param object $imgThumbY
+     * @see pluginOptions::$imgThumbY
+     */
+    public function setImgThumbY($imgThumbY)
+    {
+        $this->imgThumbY = $imgThumbY;
+    }
+    
+    /**
+     * Returns $options.
+     * @see pluginOptions::$options
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+    
+    /**
+     * Sets $options.
+     * @param object $options
+     * @see pluginOptions::$options
+     */
+    public function setOptions($options)
+    {
+        $this->options = $options;
     }
 
 }

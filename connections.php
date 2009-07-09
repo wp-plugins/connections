@@ -51,13 +51,13 @@ require_once(WP_PLUGIN_DIR . '/connections/includes/class.vcard.php');
 
 
 // Define a few constants and defaults until I can get to creating the options page.
-define('CN_DEFAULT_JPG_QUALITY', 80);
+/*define('CN_DEFAULT_JPG_QUALITY', 80);
 define('CN_DEFAULT_PROFILE_X', 300);
 define('CN_DEFAULT_PROFILE_Y', 225);
 define('CN_DEFAULT_ENTRY_X', 225);
 define('CN_DEFAULT_ENTRY_Y', 150);
 define('CN_DEFAULT_THUMBNAIL_X', 80);
-define('CN_DEFAULT_THUMBNAIL_Y', 54);
+define('CN_DEFAULT_THUMBNAIL_Y', 54);*/
 define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
 define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
 define('CN_TABLE_NAME','connections');
@@ -196,14 +196,13 @@ $defaultConnectionGroupValues = array(
 										);
 
 
-//$plugin_options = new pluginOptions;
-
 // This adds the menu items WordPress and calls the function to load my CSS and JS.
 add_action('admin_menu', 'connections_menus');
 function connections_menus() {
 	//Adds Connections to the top level menu.
 	$connections_admin = add_menu_page('Connections : Administration', 'Connections', 'connections_access', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
 	//Adds the Connections sub-menus.
+	add_submenu_page('connections/connections.php', 'Connections : Administration', 'Administration', 'connections_access', 'connections/connections.php', '_connections_main');
 	add_submenu_page('connections/connections.php', 'Connections : Settings','Settings', 'connections_change_settings','connections/submenus/settings.php');
 	add_submenu_page('connections/connections.php', 'Connections : Roles','Roles', 'connections_change_roles','connections/submenus/roles.php');
 	add_submenu_page('connections/connections.php', 'Connections : Help','Help', 'connections_view_help','connections/submenus/help.php');
@@ -911,6 +910,9 @@ function _build_alphaindex() {
 }
 
 function _process_images($_FILES) {
+	global $current_user;
+	
+	$plugin_options = new pluginOptions($current_user->ID);
 	// Uses the upload.class.php to handle file uploading and image manipulation.
 	
 		$process_image = new Upload($_FILES['original_image']);
@@ -925,7 +927,7 @@ function _process_images($_FILES) {
 			$process_image->file_auto_rename	= true;
 			$process_image->file_name_body_add= '_original';
 			$process_image->image_convert		= 'jpg';
-			$process_image->jpeg_quality		= CN_DEFAULT_JPG_QUALITY;
+			$process_image->jpeg_quality		= 80;
 			$process_image->Process(CN_IMAGE_PATH);
 			if ($process_image->processed) {
 				$success .= "<p><strong>Uploaded image saved.</strong></p> \n";
@@ -944,12 +946,12 @@ function _process_images($_FILES) {
 			$process_image->file_auto_rename	= true;
 			$process_image->file_name_body_add= '_profile';
 			$process_image->image_convert		= 'jpg';
-			$process_image->jpeg_quality		= CN_DEFAULT_JPG_QUALITY;
+			$process_image->jpeg_quality		= $plugin_options->getImgProfileQuality();
 			$process_image->image_resize		= true;
 			$process_image->image_ratio_crop	= true;
 			$process_image->image_ratio_fill	= true;
-			$process_image->image_y				= CN_DEFAULT_PROFILE_Y;
-			$process_image->image_x				= CN_DEFAULT_PROFILE_X;
+			$process_image->image_y				= $plugin_options->getImgProfileY();
+			$process_image->image_x				= $plugin_options->getImgProfileX();
 			$process_image->Process(CN_IMAGE_PATH);
 			if ($process_image->processed) {
 				$success .= "<p><strong>Profile image created and saved.</strong></p> \n";
@@ -968,12 +970,12 @@ function _process_images($_FILES) {
 			$process_image->file_auto_rename	= true;
 			$process_image->file_name_body_add= '_entry';
 			$process_image->image_convert		= 'jpg';
-			$process_image->jpeg_quality		= CN_DEFAULT_JPG_QUALITY;
+			$process_image->jpeg_quality		= $plugin_options->getImgEntryQuality();
 			$process_image->image_resize		= true;
 			$process_image->image_ratio_crop	= true;
 			$process_image->image_ratio_fill	= true;
-			$process_image->image_y				= CN_DEFAULT_ENTRY_Y;
-			$process_image->image_x				= CN_DEFAULT_ENTRY_X;
+			$process_image->image_y				= $plugin_options->getImgEntryY();
+			$process_image->image_x				= $plugin_options->getImgEntryX();
 			$process_image->Process(CN_IMAGE_PATH);
 			if ($process_image->processed) {
 				$success .= "<p><strong>Entry image created and saved.</strong></p> \n";
@@ -992,12 +994,12 @@ function _process_images($_FILES) {
 			$process_image->file_auto_rename	= true;
 			$process_image->file_name_body_add= '_thumbnail';
 			$process_image->image_convert		= 'jpg';
-			$process_image->jpeg_quality		= CN_DEFAULT_JPG_QUALITY;
+			$process_image->jpeg_quality		= $plugin_options->getImgThumbQuality();
 			$process_image->image_resize		= true;
 			$process_image->image_ratio_crop	= true;
 			$process_image->image_ratio_fill	= true;
-			$process_image->image_y				= CN_DEFAULT_THUMBNAIL_Y;
-			$process_image->image_x				= CN_DEFAULT_THUMBNAIL_X;
+			$process_image->image_y				= $plugin_options->getImgThumbY();
+			$process_image->image_x				= $plugin_options->getImgThumbX();
 			$process_image->Process(CN_IMAGE_PATH);
 			if ($process_image->processed) {
 				$success .= "<p><strong>Thumbnail image created and saved.</strong></p> \n";
@@ -1358,7 +1360,8 @@ function _connections_install() {
     dbDelta($sql);
 	
 	$plugin_options->setVersion(CN_CURRENT_VERSION);
-	//update_option('connections_options', $plugin_options->getOptions());
+	$plugin_options->setDefaultCapabilities();
+	$plugin_options->setDefaultImageSettings();
 	$plugin_options->saveOptions();
 }
 
