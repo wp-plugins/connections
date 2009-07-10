@@ -948,8 +948,8 @@ function _process_images($_FILES) {
 			$process_image->image_convert		= 'jpg';
 			$process_image->jpeg_quality		= $plugin_options->getImgProfileQuality();
 			$process_image->image_resize		= true;
-			$process_image->image_ratio_crop	= true;
-			$process_image->image_ratio_fill	= true;
+			$process_image->image_ratio_crop	= (bool) $plugin_options->getImgProfileRatioCrop();
+			$process_image->image_ratio_fill	= (bool) $plugin_options->getImgProfileRatioFill();
 			$process_image->image_y				= $plugin_options->getImgProfileY();
 			$process_image->image_x				= $plugin_options->getImgProfileX();
 			$process_image->Process(CN_IMAGE_PATH);
@@ -972,8 +972,8 @@ function _process_images($_FILES) {
 			$process_image->image_convert		= 'jpg';
 			$process_image->jpeg_quality		= $plugin_options->getImgEntryQuality();
 			$process_image->image_resize		= true;
-			$process_image->image_ratio_crop	= true;
-			$process_image->image_ratio_fill	= true;
+			$process_image->image_ratio_crop	= (bool) $plugin_options->getImgEntryRatioCrop();
+			$process_image->image_ratio_fill	= (bool) $plugin_options->getImgEntryRatioFill();
 			$process_image->image_y				= $plugin_options->getImgEntryY();
 			$process_image->image_x				= $plugin_options->getImgEntryX();
 			$process_image->Process(CN_IMAGE_PATH);
@@ -996,8 +996,8 @@ function _process_images($_FILES) {
 			$process_image->image_convert		= 'jpg';
 			$process_image->jpeg_quality		= $plugin_options->getImgThumbQuality();
 			$process_image->image_resize		= true;
-			$process_image->image_ratio_crop	= true;
-			$process_image->image_ratio_fill	= true;
+			$process_image->image_ratio_crop	= (bool) $plugin_options->getImgThumbRatioCrop();
+			$process_image->image_ratio_fill	= (bool) $plugin_options->getImgThumbRatioFill();
 			$process_image->image_y				= $plugin_options->getImgThumbY();
 			$process_image->image_x				= $plugin_options->getImgThumbX();
 			$process_image->Process(CN_IMAGE_PATH);
@@ -1193,8 +1193,9 @@ function _connections_getaddressform($data=null) {
 					$out .= "<div style='text-align:center'> <img src='" . CN_IMAGE_BASE_URL . $entry->getImageNameProfile() . "' /> <br /> <span class='radio_group'>" . $imgOptions . "</span></div> <br />"; 
 				}
 				
-				$out .= "<label for='original_image'>Select Image:</label>
-				<input type='file' value='' name='original_image' size='25'/>
+				$out .= '<div class="clear"></div>';
+				$out .= "<label for='original_image'>Select Image:
+				<input type='file' value='' name='original_image' size='25' /></label>
 				
 		</div>";
 		

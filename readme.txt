@@ -178,3 +178,6 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Added additional filters for addresses. [User requested.](http://wordpress.org/support/topic/248568)
 * Run the SQL queries through the `$wpdb->prepare()` method for security
 * Change the change log so it shows up as a top level tab on the WordPress plug-in page
+
+= 05.5.5 DATE =
+* Updated class.upload.php to version .25

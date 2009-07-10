@@ -55,14 +55,20 @@ class pluginOptions
 	private $imgThumbQuality;
 	private $imgThumbX;
 	private $imgThumbY;
+	private $imgThumbRatioCrop;
+	private $imgThumbRatioFill;
 	
 	private $imgEntryQuality;
 	private $imgEntryX;
 	private $imgEntryY;
+	private $imgEntryRatioCrop;
+	private $imgEntryRatioFill;
 	
 	private $imgProfileQuality;
 	private $imgProfileX;
 	private $imgProfileY;
+	private $imgProfileRatioCrop;
+	private $imgProfileRatioFill;
 	
 	/**
 	 * Sets up the plugin option properties. Requires the current WP user ID.
@@ -83,14 +89,20 @@ class pluginOptions
 		$this->imgThumbQuality = $this->options['settings']['image']['thumbnail']['quality'];
 		$this->imgThumbX = $this->options['settings']['image']['thumbnail']['x'];
 		$this->imgThumbY = $this->options['settings']['image']['thumbnail']['y'];
+		$this->imgThumbRatioCrop = $this->options['settings']['image']['thumbnail']['ratio_crop'];
+		$this->imgThumbRatioFill = $this->options['settings']['image']['thumbnail']['ratio_fill'];
 		
 		$this->imgEntryQuality = $this->options['settings']['image']['entry']['quality'];
 		$this->imgEntryX = $this->options['settings']['image']['entry']['x'];
 		$this->imgEntryY = $this->options['settings']['image']['entry']['y'];
+		$this->imgEntryRatioCrop = $this->options['settings']['image']['entry']['ratio_crop'];
+		$this->imgEntryRatioFill = $this->options['settings']['image']['entry']['ratio_fill'];
 		
 		$this->imgProfileQuality = $this->options['settings']['image']['profile']['quality'];
 		$this->imgProfileX = $this->options['settings']['image']['profile']['x'];
 		$this->imgProfileY = $this->options['settings']['image']['profile']['y'];
+		$this->imgProfileRatioCrop = $this->options['settings']['image']['profile']['ratio_crop'];
+		$this->imgProfileRatioFill = $this->options['settings']['image']['profile']['ratio_fill'];
 	}
 	
 	/**
@@ -109,14 +121,20 @@ class pluginOptions
 		$this->options['settings']['image']['thumbnail']['quality'] = $this->imgThumbQuality;
 		$this->options['settings']['image']['thumbnail']['x'] = $this->imgThumbX;
 		$this->options['settings']['image']['thumbnail']['y'] = $this->imgThumbY;
+		$this->options['settings']['image']['thumbnail']['ratio_crop'] = $this->imgThumbRatioCrop;
+		$this->options['settings']['image']['thumbnail']['ratio_fill'] = $this->imgThumbRatioFill;
 		
 		$this->options['settings']['image']['entry']['quality'] = $this->imgEntryQuality;
 		$this->options['settings']['image']['entry']['x'] = $this->imgEntryX;
 		$this->options['settings']['image']['entry']['y'] = $this->imgEntryY;
+		$this->options['settings']['image']['entry']['ratio_crop'] = $this->imgEntryRatioCrop;
+		$this->options['settings']['image']['entry']['ratio_fill'] = $this->imgEntryRatioFill;
 		
 		$this->options['settings']['image']['profile']['quality'] = $this->imgProfileQuality;
 		$this->options['settings']['image']['profile']['x'] = $this->imgProfileX;
 		$this->options['settings']['image']['profile']['y'] = $this->imgProfileY;
+		$this->options['settings']['image']['profile']['ratio_crop'] = $this->imgProfileRatioCrop;
+		$this->options['settings']['image']['profile']['ratio_fill'] = $this->imgProfileRatioFill;
 		
 		update_option('connections_options', $this->options);
 	}
@@ -308,14 +326,20 @@ class pluginOptions
 		$this->imgThumbQuality = 80;
 		$this->imgThumbX = 80;
 		$this->imgThumbY = 54;
+		$this->imgThumbRatioCrop = true;
+		$this->imgThumbRatioFill = true;
 		
 		$this->imgEntryQuality = 80;
 		$this->imgEntryX = 225;
 		$this->imgEntryY = 150;
+		$this->imgEntryRatioCrop = true;
+		$this->imgEntryRatioFill = true;
 		
 		$this->imgProfileQuality = 80;
 		$this->imgProfileX = 300;
 		$this->imgProfileY = 225;
+		$this->imgProfileRatioCrop = true;
+		$this->imgProfileRatioFill = true;
 	}
 	
     /**
@@ -374,6 +398,44 @@ class pluginOptions
     {
         $this->imgEntryY = $imgEntryY;
     }
+
+    /**
+     * Returns $imgEntryRatioCrop.
+     * @see pluginOptions::$imgEntryRatioCrop
+     */
+    public function getImgEntryRatioCrop()
+    {
+        return $this->imgEntryRatioCrop;
+    }
+    
+    /**
+     * Sets $imgEntryRatioCrop.
+     * @param object $imgEntryRatioCrop
+     * @see pluginOptions::$imgEntryRatioCrop
+     */
+    public function setImgEntryRatioCrop($imgEntryRatioCrop)
+    {
+        $this->imgEntryRatioCrop = $imgEntryRatioCrop;
+    }
+    
+    /**
+     * Returns $imgEntryRatioFill.
+     * @see pluginOptions::$imgEntryRatioFill
+     */
+    public function getImgEntryRatioFill()
+    {
+        return $this->imgEntryRatioFill;
+    }
+    
+    /**
+     * Sets $imgEntryRatioFill.
+     * @param object $imgEntryRatioFill
+     * @see pluginOptions::$imgEntryRatioFill
+     */
+    public function setImgEntryRatioFill($imgEntryRatioFill)
+    {
+        $this->imgEntryRatioFill = $imgEntryRatioFill;
+    }
     
     /**
      * Returns $imgProfileQuality.
@@ -431,6 +493,44 @@ class pluginOptions
     {
         $this->imgProfileY = $imgProfileY;
     }
+
+    /**
+     * Returns $imgProfileRatioCrop.
+     * @see pluginOptions::$imgProfileRatioCrop
+     */
+    public function getImgProfileRatioCrop()
+    {
+        return $this->imgProfileRatioCrop;
+    }
+    
+    /**
+     * Sets $imgProfileRatioCrop.
+     * @param object $imgProfileRatioCrop
+     * @see pluginOptions::$imgProfileRatioCrop
+     */
+    public function setImgProfileRatioCrop($imgProfileRatioCrop)
+    {
+        $this->imgProfileRatioCrop = $imgProfileRatioCrop;
+    }
+    
+    /**
+     * Returns $imgProfileRatioFill.
+     * @see pluginOptions::$imgProfileRatioFill
+     */
+    public function getImgProfileRatioFill()
+    {
+        return $this->imgProfileRatioFill;
+    }
+    
+    /**
+     * Sets $imgProfileRatioFill.
+     * @param object $imgProfileRatioFill
+     * @see pluginOptions::$imgProfileRatioFill
+     */
+    public function setImgProfileRatioFill($imgProfileRatioFill)
+    {
+        $this->imgProfileRatioFill = $imgProfileRatioFill;
+    }
     
     /**
      * Returns $imgThumbQuality.
@@ -487,6 +587,44 @@ class pluginOptions
     public function setImgThumbY($imgThumbY)
     {
         $this->imgThumbY = $imgThumbY;
+    }
+
+    /**
+     * Returns $imgThumbRatioCrop.
+     * @see pluginOptions::$imgThumbRatioCrop
+     */
+    public function getImgThumbRatioCrop()
+    {
+        return $this->imgThumbRatioCrop;
+    }
+    
+    /**
+     * Sets $imgThumbRatioCrop.
+     * @param object $imgThumbRatioCrop
+     * @see pluginOptions::$imgThumbRatioCrop
+     */
+    public function setImgThumbRatioCrop($imgThumbRatioCrop)
+    {
+        $this->imgThumbRatioCrop = $imgThumbRatioCrop;
+    }
+    
+    /**
+     * Returns $imgThumbRatioFill.
+     * @see pluginOptions::$imgThumbRatioFill
+     */
+    public function getImgThumbRatioFill()
+    {
+        return $this->imgThumbRatioFill;
+    }
+    
+    /**
+     * Sets $imgThumbRatioFill.
+     * @param object $imgThumbRatioFill
+     * @see pluginOptions::$imgThumbRatioFill
+     */
+    public function setImgThumbRatioFill($imgThumbRatioFill)
+    {
+        $this->imgThumbRatioFill = $imgThumbRatioFill;
     }
     
     /**

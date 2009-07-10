@@ -1,9 +1,31 @@
+<?php
+
+error_reporting(E_ALL);
+
+// we first include the upload class, as we will need it here to deal with the uploaded file
+include('class.upload.php');
+
+// retrieve eventual CLI parameters
+$cli = (isset($argc) && $argc > 1);
+if ($cli) {
+    if (isset($argv[1])) $_GET['file'] = $argv[1];
+    if (isset($argv[2])) $_GET['dir'] = $argv[2];
+    if (isset($argv[3])) $_GET['pics'] = $argv[3];
+}
+
+// set variables
+$dir_dest = (isset($_GET['dir']) ? $_GET['dir'] : 'test');
+$dir_pics = (isset($_GET['pics']) ? $_GET['pics'] : $dir_dest);
+
+if (!$cli) {
+?>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <meta http-equiv=content-type content="text/html; charset=UTF-8">
 <head>
     <title>class.php.upload test forms</title>
-    
+
     <style>
         body {
         }
@@ -36,19 +58,16 @@
 
     <h1>class.upload.php test forms</h1>
 
-<?php
+<?
+}
 
-error_reporting(E_ALL); 
-
-// we first include the upload class, as we will need it here to deal with the uploaded file
-include('class.upload.php');
 
 // we have three forms on the test page, so we redirect accordingly
-if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
+if ((isset($_POST['action']) ? $_POST['action'] : (isset($_GET['action']) ? $_GET['action'] : '')) == 'simple') {
 
     // ---------- SIMPLE UPLOAD ----------
-    
-    // we create an instance of the class, giving as argument the PHP object 
+
+    // we create an instance of the class, giving as argument the PHP object
     // corresponding to the file field from the form
     // All the uploads are accessible from the PHP object $_FILES
     $handle = new Upload($_FILES['my_field']);
@@ -61,15 +80,15 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
         // now, we start the upload 'process'. That is, to copy the uploaded file
         // from its temporary location to the wanted location
         // It could be something like $handle->Process('/home/www/my_uploads/');
-        $handle->Process('./test/');
-        
+        $handle->Process($dir_dest);
+
         // we check if everything went OK
         if ($handle->processed) {
             // everything was fine !
             echo '<fieldset>';
             echo '  <legend>file uploaded with success</legend>';
             echo '  <p>' . round(filesize($handle->file_dst_pathname)/256)/4 . 'KB</p>';
-            echo '  link to the file just uploaded: <a href="test/' . $handle->file_dst_name . '">' . $handle->file_dst_name . '</a>';
+            echo '  link to the file just uploaded: <a href="'.$dir_pics.'/' . $handle->file_dst_name . '">' . $handle->file_dst_name . '</a>';
             echo '</fieldset>';
         } else {
             // one error occured
@@ -80,15 +99,15 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
         }
 
         // we copy the file a second time
-        $handle->Process('./test/');
-        
+        $handle->Process($dir_dest);
+
         // we check if everything went OK
         if ($handle->processed) {
             // everything was fine !
             echo '<fieldset>';
             echo '  <legend>file uploaded with success</legend>';
             echo '  <p>' . round(filesize($handle->file_dst_pathname)/256)/4 . 'KB</p>';
-            echo '  link to the file just uploaded: <a href="test/' . $handle->file_dst_name . '">' . $handle->file_dst_name . '</a>';
+            echo '  link to the file just uploaded: <a href="'.$dir_pics.'/' . $handle->file_dst_name . '">' . $handle->file_dst_name . '</a>';
             echo '</fieldset>';
         } else {
             // one error occured
@@ -97,7 +116,7 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
             echo '  Error: ' . $handle->error . '';
             echo '</fieldset>';
         }
-        
+
         // we delete the temporary files
         $handle-> Clean();
 
@@ -110,11 +129,11 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
         echo '</fieldset>';
     }
 
-} else if ($_POST['action'] == 'image') {
+} else if ((isset($_POST['action']) ? $_POST['action'] : (isset($_GET['action']) ? $_GET['action'] : '')) == 'image') {
 
     // ---------- IMAGE UPLOAD ----------
-    
-    // we create an instance of the class, giving as argument the PHP object 
+
+    // we create an instance of the class, giving as argument the PHP object
     // corresponding to the file field from the form
     // All the uploads are accessible from the PHP object $_FILES
     $handle = new Upload($_FILES['my_field']);
@@ -122,27 +141,27 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
     // then we check if the file has been uploaded properly
     // in its *temporary* location in the server (often, it is /tmp)
     if ($handle->uploaded) {
-       
+
         // yes, the file is on the server
         // below are some example settings which can be used if the uploaded file is an image.
         $handle->image_resize            = true;
         $handle->image_ratio_y           = true;
-        $handle->image_x                 = 500;
+        $handle->image_x                 = 400;
 
         // now, we start the upload 'process'. That is, to copy the uploaded file
         // from its temporary location to the wanted location
         // It could be something like $handle->Process('/home/www/my_uploads/');
-        $handle->Process('./test/');
-        
+        $handle->Process($dir_dest);
+
         // we check if everything went OK
         if ($handle->processed) {
             // everything was fine !
             echo '<fieldset>';
             echo '  <legend>file uploaded with success</legend>';
-            echo '  <img src="test/' . $handle->file_dst_name . '" />';
+            echo '  <img src="'.$dir_pics.'/' . $handle->file_dst_name . '" />';
             $info = getimagesize($handle->file_dst_pathname);
             echo '  <p>' . $info['mime'] . ' &nbsp;-&nbsp; ' . $info[0] . ' x ' . $info[1] .' &nbsp;-&nbsp; ' . round(filesize($handle->file_dst_pathname)/256)/4 . 'KB</p>';
-            echo '  link to the file just uploaded: <a href="test/' . $handle->file_dst_name . '">' . $handle->file_dst_name . '</a><br/>';
+            echo '  link to the file just uploaded: <a href="'.$dir_pics.'/' . $handle->file_dst_name . '">' . $handle->file_dst_name . '</a><br/>';
             echo '</fieldset>';
         } else {
             // one error occured
@@ -159,17 +178,17 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
         $handle->image_reflection_height = '25%';
         $handle->image_contrast          = 50;
 
-        $handle->Process('./test/');
-        
+        $handle->Process($dir_dest);
+
         // we check if everything went OK
         if ($handle->processed) {
             // everything was fine !
             echo '<fieldset>';
             echo '  <legend>file uploaded with success</legend>';
-            echo '  <img src="test/' . $handle->file_dst_name . '" />';
+            echo '  <img src="'.$dir_pics.'/' . $handle->file_dst_name . '" />';
             $info = getimagesize($handle->file_dst_pathname);
             echo '  <p>' . $info['mime'] . ' &nbsp;-&nbsp; ' . $info[0] . ' x ' . $info[1] .' &nbsp;-&nbsp; ' . round(filesize($handle->file_dst_pathname)/256)/4 . 'KB</p>';
-            echo '  link to the file just uploaded: <a href="test/' . $handle->file_dst_name . '">' . $handle->file_dst_name . '</a><br/>';
+            echo '  link to the file just uploaded: <a href="'.$dir_pics.'/' . $handle->file_dst_name . '">' . $handle->file_dst_name . '</a><br/>';
             echo '</fieldset>';
         } else {
             // one error occured
@@ -193,7 +212,7 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
 
 
 
-} else if ($_POST['action'] == 'multiple') {
+} else if ((isset($_POST['action']) ? $_POST['action'] : (isset($_GET['action']) ? $_GET['action'] : '')) == 'multiple') {
 
     // ---------- MULTIPLE UPLOADS ----------
 
@@ -201,7 +220,7 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
     $files = array();
     foreach ($_FILES['my_field'] as $k => $l) {
         foreach ($l as $i => $v) {
-            if (!array_key_exists($i, $files)) 
+            if (!array_key_exists($i, $files))
                 $files[$i] = array();
             $files[$i][$k] = $v;
         }
@@ -209,10 +228,10 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
 
     // now we can loop through $files, and feed each element to the class
     foreach ($files as $file) {
-    
+
         // we instanciate the class for each element of $file
         $handle = new Upload($file);
-        
+
         // then we check if the file has been uploaded properly
         // in its *temporary* location in the server (often, it is /tmp)
         if ($handle->uploaded) {
@@ -220,7 +239,7 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
             // now, we start the upload 'process'. That is, to copy the uploaded file
             // from its temporary location to the wanted location
             // It could be something like $handle->Process('/home/www/my_uploads/');
-            $handle->Process("./test/");
+            $handle->Process($dir_dest);
 
             // we check if everything went OK
             if ($handle->processed) {
@@ -228,7 +247,7 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
                 echo '<fieldset>';
                 echo '  <legend>file uploaded with success</legend>';
                 echo '  <p>' . round(filesize($handle->file_dst_pathname)/256)/4 . 'KB</p>';
-                echo '  link to the file just uploaded: <a href="test/' . $handle->file_dst_name . '">' . $handle->file_dst_name . '</a>';
+                echo '  link to the file just uploaded: <a href="'.$dir_pics.'/' . $handle->file_dst_name . '">' . $handle->file_dst_name . '</a>';
                 echo '</fieldset>';
             } else {
                 // one error occured
@@ -237,7 +256,7 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
                 echo '  Error: ' . $handle->error . '';
                 echo '</fieldset>';
             }
-            
+
         } else {
             // if we're here, the upload file failed for some reasons
             // i.e. the server didn't receive the file
@@ -247,18 +266,17 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
             echo '</fieldset>';
         }
     }
-    
-} else if ($_POST['action'] == 'local') {
+
+} else if ((isset($_POST['action']) ? $_POST['action'] : (isset($_GET['action']) ? $_GET['action'] : '')) == 'local' || isset($_GET['file'])) {
 
     // ---------- LOCAL PROCESSING ----------
 
-    
-    //error_reporting(E_ALL ^ (E_NOTICE | E_USER_NOTICE | E_WARNING | E_USER_WARNING)); 
+
+    //error_reporting(E_ALL ^ (E_NOTICE | E_USER_NOTICE | E_WARNING | E_USER_WARNING));
     ini_set("max_execution_time",0);
 
     // we don't upload, we just send a local filename (image)
-    $handle = new Upload($_POST['my_field']);
-    
+    $handle = new Upload((isset($_POST['my_field']) ? $_POST['my_field'] : (isset($_GET['file']) ? $_GET['file'] : '')));
 
     // then we check if the file has been "uploaded" properly
     // in our case, it means if the file is present on the local file system
@@ -267,42 +285,43 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
         // now, we start a serie of processes, with different parameters
         // we use a little function TestProcess() to avoid repeting the same code too many times
         function TestProcess(&$handle, $title = 'test', $details='') {
+            global $dir_pics, $dir_dest;
 
-            $handle->Process('./test/');
-            
+            $handle->Process($dir_dest);
+
             if ($handle->processed) {
                 echo '<fieldset class="classuploadphp">';
                 echo '  <legend>' . $title . '</legend>';
-                echo '  <div class="classuploadphppic"><img src="test/' . $handle->file_dst_name . '" />';
+                echo '  <div class="classuploadphppic"><img src="'.$dir_pics.'/' . $handle->file_dst_name . '" />';
                 $info = getimagesize($handle->file_dst_pathname);
                 echo '  <p>' . $info['mime'] . ' &nbsp;-&nbsp; ' . $info[0] . ' x ' . $info[1] .' &nbsp;-&nbsp; ' . round(filesize($handle->file_dst_pathname)/256)/4 . 'KB</p></div>';
-                echo '  <pre class="code php">' . htmlentities($details) . '</pre>';
+                if ($details) echo '  <pre class="code php">' . htmlentities($details) . '</pre>';
                 echo '</fieldset>';
             } else {
                 echo '<fieldset class="classuploadphp">';
                 echo '  <legend>' . $title . '</legend>';
                 echo '  Error: ' . $handle->error . '';
-                echo '  <pre class="code php">' . htmlentities($details) . '</pre>';
+                if ($details) echo '  <pre class="code php">' . htmlentities($details) . '</pre>';
                 echo '</fieldset>';
             }
-        }    
-        if (!file_exists("./test")) mkdir('test');
+        }
+        if (!file_exists($dir_dest)) mkdir($dir_dest);
 
         // -----------
         TestProcess($handle, 'original file', '');
-    
+
         // -----------
         $handle->image_resize          = true;
         $handle->image_ratio_y         = true;
         $handle->image_x               = 50;
         TestProcess($handle, 'width 50, height auto', "\$foo->image_resize          = true;\n\$foo->image_ratio_y         = true;\n\$foo->image_x               = 50;");
-    
+
         // -----------
         $handle->image_resize          = true;
         $handle->image_ratio_x         = true;
         $handle->image_y               = 50;
         TestProcess($handle, 'height 50, width auto', "\$foo->image_resize          = true;\n\$foo->image_ratio_x         = true;\n\$foo->image_y               = 50;");
-    
+
         // -----------
         $handle->image_resize          = true;
         $handle->image_y               = 50;
@@ -380,11 +399,11 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
         // -----------
         $handle->image_crop            = '20%';
         TestProcess($handle, '20% crop', "\$foo->image_crop            = '20%';");
-    
+
         // -----------
         $handle->image_crop            = '5 20%';
         TestProcess($handle, '5px vertical and 20% horizontal crop', "\$foo->image_crop            = '5 20%';");
-    
+
         // -----------
         $handle->image_crop            = '-3px -10%';
         $handle->image_background_color = '#FF00FF';
@@ -393,46 +412,60 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
         // -----------
         $handle->image_crop            = '5 40 10% -20';
         TestProcess($handle, '5px top, 40px right, 10% bot. and -20px left crop', "\$foo->image_crop            = '5 40 10% -20';");
-    
+
+        // -----------
+        $handle->image_resize          = true;
+        $handle->image_ratio_y         = true;
+        $handle->image_x               = 150;
+        $handle->image_precrop         = 15;
+        TestProcess($handle, '15px pre-cropping (before resizing 150 wide)', "\$foo->image_resize          = true;\n\$foo->image_ratio_y         = true;\n\$foo->image_x               = 150;\n\$foo->image_precrop         = 15;");
+
+        // -----------
+        $handle->image_resize          = true;
+        $handle->image_ratio_y         = true;
+        $handle->image_x               = 150;
+        $handle->image_precrop         = '25 70 10% -20';
+        TestProcess($handle, 'diverse pre-cropping (before resizing 150 wide)', "\$foo->image_resize          = true;\n\$foo->image_ratio_y         = true;\n\$foo->image_x               = 150;\n\$foo->image_precrop         = '25 70 10% -20';");
+
         // -----------
         $handle->image_rotate          = '90';
         TestProcess($handle, '90 degrees rotation', "\$foo->image_rotate          = '90';");
-    
+
         // -----------
-        $handle->image_rotate          = '180'; 
+        $handle->image_rotate          = '180';
         TestProcess($handle, '180 degrees rotation', "\$foo->image_rotate          = '180';");
-    
+
         // -----------
         $handle->image_flip            = 'H';
         TestProcess($handle, 'horizontal flip', "\$foo->image_flip            = 'H';");
-    
+
         // -----------
         $handle->image_convert         = 'gif';
-        $handle->image_flip            = 'V'; 
+        $handle->image_flip            = 'V';
         TestProcess($handle, 'vertical flip, into GIF file', "\$foo->image_convert         = 'gif';\n\$foo->image_flip            = 'V';");
-    
+
         // -----------
-        $handle->image_convert         = 'bmp'; 
-        $handle->image_default_color   = '#00FF00'; 
-        $handle->image_rotate          = '180'; 
+        $handle->image_convert         = 'bmp';
+        $handle->image_default_color   = '#00FF00';
+        $handle->image_rotate          = '180';
         TestProcess($handle, '180 degrees rotation, into GIF, green bg', "\$foo->image_convert         = 'gif';\n\$foo->image_default_color   = '#00FF00';\n\$foo->image_rotate          = '180';");
 
         // -----------
         $handle->image_convert         = 'png';
         $handle->image_flip            = 'H';
-        $handle->image_rotate          = '90'; 
+        $handle->image_rotate          = '90';
         TestProcess($handle, '90 degrees rotation and horizontal flip, into PNG', "\$foo->image_convert         = 'png';\n\$foo->image_flip            = 'H';\n\$foo->image_rotate          = '90';");
-     
+
         // -----------
         $handle->image_bevel           = 20;
         $handle->image_bevel_color1    = '#FFFFFF';
-        $handle->image_bevel_color2    = '#000000'; 
+        $handle->image_bevel_color2    = '#000000';
         TestProcess($handle, '20px black and white bevel', "\$foo->image_bevel           = 20;\n\$foo->image_bevel_color1    = '#FFFFFF';\n\$foo->image_bevel_color2    = '#000000';");
-     
+
         // -----------
         $handle->image_bevel           = 5;
         $handle->image_bevel_color1    = '#FFFFFF';
-        $handle->image_bevel_color2    = '#FFFFFF'; 
+        $handle->image_bevel_color2    = '#FFFFFF';
         TestProcess($handle, '5px white bevel (smooth border)', "\$foo->image_bevel           = 5;\n\$foo->image_bevel_color1    = '#FFFFFF';\n\$foo->image_bevel_color2    = '#FFFFFF';");
 
         // -----------
@@ -444,7 +477,7 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
         $handle->image_border          = '5 20 1 25%';
         $handle->image_border_color    = '#0000FF';
         TestProcess($handle, '5px top, 20px right, 1px bot. and 25% left blue border', "\$foo->image_border          = '5 20 1 25%';\n\$foo->image_border_color    = '#0000FF';");
-     
+
         // -----------
         $handle->image_frame           = 1;
         $handle->image_frame_colors    = '#FF0000 #FFFFFF #FFFFFF #0000FF';
@@ -456,51 +489,51 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
         TestProcess($handle, 'crossed colored frame, 7 px wide', "\$foo->image_frame           = 2;\n\$foo->image_frame_colors    = '#FFFFFF #BBBBBB\n                               #999999 #FF0000\n                               #666666 #333333\n                               #000000';");
 
         // -----------
-        $handle->image_overlay_color   = '#FFFFFF'; 
-        $handle->image_overlay_percent = 50; 
-        $handle->image_rotate          = '180'; 
-        $handle->image_tint_color      = '#FF0000'; 
+        $handle->image_overlay_color   = '#FFFFFF';
+        $handle->image_overlay_percent = 50;
+        $handle->image_rotate          = '180';
+        $handle->image_tint_color      = '#FF0000';
         TestProcess($handle, 'tint and 50% overlay and 180\' rotation', "\$foo->image_overlay_color   = '#FFFFFF';\n\$foo->image_overlay_percent = 50;\n\$foo->image_rotate          = '180';\n\$foo->image_tint_color      = '#FF0000';");
-    
+
         // -----------
-        $handle->image_tint_color      = '#FF0000'; 
+        $handle->image_tint_color      = '#FF0000';
         TestProcess($handle, '#FF0000 tint', "\$foo->image_tint_color      = '#FF0000';");
-    
+
         // -----------
-        $handle->image_overlay_color   = '#FF0000'; 
-        $handle->image_overlay_percent = 50; 
+        $handle->image_overlay_color   = '#FF0000';
+        $handle->image_overlay_percent = 50;
         TestProcess($handle, '50% overlay #FF0000', "\$foo->image_overlay_color   = '#FF0000';\n\$foo->image_overlay_percent = 50;");
-    
+
         // -----------
         $handle->image_overlay_color   = '#0000FF';
-        $handle->image_overlay_percent = 5; 
+        $handle->image_overlay_percent = 5;
         TestProcess($handle, '5% overlay #0000FF', "\$foo->image_overlay_color   = '#0000FF';\n\$foo->image_overlay_percent = 5;");
-    
+
         // -----------
         $handle->image_overlay_color   = '#FFFFFF';
-        $handle->image_overlay_percent = 90; 
+        $handle->image_overlay_percent = 90;
         TestProcess($handle, '90% overlay #FFFFFF', "\$foo->image_overlay_color   = '#FFFFFF';\n\$foo->image_overlay_percent = 90;");
-    
+
         // -----------
         $handle->image_brightness      = 25;
         TestProcess($handle, 'brightness 25', "\$foo->image_brightness      = 25;");
-    
+
         // -----------
         $handle->image_brightness      = -25;
         TestProcess($handle, 'brightness -25', "\$foo->image_brightness      = -25;");
-    
+
         // -----------
         $handle->image_contrast        = 75;
         TestProcess($handle, 'contrast 75', "\$foo->image_contrast        = 75;");
-        
+
         // -----------
         $handle->image_threshold        = 20;
         TestProcess($handle, 'threshold filter', "\$foo->image_threshold       = 20;");
-    
+
         // -----------
         $handle->image_greyscale       = true;
         TestProcess($handle, 'greyscale', "\$foo->image_greyscale       = true;");
-    
+
         // -----------
         $handle->image_negative        = true;
         TestProcess($handle, 'negative', "\$foo->image_negative        = true;");
@@ -511,34 +544,34 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
         $handle->image_y               = 200;
         $handle->image_x               = 100;
         $handle->image_rotate          = '90';
-        $handle->image_overlay_color   = '#FF0000'; 
-        $handle->image_overlay_percent = 50; 
+        $handle->image_overlay_color   = '#FF0000';
+        $handle->image_overlay_percent = 50;
         $handle->image_text            = 'verot.net';
         $handle->image_text_color      = '#0000FF';
         $handle->image_text_background = '#FFFFFF';
-        $handle->image_text_position   = 'BL'; 
+        $handle->image_text_position   = 'BL';
         $handle->image_text_padding_x  = 10;
-        $handle->image_text_padding_y  = 2;   
+        $handle->image_text_padding_y  = 2;
         TestProcess($handle, 'brightness, resize, rotation, overlay &amp; label', "\$foo->image_brightness      = 75;\n\$foo->image_resize          = true;\n\$foo->image_y               = 200;\n\$foo->image_x               = 100;\n\$foo->image_rotate          = '90';\n\$foo->image_overlay_color   = '#FF0000';\n\$foo->image_overlay_percent = 50;\n\$foo->image_text            = 'verot.net';\n\$foo->image_text_color      = '#0000FF';\n\$foo->image_text_background = '#FFFFFF';\n\$foo->image_text_position   = 'BL';\n\$foo->image_text_padding_x  = 10;\n\$foo->image_text_padding_y  = 2;");
 
         // -----------
         $handle->image_text            = 'verot.net';
         $handle->image_text_color      = '#000000';
         $handle->image_text_percent    = 80;
-        $handle->image_text_background = '#FFFFFF';  
-        $handle->image_text_background_percent  = 70;  
-        $handle->image_text_font       = 5; 
+        $handle->image_text_background = '#FFFFFF';
+        $handle->image_text_background_percent  = 70;
+        $handle->image_text_font       = 5;
         $handle->image_text_padding    = 20;
         TestProcess($handle, 'overlayed transparent label', "\$foo->image_text            = 'verot.net';\n\$foo->image_text_color      = '#000000';\n\$foo->image_text_percent    = 80;\n\$foo->image_text_background = '#FFFFFF';\n\$foo->image_text_background_percent = 70;\n\$foo->image_text_font       = 5;\n\$foo->image_text_padding    = 20;");
 
         // -----------
         $handle->image_text            = 'verot.net';
         $handle->image_text_direction  = 'v';
-        $handle->image_text_background = '#000000';  
-        $handle->image_text_font       = 2; 
-        $handle->image_text_position   = 'BL'; 
+        $handle->image_text_background = '#000000';
+        $handle->image_text_font       = 2;
+        $handle->image_text_position   = 'BL';
         $handle->image_text_padding_x  = 2;
-        $handle->image_text_padding_y  = 8;    
+        $handle->image_text_padding_y  = 8;
         TestProcess($handle, 'overlayed vertical plain label bottom left', "\$foo->image_text            = 'verot.net';\n\$foo->image_text_direction  = 'v';\n\$foo->image_text_background = '#000000';\n\$foo->image_text_font       = 2;\n\$foo->image_text_position   = 'BL';\n\$foo->image_text_padding_x  = 2;\n\$foo->image_text_padding_y  = 8;");
 
         // -----------
@@ -546,15 +579,15 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
         $handle->image_text            = 'verot.net';
         $handle->image_text_direction  = 'v';
         $handle->image_text_color      = '#FFFFFF';
-        $handle->image_text_background = '#000000'; 
-        $handle->image_text_background_percent = 50; 
+        $handle->image_text_background = '#000000';
+        $handle->image_text_background_percent = 50;
         $handle->image_text_padding    = 5;
         TestProcess($handle, 'overlayed vertical label, into BMP', "\$foo->image_convert         = 'bmp';\n\$foo->image_text            = 'verot.net';\n\$foo->image_text_direction  = 'v';\n\$foo->image_text_color      = '#FFFFFF';\n\$foo->image_text_background = '#000000';\n\$foo->image_text_background_percent = 50;\n\$foo->image_text_padding    = 5;");
 
         // -----------
         $handle->image_text            = 'verot.net';
-        $handle->image_text_percent    = 50; 
-        $handle->image_text_background  = '#0000FF'; 
+        $handle->image_text_percent    = 50;
+        $handle->image_text_background  = '#0000FF';
         $handle->image_text_x          = -5;
         $handle->image_text_y          = -5;
         $handle->image_text_padding    = 5;
@@ -562,8 +595,8 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
 
         // -----------
         $handle->image_text            = 'verot.net';
-        $handle->image_text_background = '#0000FF'; 
-        $handle->image_text_background_percent = 25;  
+        $handle->image_text_background = '#0000FF';
+        $handle->image_text_background_percent = 25;
         $handle->image_text_x          = 5;
         $handle->image_text_y          = 5;
         $handle->image_text_padding    = 20;
@@ -571,31 +604,31 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
 
         // -----------
         $handle->image_text    = "verot.net\nclass\nupload";
-        $handle->image_text_background = '#000000'; 
-        $handle->image_text_background_percent = 75; 
+        $handle->image_text_background = '#000000';
+        $handle->image_text_background_percent = 75;
         $handle->image_text_font       = 1;
         $handle->image_text_padding    = 10;
         TestProcess($handle, 'text label with multiple lines and small font', "\$foo->image_text            = \"verot.net\\nclass\\nupload\";\n\$foo->image_text_background = '#000000';\n\$foo->image_text_background_percent = 75;\n\$foo->image_text_font       = 1;\n\$foo->image_text_padding    = 10;");
 
         // -----------
         $handle->image_text    = "verot.net\nclass\nupload";
-        $handle->image_text_color      = '#000000'; 
-        $handle->image_text_background = '#FFFFFF'; 
-        $handle->image_text_background_percent = 60;  
+        $handle->image_text_color      = '#000000';
+        $handle->image_text_background = '#FFFFFF';
+        $handle->image_text_background_percent = 60;
         $handle->image_text_padding    = 3;
         $handle->image_text_font       = 3;
-        $handle->image_text_alignment  = 'R'; 
-        $handle->image_text_direction  = 'V'; 
+        $handle->image_text_alignment  = 'R';
+        $handle->image_text_direction  = 'V';
         TestProcess($handle, 'vertical multi-lines text, right aligned', "\$foo->image_text            = \"verot.net\\nclass\\nupload\";\n\$foo->image_text_color      = '#000000';\n\$foo->image_text_background = '#FFFFFF';\n\$foo->image_text_background_percent = 60;\n\$foo->image_text_padding    = 3;\n\$foo->image_text_font       = 3;\n\$foo->image_text_alignment  = 'R';\n\$foo->image_text_direction  = 'V';");
 
         // -----------
         $handle->image_text    = "verot.net\nclass\nupload";
-        $handle->image_text_background = '#000000'; 
-        $handle->image_text_background_percent = 50;  
+        $handle->image_text_background = '#000000';
+        $handle->image_text_background_percent = 50;
         $handle->image_text_padding    = 10;
         $handle->image_text_x          = -5;
-        $handle->image_text_y          = -5;        
-        $handle->image_text_line_spacing = 10; 
+        $handle->image_text_y          = -5;
+        $handle->image_text_line_spacing = 10;
         TestProcess($handle, 'text label with 10 pixels of line spacing', "\$foo->image_text            = \"verot.net\\nclass\\nupload\";\n\$foo->image_text_background = '#000000';\n\$foo->image_text_background_percent = 50;\n\$foo->image_text_padding    = 10;\n\$foo->image_text_x          = -5;\n\$foo->image_text_y          = -5;\n\$foo->image_text_line_spacing = 10;");
 
         // -----------
@@ -610,8 +643,8 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
         // -----------
         $handle->image_crop            = '-3 -3 -30 -3';
         $handle->image_text            = '[dst_name] [dst_x]x[dst_y]';
-        $handle->image_text_background = '#6666ff'; 
-        $handle->image_text_color      = '#ffffff'; 
+        $handle->image_text_background = '#6666ff';
+        $handle->image_text_color      = '#ffffff';
         $handle->image_background_color = '#000099';
         $handle->image_text_font       = 2;
         $handle->image_text_y          = -7;
@@ -631,18 +664,18 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
 
         // -----------
         $handle->image_text    = "verot.net\nclass\nupload";
-        $handle->image_text_background = '#000000';  
+        $handle->image_text_background = '#000000';
         $handle->image_text_padding    = 10;
-        $handle->image_text_font = "fonts/bmreceipt.gdf";    
-        $handle->image_text_line_spacing = 2; 
+        $handle->image_text_font = "fonts/bmreceipt.gdf";
+        $handle->image_text_line_spacing = 2;
         TestProcess($handle, 'text label with external GDF font', "\$foo->image_text            = \"verot.net\\nclass\\nupload\";\n\$foo->image_text_background = '#000000';\n\$foo->image_text_padding    = 10;\n\$foo->image_text_font       = \"fonts/bmreceipt.gdf\";\n\$foo->image_text_line_spacing = 2;");
 
         // -----------
         $handle->image_text            = "PHP";
-        $handle->image_text_color      = '#FFFF00'; 
-        $handle->image_text_background = '#FF0000'; 
+        $handle->image_text_color      = '#FFFF00';
+        $handle->image_text_background = '#FF0000';
         $handle->image_text_padding    = 10;
-        $handle->image_text_font = "fonts/atommicclock.gdf";    
+        $handle->image_text_font = "fonts/atommicclock.gdf";
         TestProcess($handle, 'text label with external GDF font', "\$foo->image_text            = 'PHP';\n\$foo->image_text_color      = '#FFFF00';\n\$foo->image_text_background = '#FF0000';\n\$foo->image_text_padding    = 10;\n\$foo->image_text_font       = \"fonts/atommicclock.gdf\";");
 
         // -----------
@@ -652,9 +685,9 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
         // -----------
         $handle->image_reflection_height = '50%';
         $handle->image_text    = "verot.net\nclass\nupload";
-        $handle->image_text_background = '#000000'; 
+        $handle->image_text_background = '#000000';
         $handle->image_text_padding    = 10;
-        $handle->image_text_line_spacing = 10; 
+        $handle->image_text_line_spacing = 10;
         TestProcess($handle, 'text label and 50% reflection', "\$foo->image_text            = \"verot.net\\nclass\\nupload\";\n\$foo->image_text_background = '#000000';\n\$foo->image_text_padding    = 10;\n\$foo->image_text_line_spacing = 10;\n\$foo->image_reflection_height = '50%';");
 
         // -----------
@@ -690,37 +723,37 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
         TestProcess($handle, '50% reflection, pink background, into GIF', "\$foo->image_convert         = 'gif';\n\$foo->image_reflection_height = '50%';\n\$foo->image_default_color    = '#000000';");
 
         // -----------
-        $handle->image_watermark       = "watermark.png"; 
+        $handle->image_watermark       = "watermark.png";
         TestProcess($handle, 'overlayed watermark (alpha transparent PNG)', "\$foo->image_watermark       = 'watermark.png';");
 
         // -----------
-        $handle->image_watermark       = "watermark.png"; 
-        $handle->image_watermark_position = 'R'; 
+        $handle->image_watermark       = "watermark.png";
+        $handle->image_watermark_position = 'R';
         TestProcess($handle, 'overlayed watermark, right position', "\$foo->image_watermark       = 'watermark.png';\n\$foo->image_watermark_position = 'R;");
 
         // -----------
-        $handle->image_watermark       = "watermark.png"; 
-        $handle->image_watermark_x     = 10; 
-        $handle->image_watermark_y     = 10; 
+        $handle->image_watermark       = "watermark.png";
+        $handle->image_watermark_x     = 10;
+        $handle->image_watermark_y     = 10;
         $handle->image_greyscale       = true;
         TestProcess($handle, 'watermark on greyscale pic, absolute position', "\$foo->image_watermark       = 'watermark.png';\n\$foo->image_watermark_x     = 10;\n\$foo->image_watermark_y     = 10;\n\$foo->image_greyscale       = true;");
 
         // -----------
         $handle->image_convert         = 'jpg';
-        $handle->jpeg_size             = 3072; 
+        $handle->jpeg_size             = 3072;
         TestProcess($handle, 'desired JPEG size set to 3KB', "\$foo->image_convert         = 'jpg';\n\$foo->jpeg_size             = 3072;");
 
         // -----------
         $handle->image_convert         = 'jpg';
-        $handle->jpeg_quality          = 10; 
+        $handle->jpeg_quality          = 10;
         TestProcess($handle, 'JPG quality set to 10%', "\$foo->image_convert         = 'jpg';\n\$foo->jpeg_quality          = 10;");
 
         // -----------
         $handle->image_convert         = 'jpg';
-        $handle->jpeg_quality          = 80; 
+        $handle->jpeg_quality          = 80;
         TestProcess($handle, 'JPG quality set to 80%', "\$foo->image_convert         = 'jpg';\n\$foo->jpeg_quality          = 80;");
 
-        
+
     } else {
         // if we are here, the local file failed for some reasons
         echo '<fieldset>';
@@ -729,17 +762,22 @@ if (!array_key_exists('action', $_POST) || $_POST['action'] == 'simple') {
         echo '</fieldset>';
     }
 
-    
+
 }
 
 
-echo '<p><a href="index.html">do another test</a></p>';
+if (!$cli) {
+    echo '<p><a href="index.html">do another test</a></p>';
 
-echo '<pre>';
-echo($handle->log);
-echo '</pre>';
+    echo '<pre>';
+    echo($handle->log);
+    echo '</pre>';
 
-?> 
+?>
 </body>
 
 </html>
+
+<?
+}
+?>

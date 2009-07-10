@@ -65,6 +65,7 @@ form div.form-field  div.relation_row {margin: 6px 0px}
 form div.form-field  div.relation_row .button {margin: 1px !important; position: relative; top: 3px}
 form p.submit a.button  {font-style:normal !important;}
 form p.add  {font-style:normal; padding:12px 0 0; text-align: right;}
+table.form-table td input {width:auto;}
 
 .button-warning:hover {background:#CE0000 none repeat scroll 0 0; color:#FFFFFF;}
 .button {margin: 1px !important}
