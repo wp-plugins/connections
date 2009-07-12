@@ -23,16 +23,9 @@ else
 	
 	if (isset($_POST['submit']))
 	{
-		if (isset($_POST['settings']['allow_public']) && $_POST['settings']['allow_public'] == true)
-		{
-			$plugin_options->setAllowPublic(true);
-		}
-		else
-		{
-			$plugin_options->setAllowPublic(false);
-		}
+		$plugin_options->setAllowPublic($_POST['settings']['allow_public']);
 		
-		if (isset($_POST['settings']['allow_public_override']) && $_POST['settings']['allow_public_override'] == true && !$plugin_options->getAllowPublic())
+		if ($_POST['settings']['allow_public_override'] === 'true' && !$plugin_options->getAllowPublic())
 		{
 			$plugin_options->setAllowPublicOverride(true);
 		}
@@ -44,24 +37,28 @@ else
 		$plugin_options->setImgThumbQuality($_POST['settings']['image']['thumbnail']['quality']);
 		$plugin_options->setImgThumbX($_POST['settings']['image']['thumbnail']['x']);
 		$plugin_options->setImgThumbY($_POST['settings']['image']['thumbnail']['y']);
-		$plugin_options->setImgThumbRatioCrop($_POST['settings']['image']['thumbnail']['ratio_crop']);
-		$plugin_options->setImgThumbRatioFill($_POST['settings']['image']['thumbnail']['ratio_fill']);
+		$plugin_options->setImgThumbCrop($_POST['settings']['image']['thumbnail']['crop']);
 		
 		$plugin_options->setImgEntryQuality($_POST['settings']['image']['entry']['quality']);
 		$plugin_options->setImgEntryX($_POST['settings']['image']['entry']['x']);
 		$plugin_options->setImgEntryY($_POST['settings']['image']['entry']['y']);
-		$plugin_options->setImgEntryRatioCrop($_POST['settings']['image']['entry']['ratio_crop']);
-		$plugin_options->setImgEntryRatioFill($_POST['settings']['image']['entry']['ratio_fill']);
+		$plugin_options->setImgEntryCrop($_POST['settings']['image']['entry']['crop']);
 		
 		$plugin_options->setImgProfileQuality($_POST['settings']['image']['profile']['quality']);
 		$plugin_options->setImgProfileX($_POST['settings']['image']['profile']['x']);
 		$plugin_options->setImgProfileY($_POST['settings']['image']['profile']['y']);
-		$plugin_options->setImgProfileRatioCrop($_POST['settings']['image']['profile']['ratio_crop']);
-		$plugin_options->setImgProfileRatioFill($_POST['settings']['image']['profile']['ratio_fill']);
+		$plugin_options->setImgProfileCrop($_POST['settings']['image']['profile']['crop']);
 		
 		$plugin_options->saveOptions();
+		
+		echo "<div id='message' class='updated fade'>";
+			echo "<p><strong>Settings have been updated.</strong></p>";
+		echo "</div>";
 	}
 	
+	//$plugin_options->setDefaultImageSettings();
+	//$plugin_options->saveOptions();
+	$form =  new formObjects();
 ?>
 	<div class="wrap">
 		<div id="icon-connections" class="icon32">
@@ -83,16 +80,16 @@ else
 								</th>
 								<td>
 									<label for="allow_public">
-										<input type="hidden" value="0" name="settings[allow_public]"/>
-										<input type="checkbox" value="1" name="settings[allow_public]" id="allow_public" 
+										<input type="hidden" value="false" name="settings[allow_public]"/>
+										<input type="checkbox" value="true" name="settings[allow_public]" id="allow_public" 
 											<?php if ($plugin_options->getAllowPublic()) echo 'CHECKED ' ?>
 										/>
 										Allow unregistered visitors and users not logged in
 									</label>
 									
 									<label for="allow_public_override">
-										<input type="hidden" value="0" name="settings[allow_public_override]"/>
-										<input type="checkbox" value="1" name="settings[allow_public_override]" id="allow_public_override" 
+										<input type="hidden" value="false" name="settings[allow_public_override]"/>
+										<input type="checkbox" value="true" name="settings[allow_public_override]" id="allow_public_override" 
 											<?php if ($plugin_options->getAllowPublicOverride()) echo 'CHECKED ' ?>
 											<?php if ($plugin_options->getAllowPublic()) echo 'DISABLED ' ?>
 										/>
@@ -106,12 +103,13 @@ else
 				</div>
 			
 				<div class="form-field connectionsform">
+					<h3>Thumbnail Image Settings</h3>
 					<table class="form-table">
 						<tbody>
 							
 							<tr valign="top">
 								<th scope="row">
-									<label for="image_thumbnail_quality">Thumbnail JPEG Quality</label>
+									<label for="image_thumbnail_quality">JPEG Quality</label>
 								</th>
 								<td>
 									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgThumbQuality() ?>" id="image_thumbnail_quality" name="settings[image][thumbnail][quality]"/>%
@@ -120,7 +118,7 @@ else
 							
 							<tr valign="top">
 								<th scope="row">
-									<label for="image_thumbnail_x">Thumbnail Width</label>
+									<label for="image_thumbnail_x">Width</label>
 								</th>
 								<td>
 									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgThumbX() ?>" id="image_thumbnail_x" name="settings[image][thumbnail][x]"/>px
@@ -129,7 +127,7 @@ else
 							
 							<tr valign="top">
 								<th scope="row">
-									<label for="image_thumbnail_y">Thumbnail Height</label>
+									<label for="image_thumbnail_y">Height</label>
 								</th>
 								<td>
 									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgThumbY() ?>" id="image_thumbnail_y" name="settings[image][thumbnail][y]"/>px
@@ -138,31 +136,10 @@ else
 							
 							<tr valign="top">
 								<th scope="row">
-									Thumbnail Ratio Crop
+									Crop
 								</th>
 								<td>
-									<label for="image_thumbnail_ratio_crop">
-										<input type="hidden" value="0" name="settings[image][thumbnail][ratio_crop]"/>
-										<input type="checkbox" value="1" name="settings[image][thumbnail][ratio_crop]" id="image_thumbnail_ratio_crop" 
-											<?php if ($plugin_options->getImgThumbRatioCrop()) echo 'CHECKED ' ?>
-										/>
-										If checked the image will resize retaining the ratio set by the height and width cropping the excess image
-									</label>
-								</td>
-							</tr>
-							
-							<tr valign="top">
-								<th scope="row">
-									Thumbnail Ratio Fill
-								</th>
-								<td>
-									<label for="image_thumbnail_ratio_fill">
-										<input type="hidden" value="0" name="settings[image][thumbnail][ratio_fill]"/>
-										<input type="checkbox" value="1" name="settings[image][thumbnail][ratio_fill]" id="image_thumbnail_ratio_fill" 
-											<?php if ($plugin_options->getImgThumbRatioFill()) echo 'CHECKED ' ?>
-										/>
-										If checked the image will resize retaining the ratio set by the height and width, fitting the image in the space and filling in the remaining space with color
-									</label>
+									<?php echo $form->buildRadio('settings[image][thumbnail][crop]', 'image_thumbnail_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $plugin_options->getImgThumbCrop()) ?>
 								</td>
 							</tr>
 							
@@ -172,12 +149,13 @@ else
 							
 							
 				<div class="form-field connectionsform">
+					<h3>Entry Image Settings</h3>
 					<table class="form-table">
 						<tbody>
 							
 							<tr valign="top">
 								<th scope="row">
-									<label for="image_entry_quality">Entry JPEG Quality</label>
+									<label for="image_entry_quality">JPEG Quality</label>
 								</th>
 								<td>
 									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgEntryQuality() ?>" id="image_entry_quality" name="settings[image][entry][quality]"/>%
@@ -186,7 +164,7 @@ else
 							
 							<tr valign="top">
 								<th scope="row">
-									<label for="image_entry_x">Entry Width</label>
+									<label for="image_entry_x">Width</label>
 								</th>
 								<td>
 									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgEntryX() ?>" id="image_entry_x" name="settings[image][entry][x]"/>px
@@ -195,7 +173,7 @@ else
 							
 							<tr valign="top">
 								<th scope="row">
-									<label for="image_entry_y">Entry Height</label>
+									<label for="image_entry_y">Height</label>
 								</th>
 								<td>
 									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgEntryY() ?>" id="image_entry_y" name="settings[image][entry][y]"/>px
@@ -204,31 +182,10 @@ else
 							
 							<tr valign="top">
 								<th scope="row">
-									Entry Ratio Crop
+									Crop
 								</th>
 								<td>
-									<label for="image_entry_ratio_crop">
-										<input type="hidden" value="0" name="settings[image][entry][ratio_crop]"/>
-										<input type="checkbox" value="1" name="settings[image][entry][ratio_crop]" id="image_entry_ratio_crop" 
-											<?php if ($plugin_options->getImgEntryRatioCrop()) echo 'CHECKED ' ?>
-										/>
-										If checked the image will resize retaining the ratio set by the height and width cropping the excess image
-									</label>
-								</td>
-							</tr>
-							
-							<tr valign="top">
-								<th scope="row">
-									Entry Ratio Fill
-								</th>
-								<td>
-									<label for="image_entry_ratio_fill">
-										<input type="hidden" value="0" name="settings[image][entry][ratio_fill]"/>
-										<input type="checkbox" value="1" name="settings[image][entry][ratio_fill]" id="image_entry_ratio_fill" 
-											<?php if ($plugin_options->getImgEntryRatioFill()) echo 'CHECKED ' ?>
-										/>
-										If checked the image will resize retaining the ratio set by the height and width, fitting the image in the space and filling in the remaining space with color
-									</label>
+									<?php echo $form->buildRadio('settings[image][entry][crop]', 'image_entry_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $plugin_options->getImgEntryCrop()) ?>
 								</td>
 							</tr>
 							
@@ -237,12 +194,13 @@ else
 				</div>
 							
 				<div class="form-field connectionsform">
+					<h3>Profile Image Settings</h3>
 					<table class="form-table">
 						<tbody>
 							
 							<tr valign="top">
 								<th scope="row">
-									<label for="image_profile_quality">Profile JPEG Quality</label>
+									<label for="image_profile_quality">JPEG Quality</label>
 								</th>
 								<td>
 									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgProfileQuality() ?>" id="image_profile_quality" name="settings[image][profile][quality]"/>%
@@ -251,7 +209,7 @@ else
 							
 							<tr valign="top">
 								<th scope="row">
-									<label for="image_profile_x">Profile Width</label>
+									<label for="image_profile_x">Width</label>
 								</th>
 								<td>
 									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgProfileX() ?>" id="image_profile_x" name="settings[image][profile][x]"/>px
@@ -260,7 +218,7 @@ else
 							
 							<tr valign="top">
 								<th scope="row">
-									<label for="image_profile_y">Profile Height</label>
+									<label for="image_profile_y">Height</label>
 								</th>
 								<td>
 									<input type="text" class="small-text" value="<?php echo $plugin_options->getImgProfileY() ?>" id="image_profile_y" name="settings[image][profile][y]"/>px
@@ -269,31 +227,10 @@ else
 							
 							<tr valign="top">
 								<th scope="row">
-									Profile Ratio Crop
+									Crop
 								</th>
 								<td>
-									<label for="image_profile_ratio_crop">
-										<input type="hidden" value="0" name="settings[image][profile][ratio_crop]"/>
-										<input type="checkbox" value="1" name="settings[image][profile][ratio_crop]" id="image_profile_ratio_crop" 
-											<?php if ($plugin_options->getImgProfileRatioCrop()) echo 'CHECKED ' ?>
-										/>
-										If checked the image will resize retaining the ratio set by the height and width cropping the excess image
-									</label>
-								</td>
-							</tr>
-							
-							<tr valign="top">
-								<th scope="row">
-									Profile Ratio Fill
-								</th>
-								<td>
-									<label for="image_profile_ratio_fill">
-										<input type="hidden" value="0" name="settings[image][profile][ratio_fill]"/>
-										<input type="checkbox" value="1" name="settings[image][profile][ratio_fill]" id="image_profile_ratio_fill" 
-											<?php if ($plugin_options->getImgProfileRatioFill()) echo 'CHECKED ' ?>
-										/>
-										If checked the image will resize retaining the ratio set by the height and width, fitting the image in the space and filling in the remaining space with color
-									</label>
+									<?php echo $form->buildRadio('settings[image][profile][crop]', 'image_profile_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $plugin_options->getImgProfileCrop()) ?>
 								</td>
 							</tr>
 						

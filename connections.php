@@ -35,6 +35,8 @@ require_once(WP_PLUGIN_DIR . '/connections/includes/php_class_upload/class.uploa
 
 //SQL objects
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.sql.php');
+//HTML objects
+require_once(WP_PLUGIN_DIR . '/connections/includes/class.form.php');
 //date objects
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.date.php');
 //entry objects
@@ -49,15 +51,6 @@ require_once(WP_PLUGIN_DIR . '/connections/includes/class.output.php');
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.vcard.php');
 
 
-
-// Define a few constants and defaults until I can get to creating the options page.
-/*define('CN_DEFAULT_JPG_QUALITY', 80);
-define('CN_DEFAULT_PROFILE_X', 300);
-define('CN_DEFAULT_PROFILE_Y', 225);
-define('CN_DEFAULT_ENTRY_X', 225);
-define('CN_DEFAULT_ENTRY_Y', 150);
-define('CN_DEFAULT_THUMBNAIL_X', 80);
-define('CN_DEFAULT_THUMBNAIL_Y', 54);*/
 define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
 define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
 define('CN_TABLE_NAME','connections');
@@ -262,7 +255,6 @@ function _connections_main() {
 		
 		get_currentuserinfo();
 		$plugin_options = new pluginOptions($current_user->ID);
-		//$plugin_options->setOptions($current_user->ID);
 		
 	    if ($_GET['action']=='editform')
 		{
@@ -1361,6 +1353,7 @@ function _connections_install() {
     dbDelta($sql);
 	
 	$plugin_options->setVersion(CN_CURRENT_VERSION);
+	if (!isset($plugin_options->getAllowPublic())) $plugin_options->setAllowPublic(true);
 	$plugin_options->setDefaultCapabilities();
 	$plugin_options->setDefaultImageSettings();
 	$plugin_options->saveOptions();

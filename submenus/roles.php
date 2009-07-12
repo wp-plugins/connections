@@ -54,6 +54,10 @@ else
 		
 		if (isset($_POST['reset_all'])) $plugin_options->setDefaultCapabilities();
 		
+		echo "<div id='message' class='updated fade'>";
+			echo "<p><strong>Role capabilities have been updated.</strong></p>";
+		echo "</div>";
+		
 	}
 
 ?>
@@ -66,70 +70,73 @@ else
 		
 		<form action="admin.php?page=connections/submenus/roles.php" method="post">
 					
-			<table class="widefat">
-				<tbody>
-					
-					<?php
-					
-						foreach ($wp_roles->get_names() as $role => $name)
-						{
+			<div class="form-wrap">
+				
+				<?php
+					foreach ($wp_roles->get_names() as $role => $name)
+					{
+						// the admininistrator should always have all capabilities
+						if ($role == 'administrator') continue;
+						
+						echo '<div class="form-field connectionsform">';
+							echo '<table class="form-table">';
+								echo '<tbody>';
+						
+									echo '<tr valign="top">';
+										echo '<th scope="row">';
+											echo $name;
+										echo '</th>';
+										echo '<td>';
+											$capabilies = $plugin_options->getDefaultCapabilities();
+											
+											foreach ($capabilies as $capability => $capabilityName)
+											{
+												// if unregistered users are permitted to view the entry list there is no need for setting this capability
+												if ($capability == 'connections_view_public' && $plugin_options->getAllowPublic() == true) continue;
+												
+												echo '<label for="' . $role . '_' . $capability . '">';
+												echo '<input type="hidden" name="roles[' . $role . '][capabilities][' . $capability . ']" value="false" />';
+												echo '<input type="checkbox" id="' . $role . '_' . $capability . '" name="roles[' . $role . '][capabilities][' . $capability . ']" value="true" '; 
+												
+												if ($plugin_options->hasCapability($role, $capability)) echo 'CHECKED ';
+												// the admininistrator should always have all capabilities
+												if ($role == 'administrator') echo 'DISABLED ';
+												echo '/> ' . $capabilityName . '</label>' . "\n";
+												
+											}
+											
+											echo '<label for="' . $role . '_reset_capabilities">';
+											echo '<input type="checkbox" id="' . $role . '_reset_capabilities" name="reset[' . $role . ']" value="' . $name . '" ';
+											echo '/> Reset ' . $name . ' Capabilities</label>' . "\n";
+												
+										echo '</td>';
+									echo '</tr>';
+								echo '</tbody>';
+							echo '</table>';
+						echo '</div>';
+					}
+				?>
 							
-							if (isset($alternateRowStyle))
-							{
-								unset($alternateRowStyle);
-							}
-							else
-							{
-								$alternateRowStyle = ' class="alternate" ';
-							}
+				<div class="form-field" style="background-color:#FFFBCC; border: 1px solid #E6DB55; -moz-border-radius:3px; border-style:solid; border-width:1px;">
+					<table class="form-table">
+						<tbody>
 							
-							echo '<tr ' . $alternateRowStyle . 'valign="top">';
-								echo '<th scope="row">';
-									echo $name;
-								echo '</th>';
-								echo '<td>';
-									$capabilies = $plugin_options->getDefaultCapabilities();
-									
-									foreach ($capabilies as $capability => $capabilityName)
-									{
-										// if unregistered users are permitted to view the entry list there is no need for setting this capability
-										if ($capability == 'connections_view_public' && $plugin_options->getAllowPublic() == true) continue;
-										
-										echo '<label for="' . $role . '_' . $capability . '">';
-										echo '<input type="hidden" name="roles[' . $role . '][capabilities][' . $capability . ']" value="false" />';
-										echo '<input type="checkbox" id="' . $role . '_' . $capability . '" name="roles[' . $role . '][capabilities][' . $capability . ']" value="true" '; 
-										
-										if ($plugin_options->hasCapability($role, $capability)) echo 'CHECKED ';
-										// the admininistrator should always have all capabilities
-										if ($role == 'administrator') echo 'DISABLED ';
-										echo '/> ' . $capabilityName . '</label><br />' . "\n";
-										
-									}
-									
-									echo '<label for="' . $role . '_reset_capabilities">';
-									echo '<input type="checkbox" id="' . $role . '_reset_capabilities" name="reset[' . $role . ']" value="' . $name . '" ';
-									echo '/> Reset ' . $name . ' Capabilities</label><br />' . "\n";
-										
-								echo '</td>';
-							echo '</tr>';								
-						}
-					
-					?>
-					
-					<tr valign="top" style="background-color:#FFFBCC;">
-						<th scope="row">
-							Reset
-						</th>
-						<td>
-							<label for="reset_all_roles">
-								<input type="checkbox" id="reset_all_roles" name="reset_all" value="true">
-								Reset All Role Capabilities
-							</label>
-						</td>
-					</tr>
-					
-				</tbody>
-			</table>
+							<tr valign="top">
+								<th scope="row">
+									Reset
+								</th>
+								<td>
+									<label for="reset_all_roles">
+										<input type="checkbox" id="reset_all_roles" name="reset_all" value="true">
+										Reset All Role Capabilities
+									</label>
+								</td>
+							</tr>
+							
+						</tbody>
+					</table>
+				</div>
+			</div>
 			
 		<p class="submit"><input class="button-primary" type="submit" value="Save Changes" name="submit" /></p>
 		
