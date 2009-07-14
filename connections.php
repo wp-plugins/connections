@@ -193,11 +193,12 @@ $defaultConnectionGroupValues = array(
 add_action('admin_menu', 'connections_menus');
 function connections_menus() {
 	//Adds Connections to the top level menu.
-	$connections_admin = add_menu_page('Connections : Administration', 'Connections', 'connections_access', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
+	add_menu_page('Connections : Administration', 'Connections', 'connections_access', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
 	//Adds the Connections sub-menus.
-	add_submenu_page('connections/connections.php', 'Connections : Administration', 'Administration', 'connections_access', 'connections/connections.php', '_connections_main');
+	add_submenu_page('connections/connections.php', 'Connections : Entry List', 'Entry List', 'connections_view_entry_list', 'connections/connections.php', '_connections_main');
+	add_submenu_page('connections/connections.php', 'Connections : Add Entry','Add Entry', 'connections_add_entry','connections/submenus/add.php');
 	add_submenu_page('connections/connections.php', 'Connections : Settings','Settings', 'connections_change_settings','connections/submenus/settings.php');
-	add_submenu_page('connections/connections.php', 'Connections : Roles','Roles', 'connections_change_roles','connections/submenus/roles.php');
+	add_submenu_page('connections/connections.php', 'Connections : Roles &amp; Capabilites','Roles', 'connections_change_roles','connections/submenus/roles.php');
 	add_submenu_page('connections/connections.php', 'Connections : Help','Help', 'connections_view_help','connections/submenus/help.php');
 	
 	// Call the function to add the CSS and JS only on pages related to the Connections plug-in.
@@ -206,8 +207,11 @@ function connections_menus() {
 	 * 		 admin_print_script- hook but it didn't work. I have to assign it to a variable.
 	 * 		 The sub-pages worked as expected.
 	 */
-	add_action( "admin_print_scripts-$connections_admin", 'connections_loadjs_admin_head' );
-	add_action( "admin_print_styles-$connections_admin", 'connections_loadcss_admin_head' );
+	add_action( 'admin_print_scripts-toplevel_page_connections/connections', 'connections_loadjs_admin_head' );
+	add_action( 'admin_print_styles-toplevel_page_connections/connections', 'connections_loadcss_admin_head' );
+	
+	add_action( 'admin_print_scripts-connections/submenus/add.php', 'connections_loadjs_admin_head' );
+	add_action( 'admin_print_styles-connections/submenus/add.php', 'connections_loadcss_admin_head' );
 	
 	add_action( 'admin_print_scripts-connections/submenus/settings.php', 'connections_loadjs_admin_head' );
 	add_action( 'admin_print_styles-connections/submenus/settings.php', 'connections_loadcss_admin_head' );
@@ -346,7 +350,7 @@ function _connections_main() {
 
 			<div class="wrap">
 				<div class="icon32" id="icon-connections"><br/></div>
-				<h2>Connections Administration</h2>
+				<h2>Connections : Entry List</h2>
 				
 				<?php
 				
@@ -1353,7 +1357,7 @@ function _connections_install() {
     dbDelta($sql);
 	
 	$plugin_options->setVersion(CN_CURRENT_VERSION);
-	if (!isset($plugin_options->getAllowPublic())) $plugin_options->setAllowPublic(true);
+	if (!$plugin_options->getAllowPublic()) $plugin_options->setAllowPublic(true);
 	$plugin_options->setDefaultCapabilities();
 	$plugin_options->setDefaultImageSettings();
 	$plugin_options->saveOptions();

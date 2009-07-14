@@ -163,13 +163,12 @@ class pluginOptions
         
 		if($allowPublic === '0' || $allowPublic === 'true' || $allowPublic === true)
 		{
-			$allowPublic = true;
+			$this->allowPublic = true;
 		}
 		else{
-			$allowPublic = false;
+			$this->allowPublic = false;
 		}
 		
-		$this->allowPublic = $allowPublic;
     }
 
     /**
