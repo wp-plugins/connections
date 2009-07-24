@@ -134,8 +134,6 @@ function _connections_main() {
 		
 	    if ($_GET['action']=='editform')
 		{
-			$entryForm = new entryForm();
-			
 			/*
 			 * Check whether user can edit or copy/add an entry
 			 */
@@ -154,29 +152,33 @@ function _connections_main() {
 						text-align:center;
 						width:700px">You do not have sufficient permissions to access this page.</p>');
 			}
-			
-			$row = new entry();
-			$row = $row->get($_GET['id']);
-			if (isset($_GET['copyid']))
-			{
-				$formID = "entry_form";
-				$formAction = "add";
-				$inputName = "save";
-			}
 			else
 			{
-				$formID = "entry_form";
-				$formAction = "update";
-				$inputName = "save";
-			}
+				$entryForm = new entryForm();
+				$entry = new entry();
+				$entry = $entry->get($_GET['id']);
+				
+				if (isset($_GET['copyid']))
+				{
+					$formID = "entry_form";
+					$formAction = "add";
+					$inputName = "save";
+				}
+				else
+				{
+					$formID = "entry_form";
+					$formAction = "update";
+					$inputName = "save";
+				}
+					
 ?>
 			<div class="wrap">
 				<div class="form-wrap" style="width:600px; margin: 0 auto;">
 					<h2><a name="new"></a>Edit Entry</h2>
 					
-					<form action="admin.php?page=connections/connections.php&action=<?php echo $formAction ?>&id=<?php echo $row->id; ?>" method="post" enctype="multipart/form-data">
+					<form action="admin.php?page=connections/connections.php&action=<?php echo $formAction ?>&id=<?php echo $entry->id; ?>" method="post" enctype="multipart/form-data">
 					<?php 
-						echo $entryForm->entryForm($row);
+						echo $entryForm->entryForm($entry);
 					?>
 					<input type="hidden" name="formId" value="<?php echo $formID ?>" />
 					<input type="hidden" name="token" value="<?php echo _formtoken($formID); ?>" />
@@ -189,13 +191,17 @@ function _connections_main() {
 				</div>
 			</div>
 <?php	
-			unset($row);
-		} else {
+			}
+				unset($entry);
+		}
+		else
+		{
 	    	
 			/*
 			 * Check whether user can access Connections
 			 */
-			if(!current_user_can('connections_view_entry_list')) {
+			if(!current_user_can('connections_view_entry_list'))
+			{
 				wp_die('<p id="error-page" style="-moz-background-clip:border;
 						-moz-border-radius:11px;
 						background:#FFFFFF none repeat scroll 0 0;
