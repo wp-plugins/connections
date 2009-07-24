@@ -139,7 +139,7 @@ else
 									Crop
 								</th>
 								<td>
-									<?php echo $form->buildRadio('settings[image][thumbnail][crop]', 'image_thumbnail_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $plugin_options->getImgThumbCrop()) ?>
+									<?php echo $form->buildRadio('settings[image][thumbnail][crop]', 'image_thumbnail_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $plugin_options->getImgThumbCrop()); ?>
 								</td>
 							</tr>
 							
@@ -185,7 +185,7 @@ else
 									Crop
 								</th>
 								<td>
-									<?php echo $form->buildRadio('settings[image][entry][crop]', 'image_entry_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $plugin_options->getImgEntryCrop()) ?>
+									<?php echo $form->buildRadio('settings[image][entry][crop]', 'image_entry_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $plugin_options->getImgEntryCrop()); ?>
 								</td>
 							</tr>
 							
@@ -230,7 +230,7 @@ else
 									Crop
 								</th>
 								<td>
-									<?php echo $form->buildRadio('settings[image][profile][crop]', 'image_profile_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $plugin_options->getImgProfileCrop()) ?>
+									<?php echo $form->buildRadio('settings[image][profile][crop]', 'image_profile_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $plugin_options->getImgProfileCrop()); ?>
 								</td>
 							</tr>
 						

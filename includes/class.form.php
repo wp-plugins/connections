@@ -5,9 +5,33 @@
  */
 class formObjects
 {
-	private $formAction;
-	private $formMethod;
-	private $formEncType;
+	/**
+	 * @todo
+	 * Finish adding form tag attributes.
+	 */
+	/**
+	 * @return string HTML form open tag
+	 * @param array $attr
+	 */
+	 public function open($attr)
+	{
+		if ($attr['name'] != null) $name = 'name="' . $attr['name'] . '" ';
+		if ($attr['action'] != null) $action = 'action="' . $attr['action'] . '" ';
+		if ($attr['accept'] != null) $accept = 'accept="' . $attr['accept'] . '" ';
+		if ($attr['accept-charset'] != null) $acceptcharset = 'accept-charset="' . $attr['accept-charset'] . '" ';
+		if ($attr['enctype'] != null) $enctype = 'enctype="' . $attr['enctype'] . '" ';
+		if ($attr['method'] != null) $method = 'method="' . $attr['method'] . '" ';
+				
+		return '<form ' . $action . $method . $enctype . '>';
+	}
+	
+	/**
+	 * @return string HTML close tag
+	 */
+	public function close()
+	{
+		return '</form>';
+	}
 	
 	//Function inspired from:
 	//http://www.melbournechapter.net/wordpress/programming-languages/php/cman/2006/06/16/php-form-input-and-cross-site-attacks/
@@ -18,7 +42,6 @@ class formObjects
 	 */
 	public function token($formId)
 	{
-		
 		$token = md5(uniqid(rand(), true));
 		@session_start();
 		$_SESSION['connections']['formTokens'][$formId]['token'] = $token;
@@ -95,15 +118,146 @@ class formObjects
 
 class entryForm
 {
+	private $defaultAddressTypes	=	array
+											(
+												''=>'Select',
+												'home'=>'Home',
+												'work'=>'Work',
+												'school'=>'School',
+												'other'=>'Other'
+											);
+
+	private $defaultPhoneNumberValues	=	array
+												(
+													array
+													(
+														'type'=>'homephone',
+														'name'=>'Home Phone',
+														'number'=>null,
+														'visibility'=>'public'
+													),
+													array
+													(
+														'type'=>'homefax',
+														'name'=>'Home Fax',
+														'number'=>null,
+														'visibility'=>'public'
+													),
+													array
+													(
+														'type'=>'cellphone',
+														'name'=>'Cell Phone',
+														'number'=>null,
+														'visibility'=>'public'
+													),
+													array
+													(
+														'type'=>'workphone',
+														'name'=>'Work Phone',
+														'number'=>null,
+														'visibility'=>'public'
+													),
+													array
+													(
+														'type'=>'workfax',
+														'name'=>'Work Fax',
+														'number'=>null,
+														'visibility'=>'public'
+													),
+												);
+	
+	private $defaultEmailValues = 	array
+										(
+											array
+											(
+												'type'=>'personal',
+												'name'=>'Personal Email',
+												'address'=>null,
+												'visibility'=>'public'
+											),
+											array(
+												'type'=>'work',
+												'name'=>'Work Email',
+												'address'=>null,
+												'visibility'=>'public'
+											 )
+										);
+	
+	private $defaultIMValues =	array
+									(
+										array
+										(
+											'type'=>'aim',
+											'name'=>'AIM',
+											'id'=>null,
+											'visibility'=>'public'
+										),
+										array
+										(
+											'type'=>'yahoo',
+											'name'=>'Yahoo IM',
+											'id'=>null,
+											'visibility'=>'public'
+										),
+										array
+										(
+											'type'=>'jabber',
+											'name'=>'Jabber / Google Talk',
+											'id'=>null,
+											'visibility'=>'public'
+										),
+										array
+										(
+											'type'=>'messenger',
+											'name'=>'Messenger',
+											'id'=>null,
+											'visibility'=>'public'
+										),
+									);
+	
+	private $defaultConnectionGroupValues = array(
+											'' =>"Select Relation",
+											'aunt' =>"Aunt",
+											'brother' =>"Brother",
+											'brotherinlaw' =>"Brother-in-law",
+											'cousin' =>"Cousin",
+											'daughter' =>"Daughter",
+											'daughterinlaw' =>"Daughter-in-law",
+											'father' =>"Father",
+											'fatherinlaw' =>"Father-in-law",
+											'granddaughter' =>"Grand Daughter",
+											'grandfather' =>"Grand Father",
+											'grandmother' =>"Grand Mother",
+											'grandson' =>"Grand Son",
+											'greatgrandmother' =>"Great Grand Mother",
+											'greatgrandfather' =>"Great Grand Father",
+											'husband' =>"Husband",
+											'mother' =>"Mother",
+											'motherinlaw' =>"Mother-in-law",
+											'nephew' =>"Nephew",
+											'niece' =>"Niece",
+											'sister' =>"Sister",
+											'sisterinlaw' =>"Sister-in-law",
+											'son' =>"Son",
+											'soninlaw' =>"Son-in-law",
+											'stepbrother' =>"Step Brother",
+											'stepdaughter' =>"Step Daughter",
+											'stepfather' =>"Step Father",
+											'stepmother' =>"Step Mother",
+											'stepsister' =>"Step Sister",
+											'stepson' =>"Step Son",
+											'uncle' =>"Uncle",
+											'wife' =>"Wife"
+											);
+	
 	/**
-	 * Builds the input/edit form.
+	 * Builds the input/edit entry form.
 	 * @return HTML form
 	 * @param object $data[optional]
 	 */
-	function entryForm($data=null)
+	function entryForm($data = null)
 	{
-		global $defaultAddressTypes, $defaultEmailValues, $defaultIMValues, $defaultPhoneNumberValues, $defaultConnectionGroupValues;
-		
+		$form = new formObjects();
 		$entry = new entry($data);
 		$addressObject = new addresses();
 		$phoneNumberObject = new phoneNumber();
@@ -120,7 +274,7 @@ class entryForm
 	    $out =
 		'
 		<div class="form-field connectionsform">	
-				<span class="radio_group">' . _build_radio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Connection Group"=>"connection_group"),$defaultEntryType) . '</span>
+				<span class="radio_group">' . $form->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Connection Group"=>"connection_group"),$defaultEntryType) . '</span>
 		</div>
 		
 		<div id="connection_group" class="form-field connectionsform">
@@ -132,7 +286,7 @@ class entryForm
 					// --> Start template for Connection Group <-- \\
 					$out .= '<textarea id="relation_row_base" style="display: none">';
 						$out .= _connections_get_entry_select('connection_group[::FIELD::][entry_id]');
-						$out .= _build_select('connection_group[::FIELD::][relation]', $defaultConnectionGroupValues);
+						$out .= $form->buildSelect('connection_group[::FIELD::][relation]', $this->defaultConnectionGroupValues);
 					$out .= '</textarea>';
 					// --> End template for Connection Group <-- \\
 					
@@ -146,7 +300,7 @@ class entryForm
 							
 							$out .= '<div id="relation_row_' . $relation->getId() . '" class="relation_row">';
 								$out .= _connections_get_entry_select('connection_group[' . $relation->getId() . '][entry_id]', $key);
-								$out .= _build_select('connection_group[' . $relation->getId() . '][relation]', $defaultConnectionGroupValues, $value);
+								$out .= $form->buildSelect('connection_group[' . $relation->getId() . '][relation]', $defaultConnectionGroupValues, $value);
 								$out .= '<a href="#" id="remove_button_' . $i . '" class="button button-warning" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
 							$out .= '</div>';
 							
@@ -189,7 +343,7 @@ class entryForm
 				if ($entry->getImageLinked()) {
 					if ($entry->getImageDisplay()) $selected = "show"; else $selected = "hidden";
 					
-					$imgOptions = _build_radio("imgOptions", "imgOptionID_", array("Display"=>"show", "Not Displayed"=>"hidden", "Remove"=>"remove"), $selected);
+					$imgOptions = $form->buildRadio("imgOptions", "imgOptionID_", array("Display"=>"show", "Not Displayed"=>"hidden", "Remove"=>"remove"), $selected);
 					$out .= "<div style='text-align:center'> <img src='" . CN_IMAGE_BASE_URL . $entry->getImageNameProfile() . "' /> <br /> <span class='radio_group'>" . $imgOptions . "</span></div> <br />"; 
 				}
 				
@@ -205,7 +359,7 @@ class entryForm
 		{
 			$selectName = "address["  . $ticker->getcount() . "][type]";
 			$out .= "<div class='form-field connectionsform'>";
-				$out .= "<span class='selectbox alignright'>Type: " . _build_select($selectName,$defaultAddressTypes,$addressObject->getType($addressRow)) . "</span>";
+				$out .= "<span class='selectbox alignright'>Type: " . $form->buildSelect($selectName,$this->defaultAddressTypes,$addressObject->getType($addressRow)) . "</span>";
 				$out .= "<div class='clear'></div>";
 				
 				$out .= "<label for='address'>Address Line 1:</label>";
@@ -238,7 +392,7 @@ class entryForm
 		}
 		$ticker->reset();
 		
-		if ($data->phone_numbers != null) $phoneNumberValues = $entry->getPhoneNumbers(); else $phoneNumberValues = $defaultPhoneNumberValues;
+		if ($data->phone_numbers != null) $phoneNumberValues = $entry->getPhoneNumbers(); else $phoneNumberValues = $this->defaultPhoneNumberValues;
 		$out .= "<div class='form-field connectionsform'>";
 			$ticker->reset();
 			foreach ($phoneNumberValues as $phoneNumberRow)
@@ -255,7 +409,7 @@ class entryForm
 		$out .= "</div>";
 
 
-		if ($data->email != null) $emailValues = $entry->getEmailAddresses(); else $emailValues = $defaultEmailValues;
+		if ($data->email != null) $emailValues = $entry->getEmailAddresses(); else $emailValues = $this->defaultEmailValues;
 		$out .= "<div class='form-field connectionsform'>";
 			$ticker->reset();
 			foreach ($emailValues as $emailRow)
@@ -273,7 +427,7 @@ class entryForm
 		$out .= "</div>";
 
 
-		if ($data->im != null) $imValues = $entry->getIm(); else $imValues = $defaultIMValues;
+		if ($data->im != null) $imValues = $entry->getIm(); else $imValues = $this->defaultIMValues;
 		$out .= "<div class='form-field connectionsform im'>";
 			$ticker->reset();
 			foreach ($imValues as $imRow)
@@ -304,11 +458,11 @@ class entryForm
 		$out .= "</div>";
 		
 		$out .= "<div class='form-field connectionsform celebrate'>
-				<span class='selectbox'>Birthday: " . _build_select('birthday_month',$date->months,$date->getMonth($entry->getBirthday())) . "</span>
-				<span class='selectbox'>" . _build_select('birthday_day',$date->days,$date->getDay($entry->getBirthday())) . "</span>
+				<span class='selectbox'>Birthday: " . $form->buildSelect('birthday_month',$date->months,$date->getMonth($entry->getBirthday())) . "</span>
+				<span class='selectbox'>" . $form->buildSelect('birthday_day',$date->days,$date->getDay($entry->getBirthday())) . "</span>
 				<br />
-				<span class='selectbox'>Anniversary: " . _build_select('anniversary_month',$date->months,$date->getMonth($entry->getAnniversary())) . "</span>
-				<span class='selectbox'>" . _build_select('anniversary_day',$date->days,$date->getDay($entry->getAnniversary())) . "</span>
+				<span class='selectbox'>Anniversary: " . $form->buildSelect('anniversary_month',$date->months,$date->getMonth($entry->getAnniversary())) . "</span>
+				<span class='selectbox'>" . $form->buildSelect('anniversary_day',$date->days,$date->getDay($entry->getAnniversary())) . "</span>
 		</div>
 		
 		<div class='form-field connectionsform'>
@@ -322,9 +476,234 @@ class entryForm
 		</div>
 		
 		<div class='form-field connectionsform'>	
-				<span class='radio_group'>" . _build_radio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$defaultVisibility) . "</span>
+				<span class='radio_group'>" . $form->buildRadio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$defaultVisibility) . "</span>
 		</div>";
 		return $out;
+	}
+	
+	public function processEntry()
+	{
+		$entry = new entry();
+		
+		// If copying/editing an entry, the entry data is loaded into the class 
+		// properties and then properties are overwritten by the POST data as needed.
+		if (isset($_GET['id']))
+		{
+			$entry->set($_GET['id']);
+		}
+							
+		$entry->setEntryType($_POST['entry_type']);
+		$entry->setGroupName($_POST['connection_group_name']);
+		$entry->setConnectionGroup($_POST['connection_group']);
+		$entry->setFirstName($_POST['first_name']);
+		$entry->setLastName($_POST['last_name']);
+		$entry->setTitle($_POST['title']);
+		$entry->setOrganization($_POST['organization']);
+		$entry->setDepartment($_POST['department']);
+		$entry->setAddresses($_POST['address']);
+		$entry->setPhoneNumbers($_POST['phone_numbers']);
+		$entry->setEmailAddresses($_POST['email']);
+		$entry->setIm($_POST['im']);
+		$entry->setWebsites($_POST['websites']);
+		$entry->setBirthday($_POST['birthday_day'], $_POST['birthday_month']);
+		$entry->setAnniversary($_POST['anniversary_day'], $_POST['anniversary_month']);
+		$entry->setBio($_POST['bio']);
+		$entry->setNotes($_POST['notes']);
+		$entry->setVisibility($_POST['visibility']);
+										
+		if ($_FILES['original_image']['error'] != 4) {
+			$image_proccess_results = $this->processImages();
+			
+			$entry->setImageLinked(true);
+			$entry->setImageDisplay(true);
+			$entry->setImageNameThumbnail($image_proccess_results['image_names']['thumbnail']);
+			$entry->setImageNameCard($image_proccess_results['image_names']['entry']);
+			$entry->setImageNameProfile($image_proccess_results['image_names']['profile']);
+			$entry->setImageNameOriginal($image_proccess_results['image_names']['original']);
+			
+			$error = $image_proccess_results['error'];
+			$success = $image_proccess_results['success'];
+		}
+		
+		// If copying an entry, the image visibility property is set based on the user's choice.
+		// NOTE: This must come after the image processing.
+		if (isset($_POST['imgOptions']))
+		{
+			switch ($_POST['imgOptions'])
+			{
+				case 'remove':
+					$entry->setImageDisplay(false);
+					$entry->setImageLinked(false);
+					
+					/** @TODO remove the images from the server **/
+				break;
+				
+				case 'hidden':
+					$entry->setImageDisplay(false);
+				break;
+				
+				case 'show':
+					$entry->setImageDisplay(true);
+				break;
+				
+				default:
+					$entry->setImageDisplay(false);
+				break;
+			}
+		}
+		
+		switch ($_GET['action'])
+		{
+			case 'add':
+				if ($entry->save() === FALSE)
+				{
+					$error = '<p><strong>Entry could not be added.</strong></p>';
+				}
+				$success .= "<p><strong>Entry added.</strong></p> \n";
+			break;
+			
+			case 'update':
+				if ($entry->update() === FALSE)
+				{
+					$error = '<p><strong>Entry could not be updated.</strong></p>';
+				}
+				
+				$success .= "<p><strong>The entry has been updated.</strong></p> \n";
+			break;
+		}
+							
+		if (!$error)
+		{
+			unset($_SESSION['connections']['formTokens']);
+			unset($entry);
+			
+			$message = '<div id="message" class="updated fade">';
+				$message .= $success;
+			$message .= '</div>';
+		}
+		else
+		{
+			unset($_SESSION['connections']['formTokens']);
+			unset($entry);
+			
+			$message = '<div id="notice" class="error">';
+				$message .= $error;
+			$message .= '</div>';
+		}	
+		
+		return $message;
+	}
+	
+	private function processImages()
+	{
+		global $current_user;
+		
+		$plugin_options = new pluginOptions($current_user->ID);
+		// Uses the upload.class.php to handle file uploading and image manipulation.
+		
+			$process_image = new Upload($_FILES['original_image']);
+			$image['source'] = $process_image->file_src_name_body;
+			
+			if ($process_image->uploaded) {
+				// Saves the uploaded image with no changes to the wp_content/connection_images/ dir.
+				// If needed this will create the upload dir and chmod it.
+				$process_image->auto_create_dir		= true;
+				$process_image->auto_chmod_dir		= true;
+				$process_image->file_safe_name		= true;
+				$process_image->file_auto_rename	= true;
+				$process_image->file_name_body_add= '_original';
+				$process_image->image_convert		= 'jpg';
+				$process_image->jpeg_quality		= 80;
+				$process_image->Process(CN_IMAGE_PATH);
+				if ($process_image->processed) {
+					$success .= "<p><strong>Uploaded image saved.</strong></p> \n";
+					//$image_names['original'] = $process_image->file_dst_name;
+					$image['original'] = $process_image->file_dst_name;
+				} else {
+					$error .= "<p><strong>Uploaded could not be saved to the destination folder.</strong></p> \n
+							   <p><strong>Error: </strong>" . $process_image->error . "</p> \n";
+				}
+				
+				// Creates the profile image and saves it to the wp_content/connection_images/ dir.
+				// If needed this will create the upload dir and chmod it.
+				$process_image->auto_create_dir		= true;
+				$process_image->auto_chmod_dir		= true;
+				$process_image->file_safe_name		= true;
+				$process_image->file_auto_rename	= true;
+				$process_image->file_name_body_add= '_profile';
+				$process_image->image_convert		= 'jpg';
+				$process_image->jpeg_quality		= $plugin_options->getImgProfileQuality();
+				$process_image->image_resize		= true;
+				$process_image->image_ratio_crop	= (bool) $plugin_options->getImgProfileRatioCrop();
+				$process_image->image_ratio_fill	= (bool) $plugin_options->getImgProfileRatioFill();
+				$process_image->image_y				= $plugin_options->getImgProfileY();
+				$process_image->image_x				= $plugin_options->getImgProfileX();
+				$process_image->Process(CN_IMAGE_PATH);
+				if ($process_image->processed) {
+					$success .= "<p><strong>Profile image created and saved.</strong></p> \n";
+					//$image_names['profile'] = $process_image->file_dst_name;
+					$image['profile'] = $process_image->file_dst_name;
+				} else {
+					$error .= "<p><strong>Profile image could not be created and/or saved to the destination folder.</strong></p> \n
+							   <p><strong>Error:</strong> " . $process_image->error . "</p> \n";
+				}						
+				
+				// Creates the entry image and saves it to the wp_content/connection_images/ dir.
+				// If needed this will create the upload dir and chmod it.
+				$process_image->auto_create_dir		= true;
+				$process_image->auto_chmod_dir		= true;
+				$process_image->file_safe_name		= true;
+				$process_image->file_auto_rename	= true;
+				$process_image->file_name_body_add= '_entry';
+				$process_image->image_convert		= 'jpg';
+				$process_image->jpeg_quality		= $plugin_options->getImgEntryQuality();
+				$process_image->image_resize		= true;
+				$process_image->image_ratio_crop	= (bool) $plugin_options->getImgEntryRatioCrop();
+				$process_image->image_ratio_fill	= (bool) $plugin_options->getImgEntryRatioFill();
+				$process_image->image_y				= $plugin_options->getImgEntryY();
+				$process_image->image_x				= $plugin_options->getImgEntryX();
+				$process_image->Process(CN_IMAGE_PATH);
+				if ($process_image->processed) {
+					$success .= "<p><strong>Entry image created and saved.</strong></p> \n";
+					//$image_names['entry'] = $process_image->file_dst_name;
+					$image['entry'] = $process_image->file_dst_name;
+				} else {
+					$error .= "<p><strong>Entry image could not be created and/or saved to the destination folder.</strong></p> \n
+							   <p><strong>Error:</strong> " . $process_image->error . "</p> \n";
+				}
+				
+				// Creates the thumbnail image and saves it to the wp_content/connection_images/ dir.
+				// If needed this will create the upload dir and chmod it.
+				$process_image->auto_create_dir		= true;
+				$process_image->auto_chmod_dir		= true;
+				$process_image->file_safe_name		= true;
+				$process_image->file_auto_rename	= true;
+				$process_image->file_name_body_add= '_thumbnail';
+				$process_image->image_convert		= 'jpg';
+				$process_image->jpeg_quality		= $plugin_options->getImgThumbQuality();
+				$process_image->image_resize		= true;
+				$process_image->image_ratio_crop	= (bool) $plugin_options->getImgThumbRatioCrop();
+				$process_image->image_ratio_fill	= (bool) $plugin_options->getImgThumbRatioFill();
+				$process_image->image_y				= $plugin_options->getImgThumbY();
+				$process_image->image_x				= $plugin_options->getImgThumbX();
+				$process_image->Process(CN_IMAGE_PATH);
+				if ($process_image->processed) {
+					$success .= "<p><strong>Thumbnail image created and saved.</strong></p> \n";
+					//$image_names['thumbnail'] = $process_image->file_dst_name;
+					$image['thumbnail'] = $process_image->file_dst_name;
+				} else {
+					$error .= "<p><strong>Thumbnail image could not be created and/or saved to the destination folder.</strong></p> \n
+							   <p><strong>Error:</strong> " . $process_image->error . "</p> \n";
+				}
+				
+				//$serial_image_options = serialize($image_options);
+				$process_image->Clean();
+			} else {
+				$error = "<p><strong>Image could not be uploaded.</strong></p> \n
+						  <p><strong>Error: </strong>" . $process_image->error . "</p> \n";
+			}
+		$results = array('success'=>$success, 'error'=>$error, 'image_names'=>$image);
+		return $results;
 	}
 }
 

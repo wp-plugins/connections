@@ -36,7 +36,6 @@ class pluginOptions
 	private $currentUserID;
 	
 	private $defaultCapabilities = array(
-								'connections_access' => 'Access Connections',
 								'connections_view_entry_list' => 'View Entry List',
 								'connections_add_entry' => 'Add Entry',
 								'connections_edit_entry' => 'Edit Entry',
@@ -99,12 +98,14 @@ class pluginOptions
 		$this->imgEntryQuality = $this->options['settings']['image']['entry']['quality'];
 		$this->imgEntryX = $this->options['settings']['image']['entry']['x'];
 		$this->imgEntryY = $this->options['settings']['image']['entry']['y'];
+		$this->imgEntryCrop = $this->options['settings']['image']['entry']['crop'];
 		$this->imgEntryRatioCrop = $this->options['settings']['image']['entry']['ratio_crop'];
 		$this->imgEntryRatioFill = $this->options['settings']['image']['entry']['ratio_fill'];
 		
 		$this->imgProfileQuality = $this->options['settings']['image']['profile']['quality'];
 		$this->imgProfileX = $this->options['settings']['image']['profile']['x'];
 		$this->imgProfileY = $this->options['settings']['image']['profile']['y'];
+		$this->imgProfileCrop = $this->options['settings']['image']['profile']['crop'];
 		$this->imgProfileRatioCrop = $this->options['settings']['image']['profile']['ratio_crop'];
 		$this->imgProfileRatioFill = $this->options['settings']['image']['profile']['ratio_fill'];
 	}
@@ -132,12 +133,14 @@ class pluginOptions
 		$this->options['settings']['image']['entry']['quality'] = $this->imgEntryQuality;
 		$this->options['settings']['image']['entry']['x'] = $this->imgEntryX;
 		$this->options['settings']['image']['entry']['y'] = $this->imgEntryY;
+		$this->options['settings']['image']['entry']['crop'] = $this->imgEntryCrop;
 		$this->options['settings']['image']['entry']['ratio_crop'] = $this->imgEntryRatioCrop;
 		$this->options['settings']['image']['entry']['ratio_fill'] = $this->imgEntryRatioFill;
 		
 		$this->options['settings']['image']['profile']['quality'] = $this->imgProfileQuality;
 		$this->options['settings']['image']['profile']['x'] = $this->imgProfileX;
 		$this->options['settings']['image']['profile']['y'] = $this->imgProfileY;
+		$this->options['settings']['image']['profile']['crop'] = $this->imgProfileCrop;
 		$this->options['settings']['image']['profile']['ratio_crop'] = $this->imgProfileRatioCrop;
 		$this->options['settings']['image']['profile']['ratio_fill'] = $this->imgProfileRatioFill;
 		

@@ -26,8 +26,8 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 ----------------------------------------
 */
 
-session_start();
-$_SESSION['connections']['active'] = true;
+//session_start();
+//$_SESSION['connections']['active'] = true;
 //session_write_close();
 
 //GPL PHP upload class from http://www.verot.net/php_class_upload.htm
@@ -35,7 +35,7 @@ require_once(WP_PLUGIN_DIR . '/connections/includes/php_class_upload/class.uploa
 
 //SQL objects
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.sql.php');
-//HTML objects
+//HTML FORM objects
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.form.php');
 //date objects
 require_once(WP_PLUGIN_DIR . '/connections/includes/class.date.php');
@@ -56,144 +56,12 @@ define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
 define('CN_TABLE_NAME','connections');
 define('CN_CURRENT_VERSION', '0.5.2');
 
-$defaultAddressTypes	=	array
-							(
-								''=>'Select',
-								'home'=>'Home',
-								'work'=>'Work',
-								'school'=>'School',
-								'other'=>'Other'
-							);
-
-$defaultPhoneNumberValues	=	array
-								(
-									array
-									(
-										'type'=>'homephone',
-										'name'=>'Home Phone',
-										'number'=>null,
-										'visibility'=>'public'
-									),
-									array
-									(
-										'type'=>'homefax',
-										'name'=>'Home Fax',
-										'number'=>null,
-										'visibility'=>'public'
-									),
-									array
-									(
-										'type'=>'cellphone',
-										'name'=>'Cell Phone',
-										'number'=>null,
-										'visibility'=>'public'
-									),
-									array
-									(
-										'type'=>'workphone',
-										'name'=>'Work Phone',
-										'number'=>null,
-										'visibility'=>'public'
-									),
-									array
-									(
-										'type'=>'workfax',
-										'name'=>'Work Fax',
-										'number'=>null,
-										'visibility'=>'public'
-									),
-								);
-
-$defaultEmailValues = 	array
-						(
-							array
-							(
-								'type'=>'personal',
-								'name'=>'Personal Email',
-								'address'=>null,
-								'visibility'=>'public'
-							),
-							array(
-								'type'=>'work',
-								'name'=>'Work Email',
-								'address'=>null,
-								'visibility'=>'public'
-							 )
-						);
-
-$defaultIMValues =	array
-					(
-						array
-						(
-							'type'=>'aim',
-							'name'=>'AIM',
-							'id'=>null,
-							'visibility'=>'public'
-						),
-						array
-						(
-							'type'=>'yahoo',
-							'name'=>'Yahoo IM',
-							'id'=>null,
-							'visibility'=>'public'
-						),
-						array
-						(
-							'type'=>'jabber',
-							'name'=>'Jabber / Google Talk',
-							'id'=>null,
-							'visibility'=>'public'
-						),
-						array
-						(
-							'type'=>'messenger',
-							'name'=>'Messenger',
-							'id'=>null,
-							'visibility'=>'public'
-						),
-					);
-
-$defaultConnectionGroupValues = array(
-										'' =>"Select Relation",
-										'aunt' =>"Aunt",
-										'brother' =>"Brother",
-										'brotherinlaw' =>"Brother-in-law",
-										'cousin' =>"Cousin",
-										'daughter' =>"Daughter",
-										'daughterinlaw' =>"Daughter-in-law",
-										'father' =>"Father",
-										'fatherinlaw' =>"Father-in-law",
-										'granddaughter' =>"Grand Daughter",
-										'grandfather' =>"Grand Father",
-										'grandmother' =>"Grand Mother",
-										'grandson' =>"Grand Son",
-										'greatgrandmother' =>"Great Grand Mother",
-										'greatgrandfather' =>"Great Grand Father",
-										'husband' =>"Husband",
-										'mother' =>"Mother",
-										'motherinlaw' =>"Mother-in-law",
-										'nephew' =>"Nephew",
-										'niece' =>"Niece",
-										'sister' =>"Sister",
-										'sisterinlaw' =>"Sister-in-law",
-										'son' =>"Son",
-										'soninlaw' =>"Son-in-law",
-										'stepbrother' =>"Step Brother",
-										'stepdaughter' =>"Step Daughter",
-										'stepfather' =>"Step Father",
-										'stepmother' =>"Step Mother",
-										'stepsister' =>"Step Sister",
-										'stepson' =>"Step Son",
-										'uncle' =>"Uncle",
-										'wife' =>"Wife"
-										);
-
 
 // This adds the menu items WordPress and calls the function to load my CSS and JS.
 add_action('admin_menu', 'connections_menus');
 function connections_menus() {
 	//Adds Connections to the top level menu.
-	add_menu_page('Connections : Administration', 'Connections', 'connections_access', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
+	add_menu_page('Connections : Administration', 'Connections', 'connections_view_entry_list', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
 	//Adds the Connections sub-menus.
 	add_submenu_page('connections/connections.php', 'Connections : Entry List', 'Entry List', 'connections_view_entry_list', 'connections/connections.php', '_connections_main');
 	add_submenu_page('connections/connections.php', 'Connections : Add Entry','Add Entry', 'connections_add_entry','connections/submenus/add.php');
@@ -257,11 +125,16 @@ function _connections_main() {
 		global $wpdb, $current_user, $defaultConnectionGroupValues;
 		$sql = new sql();
 		
+		@session_start();
+		$_SESSION['connections']['active'] = true;
+		session_write_close();
+		
 		get_currentuserinfo();
 		$plugin_options = new pluginOptions($current_user->ID);
 		
 	    if ($_GET['action']=='editform')
 		{
+			$entryForm = new entryForm();
 			
 			/*
 			 * Check whether user can edit or copy/add an entry
@@ -302,11 +175,11 @@ function _connections_main() {
 					<h2><a name="new"></a>Edit Entry</h2>
 					
 					<form action="admin.php?page=connections/connections.php&action=<?php echo $formAction ?>&id=<?php echo $row->id; ?>" method="post" enctype="multipart/form-data">
-					<?php echo _connections_getaddressform($row); ?>
+					<?php 
+						echo $entryForm->entryForm($row);
+					?>
 					<input type="hidden" name="formId" value="<?php echo $formID ?>" />
 					<input type="hidden" name="token" value="<?php echo _formtoken($formID); ?>" />
-					
-					<?php session_write_close(); ?>
 					
 					<p class="submit">
 						<input  class="button-primary" type="submit" name="<?php echo $inputName ?>" value="Save" />
@@ -322,7 +195,7 @@ function _connections_main() {
 			/*
 			 * Check whether user can access Connections
 			 */
-			if(!current_user_can('connections_access')) {
+			if(!current_user_can('connections_view_entry_list')) {
 				wp_die('<p id="error-page" style="-moz-background-clip:border;
 						-moz-border-radius:11px;
 						background:#FFFFFF none repeat scroll 0 0;
@@ -354,116 +227,12 @@ function _connections_main() {
 				
 				<?php
 				
-				if ($_POST['save'] AND $_SESSION['connections']['formTokens']['entry_form']['token'] == $_POST['token'])
+				if ($_POST['save'] && $_SESSION['connections']['formTokens']['entry_form']['token'] === $_POST['token'])
 				{
-					$entry = new entry();
-					
-					// If copying/editing an entry, the entry data is loaded into the class 
-					// properties and then properties are overwritten by the POST data as needed.
-					if (isset($_GET['id']))
-					{
-						$entry->set($_GET['id']);
-					}
-										
-					$entry->setEntryType($_POST['entry_type']);
-					$entry->setGroupName($_POST['connection_group_name']);
-					$entry->setConnectionGroup($_POST['connection_group']);
-					$entry->setFirstName($_POST['first_name']);
-					$entry->setLastName($_POST['last_name']);
-					$entry->setTitle($_POST['title']);
-					$entry->setOrganization($_POST['organization']);
-					$entry->setDepartment($_POST['department']);
-					$entry->setAddresses($_POST['address']);
-					$entry->setPhoneNumbers($_POST['phone_numbers']);
-					$entry->setEmailAddresses($_POST['email']);
-					$entry->setIm($_POST['im']);
-					$entry->setWebsites($_POST['websites']);
-					$entry->setBirthday($_POST['birthday_day'], $_POST['birthday_month']);
-					$entry->setAnniversary($_POST['anniversary_day'], $_POST['anniversary_month']);
-					$entry->setBio($_POST['bio']);
-					$entry->setNotes($_POST['notes']);
-					$entry->setVisibility($_POST['visibility']);
-													
-					if ($_FILES['original_image']['error'] != 4) {
-						$image_proccess_results = _process_images($_FILES);
-						
-						$entry->setImageLinked(true);
-						$entry->setImageDisplay(true);
-						$entry->setImageNameThumbnail($image_proccess_results['image_names']['thumbnail']);
-						$entry->setImageNameCard($image_proccess_results['image_names']['entry']);
-						$entry->setImageNameProfile($image_proccess_results['image_names']['profile']);
-						$entry->setImageNameOriginal($image_proccess_results['image_names']['original']);
-						
-						$error = $image_proccess_results['error'];
-						$success = $image_proccess_results['success'];
-					}
-					
-					// If copying an entry, the image visibility property is set based on the user's choice.
-					// NOTE: This must come after the image processing.
-					if (isset($_POST['imgOptions']))
-					{
-						switch ($_POST['imgOptions'])
-						{
-							case 'remove':
-								$entry->setImageDisplay(false);
-								$entry->setImageLinked(false);
-							break;
-							
-							case 'hidden':
-								$entry->setImageDisplay(false);
-							break;
-							
-							case 'show':
-								$entry->setImageDisplay(true);
-							break;
-							
-							default:
-								$entry->setImageDisplay(false);
-							break;
-						}
-					}
-					
-					switch ($_GET['action'])
-					{
-						case 'add':
-							if ($entry->save() === FALSE)
-							{
-								$error = '<p><strong>Entry could not be added.</strong></p>';
-							}
-							$success .= "<p><strong>Entry added.</strong></p> \n";
-						break;
-						
-						case 'update':
-							if ($entry->update() === FALSE)
-							{
-								$error = '<p><strong>Entry could not be updated.</strong></p>';
-							}
-							
-							$success .= "<p><strong>The entry has been updated.</strong></p> \n";
-						break;
-					}
-										
-					if (!$error)
-					{
-						unset($_SESSION['connections']['formTokens']);
-						unset($entry);
-						
-						echo '<div id="message" class="updated fade">';
-							echo $success;
-						echo '</div>';
-					}
-					else
-					{
-						unset($_SESSION['connections']['formTokens']);
-						unset($entry);
-						
-						echo '<div id="notice" class="error">';
-							echo $error;
-						echo '</div>';
-					}
-					
+					$entryForm = new entryForm();
+					echo $entryForm->processEntry();
 				}
-								
+				
 				if ($_POST['doaction'] AND $_SESSION['connections']['formTokens']['do_action']['token'] == $_POST['token'])
 				{
 					if ($_POST['action'] != "delete")
@@ -527,7 +296,7 @@ function _connections_main() {
 				if (!$_SESSION)
 				{
 					echo '<div id="notice" class="error">';
-						echo '<p><strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in or or site setup is preventing it from being used.</strong></p>';
+						echo '<p><strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in or site setup is preventing it from being used.</strong></p>';
 					echo '</div>';
 				}
 				elseif (!$_SESSION['connections']['active'] == true)
@@ -588,7 +357,7 @@ function _connections_main() {
 							ORDER BY order_by, last_name, first_name";
 					$results = $wpdb->get_results($sql);
 				?>
-				<div id="col-container">
+				
 					
 					<?php
 					/*
@@ -597,14 +366,14 @@ function _connections_main() {
 					if(current_user_can('connections_view_entry_list'))
 					{
 					?>
-					<div id="col-right" <?php /* If the user can not add an entry; set the column width to 100% */ if (!current_user_can('connections_add_entry')) echo 'style="width: 100%"' ?>>
-						<div class="col-wrap">
-							
+						
 							<form action="admin.php?page=connections/connections.php" method="post">
 							
 							<div class="tablenav">
 								
 								<?php
+								$form = new formObjects();
+								
 								if (current_user_can('connections_edit_entry') || current_user_can('connections_delete_entry'))
 								{
 									echo '<div class="alignleft actions">';
@@ -627,7 +396,7 @@ function _connections_main() {
 								?>
 								
 								<div class="alignleft actions">
-									<?php echo _build_select('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $plugin_options->getEntryType())?>
+									<?php echo $form->buildSelect('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $plugin_options->getEntryType())?>
 									
 									<?php
 										/**
@@ -641,7 +410,7 @@ function _connections_main() {
 										{
 											$showAll[''] = 'Show All';
 											$visibilitySelect = $showAll + $visibilitySelect;
-											echo _build_select('visibility_type', $visibilitySelect, $plugin_options->getVisibilityType());
+											echo $form->buildSelect('visibility_type', $visibilitySelect, $plugin_options->getVisibilityType());
 										}
 									?>
 									<input id="doaction" class="button-secondary action" type="submit" name="dofilter" value="Filter" />
@@ -690,7 +459,7 @@ function _connections_main() {
 										 * Check whether the current user is permitted to view public, private or unlisted entries
 										 * and filter those out where permission has not been granted.
 										 */
-										if ($entry->getVisibility() == 'public' && !current_user_can('connections_view_public')) continue;
+										if ($entry->getVisibility() == 'public' && !current_user_can('connections_view_public') && !$plugin_options->getAllowPublic()) continue;
 										if ($entry->getVisibility() == 'private' && !current_user_can('connections_view_private')) continue;
 										if ($entry->getVisibility() == 'unlisted' && !current_user_can('connections_view_unlisted')) continue;
 																				
@@ -840,39 +609,11 @@ function _connections_main() {
 								<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
 							</form>
 							
-						</div>
-			        </div>
+						
 					
-					<?php
-					}
-					/*
-					 * Check if a user can add an entry and then display the form or not accordingly.
-					 */
-					if (current_user_can('connections_add_entry'))
-					{ ?>
-					<div id="col-left">
-						<div class="col-wrap">
-							<div class="form-wrap">
-							<h3><a name="new"></a>Add Entry</h3>
-							
-								<form action="admin.php?page=connections/connections.php&action=add" method="post" enctype="multipart/form-data">
-									<?php echo _connections_getaddressform(); ?>
-									<input type="hidden" name="formId" value="entry_form" />
-									<input type="hidden" name="token" value="<?php echo _formtoken("entry_form"); ?>" />
-									
-									<?php session_write_close(); ?>
-									
-									<p class="submit">
-										<input class="button-primary" type="submit" name="save" value="Add Address" />
-									</p>
-								</form>
-							</div>
-						</div>
-					</div>
 					<?php }	?>
 					
 				</div>
-			</div>
 			
 			<script type="text/javascript">
 				/* <![CDATA[ */
@@ -905,117 +646,6 @@ function _build_alphaindex() {
 	return $linkindex;
 }
 
-function _process_images($_FILES) {
-	global $current_user;
-	
-	$plugin_options = new pluginOptions($current_user->ID);
-	// Uses the upload.class.php to handle file uploading and image manipulation.
-	
-		$process_image = new Upload($_FILES['original_image']);
-		$image['source'] = $process_image->file_src_name_body;
-		
-		if ($process_image->uploaded) {
-			// Saves the uploaded image with no changes to the wp_content/connection_images/ dir.
-			// If needed this will create the upload dir and chmod it.
-			$process_image->auto_create_dir		= true;
-			$process_image->auto_chmod_dir		= true;
-			$process_image->file_safe_name		= true;
-			$process_image->file_auto_rename	= true;
-			$process_image->file_name_body_add= '_original';
-			$process_image->image_convert		= 'jpg';
-			$process_image->jpeg_quality		= 80;
-			$process_image->Process(CN_IMAGE_PATH);
-			if ($process_image->processed) {
-				$success .= "<p><strong>Uploaded image saved.</strong></p> \n";
-				//$image_names['original'] = $process_image->file_dst_name;
-				$image['original'] = $process_image->file_dst_name;
-			} else {
-				$error .= "<p><strong>Uploaded could not be saved to the destination folder.</strong></p> \n
-						   <p><strong>Error: </strong>" . $process_image->error . "</p> \n";
-			}
-			
-			// Creates the profile image and saves it to the wp_content/connection_images/ dir.
-			// If needed this will create the upload dir and chmod it.
-			$process_image->auto_create_dir		= true;
-			$process_image->auto_chmod_dir		= true;
-			$process_image->file_safe_name		= true;
-			$process_image->file_auto_rename	= true;
-			$process_image->file_name_body_add= '_profile';
-			$process_image->image_convert		= 'jpg';
-			$process_image->jpeg_quality		= $plugin_options->getImgProfileQuality();
-			$process_image->image_resize		= true;
-			$process_image->image_ratio_crop	= (bool) $plugin_options->getImgProfileRatioCrop();
-			$process_image->image_ratio_fill	= (bool) $plugin_options->getImgProfileRatioFill();
-			$process_image->image_y				= $plugin_options->getImgProfileY();
-			$process_image->image_x				= $plugin_options->getImgProfileX();
-			$process_image->Process(CN_IMAGE_PATH);
-			if ($process_image->processed) {
-				$success .= "<p><strong>Profile image created and saved.</strong></p> \n";
-				//$image_names['profile'] = $process_image->file_dst_name;
-				$image['profile'] = $process_image->file_dst_name;
-			} else {
-				$error .= "<p><strong>Profile image could not be created and/or saved to the destination folder.</strong></p> \n
-						   <p><strong>Error:</strong> " . $process_image->error . "</p> \n";
-			}						
-			
-			// Creates the entry image and saves it to the wp_content/connection_images/ dir.
-			// If needed this will create the upload dir and chmod it.
-			$process_image->auto_create_dir		= true;
-			$process_image->auto_chmod_dir		= true;
-			$process_image->file_safe_name		= true;
-			$process_image->file_auto_rename	= true;
-			$process_image->file_name_body_add= '_entry';
-			$process_image->image_convert		= 'jpg';
-			$process_image->jpeg_quality		= $plugin_options->getImgEntryQuality();
-			$process_image->image_resize		= true;
-			$process_image->image_ratio_crop	= (bool) $plugin_options->getImgEntryRatioCrop();
-			$process_image->image_ratio_fill	= (bool) $plugin_options->getImgEntryRatioFill();
-			$process_image->image_y				= $plugin_options->getImgEntryY();
-			$process_image->image_x				= $plugin_options->getImgEntryX();
-			$process_image->Process(CN_IMAGE_PATH);
-			if ($process_image->processed) {
-				$success .= "<p><strong>Entry image created and saved.</strong></p> \n";
-				//$image_names['entry'] = $process_image->file_dst_name;
-				$image['entry'] = $process_image->file_dst_name;
-			} else {
-				$error .= "<p><strong>Entry image could not be created and/or saved to the destination folder.</strong></p> \n
-						   <p><strong>Error:</strong> " . $process_image->error . "</p> \n";
-			}
-			
-			// Creates the thumbnail image and saves it to the wp_content/connection_images/ dir.
-			// If needed this will create the upload dir and chmod it.
-			$process_image->auto_create_dir		= true;
-			$process_image->auto_chmod_dir		= true;
-			$process_image->file_safe_name		= true;
-			$process_image->file_auto_rename	= true;
-			$process_image->file_name_body_add= '_thumbnail';
-			$process_image->image_convert		= 'jpg';
-			$process_image->jpeg_quality		= $plugin_options->getImgThumbQuality();
-			$process_image->image_resize		= true;
-			$process_image->image_ratio_crop	= (bool) $plugin_options->getImgThumbRatioCrop();
-			$process_image->image_ratio_fill	= (bool) $plugin_options->getImgThumbRatioFill();
-			$process_image->image_y				= $plugin_options->getImgThumbY();
-			$process_image->image_x				= $plugin_options->getImgThumbX();
-			$process_image->Process(CN_IMAGE_PATH);
-			if ($process_image->processed) {
-				$success .= "<p><strong>Thumbnail image created and saved.</strong></p> \n";
-				//$image_names['thumbnail'] = $process_image->file_dst_name;
-				$image['thumbnail'] = $process_image->file_dst_name;
-			} else {
-				$error .= "<p><strong>Thumbnail image could not be created and/or saved to the destination folder.</strong></p> \n
-						   <p><strong>Error:</strong> " . $process_image->error . "</p> \n";
-			}
-			
-			//$serial_image_options = serialize($image_options);
-			$process_image->Clean();
-		} else {
-			$error = "<p><strong>Image could not be uploaded.</strong></p> \n
-					  <p><strong>Error: </strong>" . $process_image->error . "</p> \n";
-		}
-	$results = array('success'=>$success, 'error'=>$error, 'image_names'=>$image);
-	return $results;
-}
-
 //Function inspired from:
 //http://www.melbournechapter.net/wordpress/programming-languages/php/cman/2006/06/16/php-form-input-and-cross-site-attacks/
 /**
@@ -1032,296 +662,9 @@ function _formtoken($formId) {
 	@session_start();
 	$_SESSION['connections']['formTokens'][$formId]['token'] = $token;
 	$_SESSION['connections']['formTokens'][$formId]['token_timestamp'] = time();
-	
+	session_write_close();
 	return $token;
 }
-
-/**
- * Builds a form select list
- * @return HTML form select
- * @param string $name
- * @param array $value_options Associative array where the key is the name visible in the HTML output and the value is the option attribute value
- * @param string $selected[optional]
- */
-function _build_select($name, $value_options, $selected=null) {
-	
-	/**
-	 * HTML output string
-	 * @var string
-	 */
-	$select = "<select name='" . $name . "'> \n";
-	foreach($value_options as $key=>$value) {
-		$select .= "<option ";
-		if ($value != null) {
-			$select .= "value='" . $key . "'";
-		} else {
-			$select .= "value=''";
-		}
-		if ($selected == $key) {
-			$select .= " SELECTED";
-		}
-		$select .= ">";
-		$select .= $value;
-		$select .= "</option> \n";
-	}
-	$select .= "</select> \n";
-	
-	return $select;
-}
-//Builds radio groups. Function requires (name as string, id as string, values and labels as an associative string array containing the key and values, OPTIONAL value to be selected by default)
-function _build_radio($name, $id, $value_labels, $checked=null) {
-	$radio = null;
-	$count = 0;
-	
-	foreach ($value_labels as $label=>$value) {
-		$idplus = $id . $count;
-		
-		if ($checked == $value) {
-			$selected = 'CHECKED';
-		}
-		
-		$radio .= '<label for="' . $idplus . '">';
-		$radio .= '<input id="' . $idplus . '" type="radio" name="' . $name . '" value="' . $value . '" ' . $selected . ' />';
-		$radio .= $label . '</label>';
-		
-		$selected = null;
-		$idplus = null;
-		$count = $count + 1;
-	}
-	
-	return $radio;
-}
-
-/**
- * Builds the input/edit form.
- * @return HTML form
- * @param object $data[optional]
- */
-function _connections_getaddressform($data=null) {
-		global $defaultAddressTypes, $defaultEmailValues, $defaultIMValues, $defaultPhoneNumberValues, $defaultConnectionGroupValues;
-		
-		$entry = new entry($data);
-		$addressObject = new addresses();
-		$phoneNumberObject = new phoneNumber();
-		$emailObject = new email();
-		$imObject = new im();
-		$websiteObject = new website();
-		$options = unserialize($data->options);
-		$date = new dateFunctions();
-		$ticker = new counter();
-		
-		if (!$data->visibility) $defaultVisibility = 'unlisted'; else $defaultVisibility = $entry->getVisibility();
-		if (!isset($options['entry']['type'])) $defaultEntryType = "individual"; else $defaultEntryType = $entry->getEntryType();
-				
-	    $out =
-		'
-		<div class="form-field connectionsform">	
-				<span class="radio_group">' . _build_radio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Connection Group"=>"connection_group"),$defaultEntryType) . '</span>
-		</div>
-		
-		<div id="connection_group" class="form-field connectionsform">
-			
-				<label for="connection_group_name">Connection Group Name:</label>
-				<input type="text" name="connection_group_name" value="' . $entry->getGroupName() . '" />';
-				$out .= '<div id="relations">';
-						
-					// --> Start template for Connection Group <-- \\
-					$out .= '<textarea id="relation_row_base" style="display: none">';
-						$out .= _connections_get_entry_select('connection_group[::FIELD::][entry_id]');
-						$out .= _build_select('connection_group[::FIELD::][relation]', $defaultConnectionGroupValues);
-					$out .= '</textarea>';
-					// --> End template for Connection Group <-- \\
-					
-					if ($entry->getConnectionGroup())
-					{
-						$connections = $entry->getConnectionGroup();
-						foreach ($connections as $key => $value)
-						{
-							$relation = new entry();
-							$relation->set($key);
-							
-							$out .= '<div id="relation_row_' . $relation->getId() . '" class="relation_row">';
-								$out .= _connections_get_entry_select('connection_group[' . $relation->getId() . '][entry_id]', $key);
-								$out .= _build_select('connection_group[' . $relation->getId() . '][relation]', $defaultConnectionGroupValues, $value);
-								$out .= '<a href="#" id="remove_button_' . $i . '" class="button button-warning" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
-							$out .= '</div>';
-							
-							unset($relation);
-						}
-					}						
-					
-				$out .= '</div>';
-				$out .= '<p class="add"><a id="add_button" class="button">Add Connection</a></p>';
-			$out .= '
-		</div>
-		
-		<div class="form-field connectionsform">
-				<div class="namefield">
-					<div class="input inputhalfwidth">
-						<label for="first_name">First name:</label>
-						<input type="text" name="first_name" value="' . $entry->getFirstName() . '" />
-					</div>
-					<div class="input inputhalfwidth">
-						<label for="last_name">Last name:</label>
-						<input type="text" name="last_name" value="' . $entry->getLastName() . '" />
-					</div>
-					<div class="clear"></div>
-						
-					<label for="title">Title:</label>
-					<input type="text" name="title" value="' . $entry->getTitle() . '" />
-				</div>
-				
-				<div class="organization">
-					<label for="organization">Organization:</label>
-					<input type="text" name="organization" value="' . $entry->getOrganization() . '" />
-					
-					<label for="department">Department:</label>
-					<input type="text" name="department" value="' . $entry->getDepartment() . '" />
-				</div>
-		</div>
-		
-		<div class="form-field connectionsform">';
-				
-				if ($entry->getImageLinked()) {
-					if ($entry->getImageDisplay()) $selected = "show"; else $selected = "hidden";
-					
-					$imgOptions = _build_radio("imgOptions", "imgOptionID_", array("Display"=>"show", "Not Displayed"=>"hidden", "Remove"=>"remove"), $selected);
-					$out .= "<div style='text-align:center'> <img src='" . CN_IMAGE_BASE_URL . $entry->getImageNameProfile() . "' /> <br /> <span class='radio_group'>" . $imgOptions . "</span></div> <br />"; 
-				}
-				
-				$out .= '<div class="clear"></div>';
-				$out .= "<label for='original_image'>Select Image:
-				<input type='file' value='' name='original_image' size='25' /></label>
-				
-		</div>";
-		
-		if ($data->addresses != null) $addressValues = $entry->getAddresses(); else $addressValues = array(array('null'),array('null')); //The empty null is just to make the address section build twice untul jQuery form building can be implemented
-		$ticker->reset();
-		foreach ($addressValues as $addressRow)
-		{
-			$selectName = "address["  . $ticker->getcount() . "][type]";
-			$out .= "<div class='form-field connectionsform'>";
-				$out .= "<span class='selectbox alignright'>Type: " . _build_select($selectName,$defaultAddressTypes,$addressObject->getType($addressRow)) . "</span>";
-				$out .= "<div class='clear'></div>";
-				
-				$out .= "<label for='address'>Address Line 1:</label>";
-				$out .= "<input type='text' name='address[" . $ticker->getcount() . "][address_line1]' value='" . $addressObject->getLineOne($addressRow) . "' />";
-	
-				$out .= "<label for='address'>Address Line 2:</label>";
-				$out .= "<input type='text' name='address[" . $ticker->getcount() . "][address_line2]' value='" . $addressObject->getLineTwo($addressRow) . "' />";
-	
-				$out .= "<div class='input' style='width:60%'>";
-					$out .= "<label for='address'>City:</label>";
-					$out .= "<input type='text' name='address[" . $ticker->getcount() . "][city]' value='" . $addressObject->getCity($addressRow) . "' />";
-				$out .= "</div>";
-				$out .= "<div class='input' style='width:15%'>";
-					$out .= "<label for='address'>State:</label>";
-					$out .= "<input type='text' name='address[" . $ticker->getcount() . "][state]' value='" . $addressObject->getState($addressRow) . "' />";
-				$out .= "</div>";
-				$out .= "<div class='input' style='width:25%'>";
-					$out .= "<label for='address'>Zipcode:</label>";
-					$out .= "<input type='text' name='address[" . $ticker->getcount() . "][zipcode]' value='" . $addressObject->getZipCode($addressRow) . "' />";
-				$out .= "</div>";
-				
-				$out .= "<label for='address'>Country</label>";
-				$out .= "<input type='text' name='address[" . $ticker->getcount() . "][country]' value='" . $addressObject->getCountry($addressRow) . "' />";
-				
-				$out .= "<input type='hidden' name='phone_numbers[" . $ticker->getcount() . "][visibility]' value='" . $addressObject->getVisibility($addressRow) . "' />";
-			
-			$out .= "<div class='clear'></div>";
-			$out .= "</div>";
-			$ticker->step();
-		}
-		$ticker->reset();
-		
-		if ($data->phone_numbers != null) $phoneNumberValues = $entry->getPhoneNumbers(); else $phoneNumberValues = $defaultPhoneNumberValues;
-		$out .= "<div class='form-field connectionsform'>";
-			$ticker->reset();
-			foreach ($phoneNumberValues as $phoneNumberRow)
-			{
-				$out .= "<div class='" . $phoneNumberObject->getType($phoneNumberRow) . "'>";
-					$out .= "<label for='phone_numbers'>" . $phoneNumberObject->getName($phoneNumberRow) . ":</label>";
-					$out .= "<input type='text' name='phone_numbers[" . $ticker->getcount() . "][number]' value='" . $phoneNumberObject->getNumber($phoneNumberRow) . "' />";
-					$out .= "<input type='hidden' name='phone_numbers[" . $ticker->getcount() . "][type]' value='" . $phoneNumberObject->getType($phoneNumberRow) . "' />";
-					$out .= "<input type='hidden' name='phone_numbers[" . $ticker->getcount() . "][visibility]' value='" . $phoneNumberObject->getVisibility($phoneNumberRow) . "' />";
-					$ticker->step();
-				$out .= "</div>";
-			}
-			$ticker->reset();
-		$out .= "</div>";
-
-
-		if ($data->email != null) $emailValues = $entry->getEmailAddresses(); else $emailValues = $defaultEmailValues;
-		$out .= "<div class='form-field connectionsform'>";
-			$ticker->reset();
-			foreach ($emailValues as $emailRow)
-			{
-				$out .= "<div class='" . $emailObject->getType($emailRow) . "'>";
-					$out .= "<label for='email'>" . $emailObject->getName($emailRow) . ":</label>";
-					$out .= "<input type='text' name='email[" . $ticker->getcount() . "][address]' value='" . $emailObject->getAddress($emailRow) . "' />";
-					$out .= "<input type='hidden' name='email[" . $ticker->getcount() . "][name]' value='" . $emailObject->getName($emailRow) . "' />";
-					$out .= "<input type='hidden' name='email[" . $ticker->getcount() . "][type]' value='" . $emailObject->getType($emailRow) . "' />";
-					$out .= "<input type='hidden' name='email[" . $ticker->getcount() . "][visibility]' value='" . $emailObject->getVisibility($emailRow) . "' />";
-				$ticker->step();
-				$out .= "</div>";
-			}
-			$ticker->reset();
-		$out .= "</div>";
-
-
-		if ($data->im != null) $imValues = $entry->getIm(); else $imValues = $defaultIMValues;
-		$out .= "<div class='form-field connectionsform im'>";
-			$ticker->reset();
-			foreach ($imValues as $imRow)
-			{
-				$out .= "<label for='im'>" . $imObject->getName($imRow) . ":</label>";
-				$out .= "<input type='text' name='im[" . $ticker->getcount() . "][id]' value='" . $imObject->getId($imRow) . "' />";
-				$out .= "<input type='hidden' name='im[" . $ticker->getcount() . "][name]' value='" . $imObject->getName($imRow) . "' />";
-				$out .= "<input type='hidden' name='im[" . $ticker->getcount() . "][type]' value='" . $imObject->getType($imRow) . "' />";
-				$out .= "<input type='hidden' name='im[" . $ticker->getcount() . "][visibility]' value='" . $imObject->getVisibility($imRow) . "' />";
-				$ticker->step();
-			}
-			$ticker->reset();
-		$out .= "</div>";
-		
-		if ($data->websites != null) $websiteValues = $entry->getWebsites(); else $websiteValues = array(array()); //Empty array as a place holder
-		$out .= "<div class='form-field connectionsform'>";
-		$ticker->reset();
-		foreach ($websiteValues as $websiteRow)
-		{
-			$out .= "<label for='websites'>Website:</label>";
-			$out .= "<input type='hidden' name='websites[" . $ticker->getcount() . "][type]' value'personal' />";
-			$out .= "<input type='hidden' name='websites[" . $ticker->getcount() . "][name]' value'Personal' />";
-			$out .= "<input type='text' name='websites[" . $ticker->getcount() . "][address]' value='" . $websiteObject->getAddress($websiteRow) . "' />";
-			$out .= "<input type='hidden' name='websites[" . $ticker->getcount() . "][visibility]' value'public' />";
-			$ticker->step();
-		}
-		$ticker->reset();
-		$out .= "</div>";
-		
-		$out .= "<div class='form-field connectionsform celebrate'>
-				<span class='selectbox'>Birthday: " . _build_select('birthday_month',$date->months,$date->getMonth($entry->getBirthday())) . "</span>
-				<span class='selectbox'>" . _build_select('birthday_day',$date->days,$date->getDay($entry->getBirthday())) . "</span>
-				<br />
-				<span class='selectbox'>Anniversary: " . _build_select('anniversary_month',$date->months,$date->getMonth($entry->getAnniversary())) . "</span>
-				<span class='selectbox'>" . _build_select('anniversary_day',$date->days,$date->getDay($entry->getAnniversary())) . "</span>
-		</div>
-		
-		<div class='form-field connectionsform'>
-				<label for='bio'>Biographical Info:</label>
-				<textarea name='bio' rows='3'>" . $entry->getBio() . "</textarea>
-		</div>
-		
-		<div class='form-field connectionsform'>
-				<label for='notes'>Notes:</label>
-				<textarea name='notes' rows='3'>" . $entry->getNotes() . "</textarea>
-		</div>
-		
-		<div class='form-field connectionsform'>	
-				<span class='radio_group'>" . _build_radio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$defaultVisibility) . "</span>
-		</div>";
-		return $out;
-	}
 
 // This installs and/or upgrades the plugin.
 function _connections_install() {
@@ -1437,7 +780,7 @@ function _connections_list($atts, $content=null) {
 	 * and if the shortcode attribute for the override is set and it's value is true. If any of these 
 	 * are false access will not be granted.
 	 */
-	if (!$plugin_options->getAllowPublic() && !is_user_logged_in() && $atts['allow_public_override'] != 'true')
+	if (!$plugin_options->getAllowPublic() && !is_user_logged_in() && $atts['allow_public_override'] !== 'true')
 	{
 		return '<p style="-moz-background-clip:border;
 				-moz-border-radius:11px;

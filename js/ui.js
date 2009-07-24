@@ -37,7 +37,7 @@ jQuery(document).ready(function(){
 	
 	
 	jQuery(function() {
-		jQuery('input#entry_type0')
+		jQuery('input#entry_type_0')
 			.click(function(){
 				jQuery('#connection_group').slideUp();
 				jQuery('.namefield').slideDown();
@@ -53,7 +53,7 @@ jQuery(document).ready(function(){
 	});
 	
 	jQuery(function() {
-		jQuery('input#entry_type1')
+		jQuery('input#entry_type_1')
 			.click(function(){
 				jQuery('#connection_group').slideUp();
 				jQuery('.namefield').slideUp();
@@ -69,7 +69,7 @@ jQuery(document).ready(function(){
 	});
 	
 	jQuery(function() {
-		jQuery('input#entry_type2')
+		jQuery('input#entry_type_2')
 			.click(function(){
 				jQuery('#connection_group').slideDown();
 				jQuery('.namefield').slideUp();
