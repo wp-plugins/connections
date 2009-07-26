@@ -489,6 +489,9 @@ function _connections_main()
 									/*
 									 * Check whether the current user is permitted to view public, private or unlisted entries
 									 * and filter those out where permission has not been granted.
+									 * 
+									 * This should be uneeded as the query should only query the entries that are permitted for
+									 * display for the current user.
 									 */
 									//if ($entry->getVisibility() == 'public' && !current_user_can('connections_view_public') && !$plugin_options->getAllowPublic()) continue;
 									//if ($entry->getVisibility() == 'private' && !current_user_can('connections_view_private')) continue;
@@ -870,6 +873,9 @@ function _connections_list($atts, $content=null) {
 				 * 
 				 * If unregistered visitors and users not logged in; private and unlisted entries are not displayed
 				 * unless the private override attribute is set to true then private entries will be displayed.
+				 * 
+				 * @TODO
+				 * Build the query string to query only permitted entries.
 				 */
 				if (is_user_logged_in())
 				{
