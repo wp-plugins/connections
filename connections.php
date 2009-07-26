@@ -30,36 +30,39 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 //$_SESSION['connections']['active'] = true;
 //session_write_close();
 
-//GPL PHP upload class from http://www.verot.net/php_class_upload.htm
-require_once(WP_PLUGIN_DIR . '/connections/includes/php_class_upload/class.upload.php');
-
-//SQL objects
-require_once(WP_PLUGIN_DIR . '/connections/includes/class.sql.php');
-//HTML FORM objects
-require_once(WP_PLUGIN_DIR . '/connections/includes/class.form.php');
-//date objects
-require_once(WP_PLUGIN_DIR . '/connections/includes/class.date.php');
-//entry objects
-require_once(WP_PLUGIN_DIR . '/connections/includes/class.entry.php');
-//plugin option objects
-require_once(WP_PLUGIN_DIR . '/connections/includes/class.options.php');
-//plugin utility objects
-require_once(WP_PLUGIN_DIR . '/connections/includes/class.utility.php');
-//plugin template objects
-require_once(WP_PLUGIN_DIR . '/connections/includes/class.output.php');
-//builds vCard
-require_once(WP_PLUGIN_DIR . '/connections/includes/class.vcard.php');
-
-
 define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
 define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
 define('CN_TABLE_NAME','connections');
-define('CN_CURRENT_VERSION', '0.5.2');
-
+define('CN_CURRENT_VERSION', '0.5.32');
 
 // This adds the menu items WordPress and calls the function to load my CSS and JS.
 add_action('admin_menu', 'connections_menus');
-function connections_menus() {
+function connections_menus()
+{
+	@session_start();
+	$_SESSION['connections']['active'] = true;
+	session_write_close();
+	
+	//GPL PHP upload class from http://www.verot.net/php_class_upload.htm
+	require_once(WP_PLUGIN_DIR . '/connections/includes/php_class_upload/class.upload.php');
+	
+	//SQL objects
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.sql.php');
+	//HTML FORM objects
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.form.php');
+	//date objects
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.date.php');
+	//entry objects
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.entry.php');
+	//plugin option objects
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.options.php');
+	//plugin utility objects
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.utility.php');
+	//plugin template objects
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.output.php');
+	//builds vCard
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.vcard.php');
+	
 	//Adds Connections to the top level menu.
 	add_menu_page('Connections : Administration', 'Connections', 'connections_view_entry_list', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
 	//Adds the Connections sub-menus.
@@ -70,11 +73,6 @@ function connections_menus() {
 	add_submenu_page('connections/connections.php', 'Connections : Help','Help', 'connections_view_help','connections/submenus/help.php');
 	
 	// Call the function to add the CSS and JS only on pages related to the Connections plug-in.
-	/* 
-	 * NOTE: I should have been able to call 'connections/connections.php' directly using the
-	 * 		 admin_print_script- hook but it didn't work. I have to assign it to a variable.
-	 * 		 The sub-pages worked as expected.
-	 */
 	add_action( 'admin_print_scripts-toplevel_page_connections/connections', 'connections_loadjs_admin_head' );
 	add_action( 'admin_print_styles-toplevel_page_connections/connections', 'connections_loadcss_admin_head' );
 	
@@ -121,55 +119,82 @@ function connections_loadcss_head() {
 	*/
 }
 
-function _connections_main() {
-		global $wpdb, $current_user, $defaultConnectionGroupValues;
-		$sql = new sql();
-		
-		@session_start();
-		$_SESSION['connections']['active'] = true;
-		session_write_close();
-		
-		get_currentuserinfo();
-		$plugin_options = new pluginOptions($current_user->ID);
-		
-	    if ($_GET['action']=='editform')
+function _connections_main()
+{
+	global $wpdb, $current_user, $defaultConnectionGroupValues;
+	$sql = new sql();
+	
+	get_currentuserinfo();
+	$plugin_options = new pluginOptions($current_user->ID);
+	
+	if ($wpdb->get_var("SHOW TABLES LIKE '{$sql->getTableName()}'")!= $sql->getTableName() || $plugin_options->getVersion() != CN_CURRENT_VERSION )
+	{
+        /* 
+         * Call the install function here rather than through the more usual
+         * activate_blah.php action hook so the user doesn't have to worry about
+         * deactivating then reactivating the plugin.  Should happen seamlessly.
+		 */
+        _connections_install();
+        echo "<div id='message' class='updated fade'>
+            <p><strong>The Connections plug-in version " . $plugin_options->getVersion() . " has been installed or upgraded.</strong></p>
+        </div>";
+    }
+	
+	/*
+	 * Run a quick check to see if the $_SESSION is started and verify that Connections data isn't being
+	 * overwritten and notify the user of errors.
+	 */
+	if (!$_SESSION)
+	{
+		echo '<div id="notice" class="error">';
+			echo '<p><strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in or site setup is preventing it from being used.</strong></p>';
+		echo '</div>';
+	}
+	elseif (!$_SESSION['connections']['active'] == true)
+	{
+		echo '<div id="notice" class="error">';
+			echo '<p><strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in seems to be overwritting the values for Connections.</strong></p>';
+		echo '</div>';
+	}
+	
+    if ($_GET['action']=='editform')
+	{
+		/*
+		 * Check whether current user can edit or copy/add an entry
+		 */
+		if (!current_user_can('connections_edit_entry') && !current_user_can('connections_add_entry'))
 		{
-			/*
-			 * Check whether user can edit or copy/add an entry
-			 */
-			if (!current_user_can('connections_edit_entry') && !current_user_can('connections_add_entry'))
+			wp_die('<p id="error-page" style="-moz-background-clip:border;
+					-moz-border-radius:11px;
+					background:#FFFFFF none repeat scroll 0 0;
+					border:1px solid #DFDFDF;
+					color:#333333;
+					display:block;
+					font-size:12px;
+					line-height:18px;
+					margin:25px auto 20px;
+					padding:1em 2em;
+					text-align:center;
+					width:700px">You do not have sufficient permissions to access this page.</p>');
+		}
+		else
+		{
+			$entryForm = new entryForm();
+			$entry = new entry();
+			$entry = $entry->get($_GET['id']);
+			
+			if (isset($_GET['copyid']))
 			{
-				wp_die('<p id="error-page" style="-moz-background-clip:border;
-						-moz-border-radius:11px;
-						background:#FFFFFF none repeat scroll 0 0;
-						border:1px solid #DFDFDF;
-						color:#333333;
-						display:block;
-						font-size:12px;
-						line-height:18px;
-						margin:25px auto 20px;
-						padding:1em 2em;
-						text-align:center;
-						width:700px">You do not have sufficient permissions to access this page.</p>');
+				$formID = "entry_form";
+				$formAction = "add";
+				$inputName = "save";
 			}
 			else
 			{
-				$entryForm = new entryForm();
-				$entry = new entry();
-				$entry = $entry->get($_GET['id']);
-				
-				if (isset($_GET['copyid']))
-				{
-					$formID = "entry_form";
-					$formAction = "add";
-					$inputName = "save";
-				}
-				else
-				{
-					$formID = "entry_form";
-					$formAction = "update";
-					$inputName = "save";
-				}
+				$formID = "entry_form";
+				$formAction = "update";
+				$inputName = "save";
+			}
 					
 ?>
 			<div class="wrap">
@@ -191,455 +216,456 @@ function _connections_main() {
 				</div>
 			</div>
 <?php	
-			}
-				unset($entry);
 		}
-		else
-		{
+			unset($entry);
+	}
+	else
+	{
 	    	
-			/*
-			 * Check whether user can access Connections
-			 */
-			if(!current_user_can('connections_view_entry_list'))
+		/*
+		 * Check whether user can view the entry list
+		 */
+		if(!current_user_can('connections_view_entry_list'))
+		{
+			wp_die('<p id="error-page" style="-moz-background-clip:border;
+					-moz-border-radius:11px;
+					background:#FFFFFF none repeat scroll 0 0;
+					border:1px solid #DFDFDF;
+					color:#333333;
+					display:block;
+					font-size:12px;
+					line-height:18px;
+					margin:25px auto 20px;
+					padding:1em 2em;
+					text-align:center;
+					width:700px">You do not have sufficient permissions to access this page.</p>');
+		}
+			
+        if ($_POST['save'] && $_SESSION['connections']['formTokens']['entry_form']['token'] === $_POST['token'])
+		{
+			$entryForm = new entryForm();
+			echo $entryForm->processEntry();
+		}
+		
+		if ($_POST['doaction'] AND $_SESSION['connections']['formTokens']['do_action']['token'] == $_POST['token'])
+		{
+			if ($_POST['action'] != "delete")
 			{
-				wp_die('<p id="error-page" style="-moz-background-clip:border;
-						-moz-border-radius:11px;
-						background:#FFFFFF none repeat scroll 0 0;
-						border:1px solid #DFDFDF;
-						color:#333333;
-						display:block;
-						font-size:12px;
-						line-height:18px;
-						margin:25px auto 20px;
-						padding:1em 2em;
-						text-align:center;
-						width:700px">You do not have sufficient permissions to access this page.</p>');
+				$checked = $_POST['entry'];
+				
+				foreach ($checked as $id)
+				{
+					$entry = new entry();
+					$entry->set($id);
+					
+					$entry->setVisibility($_POST['action']);
+					$entry->update();
+					unset($entry);
+				}
+					
+				echo "<div id='message' class='updated fade'>";
+					echo "<p><strong>Entry(ies) visibility have been updated.</strong></p>";
+				echo "</div>";
+				unset($_SESSION['connections']['formTokens']);
 			}
 			
-	        $table_name = $sql->getTableName();
-			if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'")!= $table_name || $plugin_options->getVersion() != CN_CURRENT_VERSION ) {
-	            // Call the install function here rather than through the more usual
-	            // activate_blah.php action hook so the user doesn't have to worry about
-	            // deactivating then reactivating the plugin.  Should happen seamlessly.
-	            _connections_install();
-	            echo "<div id='message' class='updated fade'>
-	                <p><strong>The Connections plug-in version " . $plugin_options->getVersion() . " has been installed or upgraded.</strong></p>
-	            </div>";
-	        } ?>
-
-			<div class="wrap">
-				<div class="icon32" id="icon-connections"><br/></div>
-				<h2>Connections : Entry List</h2>
+			if ($_POST['action'] == "delete")
+			{
+				$checked = $_POST['entry'];
 				
-				<?php
-				
-				if ($_POST['save'] && $_SESSION['connections']['formTokens']['entry_form']['token'] === $_POST['token'])
+				foreach ($checked as $id)
 				{
-					$entryForm = new entryForm();
-					echo $entryForm->processEntry();
-				}
-				
-				if ($_POST['doaction'] AND $_SESSION['connections']['formTokens']['do_action']['token'] == $_POST['token'])
-				{
-					if ($_POST['action'] != "delete")
-					{
-						$checked = $_POST['entry'];
-						
-						foreach ($checked as $id)
-						{
-							$entry = new entry();
-							$entry->set($id);
-							
-							$entry->setVisibility($_POST['action']);
-							$entry->update();
-							unset($entry);
-						}
-							
-						echo "<div id='message' class='updated fade'>";
-							echo "<p><strong>Entry(ies) visibility have been updated.</strong></p>";
-						echo "</div>";
-						unset($_SESSION['connections']['formTokens']);
-					}
-					
-					if ($_POST['action'] == "delete")
-					{
-						$checked = $_POST['entry'];
-						
-						foreach ($checked as $id)
-						{
-							$entry = new entry();
-							$entry->delete($id);
-							unset($entry);
-						}
-							
-						echo "<div id='message' class='updated fade'>";
-							echo "<p><strong>Entry(ies) have been deleted.</strong></p>";
-						echo "</div>";
-						unset($_SESSION['connections']['formTokens']);
-					}
-				}
-				
-				if ($_GET['action']=='delete' AND $_SESSION['connections']['formTokens']['delete_'.$_GET['id']]['token'] == $_GET['token'])
-				{
-			        $entry = new entry();
-					$entry->delete($_GET['id']);
-					echo '<div id="message" class="updated fade"><p><strong>The entry has been deleted.</strong></p></div>';
+					$entry = new entry();
+					$entry->delete($id);
 					unset($entry);
-					unset($_SESSION['connections']['formTokens']);
-			    }
-				
-				if ($_POST['dofilter']) {
-					$plugin_options->setEntryType($_POST['entry_type']);
-					$plugin_options->setVisibilityType($_POST['visibility_type']);
+				}
 					
-					$plugin_options->saveOptions();
-				}
-				
-				/*
-				 * Run a quick check to see if the $_SESSION is started and verify that Connections data isn't being
-				 * overwritten and notify the user of errors.
+				echo "<div id='message' class='updated fade'>";
+					echo "<p><strong>Entry(ies) have been deleted.</strong></p>";
+				echo "</div>";
+				unset($_SESSION['connections']['formTokens']);
+			}
+		}
+		
+		if ($_GET['action']=='delete' AND $_SESSION['connections']['formTokens']['delete_'.$_GET['id']]['token'] == $_GET['token'])
+		{
+	        $entry = new entry();
+			$entry->delete($_GET['id']);
+			echo '<div id="message" class="updated fade"><p><strong>The entry has been deleted.</strong></p></div>';
+			unset($entry);
+			unset($_SESSION['connections']['formTokens']);
+	    }
+		
+		if ($_POST['dofilter'])
+		{
+			$plugin_options->setEntryType($_POST['entry_type']);
+			$plugin_options->setVisibilityType($_POST['visibility_type']);
+			
+			$plugin_options->saveOptions();
+		}
+		
+		?>
+
+		<div class="wrap">
+			<div class="icon32" id="icon-connections"><br/></div>
+			<h2>Connections : Entry List</h2>
+			
+			<?php
+				/**
+				 * The stored visibility filter for the current user is checked against
+				 * the current user's capabilites; if the current user IS NOT permitted
+				 * the query string is set not to query the visibility type and then the
+				 * current users filter is set to NULL to show all. IF the current user
+				 * IS permitted the query string will query the visibility type. Finally
+				 * the remain visibility types are checked and if NOT permitted that is
+				 * appened to the query string.
 				 */
-				if (!$_SESSION)
+				switch ($plugin_options->getVisibilityType())
 				{
-					echo '<div id="notice" class="error">';
-						echo '<p><strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in or site setup is preventing it from being used.</strong></p>';
-					echo '</div>';
-				}
-				elseif (!$_SESSION['connections']['active'] == true)
-				{
-					echo '<div id="notice" class="error">';
-						echo '<p><strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in seems to be overwritting the values for Connections.</strong></p>';
-					echo '</div>';
+					case 'public':
+						if (!current_user_can('connections_view_public') && !$plugin_options->getAllowPublic())
+						{
+							$visibilityfilter = " AND NOT visibility='public' ";
+							$plugin_options->setVisibilityType('');
+							$plugin_options->saveOptions();
+						}
+						else
+						{
+							$visibilityfilter = " AND visibility='public' ";
+						}
+						if (!current_user_can('connections_view_private')) $visibilityfilter .= " AND NOT visibility='private' ";
+						if (!current_user_can('connections_view_unlisted')) $visibilityfilter .= " AND NOT visibility='unlisted' ";
+												
+						break;
+						
+					case 'private':
+						if (!current_user_can('connections_view_private'))
+						{
+							$visibilityfilter = " AND NOT visibility='private' ";
+							$plugin_options->setVisibilityType('');
+							$plugin_options->saveOptions();
+						}
+						else
+						{
+							$visibilityfilter = " AND visibility='private' ";
+						}
+						if (!current_user_can('connections_view_public') && !$plugin_options->getAllowPublic()) $visibilityfilter .= " AND NOT visibility='public' ";
+						if (!current_user_can('connections_view_unlisted')) $visibilityfilter .= " AND NOT visibility='unlisted' ";
+						
+						break;
+						
+					case 'unlisted':
+						if (!current_user_can('connections_view_unlisted'))
+						{
+							$visibilityfilter = " AND NOT visibility='unlisted' ";
+							$plugin_options->setVisibilityType('');
+							$plugin_options->saveOptions();
+						}
+						else
+						{
+							$visibilityfilter = " AND visibility='unlisted' ";
+						}
+						if (!current_user_can('connections_view_public') && !$plugin_options->getAllowPublic()) $visibilityfilter .= " AND NOT visibility='public' ";
+						if (!current_user_can('connections_view_private')) $visibilityfilter .= " AND NOT visibility='private' ";
+						
+						break;
+					
+					default:
+						if (!current_user_can('connections_view_public') && !$plugin_options->getAllowPublic()) $visibilityfilter .= " AND NOT visibility='public' ";
+						if (!current_user_can('connections_view_private')) $visibilityfilter .= " AND NOT visibility='private' ";
+						if (!current_user_can('connections_view_unlisted')) $visibilityfilter .= " AND NOT visibility='unlisted' ";
+						break;
 				}
 				
-				?>
-				
+				$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = '' AND group_name = ''" . $visibilityfilter . ")
+						UNION
+						(SELECT *, group_name AS order_by FROM ".$wpdb->prefix."connections WHERE group_name != ''" . $visibilityfilter . ")
+						UNION
+						(SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibilityfilter . ")
+						ORDER BY order_by, last_name, first_name";
+				$results = $wpdb->get_results($sql);
+			?>
+			
 				
 				<?php
-					/**
-					 * The stored visibility filter for the current user is checked against
-					 * the current user's capabilites; if the stored visibility filter is not
-					 * permitted by the current user's capabilities the filter is set to NULL
-					 * which will query all entries which then are filtered out based on the
-					 * current user's capabilities individually further down in the code.
-					 */
-					/**
-					 * @TODO Modify the query to query only the entries the current users can
-					 * access rather than filtering them out in the loop further down in the code.
-					 */
-					switch ($plugin_options->getVisibilityType())
-					{
-						case 'public':
-							if (!current_user_can('connections_view_public'))
-							{
-								$visibility = '';
-								$plugin_options->setVisibilityType('');
-							}
-						break;
-						
-						case 'private':
-							if (!current_user_can('connections_view_private'))
-							{
-								$visibility = '';
-								$plugin_options->setVisibilityType('');
-							}
-						break;
-						
-						case 'unlisted':
-							if (!current_user_can('connections_view_unlisted'))
-							{
-								$visibility = '';
-								$plugin_options->setVisibilityType('');
-							}
-						break;
-					}
-					if ($plugin_options->getVisibilityType() != "") $visibility = " AND visibility='" . $plugin_options->getVisibilityType() . "' ";
-					
-					$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = '' AND group_name = ''" . $visibility . ")
-							UNION
-							(SELECT *, group_name AS order_by FROM ".$wpdb->prefix."connections WHERE group_name != ''" . $visibility . ")
-							UNION
-							(SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibility . ")
-							ORDER BY order_by, last_name, first_name";
-					$results = $wpdb->get_results($sql);
+				/*
+				 * Check whether user can view the entry list
+				 */
+				if(current_user_can('connections_view_entry_list'))
+				{
 				?>
-				
 					
-					<?php
-					/*
-					 * Check whether user can view the entry list
-					 */
-					if(current_user_can('connections_view_entry_list'))
-					{
-					?>
+						<form action="admin.php?page=connections/connections.php" method="post">
 						
-							<form action="admin.php?page=connections/connections.php" method="post">
+						<div class="tablenav">
 							
-							<div class="tablenav">
+							<?php
+							$form = new formObjects();
+							
+							if (current_user_can('connections_edit_entry') || current_user_can('connections_delete_entry'))
+							{
+								echo '<div class="alignleft actions">';
+									echo '<select name="action">';
+										echo '<option value="" SELECTED>Bulk Actions</option>';
+										
+											if (current_user_can('connections_edit_entry'))
+											{
+												echo '<option value="public">Set Public</option>';
+												echo '<option value="private">Set Private</option>';
+												echo '<option value="unlisted">Set Unlisted</option>';
+											}
+											
+											if (current_user_can('connections_delete_entry'))
+											{
+												echo '<option value="delete">Delete</option>';
+											}
+																					
+									echo '</select>';
+									echo '<input id="doaction" class="button-secondary action" type="submit" name="doaction" value="Apply" />';
+								echo '</div>';
+							}
+							?>
+							
+							<div class="alignleft actions">
+								<?php echo $form->buildSelect('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $plugin_options->getEntryType())?>
 								
 								<?php
-								$form = new formObjects();
+									/**
+									 * Builds the visibilty select list base on current user capabilities.
+									 */
+									if (current_user_can('connections_view_public') || $plugin_options->getAllowPublic()) $visibilitySelect['public'] = 'Show Public';
+									if (current_user_can('connections_view_private'))	$visibilitySelect['private'] = 'Show Private';
+									if (current_user_can('connections_view_unlisted'))	$visibilitySelect['unlisted'] = 'Show Unlisted';
+									
+									if (isset($visibilitySelect))
+									{
+										$showAll[''] = 'Show All';
+										$visibilitySelect = $showAll + $visibilitySelect;
+										echo $form->buildSelect('visibility_type', $visibilitySelect, $plugin_options->getVisibilityType());
+									}
+								?>
+								<input id="doaction" class="button-secondary action" type="submit" name="dofilter" value="Filter" />
+								<input type="hidden" name="formId" value="do_action" />
+								<input type="hidden" name="token" value="<?php echo _formtoken("do_action"); ?>" />
+							</div>
+						</div>
+						<div class="clear"></div>
+						
+				       	<table cellspacing="0" class="widefat connections">
+							<thead>
+								<tr><th colspan="5" style="text-align:center;"><?php echo _build_alphaindex(); ?></th></tr>
+							</thead>
+							<thead>
+					            <tr>
+					                <th class="manage-column column-cb check-column" id="cb" scope="col"><input type="checkbox"/></th><th scope="col" colspan="2" style="width:40%;">Name</th><th scope="col" style="width:35%;">Visibility</th><th scope="col" style="width:25%;">Last Modified</th>
+					            </tr>
+							</thead>
+							<tfoot>
+					            <tr>
+					                <th class="manage-column column-cb check-column" scope="col"><input type="checkbox"/></th><th scope="col" colspan="2" style="width:40%;">Name</th><th scope="col" style="width:35%;">Visibility</th><th scope="col" style="width:25%;">Last Modified</th>
+					            </tr>
+							</tfoot>
+							<tbody>
 								
-								if (current_user_can('connections_edit_entry') || current_user_can('connections_delete_entry'))
-								{
-									echo '<div class="alignleft actions">';
-										echo '<select name="action">';
-											echo '<option value="" SELECTED>Bulk Actions</option>';
-											
+								<?php
+								
+								foreach ($results as $row) {
+									$entry = new entry($row);
+									$addressObject = new addresses();
+									$phoneNumberObject = new phoneNumber();
+									$emailAddressObject = new email();
+									$imObject = new im();
+									$websiteObject = new website();
+									
+									$object = new output($row);
+									
+									/*
+									 * This is to skip any entries that are not of the selected type when being filtered.
+									 */
+									if ($plugin_options->getEntryType() != "" )	{
+										if ($entry->getEntryType() != $plugin_options->getEntryType()) continue;
+									}
+									
+									/*
+									 * Check whether the current user is permitted to view public, private or unlisted entries
+									 * and filter those out where permission has not been granted.
+									 */
+									//if ($entry->getVisibility() == 'public' && !current_user_can('connections_view_public') && !$plugin_options->getAllowPublic()) continue;
+									//if ($entry->getVisibility() == 'private' && !current_user_can('connections_view_private')) continue;
+									//if ($entry->getVisibility() == 'unlisted' && !current_user_can('connections_view_unlisted')) continue;
+																			
+									//Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
+									$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
+									if ($currentLetter != $previousLetter) {
+										$setAnchor = "<a name='$currentLetter'></a>";
+										$previousLetter = $currentLetter;
+									} else {
+										$setAnchor = null;
+									}
+									
+									echo "<tr id='row" . $entry->getId() . "' class='parent-row'>";
+										echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
+											echo '<td colspan="2">';
+											if ($setAnchor) echo $setAnchor;
+											echo '<div style="float:right"><a href="#wphead" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" /></a></div>';
+												
 												if (current_user_can('connections_edit_entry'))
 												{
-													echo '<option value="public">Set Public</option>';
-													echo '<option value="private">Set Private</option>';
-													echo '<option value="unlisted">Set Unlisted</option>';
+													echo '<a class="row-title" title="Edit ' . $entry->getFullFirstLastName() . '" href="admin.php?page=connections/connections.php&action=editform&id=' . $row->id . '"> ' . $entry->getFullLastFirstName() . '</a><br />';
 												}
-												
-												if (current_user_can('connections_delete_entry')) echo '<option value="delete">Delete</option>';
-																						
-										echo '</select>';
-										echo '<input id="doaction" class="button-secondary action" type="submit" name="doaction" value="Apply" />';
-									echo '</div>';
-								}
-								?>
-								
-								<div class="alignleft actions">
-									<?php echo $form->buildSelect('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $plugin_options->getEntryType())?>
-									
-									<?php
-										/**
-										 * Builds the visibilty select list base on current user capabilities.
-										 */
-										if (current_user_can('connections_view_public'))	$visibilitySelect['public'] = 'Show Public';
-										if (current_user_can('connections_view_private'))	$visibilitySelect['private'] = 'Show Private';
-										if (current_user_can('connections_view_unlisted'))	$visibilitySelect['unlisted'] = 'Show Unlisted';
-										
-										if (isset($visibilitySelect))
-										{
-											$showAll[''] = 'Show All';
-											$visibilitySelect = $showAll + $visibilitySelect;
-											echo $form->buildSelect('visibility_type', $visibilitySelect, $plugin_options->getVisibilityType());
-										}
-									?>
-									<input id="doaction" class="button-secondary action" type="submit" name="dofilter" value="Filter" />
-									<input type="hidden" name="formId" value="do_action" />
-									<input type="hidden" name="token" value="<?php echo _formtoken("do_action"); ?>" />
-								</div>
-							</div>
-							<div class="clear"></div>
-							
-					       	<table cellspacing="0" class="widefat connections">
-								<thead>
-									<tr><th colspan="5" style="text-align:center;"><?php echo _build_alphaindex(); ?></th></tr>
-								</thead>
-								<thead>
-						            <tr>
-						                <th class="manage-column column-cb check-column" id="cb" scope="col"><input type="checkbox"/></th><th scope="col" colspan="2" style="width:40%;">Name</th><th scope="col" style="width:35%;">Visibility</th><th scope="col" style="width:25%;">Last Modified</th>
-						            </tr>
-								</thead>
-								<tfoot>
-						            <tr>
-						                <th class="manage-column column-cb check-column" scope="col"><input type="checkbox"/></th><th scope="col" colspan="2" style="width:40%;">Name</th><th scope="col" style="width:35%;">Visibility</th><th scope="col" style="width:25%;">Last Modified</th>
-						            </tr>
-								</tfoot>
-								<tbody>
-									
-									<?php
-									
-									foreach ($results as $row) {
-										$entry = new entry($row);
-										$addressObject = new addresses();
-										$phoneNumberObject = new phoneNumber();
-										$emailAddressObject = new email();
-										$imObject = new im();
-										$websiteObject = new website();
-										
-										$object = new output($row);
-										
-										/**
-										 * This is to skip any entries that are not of the selected type when being filtered.
-										 */
-										if ($plugin_options->getEntryType() != "" )	{
-											if ($entry->getEntryType() != $plugin_options->getEntryType()) continue;
-										}
-										
-										/**
-										 * Check whether the current user is permitted to view public, private or unlisted entries
-										 * and filter those out where permission has not been granted.
-										 */
-										if ($entry->getVisibility() == 'public' && !current_user_can('connections_view_public') && !$plugin_options->getAllowPublic()) continue;
-										if ($entry->getVisibility() == 'private' && !current_user_can('connections_view_private')) continue;
-										if ($entry->getVisibility() == 'unlisted' && !current_user_can('connections_view_unlisted')) continue;
-																				
-										//Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
-										$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
-										if ($currentLetter != $previousLetter) {
-											$setAnchor = "<a name='$currentLetter'></a>";
-											$previousLetter = $currentLetter;
-										} else {
-											$setAnchor = null;
-										}
-										
-										echo "<tr id='row" . $entry->getId() . "' class='parent-row'>";
-											echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
-												echo '<td colspan="2">';
-												if ($setAnchor) echo $setAnchor;
-												echo '<div style="float:right"><a href="#wphead" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" /></a></div>';
-													
-													if (current_user_can('connections_edit_entry'))
-													{
-														echo '<a class="row-title" title="Edit ' . $entry->getFullFirstLastName() . '" href="admin.php?page=connections/connections.php&action=editform&id=' . $row->id . '"> ' . $entry->getFullLastFirstName() . '</a><br />';
-													}
-													else
-													{
-														echo '<strong>' . $entry->getFullLastFirstName() . '</strong>';
-													}
-													
-													echo '<div class="row-actions">';
-														echo '<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a> | ';
-														if (current_user_can('connections_edit_entry')) echo '<a class="editbutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&editid=true" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | ';
-														if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&copyid=true" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
-														if (current_user_can('connections_delete_entry')) echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections/connections.php&action=delete&id=' . $entry->getId() . '&token=' . _formtoken('delete_' . $entry->getId()) . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
-													echo '</div>';
-											echo "</td> \n";
-											echo "<td ><strong>" . $entry->displayVisibiltyType() . "</strong></td> \n";												
-											echo "<td >" . $entry->getFormattedTimeStamp() . "</td> \n";											
-										echo "</tr> \n";
-										
-										echo "<tr class='child-row-" . $entry->getId() . " entrydetails' id='contact-" . $entry->getId() . "-detail' style='display:none;'>";
-											echo "<td ></td> \n";
-											echo "<td colspan='2'>";
-												
-												if ($entry->getConnectionGroup())
+												else
 												{
-													$connections = $entry->getConnectionGroup();
-													$count = count($entry->getConnectionGroup());
-													$i = 0;
-													
-													foreach ($connections as $key => $value)
-													{
-														$relation = new entry();
-														$relation->set($key);
-														echo '<strong>' . $defaultConnectionGroupValues[$value] . ':</strong> ' . '<a href="admin.php?page=connections/connections.php&action=editform&id=' . $relation->getId() . '&editid=true" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a>' . '<br />' . "\n";
-														if ($count - 1 == $i) echo '<br />'; // Insert a break after all connections are listed.
-														$i++;
-														unset($relation);
-													}
-													unset($i);
-													unset($count);
+													echo '<strong>' . $entry->getFullLastFirstName() . '</strong>';
 												}
 												
-												if ($entry->getTitle()) echo "<strong>Title:</strong><br />" . $entry->getTitle() . "<br /><br />";
-												if ($entry->getOrganization() && $entry->getEntryType() != "organization" ) echo "<strong>Organization:</strong><br />" . $entry->getOrganization() . "<br /><br />";
-												if ($entry->getDepartment()) echo "<strong>Department:</strong><br />" . $entry->getDepartment() . "<br /><br />";
-												
-												if ($entry->getAddresses())
-												{
-													foreach ($entry->getAddresses() as $addressRow)
-													{
-														echo "<div style='margin-bottom: 10px;'>";
-														if ($addressObject->getName($addressRow) != null || $addressObject->getType($addressRow)) echo "<strong>" . $addressObject->getName($addressRow) . "</strong><br />"; //The OR is for compatiblity for 0.2.24 and under
-														if ($addressObject->getLineOne($addressRow) != null) echo $addressObject->getLineOne($addressRow) . "<br />";
-														if ($addressObject->getLineTwo($addressRow) != null) echo $addressObject->getLineTwo($addressRow) . "<br />";
-														if ($addressObject->getCity($addressRow) != null) echo $addressObject->getCity($addressRow) . "&nbsp;";
-														if ($addressObject->getState($addressRow) != null) echo $addressObject->getState($addressRow) . "&nbsp;";
-														if ($addressObject->getZipCode($addressRow) != null) echo $addressObject->getZipCode($addressRow) . "<br />";
-														if ($addressObject->getCountry($addressRow) != null) echo $addressObject->getCountry($addressRow);
-														echo "</div>";														
-													}
-												}
-											echo "</td> \n";
+												echo '<div class="row-actions">';
+													echo '<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a> | ';
+													if (current_user_can('connections_edit_entry')) echo '<a class="editbutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&editid=true" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | ';
+													if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="admin.php?page=connections/connections.php&action=editform&id=' . $entry->getId() . '&copyid=true" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
+													if (current_user_can('connections_delete_entry')) echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections/connections.php&action=delete&id=' . $entry->getId() . '&token=' . _formtoken('delete_' . $entry->getId()) . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
+												echo '</div>';
+										echo "</td> \n";
+										echo "<td ><strong>" . $entry->displayVisibiltyType() . "</strong></td> \n";												
+										echo "<td >" . $entry->getFormattedTimeStamp() . "</td> \n";											
+									echo "</tr> \n";
+									
+									echo "<tr class='child-row-" . $entry->getId() . " entrydetails' id='contact-" . $entry->getId() . "-detail' style='display:none;'>";
+										echo "<td ></td> \n";
+										echo "<td colspan='2'>";
 											
-											echo "<td>";
-												if ($entry->getEmailAddresses())
-												{
-													foreach ($entry->getEmailAddresses() as $emailRow)
-													{
-														if ($emailAddressObject->getAddress($emailRow) != null) echo "<strong>" . $emailAddressObject->getName($emailRow) . ":</strong><br /><a href='mailto:" . $emailAddressObject->getAddress($emailRow) . "'>" . $emailAddressObject->getAddress($emailRow) . "</a><br /><br />";
-													}
-												}
+											if ($entry->getConnectionGroup())
+											{
+												$connections = $entry->getConnectionGroup();
+												$count = count($entry->getConnectionGroup());
+												$i = 0;
 												
-												if ($entry->getIm())
+												foreach ($connections as $key => $value)
 												{
-													foreach ($entry->getIm() as $imRow)
-													{
-														if ($imObject->getId($imRow) != "") echo "<strong>" . $imObject->getName($imRow) . ":</strong><br />" . $imObject->getId($imRow) . "<br /><br />";
-													}
+													$relation = new entry();
+													$relation->set($key);
+													echo '<strong>' . $defaultConnectionGroupValues[$value] . ':</strong> ' . '<a href="admin.php?page=connections/connections.php&action=editform&id=' . $relation->getId() . '&editid=true" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a>' . '<br />' . "\n";
+													if ($count - 1 == $i) echo '<br />'; // Insert a break after all connections are listed.
+													$i++;
+													unset($relation);
 												}
-												
-												if ($entry->getWebsites())
+												unset($i);
+												unset($count);
+											}
+											
+											if ($entry->getTitle()) echo "<strong>Title:</strong><br />" . $entry->getTitle() . "<br /><br />";
+											if ($entry->getOrganization() && $entry->getEntryType() != "organization" ) echo "<strong>Organization:</strong><br />" . $entry->getOrganization() . "<br /><br />";
+											if ($entry->getDepartment()) echo "<strong>Department:</strong><br />" . $entry->getDepartment() . "<br /><br />";
+											
+											if ($entry->getAddresses())
+											{
+												foreach ($entry->getAddresses() as $addressRow)
 												{
-													foreach ($entry->getWebsites() as $websiteRow)
-													{
-														if ($websiteObject->getAddress($websiteRow) != "") echo "<strong>Website:</strong><br /><a target='_blank' href='" . $websiteObject->getAddress($websiteRow) . "'>" . $websiteObject->getAddress($websiteRow) . "</a><br /><br />";
-													}
+													echo "<div style='margin-bottom: 10px;'>";
+													if ($addressObject->getName($addressRow) != null || $addressObject->getType($addressRow)) echo "<strong>" . $addressObject->getName($addressRow) . "</strong><br />"; //The OR is for compatiblity for 0.2.24 and under
+													if ($addressObject->getLineOne($addressRow) != null) echo $addressObject->getLineOne($addressRow) . "<br />";
+													if ($addressObject->getLineTwo($addressRow) != null) echo $addressObject->getLineTwo($addressRow) . "<br />";
+													if ($addressObject->getCity($addressRow) != null) echo $addressObject->getCity($addressRow) . "&nbsp;";
+													if ($addressObject->getState($addressRow) != null) echo $addressObject->getState($addressRow) . "&nbsp;";
+													if ($addressObject->getZipCode($addressRow) != null) echo $addressObject->getZipCode($addressRow) . "<br />";
+													if ($addressObject->getCountry($addressRow) != null) echo $addressObject->getCountry($addressRow);
+													echo "</div>";														
 												}
-												
-												if ($entry->getPhoneNumbers())
-												{
-													foreach ($entry->getPhoneNumbers() as $phoneNumberRow) 
-													{
-														if ($phoneNumberObject->getNumber($phoneNumberRow) != "") echo "<strong>" . $phoneNumberObject->getName($phoneNumberRow) . "</strong>: " .  $phoneNumberObject->getNumber($phoneNumberRow) . "<br />";
-													}
-												}
-												
-											echo "</td> \n";
-																					
-											echo "<td>";
-												if ($entry->getBirthday()) echo "<strong>Birthday:</strong><br />" . $entry->getBirthday() . "<br /><br />";
-												if ($entry->getAnniversary()) echo "<strong>Anniversary:</strong><br />" . $entry->getAnniversary();
-											echo "</td> \n";
-										echo "</tr> \n";
+											}
+										echo "</td> \n";
 										
-										echo "<tr class='child-row-" . $entry->getId() . " entrynotes' id='contact-" . $entry->getId() . "-detail-notes' style='display:none;'>";
-											echo "<td>&nbsp;</td> \n";
-											echo "<td colspan='3'>";
-												if ($entry->getBio()) echo "<strong>Bio:</strong> " . $entry->getBio() . "<br />"; else echo "&nbsp;";
-												if ($entry->getNotes()) echo "<strong>Notes:</strong> " . $entry->getNotes(); else echo "&nbsp;";
-											echo "</td> \n";
-											echo "<td><strong>Entry ID:</strong> " . $entry->getId();
-												if (!$entry->getImageLinked()) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";
-												if ($entry->getImageLinked() && $entry->getImageDisplay()) echo "<br /><strong>Display:</strong> Yes"; else echo "<br /><strong>Display:</strong> No";
-											echo "</td> \n";
-										echo "</tr> \n";
+										echo "<td>";
+											if ($entry->getEmailAddresses())
+											{
+												foreach ($entry->getEmailAddresses() as $emailRow)
+												{
+													if ($emailAddressObject->getAddress($emailRow) != null) echo "<strong>" . $emailAddressObject->getName($emailRow) . ":</strong><br /><a href='mailto:" . $emailAddressObject->getAddress($emailRow) . "'>" . $emailAddressObject->getAddress($emailRow) . "</a><br /><br />";
+												}
+											}
+											
+											if ($entry->getIm())
+											{
+												foreach ($entry->getIm() as $imRow)
+												{
+													if ($imObject->getId($imRow) != "") echo "<strong>" . $imObject->getName($imRow) . ":</strong><br />" . $imObject->getId($imRow) . "<br /><br />";
+												}
+											}
+											
+											if ($entry->getWebsites())
+											{
+												foreach ($entry->getWebsites() as $websiteRow)
+												{
+													if ($websiteObject->getAddress($websiteRow) != "") echo "<strong>Website:</strong><br /><a target='_blank' href='" . $websiteObject->getAddress($websiteRow) . "'>" . $websiteObject->getAddress($websiteRow) . "</a><br /><br />";
+												}
+											}
+											
+											if ($entry->getPhoneNumbers())
+											{
+												foreach ($entry->getPhoneNumbers() as $phoneNumberRow) 
+												{
+													if ($phoneNumberObject->getNumber($phoneNumberRow) != "") echo "<strong>" . $phoneNumberObject->getName($phoneNumberRow) . "</strong>: " .  $phoneNumberObject->getNumber($phoneNumberRow) . "<br />";
+												}
+											}
+											
+										echo "</td> \n";
 																				
-									} ?>
-								</tbody>
-					        </table>
-							</form>
-							<p style="font-size:smaller; text-align:center">This is version <?php echo $plugin_options->getVersion(); ?> of Connections.</p>
-							
-							
-							<form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="text-align:center">
-								<input type="hidden" name="cmd" value="_s-xclick">
-								<input type="hidden" name="hosted_button_id" value="5070255">
-								<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-								<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
-							</form>
-							
+										echo "<td>";
+											if ($entry->getBirthday()) echo "<strong>Birthday:</strong><br />" . $entry->getBirthday() . "<br /><br />";
+											if ($entry->getAnniversary()) echo "<strong>Anniversary:</strong><br />" . $entry->getAnniversary();
+										echo "</td> \n";
+									echo "</tr> \n";
+									
+									echo "<tr class='child-row-" . $entry->getId() . " entrynotes' id='contact-" . $entry->getId() . "-detail-notes' style='display:none;'>";
+										echo "<td>&nbsp;</td> \n";
+										echo "<td colspan='3'>";
+											if ($entry->getBio()) echo "<strong>Bio:</strong> " . $entry->getBio() . "<br />"; else echo "&nbsp;";
+											if ($entry->getNotes()) echo "<strong>Notes:</strong> " . $entry->getNotes(); else echo "&nbsp;";
+										echo "</td> \n";
+										echo "<td><strong>Entry ID:</strong> " . $entry->getId();
+											if (!$entry->getImageLinked()) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";
+											if ($entry->getImageLinked() && $entry->getImageDisplay()) echo "<br /><strong>Display:</strong> Yes"; else echo "<br /><strong>Display:</strong> No";
+										echo "</td> \n";
+									echo "</tr> \n";
+																			
+								} ?>
+							</tbody>
+				        </table>
+						</form>
+						<p style="font-size:smaller; text-align:center">This is version <?php echo $plugin_options->getVersion(); ?> of Connections.</p>
+						
+						
+						<form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="text-align:center">
+							<input type="hidden" name="cmd" value="_s-xclick">
+							<input type="hidden" name="hosted_button_id" value="5070255">
+							<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+							<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+						</form>
 						
 					
-					<?php }	?>
-					
-				</div>
-			
-			<script type="text/javascript">
-				/* <![CDATA[ */
-				(function($){
-					$(document).ready(function(){
-						$('#doaction, #doaction2').click(function(){
-							if ( $('select[name^="action"]').val() == 'delete' ) {
-								var m = 'You are about to delete the selected entry(ies).\n  \'Cancel\' to stop, \'OK\' to delete.';
-								return showNotice.warn(m);
-							}
-						});
+				
+				<?php }	?>
+				
+			</div>
+		
+		<script type="text/javascript">
+			/* <![CDATA[ */
+			(function($){
+				$(document).ready(function(){
+					$('#doaction, #doaction2').click(function(){
+						if ( $('select[name^="action"]').val() == 'delete' ) {
+							var m = 'You are about to delete the selected entry(ies).\n  \'Cancel\' to stop, \'OK\' to delete.';
+							return showNotice.warn(m);
+						}
 					});
-				})(jQuery);
-				/* ]]> */
-			</script>
+				});
+			})(jQuery);
+			/* ]]> */
+		</script>
 
 <?php
-	    }
 	}
+}
 ?>
+
 <?php
 //Builds an alpha index.
 function _build_alphaindex() {
