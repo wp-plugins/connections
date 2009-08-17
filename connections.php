@@ -667,9 +667,7 @@ function _connections_main()
 <?php
 	}
 }
-?>
 
-<?php
 //Builds an alpha index.
 function _build_alphaindex() {
 	$alphaindex = range("A","Z");
@@ -771,6 +769,23 @@ function _connections_get_entry_select($name,$selected=null)
 add_shortcode('connections_list', '_connections_list');
 function _connections_list($atts, $content=null) {
 	global $wpdb, $current_user;
+	
+	//SQL objects
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.sql.php');
+	//HTML FORM objects
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.form.php');
+	//date objects
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.date.php');
+	//entry objects
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.entry.php');
+	//plugin option objects
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.options.php');
+	//plugin utility objects
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.utility.php');
+	//plugin template objects
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.output.php');
+	//builds vCard
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.vcard.php');
 	
 	$atts = shortcode_atts( array(
 				'allow_public_override' => 'false',
