@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111
 Description: An address book.
-Version: 0.5.1
+Version: 0.5.32
 Author: Steven A. Zahm
 Author URI: http://www.shazahm.net
 
@@ -64,8 +64,7 @@ function connections_menus()
 	require_once(WP_PLUGIN_DIR . '/connections/includes/class.vcard.php');
 	
 	//Adds Connections to the top level menu.
-	//add_menu_page('Connections : Administration', 'Connections', 'connections_view_entry_list', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
-	add_menu_page('Connections : Administration', 'Connections', 'manage_options', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
+	add_menu_page('Connections : Administration', 'Connections', 'connections_view_entry_list', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
 	
 	//Adds the Connections sub-menus.
 	add_submenu_page('connections/connections.php', 'Connections : Entry List', 'Entry List', 'connections_view_entry_list', 'connections/connections.php', '_connections_main');
@@ -707,6 +706,37 @@ function _formtoken($formId) {
 	return $token;
 }
 
+// Action run during plug-in activation
+register_activation_hook('connections/connections.php', '_connections_activate');
+function _connections_activate()
+{
+	global $wpdb;
+	
+	//plugin option objects
+	require_once(WP_PLUGIN_DIR . '/connections/includes/class.options.php');
+	
+	get_currentuserinfo();
+	$plugin_options = new pluginOptions($current_user->ID);
+	
+	if (!$plugin_options->getAllowPublic()) $plugin_options->setAllowPublic(true);
+	$plugin_options->setDefaultCapabilities();
+	$plugin_options->setDefaultImageSettings();
+	$plugin_options->saveOptions();
+}
+
+// Action run during plug-in deactivation
+register_deactivation_hook( __FILE__, '_connections_deactivate' );
+function _connections_deactivate()
+{
+	global $wpdb;
+	
+	get_currentuserinfo();
+	$plugin_options = new pluginOptions($current_user->ID);
+	
+	$plugin_options->removeDefaultCapabilities();
+	$plugin_options->saveOptions();
+}
+
 // This installs and/or upgrades the plugin.
 function _connections_install() {
 	global $wpdb;
@@ -741,9 +771,6 @@ function _connections_install() {
     dbDelta($sql);
 	
 	$plugin_options->setVersion(CN_CURRENT_VERSION);
-	if (!$plugin_options->getAllowPublic()) $plugin_options->setAllowPublic(true);
-	$plugin_options->setDefaultCapabilities();
-	$plugin_options->setDefaultImageSettings();
 	$plugin_options->saveOptions();
 }
 

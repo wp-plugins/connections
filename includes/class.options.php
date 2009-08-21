@@ -267,6 +267,23 @@ class pluginOptions
 		}
 	}
 	
+	public function removeDefaultCapabilities()
+	{
+		global $wp_roles;
+		
+		$rolesToReset = $wp_roles->get_names();
+		
+		foreach ($rolesToReset as $role => $name)
+		{
+			$wpRole = get_role($role);
+			
+			foreach ($this->defaultCapabilities as $cap => $name)
+			{
+				if ($this->hasCapability($role, $cap)) $wpRole->remove_cap($cap);
+			}
+		}
+	}
+	
     /**
      * Returns $entryType.
      * @see options::$entryType
