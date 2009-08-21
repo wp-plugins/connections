@@ -300,7 +300,7 @@ class entryForm
 							
 							$out .= '<div id="relation_row_' . $relation->getId() . '" class="relation_row">';
 								$out .= _connections_get_entry_select('connection_group[' . $relation->getId() . '][entry_id]', $key);
-								$out .= $form->buildSelect('connection_group[' . $relation->getId() . '][relation]', $defaultConnectionGroupValues, $value);
+								$out .= $form->buildSelect('connection_group[' . $relation->getId() . '][relation]', $this->defaultConnectionGroupValues, $value);
 								$out .= '<a href="#" id="remove_button_' . $i . '" class="button button-warning" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
 							$out .= '</div>';
 							
