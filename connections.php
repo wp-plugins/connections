@@ -710,6 +710,10 @@ function _formtoken($formId) {
 register_activation_hook('connections/connections.php', '_connections_activate');
 function _connections_activate()
 {
+	/**
+	 * @TODO: Finish setting up defaults. Check to make sure settings haven't been set so as not
+	 * to overwite them for seemless upgrades.
+	 */
 	global $wpdb;
 	
 	//plugin option objects
