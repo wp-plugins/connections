@@ -106,6 +106,12 @@ function connections_loadcss_admin_head() {
 // Queues up the scripts on the posts/pages.
 add_action('wp_print_scripts', 'connections_loadjs_head');
 function connections_loadjs_head() {
+	
+	/**
+	 * @TODO: enqueuing the built-in jQuery breaks the Fancy Theme 2.0 by Mip Design Studio at http://www.mip-design.com/
+	 * Is there a way to fix this???
+	 */
+	
 	wp_enqueue_script('jquery');
 	wp_enqueue_script('thickbox');
 }
