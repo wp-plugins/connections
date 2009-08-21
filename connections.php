@@ -64,7 +64,9 @@ function connections_menus()
 	require_once(WP_PLUGIN_DIR . '/connections/includes/class.vcard.php');
 	
 	//Adds Connections to the top level menu.
-	add_menu_page('Connections : Administration', 'Connections', 'connections_view_entry_list', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
+	//add_menu_page('Connections : Administration', 'Connections', 'connections_view_entry_list', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
+	add_menu_page('Connections : Administration', 'Connections', 'manage_options', 'connections/connections.php', '_connections_main', WP_PLUGIN_URL . '/connections/images/menu.png');
+	
 	//Adds the Connections sub-menus.
 	add_submenu_page('connections/connections.php', 'Connections : Entry List', 'Entry List', 'connections_view_entry_list', 'connections/connections.php', '_connections_main');
 	add_submenu_page('connections/connections.php', 'Connections : Add Entry','Add Entry', 'connections_add_entry','connections/submenus/add.php');
