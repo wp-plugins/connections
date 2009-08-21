@@ -420,7 +420,7 @@ class vCard extends entry
 	
 	public function download()
 	{
-		session_start();
+		@session_start();
 		$this->setvCardData();
 		
 		$filename = trim($this->data['display_name']); 

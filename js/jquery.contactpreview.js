@@ -11,6 +11,7 @@ this.contactPreview = function(){
         var $this = jQuery(this);
         $this.data('title', $this.attr('title'));
         $this.attr('title', '');
+		$this.css("cursor","pointer");
     });
     //alert( jQuery().jquery);
     jQuery("a.contact").live('click', function(e){
@@ -20,7 +21,8 @@ this.contactPreview = function(){
         var title = $this.data('title');
         
         jQuery("body").append("<div id='contact-info'>" + title + "<div id='close-contact-footer'><a id='close-contact' class='close-contact'>Close</a></div></div>");
-        
+        jQuery("a.close-contact").css("cursor","pointer");
+		
         jQuery("#contact-info").fadeIn(500).center();
     });
     
