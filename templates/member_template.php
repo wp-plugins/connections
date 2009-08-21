@@ -1,12 +1,12 @@
-<?php
+<?php 
 /**
  * @author:   Phill Pafford
  * @website:  http://llihp.blogspot.com
- * 
+ *
  * @todo:
  *    -Add Link to personal profile in popup for each member displayed, NOT FOR MOBILE VIEWING
  */
-
+ 
 if (sizeof($entry->getConnectionGroup()) > 0) {
     // Get the plugins dir URL for the site
     $plugindir = get_bloginfo('wpurl').'/wp-content/plugins';
@@ -26,24 +26,24 @@ if (sizeof($entry->getConnectionGroup()) > 0) {
     //$member_popup_info = '<div id="popup-group-name"><span>' . $entry->getGroupName() . '</span></div>';
     
     // Set a counter
-	$counter = 0;
+    $counter = 0;
     
-    foreach($entry->getConnectionGroup() as $key_member_group => $value_member_group) {
+    foreach ($entry->getConnectionGroup() as $key_member_group=>$value_member_group) {
         // Increment
         $counter++;
-    
+        
         // Set family member id
         $member_group->set($key_member_group);
         
-        if($counter > 1){
-            $member_list_first_names .= ", " . $member_group->getFirstName();
+        if ($counter > 1) {
+            $member_list_first_names .= ", ".$member_group->getFirstName();
         } else {
             $member_list_first_names = $member_group->getFirstName();
-        } 
+        }
     }
-
-    $member_popup_info = '<div id="popup-group-members"><span>' . $member_list_first_names . '</span></div>';
-    $member_popup_info .= '<div id="popup-group-name"><span>' . $entry->getGroupName() . '</span></div>';
+    
+    $member_popup_info = '<div id="popup-group-members"><span>'.$member_list_first_names.'</span></div>';
+    $member_popup_info .= '<div id="popup-group-name"><span>'.$entry->getGroupName().'</span></div>';
     
     // Get Home phone number
     foreach ($entry->getPhoneNumbers() as $key_homephone=>$value_homephone) {
@@ -87,7 +87,7 @@ if (sizeof($entry->getConnectionGroup()) > 0) {
                 $address .= $value_addresses['state']." ";
                 $address .= $value_addresses['zipcode'];
                 
-                $address_link  = "http://maps.google.com/?q=";
+                $address_link = "http://maps.google.com/?q=";
                 $address_link .= $value_addresses['address_line1']." ";
                 
                 // Check for line2
@@ -96,17 +96,17 @@ if (sizeof($entry->getConnectionGroup()) > 0) {
                 }
                 
                 $address_link .= $value_addresses['city'].", ";
-                $address_link .= $value_addresses['state']." "; 
-                $address_link .= $value_addresses['zipcode'];                                            
+                $address_link .= $value_addresses['state']." ";
+                $address_link .= $value_addresses['zipcode'];
                 
                 // Add the address
-                $member_popup_info .= $address.'<br /><a class="google-maps-link" href="' . $address_link . '">View Large Map</a><br />';
-                $mobile_member_listing .= '<br /><a class="google-maps-link" href="' . $address_link . '">View Map</a><br />';
+                $member_popup_info .= $address.'<br /><a class="google-maps-link" href="'.$address_link.'">View Large Map</a><br />';
+                $mobile_member_listing .= '<br /><a class="google-maps-link" href="'.$address_link.'">View Map</a><br />';
                 
-                // Find all the spaces               
-                $pattern = '/\s/';    
+                // Find all the spaces
+                $pattern = '/\s/';
                 
-                // replace with +            
+                // replace with +
                 $replacement = '+';
                 
                 // Convert for iframe Google map
@@ -114,23 +114,23 @@ if (sizeof($entry->getConnectionGroup()) > 0) {
                 
                 // Google maps parameter
                 // Embed
-                $google_maps_parms  = '&amp;output=embed';
+                $google_maps_parms = '&amp;output=embed';
                 $google_maps_parms .= '&amp;ie=UTF8';
                 
-                // t= Map Type. The available options are "m" map, "k" satellite, "h" hybrid, "p" terrain. 
+                // t= Map Type. The available options are "m" map, "k" satellite, "h" hybrid, "p" terrain.
                 $google_maps_parms .= '&amp;t=h';
                 
-                // z= Sets the zoom level. 
+                // z= Sets the zoom level.
                 $google_maps_parms .= '&amp;z=17';
-
+                
                 // Add the parms
-                $iframe_google_map = $iframe_google_map . $google_maps_parms;
+                $iframe_google_map = $iframe_google_map.$google_maps_parms;
                 
                 // Hide the map
                 $member_popup_info .= '<div class="google-map" >';
-                $member_popup_info .= '<iframe width="350" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="' . $iframe_google_map . '">';
+                $member_popup_info .= '<iframe width="350" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'.$iframe_google_map.'">';
                 $member_popup_info .= '</iframe>';
-                $member_popup_info .= '</div>';  
+                $member_popup_info .= '</div>';
             }
         }
     }
@@ -145,9 +145,9 @@ if (sizeof($entry->getConnectionGroup()) > 0) {
         $member_name = '';
         $mobile_member_name = '';
         $member_mobile = '';
-	    $mobile_member_mobile = '';
+        $mobile_member_mobile = '';
         $member_email = '';
-	    $mobile_member_email = '';
+        $mobile_member_email = '';
         
         // List family member, add link to personal profile
         $member_name = "<br />".$member_group->getFullFirstLastName().":<br />"; // @todo: Would like to link to person profile
@@ -155,66 +155,63 @@ if (sizeof($entry->getConnectionGroup()) > 0) {
         
         // Check for family member and display all info
         if (sizeof($member_group) > 0) {
-        
-            // Get all phone numbers for family members
-			if ($member_group->getPhoneNumbers())
-			{
-				foreach ($member_group->getPhoneNumbers() as $key_phone=>$value_phone) {
-	            
-	                // List all numbers for family members
-	                foreach ($value_phone as $key_number=>$value_number) {
-	                
-	                    if ($key_number == 'type' && $value_number == 'cellphone') {
-	                    
-	                        // Find Mobile number(s) in $value_phone array
-	                        if ($value_phone['number'] != '') {
-	                        
-	                            // Add mobile info
-	                            $member_mobile = "Mobile: ".$value_phone['number']."<br />";
-	                            $mobile_member_mobile = "Mobile: ".$value_phone['number']."<br />";
-	                        }
-	                    }
-	                }
-	            }
-			}
+            // Check if array
+            if (is_array($member_group->getPhoneNumbers())) {
+                // Get all phone numbers for family members
+                foreach ($member_group->getPhoneNumbers() as $key_phone=>$value_phone) {
+                
+                    // List all numbers for family members
+                    foreach ($value_phone as $key_number=>$value_number) {
+                    
+                        if ($key_number == 'type' && $value_number == 'cellphone') {
+                        
+                            // Find Mobile number(s) in $value_phone array
+                            if ($value_phone['number'] != '') {
+                            
+                                // Add mobile info
+                                $member_mobile = "Mobile: ".$value_phone['number']."<br />";
+                                $mobile_member_mobile = "Mobile: ".$value_phone['number']."<br />";
+                            }
+                        }
+                    }
+                }
+            }
             
-            
-            // Get email addresses
-			if ($member_group->getEmailAddresses())
-			{
-				foreach ($member_group->getEmailAddresses() as $key_email=>$value_email) {
-	            
-	                // Display the personal email address
-	                foreach ($value_email as $key_eAddress=>$value_eAddress) {
-	                    if ($key_eAddress == 'address' && $value_eAddress != '') {
-	                    
-	                        // Add email info
-	                        $member_email = "Email: ".$value_email['address']."<br />";
-	                        $mobile_member_email = "Email: ".$value_email['address']."<br />";
-	                    }
-	                }
-	            }
-			}
-            
+            // Check if array
+            if (is_array($member_group->getEmailAddresses())) {
+                // Get email addresses
+                foreach ($member_group->getEmailAddresses() as $key_email=>$value_email) {
+                
+                    // Display the personal email address
+                    foreach ($value_email as $key_eAddress=>$value_eAddress) {
+                        if ($key_eAddress == 'address' && $value_eAddress != '') {
+                        
+                            // Add email info
+                            $member_email = "Email: ".$value_email['address']."<br />";
+                            $mobile_member_email = "Email: ".$value_email['address']."<br />";
+                        }
+                    }
+                }
+            }
             
             // Check for Mobile Phone and Address before displaying name
-            // If both are blank don't display name        
-            if($member_mobile != '' && $member_email != ''){
-                $member_popup_info .= $member_name . $member_mobile . $member_email;
-                $mobile_member_listing .= $mobile_member_name . $mobile_member_mobile . $mobile_member_email;
+            // If both are blank don't display name
+            if ($member_mobile != '' || $member_email != '') {
+                $member_popup_info .= $member_name.$member_mobile.$member_email;
+                $mobile_member_listing .= $mobile_member_name.$mobile_member_mobile.$mobile_member_email;
             }
         }
     }
 }
 
 // Build members first name list
-if($member_list_first_names != '') {
-    $member_list_first_names = " - " . $member_list_first_names;
+if ($member_list_first_names != '') {
+    $member_list_first_names = " - ".$member_list_first_names;
 }
 
 // Add group name
-$member_listing .= "<a class='contact' id='".$entry->getId()."' title='".$member_popup_info."'>".$entry->getGroupName() . $member_list_first_names ."</a>";
-$mobile_member_info = "<span class='m-contact' id='".$entry->getId()."'><b>".$entry->getGroupName() . $member_list_first_names ."</b></span><br />" . $mobile_member_listing;
+$member_listing .= "<a class='contact' id='".$entry->getId()."' title='".$member_popup_info."'>".$entry->getGroupName().$member_list_first_names."</a>";
+$mobile_member_info = "<span class='m-contact' id='".$entry->getId()."'><b>".$entry->getGroupName().$member_list_first_names."</b></span><br />".$mobile_member_listing;
 
 // Close the Info Div header
 $member_listing .= '</strong></span><br />';
