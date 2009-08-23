@@ -215,41 +215,6 @@ class entryForm
 										),
 									);
 	
-	private $defaultConnectionGroupValues = array(
-											'' =>"Select Relation",
-											'aunt' =>"Aunt",
-											'brother' =>"Brother",
-											'brotherinlaw' =>"Brother-in-law",
-											'cousin' =>"Cousin",
-											'daughter' =>"Daughter",
-											'daughterinlaw' =>"Daughter-in-law",
-											'father' =>"Father",
-											'fatherinlaw' =>"Father-in-law",
-											'granddaughter' =>"Grand Daughter",
-											'grandfather' =>"Grand Father",
-											'grandmother' =>"Grand Mother",
-											'grandson' =>"Grand Son",
-											'greatgrandmother' =>"Great Grand Mother",
-											'greatgrandfather' =>"Great Grand Father",
-											'husband' =>"Husband",
-											'mother' =>"Mother",
-											'motherinlaw' =>"Mother-in-law",
-											'nephew' =>"Nephew",
-											'niece' =>"Niece",
-											'sister' =>"Sister",
-											'sisterinlaw' =>"Sister-in-law",
-											'son' =>"Son",
-											'soninlaw' =>"Son-in-law",
-											'stepbrother' =>"Step Brother",
-											'stepdaughter' =>"Step Daughter",
-											'stepfather' =>"Step Father",
-											'stepmother' =>"Step Mother",
-											'stepsister' =>"Step Sister",
-											'stepson' =>"Step Son",
-											'uncle' =>"Uncle",
-											'wife' =>"Wife"
-											);
-	
 	/**
 	 * Builds the input/edit entry form.
 	 * @return HTML form
@@ -257,6 +222,11 @@ class entryForm
 	 */
 	function entryForm($data = null)
 	{
+		global $wpdb, $current_user;
+	
+		get_currentuserinfo();
+		$plugin_options = new pluginOptions($current_user->ID);
+		
 		$form = new formObjects();
 		$entry = new entry($data);
 		$addressObject = new addresses();
@@ -264,7 +234,7 @@ class entryForm
 		$emailObject = new email();
 		$imObject = new im();
 		$websiteObject = new website();
-		$options = unserialize($data->options);
+		$options = unserialize($data->options); /** @TODO: Is this needed??? */
 		$date = new dateFunctions();
 		$ticker = new counter();
 		
@@ -286,7 +256,7 @@ class entryForm
 					// --> Start template for Connection Group <-- \\
 					$out .= '<textarea id="relation_row_base" style="display: none">';
 						$out .= _connections_get_entry_select('connection_group[::FIELD::][entry_id]');
-						$out .= $form->buildSelect('connection_group[::FIELD::][relation]', $this->defaultConnectionGroupValues);
+						$out .= $form->buildSelect('connection_group[::FIELD::][relation]', $plugin_options->getDefaultConnectionGroupValues());
 					$out .= '</textarea>';
 					// --> End template for Connection Group <-- \\
 					
@@ -300,7 +270,7 @@ class entryForm
 							
 							$out .= '<div id="relation_row_' . $relation->getId() . '" class="relation_row">';
 								$out .= _connections_get_entry_select('connection_group[' . $relation->getId() . '][entry_id]', $key);
-								$out .= $form->buildSelect('connection_group[' . $relation->getId() . '][relation]', $this->defaultConnectionGroupValues, $value);
+								$out .= $form->buildSelect('connection_group[' . $relation->getId() . '][relation]', $plugin_options->getDefaultConnectionGroupValues(), $value);
 								$out .= '<a href="#" id="remove_button_' . $i . '" class="button button-warning" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
 							$out .= '</div>';
 							
@@ -598,7 +568,7 @@ class entryForm
 	{
 		global $current_user;
 		
-		$plugin_options = new pluginOptions($current_user->ID);
+		$plugin_options = new pluginOptions();
 		// Uses the upload.class.php to handle file uploading and image manipulation.
 		
 			$process_image = new Upload($_FILES['original_image']);

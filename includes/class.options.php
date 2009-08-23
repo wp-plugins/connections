@@ -47,6 +47,41 @@ class pluginOptions
 								'connections_change_roles' => 'Change Role Capabilities',
 								'connections_view_help' => 'View Help'
 							);
+							
+	private $defaultConnectionGroupValues = array(
+											'' =>"Select Relation",
+											'aunt' =>"Aunt",
+											'brother' =>"Brother",
+											'brotherinlaw' =>"Brother-in-law",
+											'cousin' =>"Cousin",
+											'daughter' =>"Daughter",
+											'daughterinlaw' =>"Daughter-in-law",
+											'father' =>"Father",
+											'fatherinlaw' =>"Father-in-law",
+											'granddaughter' =>"Grand Daughter",
+											'grandfather' =>"Grand Father",
+											'grandmother' =>"Grand Mother",
+											'grandson' =>"Grand Son",
+											'greatgrandmother' =>"Great Grand Mother",
+											'greatgrandfather' =>"Great Grand Father",
+											'husband' =>"Husband",
+											'mother' =>"Mother",
+											'motherinlaw' =>"Mother-in-law",
+											'nephew' =>"Nephew",
+											'niece' =>"Niece",
+											'sister' =>"Sister",
+											'sisterinlaw' =>"Sister-in-law",
+											'son' =>"Son",
+											'soninlaw' =>"Son-in-law",
+											'stepbrother' =>"Step Brother",
+											'stepdaughter' =>"Step Daughter",
+											'stepfather' =>"Step Father",
+											'stepmother' =>"Step Mother",
+											'stepsister' =>"Step Sister",
+											'stepson' =>"Step Son",
+											'uncle' =>"Uncle",
+											'wife' =>"Wife"
+											);
 	
 	private $allowPublic;
 	private $allowPublicOverride;
@@ -76,14 +111,14 @@ class pluginOptions
 	 * Sets up the plugin option properties. Requires the current WP user ID.
 	 * @param interger $userID
 	 */
-	public function __construct($userID)
+	public function __construct()
 	{
-		$this->currentUserID = $userID;
+		//$this->currentUserID = $userID;
 		
 		$this->options = get_option('connections_options');
 		$this->version = $this->options['version'];
-		$this->entryType = $this->options[$this->currentUserID]['filter']['entry_type'];
-		$this->visibilityType = $this->options[$this->currentUserID]['filter']['visibility_type'];
+		//$this->entryType = $this->options[$this->currentUserID]['filter']['entry_type'];
+		//$this->visibilityType = $this->options[$this->currentUserID]['filter']['visibility_type'];
 		
 		$this->allowPublic = $this->options['settings']['allow_public'];
 		$this->allowPublicOverride = $this->options['settings']['allow_public_override'];
@@ -288,9 +323,10 @@ class pluginOptions
      * Returns $entryType.
      * @see options::$entryType
      */
-    public function getEntryType()
+    public function getEntryType($currentUserID)
     {
-        return $this->entryType;
+        return $this->options[$currentUserID]['filter']['entry_type'];
+		//return $this->entryType;
     }
     
     /**
@@ -298,9 +334,10 @@ class pluginOptions
      * @param object $entryType
      * @see options::$entryType
      */
-    public function setEntryType($entryType)
+    public function setEntryType($entryType, $currentUserID)
     {
-        $this->entryType = $entryType;
+        $this->currentUserID;
+		$this->entryType = $entryType;
     }
     
     /**
@@ -326,9 +363,10 @@ class pluginOptions
      * Returns $visibilityType.
      * @see options::$visibilityType
      */
-    public function getVisibilityType()
+    public function getVisibilityType($currentUserID)
     {
-        return $this->visibilityType;
+        return $this->options[$currentUserID]['filter']['visibility_type'];
+		//return $this->visibilityType;
     }
     
     /**
@@ -336,9 +374,10 @@ class pluginOptions
      * @param object $visibilityType
      * @see options::$visibilityType
      */
-    public function setVisibilityType($visibilityType)
+    public function setVisibilityType($visibilityType, $currentUserID)
     {
-        $this->visibilityType = $visibilityType;
+        $this->currentUserID = $currentUserID;
+		$this->visibilityType = $visibilityType;
     }
 
     /**
@@ -744,6 +783,20 @@ class pluginOptions
     public function getImgThumbRatioFill()
     {
         return $this->imgThumbRatioFill;
+    }
+
+    /**
+     * Returns $defaultConnectionGroupValues.
+     * @see pluginOptions::$defaultConnectionGroupValues
+     */
+    public function getDefaultConnectionGroupValues()
+    {
+        return $this->defaultConnectionGroupValues;
+    }
+
+    public function getConnectionRelation($value)
+    {
+        return $this->defaultConnectionGroupValues[$value];
     }
     
     /**

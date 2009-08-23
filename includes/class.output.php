@@ -83,13 +83,13 @@ class output extends entry
 	{
 		if ($this->getConnectionGroup())
 		{
-			global $defaultConnectionGroupValues;
+			$plugin_options = new pluginOptions();
 			
 			foreach ($this->getConnectionGroup() as $key => $value)
 			{
 				$relation = new entry();
 				$relation->set($key);
-				echo '<span><strong>' . $defaultConnectionGroupValues[$value] . ':</strong> ' . $relation->getFullFirstLastName() . '</span><br />' . "\n";
+				echo '<span><strong>' . $plugin_options->getConnectionRelation($value) . ':</strong> ' . $relation->getFullFirstLastName() . '</span><br />' . "\n";
 				unset($relation);
 			}
 		}
