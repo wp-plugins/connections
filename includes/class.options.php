@@ -181,7 +181,12 @@ class pluginOptions
 		
 		update_option('connections_options', $this->options);
 	}
-
+	
+	public function removeOptions()
+	{
+		delete_option('connections_options');
+	}
+	
     /**
      * Returns $allowPublic.
      * @see pluginOptions::$allowPublic

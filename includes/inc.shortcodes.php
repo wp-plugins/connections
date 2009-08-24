@@ -24,6 +24,7 @@ function _connections_list($atts, $content=null) {
 				), $atts ) ;
 	
 	$plugin_options = new pluginOptions();
+	$form = new formObjects();
 	
 	/**
 	 * If the view public entries override shortcode attribute is not permitted the attribute is unset
@@ -77,7 +78,7 @@ function _connections_list($atts, $content=null) {
 			 * The alpha index is only displayed if set set to true and not set to repeat using the shortcode attributes.
 			 * If a alpha index is set to repeat, that is handled down separately.
 			 */
-			if ($atts['show_alphaindex'] == 'true' && $atts['repeat_alphaindex'] != 'true') $out .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
+			if ($atts['show_alphaindex'] == 'true' && $atts['repeat_alphaindex'] != 'true') $out .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex(). "</div>";
 			
 			$out .=  "<div class='connections-list'>\n";
 			

@@ -2,24 +2,14 @@
 function connectionsShowViewPage()
 {
 	global $wpdb, $current_user;
-	$sql = new sql();
-	
+		
 	get_currentuserinfo();
 	$plugin_options = new pluginOptions();
+	$form = new formObjects();
 	
-	if ($wpdb->get_var("SHOW TABLES LIKE '{$sql->getTableName()}'")!= $sql->getTableName() || $plugin_options->getVersion() != CN_CURRENT_VERSION )
-	{
-	    /* 
-	     * Call the install function here rather than through the more usual
-	     * activate_blah.php action hook so the user doesn't have to worry about
-	     * deactivating then reactivating the plugin.  Should happen seamlessly.
-		 */
-	    _connections_install();
-	    echo "<div id='message' class='updated fade'>
-	        <p><strong>The Connections plug-in version " . $plugin_options->getVersion() . " has been installed or upgraded.</strong></p>
-	    </div>";
-	}
-	
+	/**
+	 * @TODO: Move the session check to the base file -> start method.
+	 */
 	/*
 	 * Run a quick check to see if the $_SESSION is started and verify that Connections data isn't being
 	 * overwritten and notify the user of errors.
@@ -37,7 +27,29 @@ function connectionsShowViewPage()
 		echo '</div>';
 	}
 	
-	if ($_GET['action']=='editform' AND ($_SESSION['connections']['formTokens']['edit_'.$_GET['id']]['token'] == $_GET['token'] OR $_SESSION['connections']['formTokens']['copy_'.$_GET['id']]['token'] == $_GET['token']))
+	/**
+	 * @TODO: Finish checking and setting the session token variables for the
+	 * other form actions.
+	 */
+	/*
+	 * Check to make sure the id and token are set in the query string. If they
+	 * are not, they are set to false. This way they will fail the edit/copy form
+	 * comparason and access to edit/copy entries where the token was not set will
+	 * be denied.
+	 * 
+	 * Hopefully this prevents users from gaining access to entry data that they shouldn't.
+	 */
+	if (!isset($_GET['id'])) $ID = false;
+	if (!isset($_GET['token'])) $token = false;
+	
+	if ($ID) $sessionTokenEdit =  $_SESSION['connections']['formTokens']['edit_' . $_GET['id']]['token'];
+	if ($ID) $sessionTokenCopy =  $_SESSION['connections']['formTokens']['copy_' . $_GET['id']]['token'];
+	
+	/**
+	 * @TODO: Split the edit/copy form into separate form actions. This is too confusing
+	 * to follow and to debug.
+	 */
+	if ($_GET['action']=='editform' AND ($sessionTokenEdit === $token OR $sessionTokenCopy === $token))
 	{
 		/*
 		 * Check whether current user can edit or copy/add an entry
@@ -86,7 +98,7 @@ function connectionsShowViewPage()
 						echo $entryForm->entryForm($entry);
 					?>
 					<input type="hidden" name="formId" value="<?php echo $formID ?>" />
-					<input type="hidden" name="token" value="<?php echo _formtoken($formID); ?>" />
+					<input type="hidden" name="token" value="<?php echo $form->token($formID); ?>" />
 					
 					<p class="submit">
 						<input  class="button-primary" type="submit" name="<?php echo $inputName ?>" value="Save" />
@@ -127,7 +139,7 @@ function connectionsShowViewPage()
 			echo $entryForm->processEntry();
 		}
 		
-		if ($_POST['doaction'] AND $_SESSION['connections']['formTokens']['do_action']['token'] == $_POST['token'])
+		if ($_POST['doaction'] AND $_SESSION['connections']['formTokens']['do_action']['token'] === $_POST['token'])
 		{
 			if ($_POST['action'] != "delete")
 			{
@@ -167,7 +179,7 @@ function connectionsShowViewPage()
 			}
 		}
 		
-		if ($_GET['action']=='delete' AND $_SESSION['connections']['formTokens']['delete_'.$_GET['id']]['token'] == $_GET['token'])
+		if ($_GET['action']=='delete' AND $_SESSION['connections']['formTokens']['delete_'.$_GET['id']]['token'] === $_GET['token'])
 		{
 	        $entry = new entry();
 			$entry->delete($_GET['id']);
@@ -283,8 +295,7 @@ function connectionsShowViewPage()
 						<div class="tablenav">
 							
 							<?php
-							$form = new formObjects();
-							
+														
 							if (current_user_can('connections_edit_entry') || current_user_can('connections_delete_entry'))
 							{
 								echo '<div class="alignleft actions">';
@@ -329,15 +340,18 @@ function connectionsShowViewPage()
 								?>
 								<input id="doaction" class="button-secondary action" type="submit" name="dofilter" value="Filter" />
 								<input type="hidden" name="formId" value="do_action" />
-								<input type="hidden" name="token" value="<?php echo _formtoken("do_action"); ?>" />
+								<input type="hidden" name="token" value="<?php echo $form->token("do_action"); ?>" />
+							</div>
+						</div>
+						<div class="clear"></div>
+						<div class="tablenav">
+							<div class="tablenav-pages">
+								<?php echo $form->buildAlphaIndex(); ?>
 							</div>
 						</div>
 						<div class="clear"></div>
 						
 				       	<table cellspacing="0" class="widefat connections">
-							<thead>
-								<tr><th colspan="5" style="text-align:center;"><?php echo _build_alphaindex(); ?></th></tr>
-							</thead>
 							<thead>
 					            <tr>
 					                <th class="manage-column column-cb check-column" id="cb" scope="col"><input type="checkbox"/></th><th scope="col" colspan="2" style="width:40%;">Name</th><th scope="col" style="width:35%;">Visibility</th><th scope="col" style="width:25%;">Last Modified</th>
@@ -389,6 +403,11 @@ function connectionsShowViewPage()
 										$setAnchor = null;
 									}
 									
+									/*
+									 * Genreate the edit token for the entry becuse it has two links.
+									 */
+									$editToken = $form->token('edit_' . $entry->getId());
+									
 									echo "<tr id='row" . $entry->getId() . "' class='parent-row'>";
 										echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
 											echo '<td colspan="2">';
@@ -397,7 +416,7 @@ function connectionsShowViewPage()
 												
 												if (current_user_can('connections_edit_entry'))
 												{
-													echo '<a class="row-title" title="Edit ' . $entry->getFullFirstLastName() . '" href="admin.php?page=connections&action=editform&id=' . $row->id . '"> ' . $entry->getFullLastFirstName() . '</a><br />';
+													echo '<a class="row-title" title="Edit ' . $entry->getFullFirstLastName() . '" href="admin.php?page=connections&action=editform&id=' . $row->id . '&token=' . $editToken . '"> ' . $entry->getFullLastFirstName() . '</a><br />';
 												}
 												else
 												{
@@ -406,9 +425,9 @@ function connectionsShowViewPage()
 												
 												echo '<div class="row-actions">';
 													echo '<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a> | ';
-													if (current_user_can('connections_edit_entry')) echo '<a class="editbutton" href="admin.php?page=connections&action=editform&id=' . $entry->getId() . '&editid=true&token=' . _formtoken('edit_' . $entry->getId()) . '" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | ';
-													if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="admin.php?page=connections&action=editform&id=' . $entry->getId() . '&copyid=true&token=' . _formtoken('copy_' . $entry->getId()) . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
-													if (current_user_can('connections_delete_entry')) echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections&action=delete&id=' . $entry->getId() . '&token=' . _formtoken('delete_' . $entry->getId()) . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
+													if (current_user_can('connections_edit_entry')) echo '<a class="editbutton" href="admin.php?page=connections&action=editform&id=' . $entry->getId() . '&editid=true&token=' . $editToken . '" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | ';
+													if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="admin.php?page=connections&action=editform&id=' . $entry->getId() . '&copyid=true&token=' . $form->token('copy_' . $entry->getId()) . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
+													if (current_user_can('connections_delete_entry')) echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections&action=delete&id=' . $entry->getId() . '&token=' . $form->token('delete_' . $entry->getId()) . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
 												echo '</div>';
 										echo "</td> \n";
 										echo "<td ><strong>" . $entry->displayVisibiltyType() . "</strong></td> \n";												
@@ -429,7 +448,7 @@ function connectionsShowViewPage()
 												{
 													$relation = new entry();
 													$relation->set($key);
-													echo '<strong>' . $plugin_options->getConnectionRelation($value) . ':</strong> ' . '<a href="admin.php?page=connections&action=editform&id=' . $relation->getId() . '&editid=true" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a>' . '<br />' . "\n";
+													echo '<strong>' . $plugin_options->getConnectionRelation($value) . ':</strong> ' . '<a href="admin.php?page=connections&action=editform&id=' . $relation->getId() . '&editid=true&token=' . $form->token('copy_' . $relation->getId()) . '"" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a>' . '<br />' . "\n";
 													if ($count - 1 == $i) echo '<br />'; // Insert a break after all connections are listed.
 													$i++;
 													unset($relation);

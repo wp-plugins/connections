@@ -241,7 +241,7 @@ class entry
 			case 'individual':
 				return $this->lastName;
 			break;
-						
+			
 			case 'connection_group':
 				return $this->getGroupName();
 			break;

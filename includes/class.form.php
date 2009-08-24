@@ -51,6 +51,20 @@ class formObjects
 	}
 	
 	/**
+	 * Builds an alpha index.
+	 * @return string
+	 */
+	public function buildAlphaIndex() {
+		$alphaindex = range("A","Z");
+		
+		foreach ($alphaindex as $letter) {
+			$linkindex .= '<a href="#' . $letter . '">' . $letter . '</a> ';
+		}
+		
+		return $linkindex;
+	}
+	
+	/**
 	 * Builds a form select list
 	 * @return HTML form select
 	 * @param string $name
@@ -255,7 +269,7 @@ class entryForm
 						
 					// --> Start template for Connection Group <-- \\
 					$out .= '<textarea id="relation_row_base" style="display: none">';
-						$out .= _connections_get_entry_select('connection_group[::FIELD::][entry_id]');
+						$out .= $this->getEntrySelect('connection_group[::FIELD::][entry_id]');
 						$out .= $form->buildSelect('connection_group[::FIELD::][relation]', $plugin_options->getDefaultConnectionGroupValues());
 					$out .= '</textarea>';
 					// --> End template for Connection Group <-- \\
@@ -269,7 +283,7 @@ class entryForm
 							$relation->set($key);
 							
 							$out .= '<div id="relation_row_' . $relation->getId() . '" class="relation_row">';
-								$out .= _connections_get_entry_select('connection_group[' . $relation->getId() . '][entry_id]', $key);
+								$out .= $this->getEntrySelect('connection_group[' . $relation->getId() . '][entry_id]', $key);
 								$out .= $form->buildSelect('connection_group[' . $relation->getId() . '][relation]', $plugin_options->getDefaultConnectionGroupValues(), $value);
 								$out .= '<a href="#" id="remove_button_' . $i . '" class="button button-warning" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
 							$out .= '</div>';
@@ -448,6 +462,33 @@ class entryForm
 		<div class='form-field connectionsform'>	
 				<span class='radio_group'>" . $form->buildRadio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$defaultVisibility) . "</span>
 		</div>";
+		return $out;
+	}
+	
+	private function getEntrySelect($name,$selected=null)
+	{
+		global $wpdb;
+		//$results = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "connections ORDER BY last_name, first_name");
+		
+		$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = '' AND group_name = '')
+				UNION
+				(SELECT *, group_name AS order_by FROM ".$wpdb->prefix."connections WHERE group_name != '')
+				UNION
+				(SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != '')
+				ORDER BY order_by, last_name, first_name";
+		$results = $wpdb->get_results($sql);
+		
+	    $out = '<select name="' . $name . '">';
+			$out .= '<option value="">Select Entry</option>';
+			foreach($results as $row)
+			{
+				$entry = new entry($row);
+				$out .= '<option value="' . $entry->getId() . '"';
+				if ($selected == $entry->getId()) $out .= ' SELECTED';
+				$out .= '>' . $entry->getFullLastFirstName() . '</option>';
+			}
+		$out .= '</select>';
+		
 		return $out;
 	}
 	

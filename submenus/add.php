@@ -50,7 +50,7 @@ function connectionsShowAddPage()
 					echo $form->open($attr);
 					echo $entryForm->entryForm();
 					echo '<input type="hidden" name="formId" value="entry_form" />';
-					echo '<input type="hidden" name="token" value="' . _formtoken("entry_form") . '" />';
+					echo '<input type="hidden" name="token" value="' . $form->token("entry_form") . '" />';
 				?>
 					<p class="submit">
 						<input class="button-primary" type="submit" name="save" value="Add Address" />

@@ -57,9 +57,10 @@ function connectionsShowSettinsPage()
 				echo "<p><strong>Settings have been updated.</strong></p>";
 			echo "</div>";
 		}
-		
+		//$plugin_options->removeOptions();
 		//$plugin_options->setDefaultImageSettings();
 		//$plugin_options->saveOptions();
+		//print_r($plugin_options);
 		$form =  new formObjects();
 	?>
 		<div class="wrap">
@@ -86,7 +87,7 @@ function connectionsShowSettinsPage()
 											<input type="checkbox" value="true" name="settings[allow_public]" id="allow_public" 
 												<?php if ($plugin_options->getAllowPublic()) echo 'CHECKED ' ?>
 											/>
-											Allow unregistered visitors and users not logged in
+											Allow unregistered visitors and users not logged in to view entries
 										</label>
 										
 										<label for="allow_public_override">
