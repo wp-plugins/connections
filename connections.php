@@ -168,20 +168,20 @@ if (!class_exists('connectionsLoad'))
 			
 			if (!$options->getAllowPublic()) $options->setAllowPublic(true);
 			
-			if (!$options->getImgThumbQuality) $options->setImgThumbQuality(80);
-			if (!$options->getImgThumbX) $options->setImgThumbX(80);
-			if (!$options->getImgThumbY) $options->setImgThumbY(54);
-			if (!$options->getImgThumbCrop) $options->setImgThumbCrop('crop');
+			if (!$options->getImgThumbQuality()) $options->setImgThumbQuality(80);
+			if (!$options->getImgThumbX()) $options->setImgThumbX(80);
+			if (!$options->getImgThumbY()) $options->setImgThumbY(54);
+			if (!$options->getImgThumbCrop()) $options->setImgThumbCrop('crop');
 			
-			if (!$options->getImgEntryQuality) $options->setImgEntryQuality(80);
-			if (!$options->getImgEntryX) $options->setImgEntryX(225);
-			if (!$options->getImgEntryY) $options->setImgEntryY(150);
-			if (!$options->getImgEntryCrop) $options->setImgEntryCrop('crop');
+			if (!$options->getImgEntryQuality()) $options->setImgEntryQuality(80);
+			if (!$options->getImgEntryX()) $options->setImgEntryX(225);
+			if (!$options->getImgEntryY()) $options->setImgEntryY(150);
+			if (!$options->getImgEntryCrop()) $options->setImgEntryCrop('crop');
 			
-			if (!$options->getImgProfileQuality) $options->setImgProfileQuality(80);
-			if (!$options->getImgProfileX) $options->setImgProfileX(300);
-			if (!$options->getImgProfileY) $options->setImgProfileY(225);
-			if (!$options->getImgProfileCrop) $options->setImgProfileCrop('crop');
+			if (!$options->getImgProfileQuality()) $options->setImgProfileQuality(80);
+			if (!$options->getImgProfileX()) $options->setImgProfileX(300);
+			if (!$options->getImgProfileY()) $options->setImgProfileY(225);
+			if (!$options->getImgProfileCrop()) $options->setImgProfileCrop('crop');
 			
 			$options->saveOptions();
 		}

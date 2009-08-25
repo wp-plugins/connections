@@ -354,12 +354,20 @@ function connectionsShowViewPage()
 				       	<table cellspacing="0" class="widefat connections">
 							<thead>
 					            <tr>
-					                <th class="manage-column column-cb check-column" id="cb" scope="col"><input type="checkbox"/></th><th scope="col" colspan="2" style="width:40%;">Name</th><th scope="col" style="width:35%;">Visibility</th><th scope="col" style="width:25%;">Last Modified</th>
+					                <th class="manage-column column-cb check-column" id="cb" scope="col"><input type="checkbox"/></th>
+									<th class="col" style="width:10%;"></th>
+									<th scope="col" colspan="2" style="width:30%;">Name</th>
+									<th scope="col" style="width:35%;">Visibility</th>
+									<th scope="col" style="width:25%;">Last Modified</th>
 					            </tr>
 							</thead>
 							<tfoot>
 					            <tr>
-					                <th class="manage-column column-cb check-column" scope="col"><input type="checkbox"/></th><th scope="col" colspan="2" style="width:40%;">Name</th><th scope="col" style="width:35%;">Visibility</th><th scope="col" style="width:25%;">Last Modified</th>
+					                <th class="manage-column column-cb check-column" scope="col"><input type="checkbox"/></th>
+									<th class="col" style="width:10%;"></th>
+									<th scope="col" colspan="2" style="width:30%;">Name</th>
+									<th scope="col" style="width:35%;">Visibility</th>
+									<th scope="col" style="width:25%;">Last Modified</th>
 					            </tr>
 							</tfoot>
 							<tbody>
@@ -410,9 +418,10 @@ function connectionsShowViewPage()
 									
 									echo "<tr id='row" . $entry->getId() . "' class='parent-row'>";
 										echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
-											echo '<td colspan="2">';
-											if ($setAnchor) echo $setAnchor;
-											echo '<div style="float:right"><a href="#wphead" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" /></a></div>';
+											echo '<td>' . $object->getThumbnailImage() . '</td>';
+											echo '<td  colspan="2">';
+												if ($setAnchor) echo $setAnchor;
+												echo '<div style="float:right"><a href="#wphead" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" /></a></div>';
 												
 												if (current_user_can('connections_edit_entry'))
 												{
@@ -435,7 +444,8 @@ function connectionsShowViewPage()
 									echo "</tr> \n";
 									
 									echo "<tr class='child-row-" . $entry->getId() . " entrydetails' id='contact-" . $entry->getId() . "-detail' style='display:none;'>";
-										echo "<td ></td> \n";
+										echo "<td >&nbsp;</td> \n";
+										echo "<td >&nbsp;</td> \n";
 										echo "<td colspan='2'>";
 											
 											if ($entry->getConnectionGroup())
@@ -521,6 +531,7 @@ function connectionsShowViewPage()
 									
 									echo "<tr class='child-row-" . $entry->getId() . " entrynotes' id='contact-" . $entry->getId() . "-detail-notes' style='display:none;'>";
 										echo "<td>&nbsp;</td> \n";
+										echo "<td >&nbsp;</td> \n";
 										echo "<td colspan='3'>";
 											if ($entry->getBio()) echo "<strong>Bio:</strong> " . $entry->getBio() . "<br />"; else echo "&nbsp;";
 											if ($entry->getNotes()) echo "<strong>Notes:</strong> " . $entry->getNotes(); else echo "&nbsp;";
