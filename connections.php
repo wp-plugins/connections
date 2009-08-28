@@ -37,36 +37,38 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
  */
 
 /**
- * @TODO: Fix bug. When deleting entries using the bulk action, the alert box
- * has to be dismissed twice
- */
-
-/**
  * @TODO: Fix bug. When an image is removed from an entry or an entry is deleted the
  * image remains on the server.
  */
 
 /**
- * @TODO: Fix bug. The output class will output emtry divs for some data fields.
+ * @TODO: Fix bug. The output class will output entry divs for some data fields.
  */
 
 if (!class_exists('connectionsLoad'))
 {
-	/**
-	 * @TODO: Scrup the plug-in to use this global $options.
-	 */
-	global $options;
-	
 	class connectionsLoad
 	{
+		/**
+		 * @TODO: Scrup the plug-in to use this global $options.
+		 */
+		public $options;
+		
+		public $errorMessages;
+		public $successMessages;
+		
 		public function __construct()
 		{
-			session_start();
+			if (!isset($_SESSION)) session_start();
 			$_SESSION['connections']['active'] = true;
-			
+			$_SESSION['connections']['messages'];
+						
+			$this->sessionCheck();
 			$this->loadConstants();
 			$this->loadDependencies();
 			$this->initOptions();
+			$this->initErrorMessages();
+			$this->initSuccessMessages();
 			
 			// Calls the method to load the admin menus.
 			add_action('admin_menu', array (&$this, 'loadAdminMenus'));
@@ -85,25 +87,24 @@ if (!class_exists('connectionsLoad'))
 		
 		public function start()
 		{
-			global $options;
-			
 			if (is_admin())
 			{
 				// Calls the methods to load the admin scripts and CSS.
 				add_action('admin_print_scripts', array(&$this, 'loadAdminScripts') );
 				add_action('admin_print_styles', array(&$this, 'loadAdminStyles') );
 				
-				if ($options->getVersion() != CN_CURRENT_VERSION)
+				if ($this->options->getVersion() != CN_CURRENT_VERSION)
 				{
 					/**
 					 * @TODO: More descriptive error message.
 					 */
-					add_action('admin_notices', create_function('', 'echo \'<div id="message" class="error"><p><strong>ERROR: </strong>Please deactive and then reactivate Connections.</p></div>\';') );
+					add_action('admin_notices', create_function('', 'echo \'<div id="message" class="error"><p><strong>ERROR: </strong>The version of Connections installed is newer than ther version last activated. Please deactive and then reactivate Connections.</p></div>\';') );
 				}
 				
 				if (get_option('connections_installed'))
 				{
 					add_action( 'admin_notices', create_function('', 'echo \'<div id="message" class="updated fade"><p><strong>' . get_option('connections_installed') . '</strong></p></div>\';') );
+					// Remove the admin install message set during activation.
 					delete_option('connections_installed');
 				}
 			}
@@ -113,7 +114,7 @@ if (!class_exists('connectionsLoad'))
 			add_action('wp_print_styles', array(&$this, 'loadStyles') );
 			
 			// Add a version number to the header
-			add_action('wp_head', create_function('', 'echo "\n<meta name=\'Connections\' content=\'' . $options->getVersion() . '\' />\n";') );
+			add_action('wp_head', create_function('', 'echo "\n<meta name=\'Connections\' content=\'' . $this->options->getVersion() . '\' />\n";') );
 		}
 		
 		private function loadConstants()
@@ -162,33 +163,132 @@ if (!class_exists('connectionsLoad'))
 		
 		private function initOptions()
 		{
-			global $options;
+			$this->options = new pluginOptions();
 			
-			$options = new pluginOptions();
+			if (!$this->options->getAllowPublic()) $options->setAllowPublic(true);
 			
-			if (!$options->getAllowPublic()) $options->setAllowPublic(true);
+			if (!$this->options->getImgThumbQuality()) $options->setImgThumbQuality(80);
+			if (!$this->options->getImgThumbX()) $options->setImgThumbX(80);
+			if (!$this->options->getImgThumbY()) $options->setImgThumbY(54);
+			if (!$this->options->getImgThumbCrop()) $options->setImgThumbCrop('crop');
 			
-			if (!$options->getImgThumbQuality()) $options->setImgThumbQuality(80);
-			if (!$options->getImgThumbX()) $options->setImgThumbX(80);
-			if (!$options->getImgThumbY()) $options->setImgThumbY(54);
-			if (!$options->getImgThumbCrop()) $options->setImgThumbCrop('crop');
+			if (!$this->options->getImgEntryQuality()) $options->setImgEntryQuality(80);
+			if (!$this->options->getImgEntryX()) $options->setImgEntryX(225);
+			if (!$this->options->getImgEntryY()) $options->setImgEntryY(150);
+			if (!$this->options->getImgEntryCrop()) $options->setImgEntryCrop('crop');
 			
-			if (!$options->getImgEntryQuality()) $options->setImgEntryQuality(80);
-			if (!$options->getImgEntryX()) $options->setImgEntryX(225);
-			if (!$options->getImgEntryY()) $options->setImgEntryY(150);
-			if (!$options->getImgEntryCrop()) $options->setImgEntryCrop('crop');
+			if (!$this->options->getImgProfileQuality()) $options->setImgProfileQuality(80);
+			if (!$this->options->getImgProfileX()) $options->setImgProfileX(300);
+			if (!$this->options->getImgProfileY()) $options->setImgProfileY(225);
+			if (!$this->options->getImgProfileCrop()) $options->setImgProfileCrop('crop');
 			
-			if (!$options->getImgProfileQuality()) $options->setImgProfileQuality(80);
-			if (!$options->getImgProfileX()) $options->setImgProfileX(300);
-			if (!$options->getImgProfileY()) $options->setImgProfileY(225);
-			if (!$options->getImgProfileCrop()) $options->setImgProfileCrop('crop');
-			
-			$options->saveOptions();
+			$this->options->saveOptions();
 		}
+		
+		private function sessionCheck()
+		{
+			/*
+			 * Run a quick check to see if the $_SESSION is started and verify that Connections data isn't being
+			 * overwritten and notify the user of errors.
+			 */
+			if (!isset($_SESSION))
+			{
+				add_action('admin_notices', create_function('', 'echo \'<div id="message" class="error"><p><strong>ERROR: </strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in or the webserver configuration is preventing it from being used.</p></div>\';') );
+			}
+			
+			if (!$_SESSION['connections']['active'] == true)
+			{
+				add_action('admin_notices', create_function('', 'echo \'<div id="message" class="error"><p><strong>ERROR: </strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in seems to be resetting the values needed for Connections.</p></div>\';') );
+			}
+		}
+		
+		public function displayMessages()
+		{
+			$output = null;
+			
+			//if (get_option('connections_messages'))
+			if (isset($_SESSION['connections']['messages']))
+			{
+				//$messages = get_option('connections_messages');
+				$messages = $_SESSION['connections']['messages'];
 				
+				foreach ($messages as $message)
+				{
+					foreach($message as $type => $code)
+					{
+						switch ($type)
+						{
+							case 'error':
+								$output .= '<div id="message" class="error"><p><strong>ERROR: </strong>' . $this->errorMessages->get_error_message($code) . '</p></div>';
+							break;
+							
+							case 'success':
+								$output .= '<div id="message" class="updated fade"><p><strong>SUCCESS: </strong>' . $this->successMessages->get_error_message($code) . '</p></div>';
+							break;
+						}
+					}
+				}
+			}
+			delete_option('connections_messages');
+			unset($_SESSION['connections']['messages']);
+			return $output;
+		}
+		
+		private function initErrorMessages()
+		{
+			/**
+			 * @TODO: Add error codes.
+			 */
+			$this->errorMessages = new WP_Error();
+			
+			$this->errorMessages->add('form_token_mismatch', 'Token mismatch.');
+			$this->errorMessages->add('form_no_entry_id', 'No entry ID.');
+			$this->errorMessages->add('form_no_entry_token', 'No entry token.');
+			$this->errorMessages->add('form_no_session_token', 'No session token.');
+		}
+		
+		public function getErrorMessage($errorMessage)
+		{
+			return '<div id="message" class="error"><p><strong>ERROR: </strong>' . $this->errorMessages->get_error_message($errorMessage) . '</p></div>';
+		}
+		
+		public function setErrorMessage($errorMessage)
+		{
+			//if (get_option('connections_messages')) $messages = get_option('connections_messages');
+			
+			//$messages[] = array('error' => $errorMessage);
+			$_SESSION['connections']['messages'][]  = array('error' => $errorMessage);
+			//update_option('connections_messages', $messages);
+		}
+		
+		private function initSuccessMessages()
+		{
+			/**
+			 * @TODO: Add success codes.
+			 */
+			$this->successMessages = new WP_Error();
+			
+			$this->successMessages->add('form_entry_delete', 'The entry has been deleted.');
+		}
+		
+		public function getSuccessMessage($successMessage)
+		{
+			return '<div id="message" class="updated fade"><p><strong>SUCCESS: </strong>' . $this->successMessages->get_error_message($successMessage) . '</p></div>';
+		}
+		
+		public function setSuccessMessage($successMessage)
+		{
+			//if (get_option('connections_messages')) $messages = get_option('connections_messages');
+			
+			//$messages[] = array('success' => $successMessage);
+			$_SESSION['connections']['messages'][]  = array('success' => $successMessage);
+			
+			//update_option('connections_messages', $messages);
+		}
+						
 		public function activate()
 		{
-			global $wpdb, $options;
+			global $wpdb;
 			
 			$sql = new sql();
 			
@@ -229,7 +329,7 @@ if (!class_exists('connectionsLoad'))
 			$options->setVersion(CN_CURRENT_VERSION);
 			$options->saveOptions();
 			
-			update_option('connections_installed', "The Connections plug-in version " . $options->getVersion() . " has been installed or upgraded.");
+			update_option('connections_installed', 'The Connections plug-in version ' . $this->options->getVersion() . ' has been installed or upgraded.');
 		}
 		
 		public function deactivate()
@@ -345,9 +445,17 @@ if (!class_exists('connectionsLoad'))
 		}
 	}
 	
-	/*
-	 * Initiate the plug-in.
-	 */
-	global $connections;
-	$connections = new connectionsLoad();
+	if (version_compare(PHP_VERSION, '5.0.0', '>'))
+	{
+		/*
+		 * Initiate the plug-in.
+		 */
+		global $connections;
+		$connections = new connectionsLoad();
+	}
+	else
+	{
+		add_action( 'admin_notices', create_function('', 'echo \'<div id="message" class="error"><p><strong>Connections requires at least PHP5. You are using version: ' . PHP_VERSION . '</strong></p></div>\';') );
+	}
+	
 }

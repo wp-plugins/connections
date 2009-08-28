@@ -1,31 +1,11 @@
 <?php
 function connectionsShowViewPage()
 {
-	global $wpdb, $current_user;
+	global $wpdb, $current_user, $connections;
 		
 	get_currentuserinfo();
 	$plugin_options = new pluginOptions();
 	$form = new formObjects();
-	
-	/**
-	 * @TODO: Move the session check to the base file -> start method.
-	 */
-	/*
-	 * Run a quick check to see if the $_SESSION is started and verify that Connections data isn't being
-	 * overwritten and notify the user of errors.
-	 */
-	if (!$_SESSION)
-	{
-		echo '<div id="notice" class="error">';
-			echo '<p><strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in or site setup is preventing it from being used.</strong></p>';
-		echo '</div>';
-	}
-	elseif (!$_SESSION['connections']['active'] == true)
-	{
-		echo '<div id="notice" class="error">';
-			echo '<p><strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in seems to be overwritting the values for Connections.</strong></p>';
-		echo '</div>';
-	}
 	
 	/**
 	 * @TODO: Finish checking and setting the session token variables for the
@@ -87,7 +67,7 @@ function connectionsShowViewPage()
 				$formAction = "update";
 				$inputName = "save";
 			}
-					
+			
 	?>
 			<div class="wrap">
 				<div class="form-wrap" style="width:600px; margin: 0 auto;">
@@ -132,7 +112,17 @@ function connectionsShowViewPage()
 					text-align:center;
 					width:700px">You do not have sufficient permissions to access this page.</p>');
 		}
-			
+		
+		if ($_GET['action'] === 'delete')
+		{
+			delete();
+		}
+		
+		if ($_POST['action'] === 'delete')
+		{
+			deleteBulk();
+		}
+		
 	    if ($_POST['save'] && $_SESSION['connections']['formTokens']['entry_form']['token'] === $_POST['token'])
 		{
 			$entryForm = new entryForm();
@@ -161,32 +151,7 @@ function connectionsShowViewPage()
 				unset($_SESSION['connections']['formTokens']);
 			}
 			
-			if ($_POST['action'] == "delete")
-			{
-				$checked = $_POST['entry'];
-				
-				foreach ($checked as $id)
-				{
-					$entry = new entry();
-					$entry->delete($id);
-					unset($entry);
-				}
-					
-				echo "<div id='message' class='updated fade'>";
-					echo "<p><strong>Entry(ies) have been deleted.</strong></p>";
-				echo "</div>";
-				unset($_SESSION['connections']['formTokens']);
-			}
 		}
-		
-		if ($_GET['action']=='delete' AND $_SESSION['connections']['formTokens']['delete_'.$_GET['id']]['token'] === $_GET['token'])
-		{
-	        $entry = new entry();
-			$entry->delete($_GET['id']);
-			echo '<div id="message" class="updated fade"><p><strong>The entry has been deleted.</strong></p></div>';
-			unset($entry);
-			unset($_SESSION['connections']['formTokens']);
-	    }
 		
 		if ($_POST['dofilter'])
 		{
@@ -196,6 +161,7 @@ function connectionsShowViewPage()
 			$plugin_options->saveOptions();
 		}
 		
+		echo $connections->displayMessages();
 		?>
 	
 		<div class="wrap">
@@ -356,18 +322,18 @@ function connectionsShowViewPage()
 					            <tr>
 					                <th class="manage-column column-cb check-column" id="cb" scope="col"><input type="checkbox"/></th>
 									<th class="col" style="width:10%;"></th>
-									<th scope="col" colspan="2" style="width:30%;">Name</th>
-									<th scope="col" style="width:35%;">Visibility</th>
-									<th scope="col" style="width:25%;">Last Modified</th>
+									<th scope="col" colspan="2" style="width:50%;">Name</th>
+									<th scope="col" style="width:20%;">Visibility</th>
+									<th scope="col" style="width:20%;">Last Modified</th>
 					            </tr>
 							</thead>
 							<tfoot>
 					            <tr>
 					                <th class="manage-column column-cb check-column" scope="col"><input type="checkbox"/></th>
 									<th class="col" style="width:10%;"></th>
-									<th scope="col" colspan="2" style="width:30%;">Name</th>
-									<th scope="col" style="width:35%;">Visibility</th>
-									<th scope="col" style="width:25%;">Last Modified</th>
+									<th scope="col" colspan="2" style="width:50%;">Name</th>
+									<th scope="col" style="width:20%;">Visibility</th>
+									<th scope="col" style="width:20%;">Last Modified</th>
 					            </tr>
 							</tfoot>
 							<tbody>
@@ -562,7 +528,8 @@ function connectionsShowViewPage()
 				
 			</div>
 		
-		<script type="text/javascript">
+		<!-- <script type="text/javascript">
+			This is now part of WP core.
 			/* <![CDATA[ */
 			(function($){
 				$(document).ready(function(){
@@ -575,8 +542,87 @@ function connectionsShowViewPage()
 				});
 			})(jQuery);
 			/* ]]> */
-		</script>
+		</script> -->
 	
 	<?php }
+}
+
+function delete()
+{
+	global $connections;
+	
+	$message = null;
+	$error = false;
+	
+	if (isset($_GET['id']))
+	{
+		$id = $_GET['id'];
+	}
+	else
+	{
+		$error = true;
+		$connections->setErrorMessage('form_no_entry_id');
+	}
+	
+	if (isset($_GET['token']))
+	{
+		$token = $_GET['token'];
+	}
+	else
+	{
+		$error = true;
+		$connections->setErrorMessage('form_no_entry_token');
+	}
+	
+	if (isset($_SESSION['connections']['formTokens']['delete_' . $id]['token']))
+	{
+		$sessionToken = $_SESSION['connections']['formTokens']['delete_' . $id]['token'];
+	}
+	else
+	{
+		$error = true;
+		$connections->setErrorMessage('form_no_session_token');
+	}
+	
+	if ($sessionToken === $token && !$error)
+	{
+        $entry = new entry();
+		//$entry->delete($_GET['id']);
+		$connections->setSuccessMessage('form_entry_delete');
+		unset($entry);
+    }
+	else
+	{
+		$error = true;
+		$connections->setErrorMessage('form_token_mismatch');
+	}
+	
+	unset($_SESSION['connections']['formTokens']);
+	
+	if (!$error)
+	{
+		return $message;
+	}
+	else
+	{
+		return $message;
+	}
+}
+
+function deleteBulk()
+{
+	if (isset($_POST['entry']) && $_SESSION['connections']['formTokens']['do_action']['token'] === $_POST['token'])
+	{
+		$selected = $_POST['entry'];
+				
+		foreach ($selected as $id)
+		{
+			$entry = new entry();
+			$entry->delete($id);
+			unset($entry);
+		}
+		unset($_SESSION['connections']['formTokens']);
+		echo '<div id="message" class="updated fade"><p><strong>Entry(ies) have been deleted.</strong></p></div>';
+	}
 }
 ?>
