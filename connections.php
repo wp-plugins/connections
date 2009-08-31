@@ -355,9 +355,9 @@ if (!class_exists('connectionsLoad'))
 			 * @TODO: Verify that the table did create.
 			 */
 			
-			$options->setDefaultCapabilities();
-			$options->setVersion(CN_CURRENT_VERSION);
-			$options->saveOptions();
+			$this->options->setDefaultCapabilities();
+			$this->options->setVersion(CN_CURRENT_VERSION);
+			$this->options->saveOptions();
 			
 			update_option('connections_installed', 'The Connections plug-in version ' . $this->options->getVersion() . ' has been installed or upgraded.');
 		}
@@ -370,8 +370,8 @@ if (!class_exists('connectionsLoad'))
 		{
 			global $options;
 			
-			$options->removeDefaultCapabilities();
-			$options->saveOptions();
+			$this->options->removeDefaultCapabilities();
+			$this->options->saveOptions();
 		}
 				
 		public function loadAdminMenus()
