@@ -161,22 +161,22 @@ if (!class_exists('connectionsLoad'))
 			 */
 			$this->options = new pluginOptions();
 			
-			if (!$this->options->getAllowPublic()) $options->setAllowPublic(true);
+			if (!$this->options->getAllowPublic()) $this->options->setAllowPublic(true);
 			
-			if (!$this->options->getImgThumbQuality()) $options->setImgThumbQuality(80);
-			if (!$this->options->getImgThumbX()) $options->setImgThumbX(80);
-			if (!$this->options->getImgThumbY()) $options->setImgThumbY(54);
-			if (!$this->options->getImgThumbCrop()) $options->setImgThumbCrop('crop');
+			if (!$this->options->getImgThumbQuality()) $this->options->setImgThumbQuality(80);
+			if (!$this->options->getImgThumbX()) $this->options->setImgThumbX(80);
+			if (!$this->options->getImgThumbY()) $this->options->setImgThumbY(54);
+			if (!$this->options->getImgThumbCrop()) $this->options->setImgThumbCrop('crop');
 			
-			if (!$this->options->getImgEntryQuality()) $options->setImgEntryQuality(80);
-			if (!$this->options->getImgEntryX()) $options->setImgEntryX(225);
-			if (!$this->options->getImgEntryY()) $options->setImgEntryY(150);
-			if (!$this->options->getImgEntryCrop()) $options->setImgEntryCrop('crop');
+			if (!$this->options->getImgEntryQuality()) $this->options->setImgEntryQuality(80);
+			if (!$this->options->getImgEntryX()) $this->options->setImgEntryX(225);
+			if (!$this->options->getImgEntryY()) $this->options->setImgEntryY(150);
+			if (!$this->options->getImgEntryCrop()) $this->options->setImgEntryCrop('crop');
 			
-			if (!$this->options->getImgProfileQuality()) $options->setImgProfileQuality(80);
-			if (!$this->options->getImgProfileX()) $options->setImgProfileX(300);
-			if (!$this->options->getImgProfileY()) $options->setImgProfileY(225);
-			if (!$this->options->getImgProfileCrop()) $options->setImgProfileCrop('crop');
+			if (!$this->options->getImgProfileQuality()) $this->options->setImgProfileQuality(80);
+			if (!$this->options->getImgProfileX()) $this->options->setImgProfileX(300);
+			if (!$this->options->getImgProfileY()) $this->options->setImgProfileY(225);
+			if (!$this->options->getImgProfileCrop()) $this->options->setImgProfileCrop('crop');
 			
 			$this->options->saveOptions();
 		}
