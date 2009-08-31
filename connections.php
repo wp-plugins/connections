@@ -48,7 +48,7 @@ if (!class_exists('connectionsLoad'))
 		
 		public function __construct()
 		{
-			if (!isset($_SESSION)) session_start();
+			if (!isset($_SESSION)) @session_start();
 			$_SESSION['connections']['active'] = true;
 			$_SESSION['connections']['messages'];
 						
