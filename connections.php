@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111
 Description: An address book.
-Version: 0.5.45
+Version: 0.5.46
 Author: Steven A. Zahm
 Author URI: http://www.shazahm.net
 
@@ -112,7 +112,7 @@ if (!class_exists('connectionsLoad'))
 			 * @TODO: Define constants for the plug-in path and URL
 			 */
 			
-			define('CN_CURRENT_VERSION', '0.5.45');
+			define('CN_CURRENT_VERSION', '0.5.46');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
 			define('CN_TABLE_NAME','connections');
