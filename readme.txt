@@ -3,11 +3,13 @@ Contributors: Steven A. Zahm
 Donate link: http://www.shazahm.net/?page_id=111
 Tags: addresses, address book, addressbook, bio, bios, biographies, contact, contacts, connect, connections, directory, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, user, users, vcard
 Requires at least: 2.7
-Tested up to: 2.8
+Tested up to: 2.8.4
 Stable tag: 0.5.1
 Connections is a simple to use addressbook that is highly customizable.
 
 == Description ==
+**ALERT:** Due to extensive changes please only update to this version if you wish to test and report bugs.
+
 An address book / addressbook that is managed in the admin and embedded in a post/page. Upcoming birthdays and anniversaries can also be embedded in a post/page. **See the instructions under installation, above.**
 This plugin is under active developement, please make sure you have a recent backup of your WordPress database, just in case.
 
@@ -27,19 +29,21 @@ This plugin is under active developement, please make sure you have a recent bac
 * Entries output in [hCard](http://microformats.org/wiki/hcard) compatible format.
 * Download vCard of entries for importing into you email application.
 * Connection Groups. This allows to you create relational links between entries.
-* **NEW** Added a shortcode attribute to repeat the alpha index and the beginning of each character change. [User requested.](http://wordpress.org/support/topic/266754)
-* **NEW** Added a shortcode attribute to show the current character at the beginning of each character group. [User requested.](http://wordpress.org/support/topic/266754)
-* **NEW** Added additional filters for addresses. [User requested.](http://wordpress.org/support/topic/248568)
+* **0.5.1** Added a shortcode attribute to repeat the alpha index and the beginning of each character change. [User requested.](http://wordpress.org/support/topic/266754)
+* **0.5.1** Added a shortcode attribute to show the current character at the beginning of each character group. [User requested.](http://wordpress.org/support/topic/266754)
+* **0.5.1** Added additional filters for addresses. [User requested.](http://wordpress.org/support/topic/248568)
+* **NEW** Added extensive role support.
+* **NEW** Added the ability to set custom image sizes.
+* **NEW** Added the ability to determine how an image should be scaled and cropped.
 
 **New features coming in the next version:**
 
-* Option to set custom image sizes
-* Option to set minimum role permitted for administration
 * This feature [here](http://wordpress.org/support/topic/266754)
 * Make the Connection Group relations in the output list clickable to bring up the entries specific details.
 
 **Upcoming features:**
 
+* Add CRM features
 * Assign entries to groups and have the option to display those groups in a page/post
 * Sidebar widget
 * Dashboard widget
@@ -67,7 +71,7 @@ This plugin is under active developement, please make sure you have a recent bac
 
 * Currently when an image link is removed the files are not deleted from the server
 * The vCard feature is not compatible with [WP Super Cache](http://wordpress.org/extend/plugins/wp-super-cache/). Make sure the page/post excluded in WP Super Cache.
-* The bulk delete requires two "OK" clicks on the popup dialog.
+
 
 == Screenshots ==
 [Samples and screenshots can be found here](http://www.shazahm.net/?page_id=111)
@@ -181,3 +185,8 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 
 = 05.5.5 DATE =
 * Updated class.upload.php to version .25
+* Added extensive role support.
+* Added the ability to set custom image sizes.
+* Added the ability to determine how an image should be scaled and cropped.
+* Extensive backend code changes.
+* Focus on making sure the plg-in is secure.

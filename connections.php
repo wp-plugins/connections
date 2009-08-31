@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111
 Description: An address book.
-Version: 0.5.33
+Version: 0.5.44
 Author: Steven A. Zahm
 Author URI: http://www.shazahm.net
 
@@ -28,17 +28,6 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 
 /**
  * @TODO: The settings and roles form need the nonce setup.
- */
-
-/**
- * @TODO: Fix bug. Editing an entry of entry type 'individual' and changing
- * it to a entry type 'connection group'. Later edits/copy of that entry will cause
- * the query to display it twice in the entry list.
- */
-
-/**
- * @TODO: Fix bug. When an image is removed from an entry or an entry is deleted the
- * image remains on the server.
  */
 
 /**
@@ -123,7 +112,7 @@ if (!class_exists('connectionsLoad'))
 			 * @TODO: Define constants for the plug-in path and URL
 			 */
 			
-			define('CN_CURRENT_VERSION', '0.5.43');
+			define('CN_CURRENT_VERSION', '0.5.44');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
 			define('CN_TABLE_NAME','connections');
@@ -161,8 +150,15 @@ if (!class_exists('connectionsLoad'))
 			require_once(WP_PLUGIN_DIR . '/connections/includes/inc.shortcodes.php');
 		}
 		
-		private function initOptions()
+		/**
+		 * During install this will initiate the options. During upgrades, previously set options
+		 * will be left intact but will set any new options not available in previous versions.
+		 * @return 
+		 */private function initOptions()
 		{
+			/* 
+			 * When making changes to image settings, also make the changes in the plug-in option class setDefaultImageSettings()
+			 */
 			$this->options = new pluginOptions();
 			
 			if (!$this->options->getAllowPublic()) $options->setAllowPublic(true);
@@ -234,6 +230,10 @@ if (!class_exists('connectionsLoad'))
 			return $output;
 		}
 		
+		/**
+		 * Initiate the error messages for Connections using the WP_Error class.
+		 * @return null
+		 */
 		private function initErrorMessages()
 		{
 			/**
@@ -245,22 +245,36 @@ if (!class_exists('connectionsLoad'))
 			$this->errorMessages->add('form_no_entry_id', 'No entry ID.');
 			$this->errorMessages->add('form_no_entry_token', 'No entry token.');
 			$this->errorMessages->add('form_no_session_token', 'No session token.');
+			
+			$this->errorMessages->add('capability_view_entry_list', 'You are not authorized to view the entry list. Please contact the admin if you received this message in error.');
+			$this->errorMessages->add('capability_delete', 'You are not authorized to delete entries. Please contact the admin if you received this message in error.');
+			$this->errorMessages->add('capability_edit', 'You are not authorized to edit entries. Please contact the admin if you received this message in error.');
 		}
 		
+		/**
+		 * Returns one of the predefined Connections error messages.
+		 * @return HTML div with error message.
+		 * @param string
+		 */
 		public function getErrorMessage($errorMessage)
 		{
 			return '<div id="message" class="error"><p><strong>ERROR: </strong>' . $this->errorMessages->get_error_message($errorMessage) . '</p></div>';
 		}
 		
+		/**
+		 * Stores a predefined error messages in the $_SESSION variable
+		 * @return null
+		 * @param string
+		 */
 		public function setErrorMessage($errorMessage)
 		{
-			//if (get_option('connections_messages')) $messages = get_option('connections_messages');
-			
-			//$messages[] = array('error' => $errorMessage);
 			$_SESSION['connections']['messages'][]  = array('error' => $errorMessage);
-			//update_option('connections_messages', $messages);
 		}
 		
+		/**
+		 * Initiates the success messages for Connections using the WP_Error class.
+		 * @return null
+		 */
 		private function initSuccessMessages()
 		{
 			/**
@@ -269,13 +283,25 @@ if (!class_exists('connectionsLoad'))
 			$this->successMessages = new WP_Error();
 			
 			$this->successMessages->add('form_entry_delete', 'The entry has been deleted.');
+			$this->successMessages->add('form_entry_delete_bulk', 'Entry(ies) have been deleted.');
+			$this->successMessages->add('form_entry_visibility_bulk', 'Entry(ies) visibility have been updated.');
 		}
 		
+		/**
+		 * Returns one of the predefined Connections success messages.
+		 * @return HTML div with error message.
+		 * @param string
+		 */
 		public function getSuccessMessage($successMessage)
 		{
 			return '<div id="message" class="updated fade"><p><strong>SUCCESS: </strong>' . $this->successMessages->get_error_message($successMessage) . '</p></div>';
 		}
 		
+		/**
+		 * Stores a predefined success messages in the $_SESSION variable
+		 * @return null
+		 * @param string
+		 */
 		public function setSuccessMessage($successMessage)
 		{
 			//if (get_option('connections_messages')) $messages = get_option('connections_messages');
@@ -286,6 +312,10 @@ if (!class_exists('connectionsLoad'))
 			//update_option('connections_messages', $messages);
 		}
 						
+		/**
+		 * Called when activating Connections via the activation hook.
+		 * @return null
+		 */
 		public function activate()
 		{
 			global $wpdb;
@@ -332,6 +362,10 @@ if (!class_exists('connectionsLoad'))
 			update_option('connections_installed', 'The Connections plug-in version ' . $this->options->getVersion() . ' has been installed or upgraded.');
 		}
 		
+		/**
+		 * Called when deactivating Connections via the deactivation hook.
+		 * @return null
+		 */
 		public function deactivate()
 		{
 			global $options;
@@ -353,6 +387,10 @@ if (!class_exists('connectionsLoad'))
 			add_submenu_page(CN_BASE_NAME, 'Connections : Help','Help', 'connections_view_help', 'connections_help', array (&$this, 'showPage'));
 		}
 		
+		/**
+		 * Loads the Connections javascripts only on required admin pages.
+		 * @return null
+		 */
 		public function loadAdminScripts()
 		{
 			switch ($_GET['page'])
@@ -369,6 +407,10 @@ if (!class_exists('connectionsLoad'))
 			}
 		}
 		
+		/**
+		 * Loads the Connections javascripts on the WordPress frontend.
+		 * @return null
+		 */
 		public function loadScripts()
 		{
 			/**
@@ -386,6 +428,10 @@ if (!class_exists('connectionsLoad'))
 			wp_enqueue_script( 'contactpreview' );
 		}
 		
+		/**
+		 * Loads the Connections CSS only on required admin pages.
+		 * @return null
+		 */
 		public function loadAdminStyles()
 		{
 			/*
@@ -403,6 +449,10 @@ if (!class_exists('connectionsLoad'))
 			}
 		}
 		
+		/**
+		 * Loads the Connections CSS on the WordPress frontend.
+		 * @return null
+		 */
 		public function loadStyles()
 		{
 			/**
@@ -412,6 +462,11 @@ if (!class_exists('connectionsLoad'))
 			wp_enqueue_style( 'member_template_styles' );
 		}
 		
+		/**
+		 * This is the registered function calls for the Connections admin pages as registered
+		 * using the add_menu_page() and add_submenu_page() WordPress functions.
+		 * @return null
+		 */
 		public function showPage()
 		{
 			switch ($_GET['page'])
@@ -445,6 +500,10 @@ if (!class_exists('connectionsLoad'))
 		}
 	}
 	
+	/*
+	 * Checks for PHP 5 or greater as required by Connections and display an error message
+	 * rather that havinh PHP thru an error.
+	 */
 	if (version_compare(PHP_VERSION, '5.0.0', '>'))
 	{
 		/*
