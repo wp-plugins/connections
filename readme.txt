@@ -183,7 +183,7 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Run the SQL queries through the `$wpdb->prepare()` method for security
 * Change the change log so it shows up as a top level tab on the WordPress plug-in page
 
-= 0.5.44 DATE =
+= 0.5.44 8/30/2009 =
 * Updated class.upload.php to version .25
 * Added extensive role support.
 * Added the ability to set custom image sizes.
