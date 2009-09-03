@@ -44,8 +44,8 @@ class formObjects
 	{
 		$token = md5(uniqid(rand(), true));
 		@session_start();
-		$_SESSION['connections']['formTokens'][$formId]['token'] = $token;
-		$_SESSION['connections']['formTokens'][$formId]['token_timestamp'] = time();
+		$_SESSION['cn_session']['formTokens'][$formId]['token'] = $token;
+		$_SESSION['cn_session']['formTokens'][$formId]['token_timestamp'] = time();
 		
 		return $token;
 	}
@@ -585,7 +585,7 @@ class entryForm
 							
 		if (!$error)
 		{
-			unset($_SESSION['connections']['formTokens']);
+			unset($_SESSION['cn_session']['formTokens']);
 			unset($entry);
 			
 			$message = '<div id="message" class="updated fade">';
@@ -594,7 +594,7 @@ class entryForm
 		}
 		else
 		{
-			unset($_SESSION['connections']['formTokens']);
+			unset($_SESSION['cn_session']['formTokens']);
 			unset($entry);
 			
 			$message = '<div id="notice" class="error">';

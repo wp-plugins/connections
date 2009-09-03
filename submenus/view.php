@@ -17,7 +17,7 @@ function connectionsShowViewPage()
 			 * Add session token check.
 			 */
 			
-			//if ($ID) $sessionTokenCopy =  $_SESSION['connections']['formTokens']['copy_' . $_GET['id']]['token'];
+			//if ($ID) $sessionTokenCopy =  $_SESSION['cn_session']['formTokens']['copy_' . $_GET['id']]['token'];
 			
 			$entryForm = new entryForm();
 			$form = new formObjects();
@@ -56,7 +56,7 @@ function connectionsShowViewPage()
 			 * Add session token check.
 			 */
 			
-			//if ($ID) $sessionTokenEdit =  $_SESSION['connections']['formTokens']['edit_' . $_GET['id']]['token'];
+			//if ($ID) $sessionTokenEdit =  $_SESSION['cn_session']['formTokens']['edit_' . $_GET['id']]['token'];
 								
 			$entryForm = new entryForm();
 			$form = new formObjects();
@@ -99,7 +99,7 @@ function connectionsShowViewPage()
 			 * Add current user capability check.
 			 * Add session token check.
 			 */
-			if ($_POST['save'] && $_SESSION['connections']['formTokens']['entry_form']['token'] === $_POST['token'])
+			if ($_POST['save'] && $_SESSION['cn_session']['formTokens']['entry_form']['token'] === $_POST['token'])
 			{
 				$entryForm = new entryForm();
 				echo $entryForm->processEntry();
@@ -115,7 +115,7 @@ function connectionsShowViewPage()
 			 * Add current user capability check.
 			 * Add session token check.
 			 */
-			if ($_POST['update'] && $_SESSION['connections']['formTokens']['entry_form']['token'] === $_POST['token'])
+			if ($_POST['update'] && $_SESSION['cn_session']['formTokens']['entry_form']['token'] === $_POST['token'])
 			{
 				$entryForm = new entryForm();
 				echo $entryForm->processEntry();
@@ -143,7 +143,7 @@ function connectionsShowViewPage()
 				case 'unlisted':
 					if (current_user_can('connections_edit_entry'))
 					{
-						if ($_SESSION['connections']['formTokens']['do_action']['token'] === $_POST['token'])
+						if ($_SESSION['cn_session']['formTokens']['do_action']['token'] === $_POST['token'])
 						{
 							
 							foreach ($_POST['entry'] as $id)
@@ -158,7 +158,7 @@ function connectionsShowViewPage()
 							
 							$connections->setSuccessMessage('form_entry_visibility_bulk');
 							
-							unset($_SESSION['connections']['formTokens']);
+							unset($_SESSION['cn_session']['formTokens']);
 						}
 					}
 					else
@@ -607,9 +607,9 @@ function delete($ids)
 				$connections->setErrorMessage('form_no_entry_token');
 			}
 			
-			if (isset($_SESSION['connections']['formTokens']['delete_' . $id]['token']))
+			if (isset($_SESSION['cn_session']['formTokens']['delete_' . $id]['token']))
 			{
-				$sessionToken = $_SESSION['connections']['formTokens']['delete_' . $id]['token'];
+				$sessionToken = $_SESSION['cn_session']['formTokens']['delete_' . $id]['token'];
 			}
 			else
 			{
@@ -634,7 +634,7 @@ function delete($ids)
 			/**
 			 * @TODO: Check that session token and form token are set before the comparison is made.
 			 */
-			if ($_SESSION['connections']['formTokens']['do_action']['token'] === $_POST['token'])
+			if ($_SESSION['cn_session']['formTokens']['do_action']['token'] === $_POST['token'])
 			{
 				foreach ($ids as $id)
 				{
@@ -650,7 +650,7 @@ function delete($ids)
 			}
 		}
 	
-		unset($_SESSION['connections']['formTokens']);
+		unset($_SESSION['cn_session']['formTokens']);
 	}
 	else
 	{

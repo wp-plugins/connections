@@ -24,7 +24,7 @@ function connectionsShowAddPage()
 		$entryForm = new entryForm();
 		$form = new formObjects();
 		
-		if ($_POST['save'] && $_SESSION['connections']['formTokens']['entry_form']['token'] === $_POST['token'])
+		if ($_POST['save'] && $_SESSION['cn_session']['formTokens']['entry_form']['token'] === $_POST['token'])
 		{
 			echo $entryForm->processEntry();
 		}

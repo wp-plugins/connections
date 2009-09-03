@@ -49,8 +49,8 @@ if (!class_exists('connectionsLoad'))
 		public function __construct()
 		{
 			if (!isset($_SESSION)) @session_start();
-			$_SESSION['connections']['active'] = true;
-			$_SESSION['connections']['messages'];
+			$_SESSION['cn_session']['active'] = true;
+			$_SESSION['cn_session']['messages'];
 						
 			$this->sessionCheck();
 			$this->loadConstants();
@@ -192,7 +192,7 @@ if (!class_exists('connectionsLoad'))
 				add_action('admin_notices', create_function('', 'echo \'<div id="message" class="error"><p><strong>ERROR: </strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in or the webserver configuration is preventing it from being used.</p></div>\';') );
 			}
 			
-			if (!$_SESSION['connections']['active'] == true)
+			if (!$_SESSION['cn_session']['active'] == true)
 			{
 				add_action('admin_notices', create_function('', 'echo \'<div id="message" class="error"><p><strong>ERROR: </strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in seems to be resetting the values needed for Connections.</p></div>\';') );
 			}
@@ -203,10 +203,10 @@ if (!class_exists('connectionsLoad'))
 			$output = null;
 			
 			//if (get_option('connections_messages'))
-			if (isset($_SESSION['connections']['messages']))
+			if (isset($_SESSION['cn_session']['messages']))
 			{
 				//$messages = get_option('connections_messages');
-				$messages = $_SESSION['connections']['messages'];
+				$messages = $_SESSION['cn_session']['messages'];
 				
 				foreach ($messages as $message)
 				{
@@ -226,7 +226,7 @@ if (!class_exists('connectionsLoad'))
 				}
 			}
 			delete_option('connections_messages');
-			unset($_SESSION['connections']['messages']);
+			unset($_SESSION['cn_session']['messages']);
 			return $output;
 		}
 		
@@ -268,7 +268,7 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function setErrorMessage($errorMessage)
 		{
-			$_SESSION['connections']['messages'][]  = array('error' => $errorMessage);
+			$_SESSION['cn_session']['messages'][]  = array('error' => $errorMessage);
 		}
 		
 		/**
@@ -307,7 +307,7 @@ if (!class_exists('connectionsLoad'))
 			//if (get_option('connections_messages')) $messages = get_option('connections_messages');
 			
 			//$messages[] = array('success' => $successMessage);
-			$_SESSION['connections']['messages'][]  = array('success' => $successMessage);
+			$_SESSION['cn_session']['messages'][]  = array('success' => $successMessage);
 			
 			//update_option('connections_messages', $messages);
 		}
