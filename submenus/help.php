@@ -12,8 +12,13 @@ function connectionsShowHelpPage()
 	
 	    <div id="toc">
 	        <ol>
-	            <li><a href=
-	            "#tocIdInstructions">Instructions</a></li>
+	            <li><a href="#tocIdUsageInstructions">Usage Instructions</a></li>
+	
+	            	<ol>
+	                    <li><a href="#tocIdConnectionGroups">Connection Groups</a></li>
+	                </ol>
+				
+				<li><a href="#tocIdShortCodeInstructions">Shortcode Instructions</a></li>
 	
 	            	<ol>
 	                    <li><a href="#tocIdEntryList">Entry list and Options</a></li>
@@ -71,8 +76,32 @@ function connectionsShowHelpPage()
 			</form>
 			
 	    </div>
-	
-	    <h3><a name="tocIdInstructions"></a>Instructions:</h3>
+		
+		<h3><a name="tocIdUsageInstructions"></a>Usage Instructions:</h3>
+		
+		<p><a name="tocIdConnectionGroups"></a>Here is an example on how to use the Connection Groups entry type.</p>
+		
+		<p>Say we have a family, the Doe's.</p>
+		
+		<ol>
+		   <li>John</li>
+		   <li>Jane</li>
+		   <li>Girl</li>
+		   <li>Boy</li>
+		</ol>
+
+		<p>First, lets start with one of the parent's, John. Create a new Individual entry for John and put in all his personal info.
+		Second, simply copy John and change the first name to Jane and add/change any info that relates only to her for example her birthday. 
+		Third, do the same for Girl and Boy.</p>
+		
+		<p>Now create a new entry using the Connection Group type. For the Connection Group name enter something like "Doe, John & Jane" 
+		and then click the "Add Connection" button for each member in the family, in this example, four times. 
+		In the first column of drop downs select each family member and in the second column of 
+		drop downs select their relationships.</p>
+		
+		<p>Finally, just add a the following attribute to the shortcode like such; [connections_list list_type='connection_group']</p>
+		
+	    <h3><a name="tocIdShortCodeInstructions"></a>Shortcode Instructions:</h3>
 	
 	    <p><a name="tocIdEntryList"></a>To embed an entry list in a page/post just enter the
 	    shortcode text and any of the options outlined below in

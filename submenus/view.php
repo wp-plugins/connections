@@ -4,88 +4,181 @@ function connectionsShowViewPage()
 	global $wpdb, $current_user, $connections;
 		
 	get_currentuserinfo();
+	
+	/**
+	 * @TODO: Scrub code to use global $options instead of defining a new object.
+	 */
 	$plugin_options = new pluginOptions();
+	
 	$form = new formObjects();
 	$showEntryList = true;
 		
 	switch ($_GET['action'])
 	{
 		case 'copy':
-			/**
-			 * @TODO:
-			 * Add current user capability check.
-			 * Add session token check.
+			/*
+			 * Check whether current user can add an entry.
 			 */
-			
-			//if ($ID) $sessionTokenCopy =  $_SESSION['cn_session']['formTokens']['copy_' . $_GET['id']]['token'];
-			
-			$entryForm = new entryForm();
-			$form = new formObjects();
-			$entry = new entry();
-			$entry = $entry->get($_GET['id']);
-			
-			$out = '<div class="wrap">';
-				$out .= '<div class="form-wrap" style="width:600px; margin: 0 auto;">';
-					$out .= '<h2><a name="new"></a>Add Entry</h2>';
+			if (current_user_can('connections_add_entry'))
+			{
+				/*
+				 * Make sure the action token and $_SESSION token are set and equal before
+				 * performing the copy. This should hopefully prevent user from accessing
+				 * entries for which they do not have permission
+				 */
+				if (isset($_GET['id']))
+				{
+					$id = $_GET['id'];
+				}
+				else
+				{
+					$error = true;
+					$connections->setErrorMessage('form_no_entry_id');
+				}
+				
+				if (isset($_GET['token']))
+				{
+					$token = $_GET['token'];
+				}
+				else
+				{
+					$error = true;
+					$connections->setErrorMessage('form_no_entry_token');
+				}
+				
+				if (isset($_SESSION['cn_session']['formTokens']['copy_' . $_GET['id']]['token']))
+				{
+					$sessionToken = $_SESSION['cn_session']['formTokens']['copy_' . $_GET['id']]['token'];
+				}
+				else
+				{
+					$error = true;
+					$connections->setErrorMessage('form_no_session_token');
+				}
+				
+				if ($sessionToken === $token && !$error)
+				{
+					$entryForm = new entryForm();
+					$form = new formObjects();
+					$entry = new entry();
+					$entry = $entry->get($_GET['id']);
 					
-					$out .= '<form action="admin.php?page=connections&action=add&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
-					 
-						$out .= $entryForm->entryForm($entry);
-						
-						$out .= '<input type="hidden" name="formId" value="entry_form" />';
-						$out .= '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
-						
-						$out .= '<p class="submit">';
-							$out .= '<input  class="button-primary" type="submit" name="save" value="Save" />';
-							$out .= '<a href="admin.php?page=connections" class="button button-warning">Cancel</a>';
-						$out .= '</p>';
-					$out .= '</form>';
-				$out .= '</div>';
-			$out .= '</div>';
-		
-			unset($entry);
-			$showEntryList = false;
-			
-			echo $out;
+					$out = '<div class="wrap">';
+						$out .= '<div class="form-wrap" style="width:600px; margin: 0 auto;">';
+							$out .= '<h2><a name="new"></a>Add Entry</h2>';
+							
+							$out .= '<form action="admin.php?page=connections&action=add&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
+							 
+								$out .= $entryForm->entryForm($entry);
+								
+								$out .= '<input type="hidden" name="formId" value="entry_form" />';
+								$out .= '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
+								
+								$out .= '<p class="submit">';
+									$out .= '<input  class="button-primary" type="submit" name="save" value="Save" />';
+									$out .= '<a href="admin.php?page=connections" class="button button-warning">Cancel</a>';
+								$out .= '</p>';
+							$out .= '</form>';
+						$out .= '</div>';
+					$out .= '</div>';
+				
+					unset($entry);
+					$showEntryList = false;
+					
+					echo $out;
+				}
+				else
+				{
+					$connections->setErrorMessage('form_token_mismatch');
+				}
+			}
+			else
+			{
+				$connections->setErrorMessage('capability_add');
+			}
 		break;
 		
 		case 'edit':
-			/**
-			 * @TODO:
-			 * Add current user capability check.
-			 * Add session token check.
+			/*
+			 * Check whether the current user can edit entries.
 			 */
-			
-			//if ($ID) $sessionTokenEdit =  $_SESSION['cn_session']['formTokens']['edit_' . $_GET['id']]['token'];
-								
-			$entryForm = new entryForm();
-			$form = new formObjects();
-			$entry = new entry();
-			$entry = $entry->get($_GET['id']);
-			
-			$out = '<div class="wrap">';
-				$out .= '<div class="form-wrap" style="width:600px; margin: 0 auto;">';
-					$out .= '<h2><a name="new"></a>Edit Entry</h2>';
+			if (current_user_can('connections_edit_entry'))
+			{
+				/*
+				 * Make sure the action token and $_SESSION token are set and equal before
+				 * performing the copy. This should hopefully prevent user from accessing
+				 * entries for which they do not have permission
+				 */
+				if (isset($_GET['id']))
+				{
+					$id = $_GET['id'];
+				}
+				else
+				{
+					$error = true;
+					$connections->setErrorMessage('form_no_entry_id');
+				}
+				
+				if (isset($_GET['token']))
+				{
+					$token = $_GET['token'];
+				}
+				else
+				{
+					$error = true;
+					$connections->setErrorMessage('form_no_entry_token');
+				}
+				
+				if (isset($_SESSION['cn_session']['formTokens']['edit_' . $_GET['id']]['token']))
+				{
+					$sessionToken = $_SESSION['cn_session']['formTokens']['edit_' . $_GET['id']]['token'];
+				}
+				else
+				{
+					$error = true;
+					$connections->setErrorMessage('form_no_session_token');
+				}
+				
+				if ($sessionToken === $token && !$error)
+				{
+					$entryForm = new entryForm();
+					$form = new formObjects();
+					$entry = new entry();
+					$entry = $entry->get($_GET['id']);
 					
-					$out .= '<form action="admin.php?page=connections&action=update&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
-					 
-						$out .= $entryForm->entryForm($entry);
-						
-						$out .= '<input type="hidden" name="formId" value="entry_form" />';
-						$out .= '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
-						
-						$out .= '<p class="submit">';
-							$out .= '<input  class="button-primary" type="submit" name="update" value="Update" />';
-							$out .= '<a href="admin.php?page=connections" class="button button-warning">Cancel</a>';
-						$out .= '</p>';
-					$out .= '</form>';
-				$out .= '</div>';
-			$out .= '</div>';
-		
-			unset($entry);
-			$showEntryList = false;
-			
-			echo $out;
+					$out = '<div class="wrap">';
+						$out .= '<div class="form-wrap" style="width:600px; margin: 0 auto;">';
+							$out .= '<h2><a name="new"></a>Edit Entry</h2>';
+							
+							$out .= '<form action="admin.php?page=connections&action=update&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
+							 
+								$out .= $entryForm->entryForm($entry);
+								
+								$out .= '<input type="hidden" name="formId" value="entry_form" />';
+								$out .= '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
+								
+								$out .= '<p class="submit">';
+									$out .= '<input  class="button-primary" type="submit" name="update" value="Update" />';
+									$out .= '<a href="admin.php?page=connections" class="button button-warning">Cancel</a>';
+								$out .= '</p>';
+							$out .= '</form>';
+						$out .= '</div>';
+					$out .= '</div>';
+					
+					unset($entry);
+					$showEntryList = false;
+					
+					echo $out;
+				}
+				else
+				{
+					$connections->setErrorMessage('form_token_mismatch');
+				}
+			}
+			else
+			{
+				$connections->setErrorMessage('capability_edit');
+			}
 		break;
 		
 		case 'delete':
@@ -94,46 +187,64 @@ function connectionsShowViewPage()
 		break;
 		
 		case 'add':
-			/**
-			 * @TODO:
-			 * Add current user capability check.
-			 * Add session token check.
+			/*
+			 * Check whether the current user can add an entry.
 			 */
-			if ($_POST['save'] && $_SESSION['cn_session']['formTokens']['entry_form']['token'] === $_POST['token'])
+			if (current_user_can('connections_add_entry'))
 			{
-				$entryForm = new entryForm();
-				echo $entryForm->processEntry();
+				/*
+				 * Check whether the token for the current entry equal the token stored in the $_SESSION.
+				 */
+				if ($_POST['save'] && $_SESSION['cn_session']['formTokens']['entry_form']['token'] === $_POST['token'])
+				{
+					$entryForm = new entryForm();
+					echo $entryForm->processEntry();
+					unset($_SESSION['cn_session']['formTokens']);
+				}
+				else
+				{
+					$connections->setErrorMessage('form_token_mismatch');
+				}
+				
+				$showEntryList = true;
 			}
-			
-			$showEntryList = true;
-			
+			else
+			{
+				$connections->setErrorMessage('capability_add');
+			}
 		break;
 		
 		case 'update':
-			/**
-			 * @TODO:
-			 * Add current user capability check.
-			 * Add session token check.
+			/*
+			 * Check whether the current user can edit an entry.
 			 */
-			if ($_POST['update'] && $_SESSION['cn_session']['formTokens']['entry_form']['token'] === $_POST['token'])
+			if (current_user_can('connections_edit_entry'))
 			{
-				$entryForm = new entryForm();
-				echo $entryForm->processEntry();
+				/*
+				 * Check whether the token for the current entry equal the token stored in the $_SESSION.
+				 */
+				if ($_POST['update'] && $_SESSION['cn_session']['formTokens']['entry_form']['token'] === $_POST['token'])
+				{
+					$entryForm = new entryForm();
+					echo $entryForm->processEntry();
+					unset($_SESSION['cn_session']['formTokens']);
+				}
+				else
+				{
+					$connections->setErrorMessage('form_token_mismatch');
+				}
+				
+				$showEntryList = true;
 			}
-			
-			$showEntryList = true;
-			
+			else
+			{
+				$connections->setErrorMessage('capability_edit');
+			}
 		break;
 
 		case 'do':
 			switch ($_POST['action'])
 			{
-				/**
-				 * @TODO:
-				 * Add current user capability check.
-				 * Add session token check.
-				 */
-				
 				case 'delete':
 					delete($_POST['entry']);
 				break;
@@ -141,8 +252,14 @@ function connectionsShowViewPage()
 				case 'public':
 				case 'private':
 				case 'unlisted':
+					/*
+					 * Check whether the current user can edit entries.
+					 */
 					if (current_user_can('connections_edit_entry'))
 					{
+						/*
+						 * Check whether the token for the current entry equal the token stored in the $_SESSION.
+						 */
 						if ($_SESSION['cn_session']['formTokens']['do_action']['token'] === $_POST['token'])
 						{
 							
@@ -414,7 +531,7 @@ function connectionsShowViewPage()
 												//if (current_user_can('connections_edit_entry')) echo '<a class="editbutton" href="admin.php?page=connections&action=editform&id=' . $entry->getId() . '&editid=true&token=' . $editToken . '" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | ';
 												if (current_user_can('connections_edit_entry')) echo '<a class="editbutton" href="admin.php?page=connections&action=edit&id=' . $entry->getId() . '&token=' . $editToken . '" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | ';
 												//if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="admin.php?page=connections&action=editform&id=' . $entry->getId() . '&copyid=true&token=' . $form->token('copy_' . $entry->getId()) . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
-												if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="admin.php?page=connections&action=copy&id=' . $entry->getId() . 'token=' . $form->token('copy_' . $entry->getId()) . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
+												if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="admin.php?page=connections&action=copy&id=' . $entry->getId() . '&token=' . $form->token('copy_' . $entry->getId()) . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
 												if (current_user_can('connections_delete_entry')) echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections&action=delete&id=' . $entry->getId() . '&token=' . $form->token('delete_' . $entry->getId()) . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
 											echo '</div>';
 									echo "</td> \n";
@@ -631,9 +748,6 @@ function delete($ids)
 		}
 		else
 		{
-			/**
-			 * @TODO: Check that session token and form token are set before the comparison is made.
-			 */
 			if ($_SESSION['cn_session']['formTokens']['do_action']['token'] === $_POST['token'])
 			{
 				foreach ($ids as $id)

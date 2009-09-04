@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111
 Description: An address book.
-Version: 0.5.46
+Version: 0.5.47
 Author: Steven A. Zahm
 Author URI: http://www.shazahm.net
 
@@ -112,7 +112,7 @@ if (!class_exists('connectionsLoad'))
 			 * @TODO: Define constants for the plug-in path and URL
 			 */
 			
-			define('CN_CURRENT_VERSION', '0.5.46');
+			define('CN_CURRENT_VERSION', '0.5.47');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
 			define('CN_TABLE_NAME','connections');
@@ -247,6 +247,8 @@ if (!class_exists('connectionsLoad'))
 			$this->errorMessages->add('form_no_session_token', 'No session token.');
 			
 			$this->errorMessages->add('capability_view_entry_list', 'You are not authorized to view the entry list. Please contact the admin if you received this message in error.');
+			
+			$this->errorMessages->add('capability_add', 'You are not authorized to add entries. Please contact the admin if you received this message in error.');
 			$this->errorMessages->add('capability_delete', 'You are not authorized to delete entries. Please contact the admin if you received this message in error.');
 			$this->errorMessages->add('capability_edit', 'You are not authorized to edit entries. Please contact the admin if you received this message in error.');
 		}
