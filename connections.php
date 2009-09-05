@@ -2,7 +2,7 @@
 /*
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111
-Description: An address book.
+Description: An address book and business directory.
 Version: 0.5.47
 Author: Steven A. Zahm
 Author URI: http://www.shazahm.net
@@ -33,7 +33,9 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 /**
  * @TODO: Fix bug. The output class will output entry divs for some data fields.
  */
-
+/**
+ * @TODO: Add plug-in version to the Javascript and CSS hooks.
+ */
 if (!class_exists('connectionsLoad'))
 {
 	class connectionsLoad
@@ -349,7 +351,7 @@ if (!class_exists('connectionsLoad'))
 					visibility tinytext NOT NULL,
 			        PRIMARY KEY  (id)
 			    );";
-			    //require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
+			    require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 			    dbDelta($sql);
 			}
 			
