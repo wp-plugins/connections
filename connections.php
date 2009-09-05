@@ -2,7 +2,7 @@
 /*
 Plugin Name: Connections
 Plugin URI: http://www.shazahm.net/?page_id=111
-Description: An address book.
+Description: An address book and business directory.
 Version: 0.5.47
 Author: Steven A. Zahm
 Author URI: http://www.shazahm.net
@@ -351,7 +351,7 @@ if (!class_exists('connectionsLoad'))
 					visibility tinytext NOT NULL,
 			        PRIMARY KEY  (id)
 			    );";
-			    //require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
+			    require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 			    dbDelta($sql);
 			}
 			
