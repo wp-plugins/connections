@@ -450,7 +450,30 @@ function connectionsShowViewPage()
 					<div class="clear"></div>
 					<div class="tablenav">
 						<div class="tablenav-pages">
-							<?php echo $form->buildAlphaIndex(); ?>
+							<?php
+								/*
+								 * Dynamically builds the alpha index based on the available entries.
+								 */
+								foreach ($results as $row)
+								{
+									$entry = new entry($row);
+									$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
+									if ($currentLetter != $previousLetter)
+									{
+										/*
+										 * This is to skip any entries that are not of the selected type when being filtered.
+										 */
+										if ($plugin_options->getEntryType($current_user->ID) != "" )	{
+											if ($entry->getEntryType() != $plugin_options->getEntryType($current_user->ID)) continue;
+										}
+										
+										$setAnchor .= '<a href="#' . $currentLetter . '">' . $currentLetter . '</a> ';
+										$previousLetter = $currentLetter;
+									}
+								}
+								
+								echo $setAnchor;
+							?>
 						</div>
 					</div>
 					<div class="clear"></div>

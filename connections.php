@@ -33,7 +33,9 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 /**
  * @TODO: Fix bug. The output class will output entry divs for some data fields.
  */
-
+/**
+ * @TODO: Add plug-in version to the Javascript and CSS hooks.
+ */
 if (!class_exists('connectionsLoad'))
 {
 	class connectionsLoad
