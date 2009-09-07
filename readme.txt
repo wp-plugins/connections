@@ -5,11 +5,11 @@ Tags: addresses, address book, addressbook, bio, bios, biographies, contact, con
 Requires at least: 2.7
 Tested up to: 2.8.4
 Stable tag: 0.5.47
-Connections is a simple to use addressbook or directory that is highly customizable.
+Connections is a simple to use addressbook or business directory that is highly customizable.
 
 == Description ==
 
-Connections is a simple to use address book or directory that is highly customizable with templates and shortcode attributes. The entry list can be embedded in a post/page using a simple shortcode that has many available options. The entry list can embedded multiple times in the same post/page using different options and even different templates. Also included; a second shortcode that can be used to show upcoming anniversaries and birthdays.
+Connections is a simple to use address book or business directory that is highly customizable with templates and shortcode attributes. The entry list can be embedded in a post/page using a simple shortcode that has many available options. The entry list can embedded multiple times in the same post/page using different options and even different templates. Also included; a second shortcode that can be used to show upcoming anniversaries and birthdays.
 
 = Admin Features =
 * Built-in help page
