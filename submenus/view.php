@@ -399,29 +399,100 @@ function connectionsShowViewPage()
 					<div class="tablenav">
 						
 						<?php
-													
-						if (current_user_can('connections_edit_entry') || current_user_can('connections_delete_entry'))
-						{
 							echo '<div class="alignleft actions">';
-								echo '<select name="action">';
-									echo '<option value="" SELECTED>Bulk Actions</option>';
+								
+								foreach ($results as $row)
+								{
+									$entry = new entry($row);
 									
-										if (current_user_can('connections_edit_entry'))
+									if ($entry->getLastName() != null && @!in_array($entry->getLastName(), $filter_lastName)) $filter_lastName[strtolower($entry->getLastName())] = $entry->getLastName();
+									if ($entry->getTitle() != null && @!in_array($entry->getTitle(), $filter_title)) $filter_title[strtolower($entry->getTitle())] = $entry->getTitle();
+									if ($entry->getOrganization() != null && @!in_array($entry->getOrganization(), $filter_organization)) $filter_organization[strtolower($entry->getOrganization())] = $entry->getOrganization();
+									if ($entry->getDepartment() != null && @!in_array($entry->getDepartment(), $filter_department)) $filter_department[strtolower($entry->getDepartment())] = $entry->getDepartment();
+									
+									/*
+									 * First check to make sure there is data stored in the address array.
+									 * Then cycle thru each address, building separate arrays for city, state, zip and country.
+									 */
+									if ($entry->getAddresses())
+									{
+										$addressObject = new addresses;
+										foreach ($entry->getAddresses() as $addressRow)
 										{
-											echo '<option value="public">Set Public</option>';
-											echo '<option value="private">Set Private</option>';
-											echo '<option value="unlisted">Set Unlisted</option>';
-										}
-										
-										if (current_user_can('connections_delete_entry'))
-										{
-											echo '<option value="delete">Delete</option>';
-										}
-																				
-								echo '</select>';
-								echo '<input id="doaction" class="button-secondary action" type="submit" name="doaction" value="Apply" />';
+											if ($addressObject->getCity($addressRow) != null && @!in_array($addressObject->getCity($addressRow), $filter_cities)) $filter_cities[strtolower($addressObject->getCity($addressRow))] = $addressObject->getCity($addressRow);
+											if ($addressObject->getState($addressRow) != null && @!in_array($addressObject->getState($addressRow), $filter_states)) $filter_states[strtolower($addressObject->getState($addressRow))] = $addressObject->getState($addressRow);
+											if ($addressObject->getZipCode($addressRow) != null && @!in_array($addressObject->getZipCode($addressRow), $filter_zipcodes)) $filter_zipcodes[strtolower($addressObject->getZipCode($addressRow))] = $addressObject->getZipCode($addressRow);
+											if ($addressObject->getCountry($addressRow) != null && @!in_array($addressObject->getCountry($addressRow), $filter_countries)) $filter_countries[strtolower($addressObject->getCountry($addressRow))] = $addressObject->getCountry($addressRow);
+										}			
+									}
+								}
+								
+								if (is_array($filter_lastName))
+								{
+									ksort($filter_lastName);
+									$filter_lastName = array('' => 'Last Name') + $filter_lastName;
+									echo $form->buildSelect('filter_lastname', $filter_lastName, $_POST['filter_lastname']);
+								}
+								
+								if (is_array($filter_title))
+								{
+									ksort($filter_title);
+									$filter_title = array('' => 'Title') + $filter_title;
+									echo $form->buildSelect('filter_title', $filter_title, $_POST['filter_title']);
+								}
+								
+								if (is_array($filter_organization))
+								{
+									ksort($filter_organization);
+									$filter_organization = array('' => 'Organization') + $filter_organization;
+									echo $form->buildSelect('filter_organization', $filter_organization, $_POST['filter_organization']);
+								}
+								
+								if (is_array($filter_department))
+								{
+									ksort($filter_department);
+									$filter_department = array('' => 'Department') + $filter_department;
+									echo $form->buildSelect('filter_department', $filter_department, $_POST['filter_department']);
+								}
+								
+								if (is_array($filter_cities))
+								{
+									ksort($filter_cities);
+									$filter_cities = array('' => 'City') + $filter_cities;
+									echo $form->buildSelect('filter_city', $filter_cities, $_POST['filter_city']);
+								}
+								
+								if (is_array($filter_states))
+								{
+									ksort($filter_states);
+									$filter_states = array('' => 'State') + $filter_states;
+									echo $form->buildSelect('filter_state', $filter_states, $_POST['filter_state']);
+								}
+								
+								if (is_array($filter_zipcodes))
+								{
+									ksort($filter_zipcodes);
+									$filter_zipcodes = array('' => 'Zipcode') + $filter_zipcodes;
+									echo $form->buildSelect('filter_zipcode', $filter_zipcodes, $_POST['filter_zipcode']);
+								}
+								
+								if (is_array($filter_countries))
+								{
+									ksort($filter_countries);
+									$filter_countries = array('' => 'Country') + $filter_countries;
+									echo $form->buildSelect('filter_country', $filter_countries, $_POST['filter_country']);
+								}
+								
+								if (isset($filter_lastName)) unset($filter_lastName);
+								if (isset($filter_title)) unset($filter_title);
+								if (isset($filter_organization)) unset($filter_organization);
+								if (isset($filter_department)) unset($filter_department);
+								if (isset($filter_cities)) unset($filter_cities);
+								if (isset($filter_states)) unset($filter_states);
+								if (isset($filter_zipcodes)) unset($filter_zipcodes);
+								if (isset($filter_countries)) unset($filter_countries);
+								
 							echo '</div>';
-						}
 						?>
 						
 						<div class="alignleft actions">
@@ -449,6 +520,33 @@ function connectionsShowViewPage()
 					</div>
 					<div class="clear"></div>
 					<div class="tablenav">
+						
+						<?php
+													
+						if (current_user_can('connections_edit_entry') || current_user_can('connections_delete_entry'))
+						{
+							echo '<div class="alignleft actions">';
+								echo '<select name="action">';
+									echo '<option value="" SELECTED>Bulk Actions</option>';
+									
+										if (current_user_can('connections_edit_entry'))
+										{
+											echo '<option value="public">Set Public</option>';
+											echo '<option value="private">Set Private</option>';
+											echo '<option value="unlisted">Set Unlisted</option>';
+										}
+										
+										if (current_user_can('connections_delete_entry'))
+										{
+											echo '<option value="delete">Delete</option>';
+										}
+																				
+								echo '</select>';
+								echo '<input id="doaction" class="button-secondary action" type="submit" name="doaction" value="Apply" />';
+							echo '</div>';
+						}
+						?>
+						
 						<div class="tablenav-pages">
 							<?php
 								/*
@@ -463,9 +561,66 @@ function connectionsShowViewPage()
 										/*
 										 * This is to skip any entries that are not of the selected type when being filtered.
 										 */
-										if ($plugin_options->getEntryType($current_user->ID) != "" )	{
+										if ($plugin_options->getEntryType($current_user->ID) != "" )
+										{
 											if ($entry->getEntryType() != $plugin_options->getEntryType($current_user->ID)) continue;
 										}
+										
+										/*
+										 * If any of the following variables are set from a previous iteration
+										 * they are unset.
+										 */
+										if (isset($continue)) unset($continue);
+										if (isset($lastName)) unset($lastName);
+										if (isset($title)) unset($title);
+										if (isset($organization)) unset($organization);
+										if (isset($department)) unset($department);
+										if (isset($cities)) unset($cities);
+										if (isset($states)) unset($states);
+										if (isset($zipcodes)) unset($zipcodes);
+										if (isset($countries)) unset($countries);
+										
+										if ($entry->getLastName() != null) $lastName[] = strtolower($entry->getLastName());
+										if ($entry->getTitle() != null) $title[] = strtolower($entry->getTitle());
+										if ($entry->getOrganization() != null) $organization[] = strtolower($entry->getOrganization());
+										if ($entry->getDepartment() != null) $department[] = strtolower($entry->getDepartment());
+										
+										/*
+										 * First check to make sure there is data stored in the address array.
+										 * Then cycle thru each address, building separate arrays for city, state, zip and country.
+										 */
+										if ($entry->getAddresses())
+										{
+											$addressObject = new addresses;
+											foreach ($entry->getAddresses() as $addressRow)
+											{
+												if ($addressObject->getCity($addressRow) != null) $cities[] = strtolower($addressObject->getCity($addressRow));
+												if ($addressObject->getState($addressRow) != null) $states[] = strtolower($addressObject->getState($addressRow));
+												if ($addressObject->getZipCode($addressRow) != null) $zipcodes[] = $addressObject->getZipCode($addressRow);
+												if ($addressObject->getCountry($addressRow) != null) $countries[] = strtolower($addressObject->getCountry($addressRow));
+											}			
+										}
+										
+										/*
+										 * Here we filter out the entries that are wanted based on the
+										 * filter attributes that may have been used in the shortcode.
+										 * 
+										 * NOTE: The '@' operator is used to suppress PHP generated errors. This is done
+										 * because not every entry will have addresses to populate the arrays created above.
+										 */
+										if (@!in_array($_POST['filter_lastname'], $lastName) && $_POST['filter_lastname'] != null)				$continue = true;
+										if (@!in_array($_POST['filter_title'], $title) && $_POST['filter_title'] != null)						$continue = true;
+										if (@!in_array($_POST['filter_organization'], $organization) && $_POST['filter_organization'] != null) 	$continue = true;
+										if (@!in_array($_POST['filter_department'], $department) && $_POST['filter_department'] != null) 		$continue = true;
+										if (@!in_array($_POST['filter_city'], $cities) && $_POST['filter_city'] != null) 						$continue = true;
+										if (@!in_array($_POST['filter_state'], $states) && $_POST['filter_state'] != null) 						$continue = true;
+										if (@!in_array($_POST['filter_zipcode'], $zipcodes) && $_POST['filter_zipcode'] != null) 				$continue = true;
+										if (@!in_array($_POST['filter_country'], $countries) && $_POST['filter_country'] != null) 				$continue = true;
+										
+										/*
+										 * If any of the above filters returned true, the script will continue to the next entry.
+										 */
+										if ($continue == true) continue;
 										
 										$setAnchor .= '<a href="#' . $currentLetter . '">' . $currentLetter . '</a> ';
 										$previousLetter = $currentLetter;
@@ -513,9 +668,66 @@ function connectionsShowViewPage()
 								/*
 								 * This is to skip any entries that are not of the selected type when being filtered.
 								 */
-								if ($plugin_options->getEntryType($current_user->ID) != "" )	{
+								if ($plugin_options->getEntryType($current_user->ID) != "" )
+								{
 									if ($entry->getEntryType() != $plugin_options->getEntryType($current_user->ID)) continue;
 								}
+								
+								/*
+								 * If any of the following variables are set from a previous iteration
+								 * they are unset.
+								 */
+								if (isset($continue)) unset($continue);
+								if (isset($lastName)) unset($lastName);
+								if (isset($title)) unset($title);
+								if (isset($organization)) unset($organization);
+								if (isset($department)) unset($department);
+								if (isset($cities)) unset($cities);
+								if (isset($states)) unset($states);
+								if (isset($zipcodes)) unset($zipcodes);
+								if (isset($countries)) unset($countries);
+								
+								if ($entry->getLastName() != null) $lastName[] = strtolower($entry->getLastName());
+								if ($entry->getTitle() != null) $title[] = strtolower($entry->getTitle());
+								if ($entry->getOrganization() != null) $organization[] = strtolower($entry->getOrganization());
+								if ($entry->getDepartment() != null) $department[] = strtolower($entry->getDepartment());
+							
+								/*
+								 * First check to make sure there is data stored in the address array.
+								 * Then cycle thru each address, building separate arrays for city, state, zip and country.
+								 */
+								if ($entry->getAddresses())
+								{
+									$addressObject = new addresses;
+									foreach ($entry->getAddresses() as $addressRow)
+									{
+										if ($addressObject->getCity($addressRow) != null) $cities[] = strtolower($addressObject->getCity($addressRow));
+										if ($addressObject->getState($addressRow) != null) $states[] = strtolower($addressObject->getState($addressRow));
+										if ($addressObject->getZipCode($addressRow) != null) $zipcodes[] = $addressObject->getZipCode($addressRow);
+										if ($addressObject->getCountry($addressRow) != null) $countries[] = strtolower($addressObject->getCountry($addressRow));
+									}			
+								}
+								
+								/*
+								 * Here we filter out the entries that are wanted based on the
+								 * filter attributes that may have been used in the shortcode.
+								 * 
+								 * NOTE: The '@' operator is used to suppress PHP generated errors. This is done
+								 * because not every entry will have addresses to populate the arrays created above.
+								 */
+								if (@!in_array($_POST['filter_lastname'], $lastName) && $_POST['filter_lastname'] != null)				$continue = true;
+								if (@!in_array($_POST['filter_title'], $title) && $_POST['filter_title'] != null)						$continue = true;
+								if (@!in_array($_POST['filter_organization'], $organization) && $_POST['filter_organization'] != null) 	$continue = true;
+								if (@!in_array($_POST['filter_department'], $department) && $_POST['filter_department'] != null) 		$continue = true;
+								if (@!in_array($_POST['filter_city'], $cities) && $_POST['filter_city'] != null) 						$continue = true;
+								if (@!in_array($_POST['filter_state'], $states) && $_POST['filter_state'] != null) 						$continue = true;
+								if (@!in_array($_POST['filter_zipcode'], $zipcodes) && $_POST['filter_zipcode'] != null) 				$continue = true;
+								if (@!in_array($_POST['filter_country'], $countries) && $_POST['filter_country'] != null) 				$continue = true;
+								
+								/*
+								 * If any of the above filters returned true, the script will continue to the next entry.
+								 */
+								if ($continue == true) continue;
 								
 								/*
 								 * Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
