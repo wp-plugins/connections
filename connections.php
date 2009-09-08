@@ -99,13 +99,15 @@ if (!class_exists('connectionsLoad'))
 					delete_option('connections_installed');
 				}
 			}
-			
-			// Calls the methods to load the frontend scripts and CSS.
-			add_action('wp_print_scripts', array(&$this, 'loadScripts') );
-			add_action('wp_print_styles', array(&$this, 'loadStyles') );
-			
-			// Add a version number to the header
-			add_action('wp_head', create_function('', 'echo "\n<meta name=\'Connections\' content=\'' . $this->options->getVersion() . '\' />\n";') );
+			else
+			{
+				// Calls the methods to load the frontend scripts and CSS.
+				add_action('wp_print_scripts', array(&$this, 'loadScripts') );
+				add_action('wp_print_styles', array(&$this, 'loadStyles') );
+				
+				// Add a version number to the header
+				add_action('wp_head', create_function('', 'echo "\n<meta name=\'Connections\' content=\'' . $this->options->getVersion() . '\' />\n";') );
+			}
 		}
 		
 		private function loadConstants()
