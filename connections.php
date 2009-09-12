@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Connections
-Plugin URI: http://www.shazahm.net/?page_id=111
+Plugin URI: http://connections-pro.com/
 Description: An address book and business directory.
 Version: 0.5.47
 Author: Steven A. Zahm
-Author URI: http://www.shazahm.net
+Author URI: http://connections-pro.com/
 
 Connections is based on Little Black Book  1.1.2 by Gerald S. Fuller which was based on
 Little Black Book is based on Addressbook 0.7 by Sam Wilson
