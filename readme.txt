@@ -1,6 +1,6 @@
 === Plugin Name ===
 Contributors: Steven A. Zahm
-Donate link: http://www.shazahm.net/?page_id=111
+Donate link: http://connections-pro.com/
 Tags: addresses, address book, addressbook, bio, bios, biographies, contact, contacts, connect, connections, directory, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, user, users, vcard
 Requires at least: 2.7
 Tested up to: 2.8.4
@@ -71,7 +71,7 @@ Connections is a simple to use address book or business directory that is highly
 * The vCard feature is not compatible with [WP Super Cache](http://wordpress.org/extend/plugins/wp-super-cache/). Make sure the page/post excluded in WP Super Cache.
 
 == Screenshots ==
-[Samples and screenshots can be found here](http://www.shazahm.net/?page_id=111)
+[Samples and screenshots can be found here](http://connections-pro.com/?page_id=52)
 
 Here are a couple of sites using Connections as a business directory.
 
