@@ -20,7 +20,7 @@ jQuery(document).ready(function(){
 					jQuery(elem).toggle(jQuery(elem).css('display') == 'none');
 				});
 
-				//return false;		
+				return false;		
 			})
 			.toggle
 			(
