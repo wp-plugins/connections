@@ -546,7 +546,7 @@ function connectionsShowViewPage()
 								 */
 								$editToken = $form->token('edit_' . $entry->getId());
 								
-								echo "<tr id='row" . $entry->getId() . "' class='parent-row'>";
+								echo "<tr id='row-" . $entry->getId() . "' class='parent-row'>";
 									echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
 										echo '<td>' . $object->getThumbnailImage() . '</td>';
 										echo '<td  colspan="2">';

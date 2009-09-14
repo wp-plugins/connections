@@ -46,5 +46,6 @@ jQuery(document).ready(function(){
 
     // Call the function here
     contactPreview();
+	//window.onload = function(){setTimeout("contactPreview()",0)}
     
 });

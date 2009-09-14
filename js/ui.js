@@ -15,7 +15,12 @@ jQuery(document).ready(function(){
 			.attr("title","Click to show details.")
 			.click(function()
 			{
-				jQuery('.child-'+this.id).toggle();			
+				jQuery('.child-'+this.id).each(function(i, elem)
+				{
+					jQuery(elem).toggle(jQuery(elem).css('display') == 'none');
+				});
+
+				//return false;		
 			})
 			.toggle
 			(
