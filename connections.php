@@ -116,7 +116,7 @@ if (!class_exists('connectionsLoad'))
 			 * @TODO: Define constants for the plug-in path and URL
 			 */
 			
-			define('CN_CURRENT_VERSION', '0.5.47');
+			define('CN_CURRENT_VERSION', '0.5.48');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
 			define('CN_TABLE_NAME','connections');
