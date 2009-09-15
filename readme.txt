@@ -19,9 +19,9 @@ Connections is a simple to use address book or business directory that is highly
 * Copy entries
 * Bulk actions that include setting the visibility on deleting entries
 * Filters that is persistent per user between sessions and browsers
-* **NEW** Added extensive role support.
-* **NEW** Added the ability to set custom image sizes.
-* **NEW** Added the ability to determine how an image should be scaled and cropped.
+* **0.5.47** Added extensive role support.
+* **0.5.47** Added the ability to set custom image sizes.
+* **0.5.47** Added the ability to determine how an image should be scaled and cropped.
 
 = Frontend Features =
 * xHTML Transition output
@@ -110,6 +110,10 @@ This plugin requires PHP 5. Turn on or ask your web host to turn on PHP 5 suppor
 Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>` tag is needed for hCalendar event compatibility. To remove this from the styling, add `.vevent abbr{border:0}` to your theme's CSS.
 
 == Changelog ==
+
+= 0.5.45 9/14/2009 =
+* Fixed a jQuery bug in IE8.
+* The alpha index in the admin is now dynamic. It will only show letters for entries in you list.
 
 = 0.5.47 9/3/2009 =
 * Updated class.upload.php to version .25

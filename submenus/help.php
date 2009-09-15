@@ -683,18 +683,16 @@ function connectionsShowHelpPage()
 	
 	<h3><a name="tocIdSupport"></a>Support</h3>
 	
-	<p>If support is needed use the forum on the
-	wordpress.org site. Title the post "[Plugin:
-	Connections] Your Problem". Also be sure to tag the
-	post with "connections".</p>
+	<p>If support is needed go to <a href="http://www.connection-pro.com">connection-pro.com</a> and submit a help desk ticket.</p>
 	
 	
 	<h3><a name="tocIdFAQ"></a>FAQ</h3>
 	
 	<h4><a name="tocIdFAQ001"></a>Upgrading</h4>
 	
-	<p>There is no need to de-activate and then re-activate
-	Connections to upgrade.</p>
+	<p>Use the automatic plug-in upgrade feature built into WordPress. Optionally, the plugin can be downloaded
+	from the WordPress plug-in repository and maully uploaded via FTP. After the plug-in has been uploaded
+	make sure to activate and deactive the plug-in.</p>
 	
 	<h4><a name="tocIdFAQ002"></a>Why don't any entries
 	show in my page/post when I use the connections_list
