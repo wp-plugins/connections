@@ -4,7 +4,7 @@ Donate link: http://connections-pro.com/
 Tags: addresses, address book, addressbook, bio, bios, biographies, contact, contacts, connect, connections, directory, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, user, users, vcard
 Requires at least: 2.7
 Tested up to: 2.8.4
-Stable tag: 0.5.47
+Stable tag: 0.5.48
 Connections is a simple to use addressbook or business directory that is highly customizable.
 
 == Description ==
