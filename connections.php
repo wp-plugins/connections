@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: An address book and business directory.
-Version: 0.5.47
+Version: 0.5.48
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 
