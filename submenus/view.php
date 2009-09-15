@@ -555,7 +555,7 @@ function connectionsShowViewPage()
 											
 											if (current_user_can('connections_edit_entry'))
 											{
-												echo '<a class="row-title" title="Edit ' . $entry->getFullFirstLastName() . '" href="admin.php?page=connections&action=editform&id=' . $row->id . '&token=' . $editToken . '"> ' . $entry->getFullLastFirstName() . '</a><br />';
+												echo '<a class="row-title" title="Edit ' . $entry->getFullFirstLastName() . '" href="admin.php?page=connections&action=edit&id=' . $row->id . '&token=' . $editToken . '"> ' . $entry->getFullLastFirstName() . '</a><br />';
 											}
 											else
 											{
