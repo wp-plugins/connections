@@ -1,7 +1,7 @@
 <?php
 add_shortcode('connections_list', '_connections_list');
 function _connections_list($atts, $content=null) {
-	global $wpdb, $current_user;
+	global $wpdb, $connections, $current_user;
 	
 	$atts = shortcode_atts( array(
 				'allow_public_override' => 'false',
@@ -23,15 +23,15 @@ function _connections_list($atts, $content=null) {
 				'custom_template'=>'false',
 				), $atts ) ;
 	
-	$plugin_options = new pluginOptions();
-	$form = new formObjects();
+	//$plugin_options = new cnOptions();
+	$form = new cnFormObjects();
 	
 	/**
 	 * If the view public entries override shortcode attribute is not permitted the attribute is unset
 	 * to ensure that only possible way the next expression will not equal false and give access to the
 	 * entries is for $atts['allow_public_override'] to be set and it's value be true
 	 */
-	if (!$plugin_options->getAllowPublicOverride()) unset($atts['allow_public_override']);
+	if (!$connections->options->getAllowPublicOverride()) unset($atts['allow_public_override']);
 	
 	/**
 	 * Check whether the public is permitted to see the entry list based on if the user is logged in,
@@ -39,7 +39,7 @@ function _connections_list($atts, $content=null) {
 	 * and if the shortcode attribute for the override is set and it's value is true. If any of these 
 	 * are false access will not be granted.
 	 */
-	if (!$plugin_options->getAllowPublic() && !is_user_logged_in() && $atts['allow_public_override'] !== 'true')
+	if (!$connections->options->getAllowPublic() && !is_user_logged_in() && $atts['allow_public_override'] !== 'true')
 	{
 		return '<p style="-moz-background-clip:border;
 				-moz-border-radius:11px;
@@ -84,8 +84,8 @@ function _connections_list($atts, $content=null) {
 			
 			foreach ($results as $row)
 			{
-				$entry = new output($row);
-				$vCard = new vCard($row);
+				$entry = new cnOutput($row);
+				$vCard = new cnvCard($row);
 				
 				/**
 				 * Check whether the current user, if logged in, is permitted to view public, private
@@ -101,7 +101,7 @@ function _connections_list($atts, $content=null) {
 				 */
 				if (is_user_logged_in())
 				{
-					if ($entry->getVisibility() == 'public' && !current_user_can('connections_view_public') && !$plugin_options->getAllowPublic()) continue;
+					if ($entry->getVisibility() == 'public' && !current_user_can('connections_view_public') && !$connections->options->getAllowPublic()) continue;
 					if ($entry->getVisibility() == 'private' && !current_user_can('connections_view_private') && $atts['private_override'] == 'false') continue;
 					if ($entry->getVisibility() == 'unlisted' && !current_user_can('connections_view_unlisted')) continue;
 				}
@@ -128,7 +128,7 @@ function _connections_list($atts, $content=null) {
 				 */
 				if ($entry->getAddresses())
 				{
-					$addressObject = new addresses;
+					$addressObject = new cnAddresses;
 					foreach ($entry->getAddresses() as $addressRow)
 					{
 						if ($addressObject->getCity($addressRow) != null) $cities[] = $addressObject->getCity($addressRow);

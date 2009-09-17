@@ -1,6 +1,6 @@
 <?php
 
-class counter {
+class cnCounter {
      private $step;
      private $count; 
 

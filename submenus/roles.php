@@ -21,9 +21,9 @@ function connectionsShowRolesPage()
 	}
 	else
 	{
-		global $wp_roles;
-		$plugin_options = new pluginOptions();
-		//$plugin_options->setDefaultCapabilities();
+		global $connections, $wp_roles;
+		//$plugin_options = new cnOptions();
+		//$connections->options->setDefaultCapabilities();
 							
 		if (isset($_POST['submit']))
 		{
@@ -41,19 +41,19 @@ function connectionsShowRolesPage()
 						
 						if ($grant == 'true')
 						{
-							$plugin_options->addCapability($role, $capability);
+							$connections->options->addCapability($role, $capability);
 						}
 						else
 						{
-							$plugin_options->removeCapability($role, $capability);
+							$connections->options->removeCapability($role, $capability);
 						}
 					}
 				}
 			}
 			
-			if (isset($_POST['reset'])) $plugin_options->setDefaultCapabilities($_POST['reset']);
+			if (isset($_POST['reset'])) $connections->options->setDefaultCapabilities($_POST['reset']);
 			
-			if (isset($_POST['reset_all'])) $plugin_options->setDefaultCapabilities();
+			if (isset($_POST['reset_all'])) $connections->options->setDefaultCapabilities();
 			
 			echo "<div id='message' class='updated fade'>";
 				echo "<p><strong>Role capabilities have been updated.</strong></p>";
@@ -88,18 +88,18 @@ function connectionsShowRolesPage()
 												echo $name;
 											echo '</th>';
 											echo '<td>';
-												$capabilies = $plugin_options->getDefaultCapabilities();
+												$capabilies = $connections->options->getDefaultCapabilities();
 												
 												foreach ($capabilies as $capability => $capabilityName)
 												{
 													// if unregistered users are permitted to view the entry list there is no need for setting this capability
-													if ($capability == 'connections_view_public' && $plugin_options->getAllowPublic() == true) continue;
+													if ($capability == 'connections_view_public' && $connections->options->getAllowPublic() == true) continue;
 													
 													echo '<label for="' . $role . '_' . $capability . '">';
 													echo '<input type="hidden" name="roles[' . $role . '][capabilities][' . $capability . ']" value="false" />';
 													echo '<input type="checkbox" id="' . $role . '_' . $capability . '" name="roles[' . $role . '][capabilities][' . $capability . ']" value="true" '; 
 													
-													if ($plugin_options->hasCapability($role, $capability)) echo 'CHECKED ';
+													if ($connections->options->hasCapability($role, $capability)) echo 'CHECKED ';
 													// the admininistrator should always have all capabilities
 													if ($role == 'administrator') echo 'DISABLED ';
 													echo '/> ' . $capabilityName . '</label>' . "\n";

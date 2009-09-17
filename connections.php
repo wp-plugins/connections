@@ -163,7 +163,7 @@ if (!class_exists('connectionsLoad'))
 			/* 
 			 * When making changes to image settings, also make the changes in the plug-in option class setDefaultImageSettings()
 			 */
-			$this->options = new pluginOptions();
+			$this->options = new cnOptions();
 			
 			if (!$this->options->getAllowPublic()) $this->options->setAllowPublic(true);
 			
@@ -326,7 +326,7 @@ if (!class_exists('connectionsLoad'))
 		{
 			global $wpdb;
 			
-			$sql = new sql();
+			$sql = new cnSQL();
 			
 			if ($wpdb->get_var("SHOW TABLES LIKE '{$sql->getTableName()}'")!= $sql->getTableName() )
 			{

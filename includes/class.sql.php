@@ -4,7 +4,7 @@
 /**
  * SQL statements.
  */
-class sql
+class cnSQL
 {
 	public function getTableName()
 	{

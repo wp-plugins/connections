@@ -1,6 +1,6 @@
 <?php
 
-class output extends entry
+class cnOutput extends cnEntry
 {
 	public function getCardImage()
 	{
@@ -83,13 +83,14 @@ class output extends entry
 	{
 		if ($this->getConnectionGroup())
 		{
-			$plugin_options = new pluginOptions();
+			//$plugin_options = new cnOptions();
+			global $connections;
 			
 			foreach ($this->getConnectionGroup() as $key => $value)
 			{
-				$relation = new entry();
+				$relation = new cnEntry();
 				$relation->set($key);
-				echo '<span><strong>' . $plugin_options->getConnectionRelation($value) . ':</strong> ' . $relation->getFullFirstLastName() . '</span><br />' . "\n";
+				echo '<span><strong>' . $connections->options->getConnectionRelation($value) . ':</strong> ' . $relation->getFullFirstLastName() . '</span><br />' . "\n";
 				unset($relation);
 			}
 		}
@@ -124,7 +125,7 @@ class output extends entry
 	{
 		if ($this->getAddresses())
 		{
-			$addressObject = new addresses;
+			$addressObject = new cnAddresses;
 			foreach ($this->getAddresses() as $addressRow)
 			{
 				$out .= '<div class="adr" style="margin-bottom: 10px;">' . "\n";
@@ -147,7 +148,7 @@ class output extends entry
 	{
 		if ($this->getPhoneNumbers())
 		{
-			$phoneNumberObject = new phoneNumber;
+			$phoneNumberObject = new cnPhoneNumber();
 			$out .= '<div class="phone_numbers" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getPhoneNumbers() as $phoneNumberRow) 
 			{
@@ -237,7 +238,7 @@ class output extends entry
 	{
 		if ($this->getEmailAddresses())
 		{
-			$emailAddressObject = new email;
+			$emailAddressObject = new cnEmail();
 			$out .= '<div class="email-addresses">' . "\n";
 			foreach ($this->getEmailAddresses() as $emailRow)
 			{
@@ -253,7 +254,7 @@ class output extends entry
 	{
 		if ($this->getIm())
 		{
-			$imObject = new im;
+			$imObject = new cnIM();
 			$out .= '<div class="im" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getIm() as $imRow)
 			{
@@ -266,7 +267,7 @@ class output extends entry
 	
 	public function getWebsiteBlock()
 	{
-		$websiteObject = new website;
+		$websiteObject = new cnWebsite;
 		if ($this->getWebsites())
 		{
 			$out .= '<div class="websites" style="margin-bottom: 10px;">' . "\n";

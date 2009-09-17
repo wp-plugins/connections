@@ -3,7 +3,7 @@
 /**
  * Get and Set the plugin options
  */
-class pluginOptions
+class cnOptions
 {
 	/**
 	 * Array of options returned from WP get_option method

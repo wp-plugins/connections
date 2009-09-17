@@ -20,7 +20,7 @@ if (sizeof($entry->getConnectionGroup()) > 0) {
     $mobile_member_listing .= '<div><span class="member-details"><strong>';
     
     // create family member
-    $member_group = new entry();
+    $member_group = new cnEntry();
     
     // Create the popup container
     //$member_popup_info = '<div id="popup-group-name"><span>' . $entry->getGroupName() . '</span></div>';

@@ -1,6 +1,6 @@
 <?php
 
-class vCard extends entry
+class cnvCard extends cnEntry
 {
 	private $data;
 	private $card;
@@ -189,7 +189,7 @@ class vCard extends entry
 	{
 		if ($this->getAddresses())
 		{
-			$addressObject = new addresses;
+			$addressObject = new cnAddresses;
 			foreach ($this->getAddresses() as $addressRow)
 			{
 				switch ($addressObject->getType($addressRow))
@@ -271,7 +271,7 @@ class vCard extends entry
 
 		if ($this->getPhoneNumbers())
 		{
-			$phoneNumberObject = new phoneNumber;
+			$phoneNumberObject = new cnPhoneNumber();
 			foreach ($this->getPhoneNumbers() as $phoneNumberRow) 
 			{
 				switch ($phoneNumberObject->getType($phoneNumberRow))
@@ -320,7 +320,7 @@ class vCard extends entry
 	{
 		if ($this->getEmailAddresses())
 		{
-			$emailAddressObject = new email;
+			$emailAddressObject = new cnEmail();
 			
 			foreach ($this->getEmailAddresses() as $emailRow)
 			{
@@ -347,7 +347,7 @@ class vCard extends entry
 	{
 		if ($this->getWebsites())
 		{
-			$websiteObject = new website;
+			$websiteObject = new cnWebsite;
 			
 			foreach ($this->getWebsites() as $websiteRow)
 			{
@@ -370,7 +370,7 @@ class vCard extends entry
 	{
 		if ($this->getIm())
 		{
-			$imObject = new im;
+			$imObject = new cnIM();
 			
 			foreach ($this->getIm() as $imRow)
 			{

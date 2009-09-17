@@ -21,47 +21,49 @@ function connectionsShowSettinsPage()
 	}
 	else
 	{
-		$plugin_options = new pluginOptions();
+		global $connections;
+		
+		//$plugin_options = new cnOptions();
 		
 		if (isset($_POST['submit']))
 		{
-			$plugin_options->setAllowPublic($_POST['settings']['allow_public']);
+			$connections->options->setAllowPublic($_POST['settings']['allow_public']);
 			
-			if ($_POST['settings']['allow_public_override'] === 'true' && !$plugin_options->getAllowPublic())
+			if ($_POST['settings']['allow_public_override'] === 'true' && !$connections->options->getAllowPublic())
 			{
-				$plugin_options->setAllowPublicOverride(true);
+				$connections->options->setAllowPublicOverride(true);
 			}
 			else
 			{
-				$plugin_options->setAllowPublicOverride(false);
+				$connections->options->setAllowPublicOverride(false);
 			}
 			
-			$plugin_options->setImgThumbQuality($_POST['settings']['image']['thumbnail']['quality']);
-			$plugin_options->setImgThumbX($_POST['settings']['image']['thumbnail']['x']);
-			$plugin_options->setImgThumbY($_POST['settings']['image']['thumbnail']['y']);
-			$plugin_options->setImgThumbCrop($_POST['settings']['image']['thumbnail']['crop']);
+			$connections->options->setImgThumbQuality($_POST['settings']['image']['thumbnail']['quality']);
+			$connections->options->setImgThumbX($_POST['settings']['image']['thumbnail']['x']);
+			$connections->options->setImgThumbY($_POST['settings']['image']['thumbnail']['y']);
+			$connections->options->setImgThumbCrop($_POST['settings']['image']['thumbnail']['crop']);
 			
-			$plugin_options->setImgEntryQuality($_POST['settings']['image']['entry']['quality']);
-			$plugin_options->setImgEntryX($_POST['settings']['image']['entry']['x']);
-			$plugin_options->setImgEntryY($_POST['settings']['image']['entry']['y']);
-			$plugin_options->setImgEntryCrop($_POST['settings']['image']['entry']['crop']);
+			$connections->options->setImgEntryQuality($_POST['settings']['image']['entry']['quality']);
+			$connections->options->setImgEntryX($_POST['settings']['image']['entry']['x']);
+			$connections->options->setImgEntryY($_POST['settings']['image']['entry']['y']);
+			$connections->options->setImgEntryCrop($_POST['settings']['image']['entry']['crop']);
 			
-			$plugin_options->setImgProfileQuality($_POST['settings']['image']['profile']['quality']);
-			$plugin_options->setImgProfileX($_POST['settings']['image']['profile']['x']);
-			$plugin_options->setImgProfileY($_POST['settings']['image']['profile']['y']);
-			$plugin_options->setImgProfileCrop($_POST['settings']['image']['profile']['crop']);
+			$connections->options->setImgProfileQuality($_POST['settings']['image']['profile']['quality']);
+			$connections->options->setImgProfileX($_POST['settings']['image']['profile']['x']);
+			$connections->options->setImgProfileY($_POST['settings']['image']['profile']['y']);
+			$connections->options->setImgProfileCrop($_POST['settings']['image']['profile']['crop']);
 			
-			$plugin_options->saveOptions();
+			$connections->options->saveOptions();
 			
 			echo "<div id='message' class='updated fade'>";
 				echo "<p><strong>Settings have been updated.</strong></p>";
 			echo "</div>";
 		}
-		//$plugin_options->removeOptions();
-		//$plugin_options->setDefaultImageSettings();
-		//$plugin_options->saveOptions();
+		//$connections->options->removeOptions();
+		//$connections->options->setDefaultImageSettings();
+		//$connections->options->saveOptions();
 		//print_r($plugin_options);
-		$form =  new formObjects();
+		$form =  new cnFormObjects();
 	?>
 		<div class="wrap">
 			<div id="icon-connections" class="icon32">
@@ -85,7 +87,7 @@ function connectionsShowSettinsPage()
 										<label for="allow_public">
 											<input type="hidden" value="false" name="settings[allow_public]"/>
 											<input type="checkbox" value="true" name="settings[allow_public]" id="allow_public" 
-												<?php if ($plugin_options->getAllowPublic()) echo 'CHECKED ' ?>
+												<?php if ($connections->options->getAllowPublic()) echo 'CHECKED ' ?>
 											/>
 											Allow unregistered visitors and users not logged in to view entries
 										</label>
@@ -93,8 +95,8 @@ function connectionsShowSettinsPage()
 										<label for="allow_public_override">
 											<input type="hidden" value="false" name="settings[allow_public_override]"/>
 											<input type="checkbox" value="true" name="settings[allow_public_override]" id="allow_public_override" 
-												<?php if ($plugin_options->getAllowPublicOverride()) echo 'CHECKED ' ?>
-												<?php if ($plugin_options->getAllowPublic()) echo 'DISABLED ' ?>
+												<?php if ($connections->options->getAllowPublicOverride()) echo 'CHECKED ' ?>
+												<?php if ($connections->options->getAllowPublic()) echo 'DISABLED ' ?>
 											/>
 											Allow shortcode attribute override
 										</label>
@@ -115,7 +117,7 @@ function connectionsShowSettinsPage()
 										<label for="image_thumbnail_quality">JPEG Quality</label>
 									</th>
 									<td>
-										<input type="text" class="small-text" value="<?php echo $plugin_options->getImgThumbQuality() ?>" id="image_thumbnail_quality" name="settings[image][thumbnail][quality]"/>%
+										<input type="text" class="small-text" value="<?php echo $connections->options->getImgThumbQuality() ?>" id="image_thumbnail_quality" name="settings[image][thumbnail][quality]"/>%
 									</td>
 								</tr>
 								
@@ -124,7 +126,7 @@ function connectionsShowSettinsPage()
 										<label for="image_thumbnail_x">Width</label>
 									</th>
 									<td>
-										<input type="text" class="small-text" value="<?php echo $plugin_options->getImgThumbX() ?>" id="image_thumbnail_x" name="settings[image][thumbnail][x]"/>px
+										<input type="text" class="small-text" value="<?php echo $connections->options->getImgThumbX() ?>" id="image_thumbnail_x" name="settings[image][thumbnail][x]"/>px
 									</td>
 								</tr>				
 								
@@ -133,7 +135,7 @@ function connectionsShowSettinsPage()
 										<label for="image_thumbnail_y">Height</label>
 									</th>
 									<td>
-										<input type="text" class="small-text" value="<?php echo $plugin_options->getImgThumbY() ?>" id="image_thumbnail_y" name="settings[image][thumbnail][y]"/>px
+										<input type="text" class="small-text" value="<?php echo $connections->options->getImgThumbY() ?>" id="image_thumbnail_y" name="settings[image][thumbnail][y]"/>px
 									</td>
 								</tr>
 								
@@ -142,7 +144,7 @@ function connectionsShowSettinsPage()
 										Crop
 									</th>
 									<td>
-										<?php echo $form->buildRadio('settings[image][thumbnail][crop]', 'image_thumbnail_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $plugin_options->getImgThumbCrop()); ?>
+										<?php echo $form->buildRadio('settings[image][thumbnail][crop]', 'image_thumbnail_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $connections->options->getImgThumbCrop()); ?>
 									</td>
 								</tr>
 								
@@ -161,7 +163,7 @@ function connectionsShowSettinsPage()
 										<label for="image_entry_quality">JPEG Quality</label>
 									</th>
 									<td>
-										<input type="text" class="small-text" value="<?php echo $plugin_options->getImgEntryQuality() ?>" id="image_entry_quality" name="settings[image][entry][quality]"/>%
+										<input type="text" class="small-text" value="<?php echo $connections->options->getImgEntryQuality() ?>" id="image_entry_quality" name="settings[image][entry][quality]"/>%
 									</td>
 								</tr>
 								
@@ -170,7 +172,7 @@ function connectionsShowSettinsPage()
 										<label for="image_entry_x">Width</label>
 									</th>
 									<td>
-										<input type="text" class="small-text" value="<?php echo $plugin_options->getImgEntryX() ?>" id="image_entry_x" name="settings[image][entry][x]"/>px
+										<input type="text" class="small-text" value="<?php echo $connections->options->getImgEntryX() ?>" id="image_entry_x" name="settings[image][entry][x]"/>px
 									</td>
 								</tr>				
 								
@@ -179,7 +181,7 @@ function connectionsShowSettinsPage()
 										<label for="image_entry_y">Height</label>
 									</th>
 									<td>
-										<input type="text" class="small-text" value="<?php echo $plugin_options->getImgEntryY() ?>" id="image_entry_y" name="settings[image][entry][y]"/>px
+										<input type="text" class="small-text" value="<?php echo $connections->options->getImgEntryY() ?>" id="image_entry_y" name="settings[image][entry][y]"/>px
 									</td>
 								</tr>
 								
@@ -188,7 +190,7 @@ function connectionsShowSettinsPage()
 										Crop
 									</th>
 									<td>
-										<?php echo $form->buildRadio('settings[image][entry][crop]', 'image_entry_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $plugin_options->getImgEntryCrop()); ?>
+										<?php echo $form->buildRadio('settings[image][entry][crop]', 'image_entry_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $connections->options->getImgEntryCrop()); ?>
 									</td>
 								</tr>
 								
@@ -206,7 +208,7 @@ function connectionsShowSettinsPage()
 										<label for="image_profile_quality">JPEG Quality</label>
 									</th>
 									<td>
-										<input type="text" class="small-text" value="<?php echo $plugin_options->getImgProfileQuality() ?>" id="image_profile_quality" name="settings[image][profile][quality]"/>%
+										<input type="text" class="small-text" value="<?php echo $connections->options->getImgProfileQuality() ?>" id="image_profile_quality" name="settings[image][profile][quality]"/>%
 									</td>
 								</tr>
 								
@@ -215,7 +217,7 @@ function connectionsShowSettinsPage()
 										<label for="image_profile_x">Width</label>
 									</th>
 									<td>
-										<input type="text" class="small-text" value="<?php echo $plugin_options->getImgProfileX() ?>" id="image_profile_x" name="settings[image][profile][x]"/>px
+										<input type="text" class="small-text" value="<?php echo $connections->options->getImgProfileX() ?>" id="image_profile_x" name="settings[image][profile][x]"/>px
 									</td>
 								</tr>				
 								
@@ -224,7 +226,7 @@ function connectionsShowSettinsPage()
 										<label for="image_profile_y">Height</label>
 									</th>
 									<td>
-										<input type="text" class="small-text" value="<?php echo $plugin_options->getImgProfileY() ?>" id="image_profile_y" name="settings[image][profile][y]"/>px
+										<input type="text" class="small-text" value="<?php echo $connections->options->getImgProfileY() ?>" id="image_profile_y" name="settings[image][profile][y]"/>px
 									</td>
 								</tr>
 								
@@ -233,7 +235,7 @@ function connectionsShowSettinsPage()
 										Crop
 									</th>
 									<td>
-										<?php echo $form->buildRadio('settings[image][profile][crop]', 'image_profile_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $plugin_options->getImgProfileCrop()); ?>
+										<?php echo $form->buildRadio('settings[image][profile][crop]', 'image_profile_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $connections->options->getImgProfileCrop()); ?>
 									</td>
 								</tr>
 							

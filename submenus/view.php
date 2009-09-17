@@ -10,9 +10,9 @@ function connectionsShowViewPage()
 	/**
 	 * @TODO: Scrub code to use global $options instead of defining a new object.
 	 */
-	$plugin_options = new pluginOptions();
+	//$plugin_options = new cnOptions();
 	
-	$form = new formObjects();
+	$form = new cnFormObjects();
 	$showEntryList = true;
 		
 	switch ($_GET['action'])
@@ -60,9 +60,9 @@ function connectionsShowViewPage()
 				
 				if ($sessionToken === $token && !$error)
 				{
-					$entryForm = new entryForm();
-					$form = new formObjects();
-					$entry = new entry();
+					$entryForm = new cnEntryForm();
+					$form = new cnFormObjects();
+					$entry = new cnEntry();
 					$entry = $entry->get($_GET['id']);
 					
 					$out = '<div class="wrap">';
@@ -71,7 +71,7 @@ function connectionsShowViewPage()
 							
 							$out .= '<form action="admin.php?page=connections&action=add&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
 							 
-								$out .= $entryForm->entryForm($entry);
+								$out .= $entryForm->displayForm($entry);
 								
 								$out .= '<input type="hidden" name="formId" value="entry_form" />';
 								$out .= '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
@@ -143,9 +143,9 @@ function connectionsShowViewPage()
 				
 				if ($sessionToken === $token && !$error)
 				{
-					$entryForm = new entryForm();
-					$form = new formObjects();
-					$entry = new entry();
+					$entryForm = new cnEntryForm();
+					$form = new cnFormObjects();
+					$entry = new cnEntry();
 					$entry = $entry->get($_GET['id']);
 					
 					$out = '<div class="wrap">';
@@ -154,7 +154,7 @@ function connectionsShowViewPage()
 							
 							$out .= '<form action="admin.php?page=connections&action=update&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
 							 
-								$out .= $entryForm->entryForm($entry);
+								$out .= $entryForm->displayForm($entry);
 								
 								$out .= '<input type="hidden" name="formId" value="entry_form" />';
 								$out .= '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
@@ -199,7 +199,7 @@ function connectionsShowViewPage()
 				 */
 				if ($_POST['save'] && $_SESSION['cn_session']['formTokens']['entry_form']['token'] === $_POST['token'])
 				{
-					$entryForm = new entryForm();
+					$entryForm = new cnEntryForm();
 					echo $entryForm->processEntry();
 					unset($_SESSION['cn_session']['formTokens']);
 				}
@@ -227,7 +227,7 @@ function connectionsShowViewPage()
 				 */
 				if ($_POST['update'] && $_SESSION['cn_session']['formTokens']['entry_form']['token'] === $_POST['token'])
 				{
-					$entryForm = new entryForm();
+					$entryForm = new cnEntryForm();
 					echo $entryForm->processEntry();
 					unset($_SESSION['cn_session']['formTokens']);
 				}
@@ -267,7 +267,7 @@ function connectionsShowViewPage()
 							
 							foreach ($_POST['entry'] as $id)
 							{
-								$entry = new entry();
+								$entry = new cnEntry();
 								$entry->set($id);
 								
 								$entry->setVisibility($_POST['action']);
@@ -289,10 +289,10 @@ function connectionsShowViewPage()
 			
 			if ($_POST['filter'])
 			{
-				$plugin_options->setEntryType($_POST['entry_type'], $current_user->ID);
-				$plugin_options->setVisibilityType($_POST['visibility_type'], $current_user->ID);
+				$connections->options->setEntryType($_POST['entry_type'], $current_user->ID);
+				$connections->options->setVisibilityType($_POST['visibility_type'], $current_user->ID);
 				
-				$plugin_options->saveOptions();
+				$connections->options->saveOptions();
 			}
 			
 			$showEntryList = true;
@@ -329,14 +329,14 @@ function connectionsShowViewPage()
 					 * the remaining visibility types are checked and if NOT permitted that is
 					 * appened to the query string.
 					 */
-					switch ($plugin_options->getVisibilityType($current_user->ID))
+					switch ($connections->options->getVisibilityType($current_user->ID))
 					{
 						case 'public':
-							if (!current_user_can('connections_view_public') && !$plugin_options->getAllowPublic())
+							if (!current_user_can('connections_view_public') && !$connections->options->getAllowPublic())
 							{
 								$visibilityfilter = " AND NOT visibility='public' ";
-								$plugin_options->setVisibilityType('', $current_user->ID);
-								$plugin_options->saveOptions();
+								$connections->options->setVisibilityType('', $current_user->ID);
+								$connections->options->saveOptions();
 							}
 							else
 							{
@@ -351,14 +351,14 @@ function connectionsShowViewPage()
 							if (!current_user_can('connections_view_private'))
 							{
 								$visibilityfilter = " AND NOT visibility='private' ";
-								$plugin_options->setVisibilityType('', $current_user->ID);
-								$plugin_options->saveOptions();
+								$connections->options->setVisibilityType('', $current_user->ID);
+								$connections->options->saveOptions();
 							}
 							else
 							{
 								$visibilityfilter = " AND visibility='private' ";
 							}
-							if (!current_user_can('connections_view_public') && !$plugin_options->getAllowPublic()) $visibilityfilter .= " AND NOT visibility='public' ";
+							if (!current_user_can('connections_view_public') && !$connections->options->getAllowPublic()) $visibilityfilter .= " AND NOT visibility='public' ";
 							if (!current_user_can('connections_view_unlisted')) $visibilityfilter .= " AND NOT visibility='unlisted' ";
 							
 							break;
@@ -367,20 +367,20 @@ function connectionsShowViewPage()
 							if (!current_user_can('connections_view_unlisted'))
 							{
 								$visibilityfilter = " AND NOT visibility='unlisted' ";
-								$plugin_options->setVisibilityType('', $current_user->ID);
-								$plugin_options->saveOptions();
+								$connections->options->setVisibilityType('', $current_user->ID);
+								$connections->options->saveOptions();
 							}
 							else
 							{
 								$visibilityfilter = " AND visibility='unlisted' ";
 							}
-							if (!current_user_can('connections_view_public') && !$plugin_options->getAllowPublic()) $visibilityfilter .= " AND NOT visibility='public' ";
+							if (!current_user_can('connections_view_public') && !$connections->options->getAllowPublic()) $visibilityfilter .= " AND NOT visibility='public' ";
 							if (!current_user_can('connections_view_private')) $visibilityfilter .= " AND NOT visibility='private' ";
 							
 							break;
 						
 						default:
-							if (!current_user_can('connections_view_public') && !$plugin_options->getAllowPublic()) $visibilityfilter .= " AND NOT visibility='public' ";
+							if (!current_user_can('connections_view_public') && !$connections->options->getAllowPublic()) $visibilityfilter .= " AND NOT visibility='public' ";
 							if (!current_user_can('connections_view_private')) $visibilityfilter .= " AND NOT visibility='private' ";
 							if (!current_user_can('connections_view_unlisted')) $visibilityfilter .= " AND NOT visibility='unlisted' ";
 							break;
@@ -409,13 +409,13 @@ function connectionsShowViewPage()
 						?>
 						
 						<div class="alignleft actions">
-							<?php echo $form->buildSelect('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $plugin_options->getEntryType($current_user->ID))?>
+							<?php echo $form->buildSelect('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $connections->options->getEntryType($current_user->ID))?>
 							
 							<?php
 								/**
 								 * Builds the visibilty select list base on current user capabilities.
 								 */
-								if (current_user_can('connections_view_public') || $plugin_options->getAllowPublic()) $visibilitySelect['public'] = 'Show Public';
+								if (current_user_can('connections_view_public') || $connections->options->getAllowPublic()) $visibilitySelect['public'] = 'Show Public';
 								if (current_user_can('connections_view_private'))	$visibilitySelect['private'] = 'Show Private';
 								if (current_user_can('connections_view_unlisted'))	$visibilitySelect['unlisted'] = 'Show Unlisted';
 								
@@ -423,7 +423,7 @@ function connectionsShowViewPage()
 								{
 									$showAll[''] = 'Show All';
 									$visibilitySelect = $showAll + $visibilitySelect;
-									echo $form->buildSelect('visibility_type', $visibilitySelect, $plugin_options->getVisibilityType($current_user->ID));
+									echo $form->buildSelect('visibility_type', $visibilitySelect, $connections->options->getVisibilityType($current_user->ID));
 								}
 							?>
 							<input id="doaction" class="button-secondary action" type="submit" name="filter" value="Filter" />
@@ -467,16 +467,16 @@ function connectionsShowViewPage()
 								 */
 								foreach ($results as $row)
 								{
-									$entry = new entry($row);
+									$entry = new cnEntry($row);
 									$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
 									if ($currentLetter != $previousLetter)
 									{
 										/*
 										 * This is to skip any entries that are not of the selected type when being filtered.
 										 */
-										if ($plugin_options->getEntryType($current_user->ID) != "" )
+										if ($connections->options->getEntryType($current_user->ID) != "" )
 										{
-											if ($entry->getEntryType() != $plugin_options->getEntryType($current_user->ID)) continue;
+											if ($entry->getEntryType() != $connections->options->getEntryType($current_user->ID)) continue;
 										}
 																				
 										$setAnchor .= '<a href="#' . $currentLetter . '">' . $currentLetter . '</a> ';
@@ -514,20 +514,20 @@ function connectionsShowViewPage()
 							<?php
 							
 							foreach ($results as $row) {
-								$entry = new entry($row);
+								$entry = new cnEntry($row);
 								
 								/**
 								 * @TODO: Use the Output class to show entry details.
 								 * @TODO: Add the vCard.
 								 */								
-								$object = new output($row);
+								$object = new cnOutput($row);
 								
 								/*
 								 * This is to skip any entries that are not of the selected type when being filtered.
 								 */
-								if ($plugin_options->getEntryType($current_user->ID) != "" )
+								if ($connections->options->getEntryType($current_user->ID) != "" )
 								{
-									if ($entry->getEntryType() != $plugin_options->getEntryType($current_user->ID)) continue;
+									if ($entry->getEntryType() != $connections->options->getEntryType($current_user->ID)) continue;
 								}
 															
 								/*
@@ -582,13 +582,13 @@ function connectionsShowViewPage()
 										
 										if ($entry->getConnectionGroup())
 										{
-											$connections = $entry->getConnectionGroup();
+											//$connections = $entry->getConnectionGroup();
 											$count = count($entry->getConnectionGroup());
 											$i = 0;
 											
-											foreach ($connections as $key => $value)
+											foreach ($entry->getConnectionGroup() as $key => $value)
 											{
-												$relation = new entry();
+												$relation = new cnEntry();
 												$relation->set($key);
 												
 												/**
@@ -596,7 +596,7 @@ function connectionsShowViewPage()
 												 * @TODO: First check to make sure a relation exists before out. Relation could have been deleted.
 												 */
 												
-												echo '<strong>' . $plugin_options->getConnectionRelation($value) . ':</strong> ' . '<a href="admin.php?page=connections&action=editform&id=' . $relation->getId() . '&editid=true&token=' . $form->token('copy_' . $relation->getId()) . '"" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a>' . '<br />' . "\n";
+												echo '<strong>' . $connections->options->getConnectionRelation($value) . ':</strong> ' . '<a href="admin.php?page=connections&action=edit&id=' . $relation->getId() . '&token=' . $form->token('edit_' . $relation->getId()) . '"" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a>' . '<br />' . "\n";
 												if ($count - 1 == $i) echo '<br />'; // Insert a break after all connections are listed.
 												$i++;
 												unset($relation);
@@ -611,7 +611,7 @@ function connectionsShowViewPage()
 										
 										if ($entry->getAddresses())
 										{
-											$addressObject = new addresses();
+											$addressObject = new cnAddresses();
 								
 											foreach ($entry->getAddresses() as $addressRow)
 											{
@@ -631,7 +631,7 @@ function connectionsShowViewPage()
 									echo "<td>";
 										if ($entry->getEmailAddresses())
 										{
-											$emailAddressObject = new email();
+											$emailAddressObject = new cnEmail();
 											
 											foreach ($entry->getEmailAddresses() as $emailRow)
 											{
@@ -641,7 +641,7 @@ function connectionsShowViewPage()
 										
 										if ($entry->getIm())
 										{
-											$imObject = new im();
+											$imObject = new cnIM();
 											
 											foreach ($entry->getIm() as $imRow)
 											{
@@ -651,7 +651,7 @@ function connectionsShowViewPage()
 										
 										if ($entry->getWebsites())
 										{
-											$websiteObject = new website();
+											$websiteObject = new cnWebsite();
 											
 											foreach ($entry->getWebsites() as $websiteRow)
 											{
@@ -661,7 +661,7 @@ function connectionsShowViewPage()
 										
 										if ($entry->getPhoneNumbers())
 										{
-											$phoneNumberObject = new phoneNumber();
+											$phoneNumberObject = new cnPhoneNumber();
 																						
 											foreach ($entry->getPhoneNumbers() as $phoneNumberRow) 
 											{
@@ -694,7 +694,7 @@ function connectionsShowViewPage()
 						</tbody>
 			        </table>
 					</form>
-					<p style="font-size:smaller; text-align:center">This is version <?php echo $plugin_options->getVersion(); ?> of Connections.</p>
+					<p style="font-size:smaller; text-align:center">This is version <?php echo $connections->options->getVersion(); ?> of Connections.</p>
 					
 					
 					<form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="text-align:center">
@@ -772,7 +772,7 @@ function delete($ids)
 			
 			if ($sessionToken === $token && !$error)
 			{
-		        $entry = new entry();
+		        $entry = new cnEntry();
 				$entry->delete($_GET['id']);
 				$connections->setSuccessMessage('form_entry_delete');
 				unset($entry);
@@ -788,7 +788,7 @@ function delete($ids)
 			{
 				foreach ($ids as $id)
 				{
-					$entry = new entry();
+					$entry = new cnEntry();
 					$entry->delete($id);
 					unset($entry);
 				}

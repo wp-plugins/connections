@@ -21,8 +21,8 @@ function connectionsShowAddPage()
 	}
 	else
 	{
-		$entryForm = new entryForm();
-		$form = new formObjects();
+		$entryForm = new cnEntryForm();
+		$form = new cnFormObjects();
 		
 		if ($_POST['save'] && $_SESSION['cn_session']['formTokens']['entry_form']['token'] === $_POST['token'])
 		{
@@ -48,7 +48,7 @@ function connectionsShowAddPage()
 								 );
 					
 					echo $form->open($attr);
-					echo $entryForm->entryForm();
+					echo $entryForm->displayForm();
 					echo '<input type="hidden" name="formId" value="entry_form" />';
 					echo '<input type="hidden" name="token" value="' . $form->token("entry_form") . '" />';
 				?>

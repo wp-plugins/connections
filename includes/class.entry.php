@@ -3,7 +3,7 @@
 /**
  * Entry class
  */
-class entry
+class cnEntry
 {
 	/**
 	 * Interger: Entry ID
@@ -923,7 +923,7 @@ class entry
  * $number
  * $visibility
  */
-class phoneNumber 
+class cnPhoneNumber 
 {
 	
 	private $type;
@@ -1101,7 +1101,7 @@ class phoneNumber
  * $address
  * $visibility
  */
-class email
+class cnEmail
 {
 
 	/**
@@ -1233,7 +1233,7 @@ class email
  * $address
  * $visibility
  */
-class website
+class cnWebsite
 {
 	/**
 	 * String: type -- need to define
@@ -1342,7 +1342,7 @@ class website
 	
 }
 
-class addresses
+class cnAddresses
 {
 	private $type;
 	private $name;
@@ -1565,7 +1565,7 @@ class addresses
  * $id
  * $visibility
  */
-class im
+class cnIM
 {
 	/**
 	 * String: IM protocal

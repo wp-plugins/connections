@@ -1,6 +1,6 @@
 <?php
 
-class dateFunctions
+class cnDate
 {
 	/**
 	 * Returns an associative array containing days 1 thru 31

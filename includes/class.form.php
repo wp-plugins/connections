@@ -3,7 +3,7 @@
 /**
  * Create custom HTML forms.
  */
-class formObjects
+class cnFormObjects
 {
 	/**
 	 * @todo
@@ -130,7 +130,7 @@ class formObjects
 	
 }
 
-class entryForm
+class cnEntryForm
 {
 	private $defaultAddressTypes	=	array
 											(
@@ -234,24 +234,28 @@ class entryForm
 	 * @return HTML form
 	 * @param object $data[optional]
 	 */
-	function entryForm($data = null)
+	function displayForm($data = null)
 	{
-		global $wpdb, $current_user;
+		//global $wpdb, $current_user;
+		global $wpdb, $connections;
 	
-		get_currentuserinfo();
-		$plugin_options = new pluginOptions($current_user->ID);
+		//get_currentuserinfo();
+		//$plugin_options = new cnOptions();
 		
-		$form = new formObjects();
-		$entry = new entry($data);
-		$addressObject = new addresses();
-		$phoneNumberObject = new phoneNumber();
-		$emailObject = new email();
-		$imObject = new im();
-		$websiteObject = new website();
-		$options = unserialize($data->options); /** @TODO: Is this needed??? */
-		$date = new dateFunctions();
-		$ticker = new counter();
+		$form = new cnFormObjects();
+		$entry = new cnEntry($data);
+		$addressObject = new cnAddresses();
+		$phoneNumberObject = new cnPhoneNumber();
+		$emailObject = new cnEmail();
+		$imObject = new cnIM();
+		$websiteObject = new cnWebsite();
+		$options = unserialize($data->options);
+		$date = new cnDate();
+		$ticker = new cnCounter();
 		
+		/**
+		 * @TODO: Do something better with these statements.
+		 */
 		if (!$data->visibility) $defaultVisibility = 'unlisted'; else $defaultVisibility = $entry->getVisibility();
 		if (!isset($options['entry']['type'])) $defaultEntryType = "individual"; else $defaultEntryType = $entry->getEntryType();
 				
@@ -270,21 +274,21 @@ class entryForm
 					// --> Start template for Connection Group <-- \\
 					$out .= '<textarea id="relation_row_base" style="display: none">';
 						$out .= $this->getEntrySelect('connection_group[::FIELD::][entry_id]');
-						$out .= $form->buildSelect('connection_group[::FIELD::][relation]', $plugin_options->getDefaultConnectionGroupValues());
+						$out .= $form->buildSelect('connection_group[::FIELD::][relation]', $connections->options->getDefaultConnectionGroupValues());
 					$out .= '</textarea>';
 					// --> End template for Connection Group <-- \\
 					
 					if ($entry->getConnectionGroup())
 					{
-						$connections = $entry->getConnectionGroup();
-						foreach ($connections as $key => $value)
+						//$connections = $entry->getConnectionGroup();
+						foreach ($entry->getConnectionGroup() as $key => $value)
 						{
-							$relation = new entry();
+							$relation = new cnEntry();
 							$relation->set($key);
 							
 							$out .= '<div id="relation_row_' . $relation->getId() . '" class="relation_row">';
 								$out .= $this->getEntrySelect('connection_group[' . $relation->getId() . '][entry_id]', $key);
-								$out .= $form->buildSelect('connection_group[' . $relation->getId() . '][relation]', $plugin_options->getDefaultConnectionGroupValues(), $value);
+								$out .= $form->buildSelect('connection_group[' . $relation->getId() . '][relation]', $connections->options->getDefaultConnectionGroupValues(), $value);
 								$out .= '<a href="#" id="remove_button_' . $i . '" class="button button-warning" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
 							$out .= '</div>';
 							
@@ -482,7 +486,7 @@ class entryForm
 			$out .= '<option value="">Select Entry</option>';
 			foreach($results as $row)
 			{
-				$entry = new entry($row);
+				$entry = new cnEntry($row);
 				$out .= '<option value="' . $entry->getId() . '"';
 				if ($selected == $entry->getId()) $out .= ' SELECTED';
 				$out .= '>' . $entry->getFullLastFirstName() . '</option>';
@@ -494,7 +498,7 @@ class entryForm
 	
 	public function processEntry()
 	{
-		$entry = new entry();
+		$entry = new cnEntry();
 		
 		// If copying/editing an entry, the entry data is loaded into the class 
 		// properties and then properties are overwritten by the POST data as needed.
@@ -607,9 +611,10 @@ class entryForm
 	
 	private function processImages()
 	{
-		global $current_user;
+		//global $current_user;
+		global $connections;
 		
-		$plugin_options = new pluginOptions();
+		//$plugin_options = new cnOptions();
 		// Uses the upload.class.php to handle file uploading and image manipulation.
 		
 			$process_image = new Upload($_FILES['original_image']);
@@ -643,12 +648,12 @@ class entryForm
 				$process_image->file_auto_rename	= true;
 				$process_image->file_name_body_add= '_profile';
 				$process_image->image_convert		= 'jpg';
-				$process_image->jpeg_quality		= $plugin_options->getImgProfileQuality();
+				$process_image->jpeg_quality		= $connections->options->getImgProfileQuality();
 				$process_image->image_resize		= true;
-				$process_image->image_ratio_crop	= (bool) $plugin_options->getImgProfileRatioCrop();
-				$process_image->image_ratio_fill	= (bool) $plugin_options->getImgProfileRatioFill();
-				$process_image->image_y				= $plugin_options->getImgProfileY();
-				$process_image->image_x				= $plugin_options->getImgProfileX();
+				$process_image->image_ratio_crop	= (bool) $connections->options->getImgProfileRatioCrop();
+				$process_image->image_ratio_fill	= (bool) $connections->options->getImgProfileRatioFill();
+				$process_image->image_y				= $connections->options->getImgProfileY();
+				$process_image->image_x				= $connections->options->getImgProfileX();
 				$process_image->Process(CN_IMAGE_PATH);
 				if ($process_image->processed) {
 					$success .= "<p><strong>Profile image created and saved.</strong></p> \n";
@@ -667,12 +672,12 @@ class entryForm
 				$process_image->file_auto_rename	= true;
 				$process_image->file_name_body_add= '_entry';
 				$process_image->image_convert		= 'jpg';
-				$process_image->jpeg_quality		= $plugin_options->getImgEntryQuality();
+				$process_image->jpeg_quality		= $connections->options->getImgEntryQuality();
 				$process_image->image_resize		= true;
-				$process_image->image_ratio_crop	= (bool) $plugin_options->getImgEntryRatioCrop();
-				$process_image->image_ratio_fill	= (bool) $plugin_options->getImgEntryRatioFill();
-				$process_image->image_y				= $plugin_options->getImgEntryY();
-				$process_image->image_x				= $plugin_options->getImgEntryX();
+				$process_image->image_ratio_crop	= (bool) $connections->options->getImgEntryRatioCrop();
+				$process_image->image_ratio_fill	= (bool) $connections->options->getImgEntryRatioFill();
+				$process_image->image_y				= $connections->options->getImgEntryY();
+				$process_image->image_x				= $connections->options->getImgEntryX();
 				$process_image->Process(CN_IMAGE_PATH);
 				if ($process_image->processed) {
 					$success .= "<p><strong>Entry image created and saved.</strong></p> \n";
@@ -691,12 +696,12 @@ class entryForm
 				$process_image->file_auto_rename	= true;
 				$process_image->file_name_body_add= '_thumbnail';
 				$process_image->image_convert		= 'jpg';
-				$process_image->jpeg_quality		= $plugin_options->getImgThumbQuality();
+				$process_image->jpeg_quality		= $connections->options->getImgThumbQuality();
 				$process_image->image_resize		= true;
-				$process_image->image_ratio_crop	= (bool) $plugin_options->getImgThumbRatioCrop();
-				$process_image->image_ratio_fill	= (bool) $plugin_options->getImgThumbRatioFill();
-				$process_image->image_y				= $plugin_options->getImgThumbY();
-				$process_image->image_x				= $plugin_options->getImgThumbX();
+				$process_image->image_ratio_crop	= (bool) $connections->options->getImgThumbRatioCrop();
+				$process_image->image_ratio_fill	= (bool) $connections->options->getImgThumbRatioFill();
+				$process_image->image_y				= $connections->options->getImgThumbY();
+				$process_image->image_x				= $connections->options->getImgThumbX();
 				$process_image->Process(CN_IMAGE_PATH);
 				if ($process_image->processed) {
 					$success .= "<p><strong>Thumbnail image created and saved.</strong></p> \n";
