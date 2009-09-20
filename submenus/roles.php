@@ -22,8 +22,6 @@ function connectionsShowRolesPage()
 	else
 	{
 		global $connections, $wp_roles;
-		//$plugin_options = new cnOptions();
-		//$connections->options->setDefaultCapabilities();
 							
 		if (isset($_POST['submit']))
 		{

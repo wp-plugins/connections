@@ -329,7 +329,7 @@ function connectionsShowViewPage()
 					 * the remaining visibility types are checked and if NOT permitted that is
 					 * appened to the query string.
 					 */
-					switch ($connections->options->getVisibilityType($current_user->ID))
+					/*switch ($connections->options->getVisibilityType($current_user->ID))
 					{
 						case 'public':
 							if (!current_user_can('connections_view_public') && !$connections->options->getAllowPublic())
@@ -391,8 +391,11 @@ function connectionsShowViewPage()
 							(SELECT *, group_name AS order_by FROM ".$wpdb->prefix."connections WHERE group_name != ''" . $visibilityfilter . ")
 							UNION
 							(SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibilityfilter . ")
-							ORDER BY order_by, last_name, first_name";
-					$results = $wpdb->get_results($sql);
+							ORDER BY order_by, last_name, first_name";*/
+							
+					$sql = new cnSQL();
+					//$results = $wpdb->get_results($sql);
+					$results = $sql->getEntries();
 					
 					?>
 					

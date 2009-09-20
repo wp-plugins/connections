@@ -160,27 +160,24 @@ if (!class_exists('connectionsLoad'))
 		 * @return 
 		 */private function initOptions()
 		{
-			/* 
-			 * When making changes to image settings, also make the changes in the plug-in option class setDefaultImageSettings()
-			 */
 			$this->options = new cnOptions();
 			
-			if (!$this->options->getAllowPublic()) $this->options->setAllowPublic(true);
+			if ($this->options->getAllowPublic() != null) $this->options->setAllowPublic(true);
 			
-			if (!$this->options->getImgThumbQuality()) $this->options->setImgThumbQuality(80);
-			if (!$this->options->getImgThumbX()) $this->options->setImgThumbX(80);
-			if (!$this->options->getImgThumbY()) $this->options->setImgThumbY(54);
-			if (!$this->options->getImgThumbCrop()) $this->options->setImgThumbCrop('crop');
+			if ($this->options->getImgThumbQuality() != null) $this->options->setImgThumbQuality(80);
+			if ($this->options->getImgThumbX() != null) $this->options->setImgThumbX(80);
+			if ($this->options->getImgThumbY() != null) $this->options->setImgThumbY(54);
+			if ($this->options->getImgThumbCrop() != null) $this->options->setImgThumbCrop('crop');
 			
-			if (!$this->options->getImgEntryQuality()) $this->options->setImgEntryQuality(80);
-			if (!$this->options->getImgEntryX()) $this->options->setImgEntryX(225);
-			if (!$this->options->getImgEntryY()) $this->options->setImgEntryY(150);
-			if (!$this->options->getImgEntryCrop()) $this->options->setImgEntryCrop('crop');
+			if ($this->options->getImgEntryQuality() != null) $this->options->setImgEntryQuality(80);
+			if ($this->options->getImgEntryX() != null) $this->options->setImgEntryX(225);
+			if ($this->options->getImgEntryY() != null) $this->options->setImgEntryY(150);
+			if ($this->options->getImgEntryCrop() != null) $this->options->setImgEntryCrop('crop');
 			
-			if (!$this->options->getImgProfileQuality()) $this->options->setImgProfileQuality(80);
-			if (!$this->options->getImgProfileX()) $this->options->setImgProfileX(300);
-			if (!$this->options->getImgProfileY()) $this->options->setImgProfileY(225);
-			if (!$this->options->getImgProfileCrop()) $this->options->setImgProfileCrop('crop');
+			if ($this->options->getImgProfileQuality() != null) $this->options->setImgProfileQuality(80);
+			if ($this->options->getImgProfileX() != null) $this->options->setImgProfileX(300);
+			if ($this->options->getImgProfileY() != null) $this->options->setImgProfileY(225);
+			if ($this->options->getImgProfileCrop() != null) $this->options->setImgProfileCrop('crop');
 			
 			$this->options->saveOptions();
 		}

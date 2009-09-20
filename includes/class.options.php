@@ -203,13 +203,30 @@ class cnOptions
      */
     public function setAllowPublic($allowPublic)
     {
-        
+        global $wp_roles;
+		
+		if (!isset($wp_roles))
+		{
+			$wp_roles = new WP_Roles();
+		}
+		
+		$currentRoles = $wp_roles->get_names();
+		
 		if($allowPublic === '0' || $allowPublic === 'true' || $allowPublic === true)
 		{
 			$this->allowPublic = true;
+			
+			foreach ($currentRoles as $role => $name)
+			{
+				$this->addCapability($role, 'connections_view_public');
+			}
 		}
 		else{
 			$this->allowPublic = false;
+			/*foreach ($currentRoles as $role => $name)
+			{
+				$this->removeCapability($role, 'connections_view_public');
+			}*/
 		}
 		
     }
@@ -230,21 +247,30 @@ class cnOptions
      */
     public function setAllowPublicOverride($allowPublicOverride)
     {
-        
-		if($allowPublicOverride === '0' || $allowPublicOverride === 'true' || $allowPublicOverride === true)
+        if($allowPublicOverride === '0' || $allowPublicOverride === 'true' || $allowPublicOverride === true)
 		{
-			$allowPublicOverride = true;
+			$this->allowPublicOverride = true;
 		}
-		else{
-			$allowPublicOverride = false;
+		else
+		{
+			$this->allowPublicOverride = false;
 		}
-		
-		$this->allowPublicOverride = $allowPublicOverride;
     }
 	
 	public function hasCapability($role, $cap)
 	{
-		global $wp_roles;		
+		global $wp_roles;
+		
+		/* 
+		 * Check to make sure $wp_roles has been initialized and set.
+		 * If it hasn't it is initialized. This was done because this method 
+		 * can be called before the $wp_roles has been initialized.
+		 */
+		if (!isset($wp_roles))
+		{
+			$wp_roles = new WP_Roles();
+		}
+		
 		$wpRoleDataArray = $wp_roles->roles;
 		$wpRoleCaps = $wpRoleDataArray[$role]['capabilities'];
 		$wpRole = new WP_Role($role, $wpRoleCaps);
@@ -254,14 +280,38 @@ class cnOptions
 	
 	public function addCapability($role, $cap)
 	{
-		$wpRole = get_role($role);
-		if (!$this->hasCapability($role, $cap)) $wpRole->add_cap($cap);
+		global $wp_roles;
+		
+		/* 
+		 * Check to make sure $wp_roles has been initialized and set.
+		 * If it hasn't it is initialized. This was done because this method 
+		 * can be called before the $wp_roles has been initialized.
+		 */
+		if (!isset($wp_roles))
+		{
+			$wp_roles = new WP_Roles();
+		}
+		
+		//$wpRole = get_role($role);
+		if (!$this->hasCapability($role, $cap)) $wp_roles->add_cap($role, $cap);
 	}
 	
 	public function removeCapability($role, $cap)
 	{
-		$wpRole = get_role($role);
-		if ($this->hasCapability($role, $cap)) $wpRole->remove_cap($cap);
+		global $wp_roles;
+		
+		/* 
+		 * Check to make sure $wp_roles has been initialized and set.
+		 * If it hasn't it is initialized. This was done because this method 
+		 * can be called before the $wp_roles has been initialized.
+		 */
+		if (!isset($wp_roles))
+		{
+			$wp_roles = new WP_Roles();
+		}
+		
+		//$wpRole = get_role($role);
+		if ($this->hasCapability($role, $cap)) $wp_roles->remove_cap($role, $cap);
 	}
 	
 	public function getDefaultCapabilities()

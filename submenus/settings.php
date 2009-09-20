@@ -62,7 +62,8 @@ function connectionsShowSettinsPage()
 		//$connections->options->removeOptions();
 		//$connections->options->setDefaultImageSettings();
 		//$connections->options->saveOptions();
-		//print_r($plugin_options);
+		//print_r($_POST['settings']['allow_public']);
+		
 		$form =  new cnFormObjects();
 	?>
 		<div class="wrap">

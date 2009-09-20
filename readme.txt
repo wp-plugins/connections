@@ -111,7 +111,14 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 
 == Changelog ==
 
-= 0.5.45 9/14/2009 =
+= 0.5.XX X/X/X =
+* BUG: Fixed a bug when intializing the settings.
+* BUG: Fixed how capabilites were created and managed for public entries.
+* Moved all queries to the SQL class.
+* Options class now is used throughout the plug-in rather than creating new instances.
+* Renamed all the classes to be more unique to help avoid conflict with other plug-ins.
+
+= 0.5.48 9/14/2009 =
 * Fixed a jQuery bug in IE8.
 * The alpha index in the admin is now dynamic. It will only show letters for entries in you list.
 
