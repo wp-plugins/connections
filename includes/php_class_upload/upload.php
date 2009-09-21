@@ -58,7 +58,7 @@ if (!$cli) {
 
     <h1>class.upload.php test forms</h1>
 
-<?
+<?php
 }
 
 
@@ -778,6 +778,6 @@ if (!$cli) {
 
 </html>
 
-<?
+<?php
 }
 ?>

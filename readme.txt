@@ -114,6 +114,7 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 = 0.5.XX X/X/X =
 * BUG: Fixed a bug when intializing the settings.
 * BUG: Fixed how capabilites were created and managed for public entries.
+* Updated class.upload.php to version .28
 * Moved all queries to the SQL class.
 * Options class now is used throughout the plug-in rather than creating new instances.
 * Renamed all the classes to be more unique to help avoid conflict with other plug-ins.

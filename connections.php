@@ -117,8 +117,8 @@ if (!class_exists('connectionsLoad'))
 			 */
 			
 			define('CN_CURRENT_VERSION', '0.5.48');
-			define('CN_IMAGE_PATH', WP_CONTENT_DIR . "/connection_images/");
-			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . "/connection_images/");
+			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
+			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
 			define('CN_TABLE_NAME','connections');
 			define('CN_BASE_NAME', plugin_basename( dirname(__FILE__)) );
 		}
@@ -162,22 +162,22 @@ if (!class_exists('connectionsLoad'))
 		{
 			$this->options = new cnOptions();
 			
-			if ($this->options->getAllowPublic() != null) $this->options->setAllowPublic(true);
+			if ($this->options->getAllowPublic() == null) $this->options->setAllowPublic(true);
 			
-			if ($this->options->getImgThumbQuality() != null) $this->options->setImgThumbQuality(80);
-			if ($this->options->getImgThumbX() != null) $this->options->setImgThumbX(80);
-			if ($this->options->getImgThumbY() != null) $this->options->setImgThumbY(54);
-			if ($this->options->getImgThumbCrop() != null) $this->options->setImgThumbCrop('crop');
+			if ($this->options->getImgThumbQuality() == null) $this->options->setImgThumbQuality(80);
+			if ($this->options->getImgThumbX() == null) $this->options->setImgThumbX(80);
+			if ($this->options->getImgThumbY() == null) $this->options->setImgThumbY(54);
+			if ($this->options->getImgThumbCrop() == null) $this->options->setImgThumbCrop('crop');
 			
-			if ($this->options->getImgEntryQuality() != null) $this->options->setImgEntryQuality(80);
-			if ($this->options->getImgEntryX() != null) $this->options->setImgEntryX(225);
-			if ($this->options->getImgEntryY() != null) $this->options->setImgEntryY(150);
-			if ($this->options->getImgEntryCrop() != null) $this->options->setImgEntryCrop('crop');
+			if ($this->options->getImgEntryQuality() == null) $this->options->setImgEntryQuality(80);
+			if ($this->options->getImgEntryX() == null) $this->options->setImgEntryX(225);
+			if ($this->options->getImgEntryY() == null) $this->options->setImgEntryY(150);
+			if ($this->options->getImgEntryCrop() == null) $this->options->setImgEntryCrop('crop');
 			
-			if ($this->options->getImgProfileQuality() != null) $this->options->setImgProfileQuality(80);
-			if ($this->options->getImgProfileX() != null) $this->options->setImgProfileX(300);
-			if ($this->options->getImgProfileY() != null) $this->options->setImgProfileY(225);
-			if ($this->options->getImgProfileCrop() != null) $this->options->setImgProfileCrop('crop');
+			if ($this->options->getImgProfileQuality() == null) $this->options->setImgProfileQuality(80);
+			if ($this->options->getImgProfileX() == null) $this->options->setImgProfileX(300);
+			if ($this->options->getImgProfileY() == null) $this->options->setImgProfileY(225);
+			if ($this->options->getImgProfileCrop() == null) $this->options->setImgProfileCrop('crop');
 			
 			$this->options->saveOptions();
 		}

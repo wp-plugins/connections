@@ -22,7 +22,7 @@
                 <li><span class="field">license:</span> <a href="http://opensource.org/licenses/gpl-license.php">GNU Public License version 2</a></li>
                 <li><span class="field">author:</span> Colin Verot &lt;<a href="mailto:colin@verot.net">colin@verot.net</a>&gt;</li>
                 <li><span class="field">version:</span>
-0.27
+0.28
 </li>
             </ul>
 
@@ -35,10 +35,11 @@
 					<span class="disabled">Description</span> |
 													<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
 						|											<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
-						
+
 					</div>
 	<div class="info-box-body">
-        		<!-- ========== Info from phpDoc block ========= -->
+
+<!-- ========== Info from phpDoc block ========= -->
 <p class="short-description">Class upload</p>
 <p class="description"><p><strong>What does it do?</strong></p><p>It manages file uploads for you. In short, it manages the uploaded file,  and allows you to do whatever you want with the file, especially if it  is an image, and as many times as you want.</p><p>It is the ideal class to quickly integrate file upload in your site.  If the file is an image, you can convert, resize, crop it in many ways.  You can also apply filters, add borders, text, watermarks, etc...  That's all you need for a gallery script for instance. Supported formats  are PNG, JPG, GIF and BMP.</p><p>You can also use the class to work on local files, which is especially  useful to use the image manipulation features. The class also supports  Flash uploaders.</p><p>The class works with PHP 4 and 5, and its error messages can  be localized at will.</p><p><strong>How does it work?</strong></p><p>You instanciate the class with the $_FILES['my_field'] array  where my_field is the field name from your upload form.  The class will check if the original file has been uploaded  to its temporary location (alternatively, you can instanciate  the class with a local filename).</p><p>You can then set a number of processing variables to act on the file.  For instance, you can rename the file, and if it is an image,  convert and resize it in many ways.  You can also set what will the class do if the file already exists.</p><p>Then you call the function <a href="#methodprocess">process</a> to actually perform the actions  according to the processing parameters you set above.  It will create new instances of the original file,  so the original file remains the same between each process.  The file will be manipulated, and copied to the given location.  The processing variables will be reset once it is done.</p><p>You can repeat setting up a new set of processing variables,  and calling <a href="#methodprocess">process</a> again as many times as you want.  When you have finished, you can call <a href="#methodclean">clean</a> to delete  the original uploaded file.</p><p>If you don't set any processing parameters and call <a href="#methodprocess">process</a>  just after instanciating the class. The uploaded file will be simply  copied to the given location without any alteration or checks.</p><p>Don't forget to add <em>enctype=&quot;multipart/form-data&quot;</em> in your form  tag &lt;form&gt; if you want your form to upload the file.</p><p><strong>How to use it?</strong><br />  Create a simple HTML file, with a form such as:  <pre> &lt;form enctype="multipart/form-data" method="post" action="upload.php"&gt;
    &lt;input type="file" size="32" name="image_field" value=""&gt;
@@ -66,7 +67,8 @@
   echo $handle->Process();
   die();</pre></p><p><strong>Processing parameters</strong> (reset after each process)  <ul><li><strong>file_new_name_body</strong> replaces the name body (default: '')<br />
   <pre>$handle->file_new_name_body = 'new name';</pre></li><li><strong>file_name_body_add</strong> appends to the name body (default: '')<br />
-  <pre>$handle->file_name_body_add = '_uploaded';</pre></li><li><strong>file_new_name_ext</strong> replaces the file extension (default: '')<br />
+  <pre>$handle->file_name_body_add = '_uploaded';</pre></li><li><strong>file_name_body_pre</strong> prepends to the name body (default: '')<br />
+  <pre>$handle->file_name_body_pre = 'thumb_';</pre></li><li><strong>file_new_name_ext</strong> replaces the file extension (default: '')<br />
   <pre>$handle->file_new_name_ext = 'txt';</pre></li><li><strong>file_safe_name</strong> formats the filename (spaces changed to _) (default: true)<br />
   <pre>$handle->file_safe_name = true;</pre></li><li><strong>file_overwrite</strong> sets behaviour if file already exists (default: false)<br />
   <pre>$handle->file_overwrite = true;</pre></li><li><strong>file_auto_rename</strong> automatically renames file if it already exists (default: true)<br />
@@ -75,7 +77,11 @@
   <pre>$handle->dir_auto_chmod = true;</pre></li><li><strong>dir_chmod</strong> chmod used when creating directory or if directory not writeable (default: 0777)<br />
   <pre>$handle->dir_chmod = 0777;</pre></li><li><strong>file_max_size</strong> sets maximum upload size (default: upload_max_filesize from php.ini)<br />
   <pre>$handle->file_max_size = '1024'; // 1KB</pre></li><li><strong>mime_check</strong> sets if the class check the MIME against the <a href="#var$allowed">allowed</a> list (default: true)<br />
-  <pre>$handle->mime_check = true;</pre></li><li><strong>no_script</strong> sets if the class turns scripts into text files (default: true)<br />
+  <pre>$handle->mime_check = true;</pre></li><li><strong>mime_fileinfo</strong> activates MIME detection with Fileinfo PECL extension if true (or a string to set the path to the magic database file); false to deactivate (default: true)<br />
+  <pre>$handle->mime_fileinfo = '/usr/share/file/magic';</pre></li><li><strong>mime_file</strong> activates MIME detection with UNIX file() command if true; false to deactivate (default: true)<br />
+  <pre>$handle->mime_file = false;</pre></li><li><strong>mime_magic</strong> activates MIME detection with mime_magic (mime_content_type()) if true; false to deactivate (default: true)<br />
+  <pre>$handle->mime_magic = false;</pre></li><li><strong>mime_getimagesize</strong> activates MIME detection with getimagesize() if true; false to deactivate (default: true)<br />
+  <pre>$handle->mime_getimagesize = false;</pre></li><li><strong>no_script</strong> sets if the class turns scripts into text files (default: true)<br />
   <pre>$handle->no_script = false;</pre></li><li><strong>allowed</strong> array of allowed mime-types. wildcard accepted, as in image/* (default: check Init)<br />
   <pre>$handle->allowed = array('application/pdf','application/msword', 'image/*');</pre></li><li><strong>forbidden</strong> array of forbidden mime-types. wildcard accepted, as in image/*  (default: check Init)<br />
   <pre>$handle->forbidden = array('application/*');</pre></li></ul>  <ul><li><strong>image_convert</strong> if set, image will be converted (possible values : ''|'png'|'jpeg'|'gif'|'bmp'; default: '')<br />
@@ -144,7 +150,15 @@
   <pre>$handle->image_reflection_height = '25%';</pre></li><li><strong>image_reflection_space</strong> space in pixels between the source image and the reflection, can be negative (default: null)<br />
   <pre>$handle->image_reflection_space = 3;</pre></li><li><strong>image_reflection_color</strong> reflection background color, in hexadecimal. Now deprecated in favor of <a href="#var$image_default_color">image_default_color</a> (default: #FFFFFF)<br />
   <pre>$handle->image_default_color = '#000000';</pre></li><li><strong>image_reflection_opacity</strong> opacity level at which the reflection starts, integer between 0 and 100 (default: 60)<br />
-  <pre>$handle->image_reflection_opacity = 60;</pre></li></ul></p><p><strong>Values that can be read before calling <a href="#methodprocess">process</a>()</strong>  <ul><li><strong>file_src_name</strong> Source file name</li><li><strong>file_src_name_body</strong> Source file name body</li><li><strong>file_src_name_ext</strong> Source file extension</li><li><strong>file_src_pathname</strong> Source file complete path and name</li><li><strong>file_src_mime</strong> Source file mime type</li><li><strong>file_src_size</strong> Source file size in bytes</li><li><strong>file_src_error</strong> Upload error code</li><li><strong>file_is_image</strong> Boolean flag, true if the file is a supported image type</li></ul>  If the file is a supported image type (and <em>open_basedir</em> restrictions allow it)  <ul><li><strong>image_src_x</strong> Source file width in pixels</li><li><strong>image_src_y</strong> Source file height in pixels</li><li><strong>image_src_pixels</strong> Source file number of pixels</li><li><strong>image_src_type</strong> Source file type (png, jpg, gif or bmp)</li><li><strong>image_src_bits</strong> Source file color depth</li></ul></p><p><strong>Values that can be read after calling <a href="#methodprocess">process</a>()</strong>  <ul><li><strong>file_dst_path</strong> Destination file path</li><li><strong>file_dst_name_body</strong> Destination file name body</li><li><strong>file_dst_name_ext</strong> Destination file extension</li><li><strong>file_dst_name</strong> Destination file name</li><li><strong>file_dst_pathname</strong> Destination file complete path and name</li></ul>  If the file is a supported image type  <ul><li><strong>image_dst_x</strong> Destination file width</li><li><strong>image_dst_y</strong> Destination file height</li><li><strong>image_convert</strong> Destination file format</li></ul></p><p><strong>Requirements</strong></p><p>Most of the image operations require GD. GD2 is greatly recommended</p><p>The class is compatible with PHP 4.3+, and compatible with PHP5</p><p><strong>Changelog</strong>  <ul><li><strong>v 0.27</strong> 14/05/2009<br />
+  <pre>$handle->image_reflection_opacity = 60;</pre></li></ul></p><p><strong>Values that can be read before calling <a href="#methodprocess">process</a>()</strong>  <ul><li><strong>file_src_name</strong> Source file name</li><li><strong>file_src_name_body</strong> Source file name body</li><li><strong>file_src_name_ext</strong> Source file extension</li><li><strong>file_src_pathname</strong> Source file complete path and name</li><li><strong>file_src_mime</strong> Source file mime type</li><li><strong>file_src_size</strong> Source file size in bytes</li><li><strong>file_src_error</strong> Upload error code</li><li><strong>file_is_image</strong> Boolean flag, true if the file is a supported image type</li></ul>  If the file is a supported image type (and <em>open_basedir</em> restrictions allow it)  <ul><li><strong>image_src_x</strong> Source file width in pixels</li><li><strong>image_src_y</strong> Source file height in pixels</li><li><strong>image_src_pixels</strong> Source file number of pixels</li><li><strong>image_src_type</strong> Source file type (png, jpg, gif or bmp)</li><li><strong>image_src_bits</strong> Source file color depth</li></ul></p><p><strong>Values that can be read after calling <a href="#methodprocess">process</a>()</strong>  <ul><li><strong>file_dst_path</strong> Destination file path</li><li><strong>file_dst_name_body</strong> Destination file name body</li><li><strong>file_dst_name_ext</strong> Destination file extension</li><li><strong>file_dst_name</strong> Destination file name</li><li><strong>file_dst_pathname</strong> Destination file complete path and name</li></ul>  If the file is a supported image type  <ul><li><strong>image_dst_x</strong> Destination file width</li><li><strong>image_dst_y</strong> Destination file height</li><li><strong>image_convert</strong> Destination file format</li></ul></p><p><strong>Requirements</strong></p><p>Most of the image operations require GD. GD2 is greatly recommended</p><p>The class is compatible with PHP 4.3+, and compatible with PHP5</p><p><strong>Changelog</strong>  <ul><li><strong>v 0.28</strong> 10/08/2009<br />
+   - replaced ereg functions to be compatible with PHP 5.3<br />
+   - added flv MIME type<br />
+   - improved MIME type detection<br />
+   - added <a href="#var$file_name_body_pre">file_name_body_pre</a> to prepend a string to the file name<br />
+   - added <a href="#var$mime_fileinfo">mime_fileinfo</a>, <a href="#var$mime_file">mime_file</a>, <a href="#var$mime_magic">mime_magic</a> and <a href="#var$mime_getimagesize">mime_getimagesize</a> so that it is possible to deactivate some MIME type checking method<br />
+   - use exec() rather than shell_exec(), to play better with safe mode <br />
+   - added some error messages<br />
+   - fix bug when checking on conditions, <a href="#var$processed">processed</a> wasn't propagated properly</li><li><strong>v 0.27</strong> 14/05/2009<br />
    - look for the language files directory from __FILE__<br />
    - deactivate <a href="#var$file_auto_rename">file_auto_rename</a> if <a href="#var$file_overwrite">file_overwrite</a> is set<br />
    - improved transparency replacement for true color images<br />
@@ -247,12 +261,12 @@
    - added <a href="#var$image_ratio">image_ratio</a> to resize within max values, keeping image ratio</li><li><strong>v 0.11</strong> 22/08/2003<br />
    - update for GD2 (changed imageresized() into imagecopyresampled() and imagecreate() into imagecreatetruecolor())</li></ul></p></p>
 		<p class="notes">
-			Located in <a class="field" href="_class.upload.php.html">/class.upload.php</a> (line <span class="field"><a href="class.upload.php.html#a508">508</a></span>)
+			Located in <a class="field" href="_class.upload.php.html">/class.upload.php</a> (line <span class="field"><a href="class.upload.php.html#a527">527</a></span>)
 		</p>
-		
-				
+
+
 		<pre></pre>
-	
+
 			</div>
 </div>
 
@@ -264,13 +278,13 @@
 		<div class="nav-bar">
 			<a href="#sec-description">Description</a> |
 						<span class="disabled">Vars</span> (<a href="#sec-vars">details</a>)
-							| 
+							|
 									<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
-							
+
 								</div>
 		<div class="info-box-body">
 			<div class="var-summary">
-																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																								<div class="var-title">
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																<div class="var-title">
 					<img src="phpdoc/Variable.png" alt=" " />
 					<span class="var-type">array</span>
 					<a href="#$allowed" title="details" class="var-name">$allowed</a>
@@ -324,6 +338,11 @@
 					<img src="phpdoc/Variable.png" alt=" " />
 					<span class="var-type">string</span>
 					<a href="#$file_name_body_add" title="details" class="var-name">$file_name_body_add</a>
+				</div>
+																<div class="var-title">
+					<img src="phpdoc/Variable.png" alt=" " />
+					<span class="var-type">string</span>
+					<a href="#$file_name_body_pre" title="details" class="var-name">$file_name_body_pre</a>
 				</div>
 																<div class="var-title">
 					<img src="phpdoc/Variable.png" alt=" " />
@@ -743,6 +762,26 @@
 																<div class="var-title">
 					<img src="phpdoc/Variable.png" alt=" " />
 					<span class="var-type">boolean</span>
+					<a href="#$mime_file" title="details" class="var-name">$mime_file</a>
+				</div>
+																<div class="var-title">
+					<img src="phpdoc/Variable.png" alt=" " />
+					<span class="var-type">boolean</span>
+					<a href="#$mime_fileinfo" title="details" class="var-name">$mime_fileinfo</a>
+				</div>
+																<div class="var-title">
+					<img src="phpdoc/Variable.png" alt=" " />
+					<span class="var-type">boolean</span>
+					<a href="#$mime_getimagesize" title="details" class="var-name">$mime_getimagesize</a>
+				</div>
+																<div class="var-title">
+					<img src="phpdoc/Variable.png" alt=" " />
+					<span class="var-type">boolean</span>
+					<a href="#$mime_magic" title="details" class="var-name">$mime_magic</a>
+				</div>
+																<div class="var-title">
+					<img src="phpdoc/Variable.png" alt=" " />
+					<span class="var-type">boolean</span>
 					<a href="#$no_script" title="details" class="var-name">$no_script</a>
 				</div>
 																<div class="var-title">
@@ -785,11 +824,11 @@
 		<div class="nav-bar">
 			<a href="#sec-description">Description</a> |
 																		<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
-				 
+
 				|
 						<span class="disabled">Methods</span> (<a href="#sec-methods">details</a>)
 		</div>
-		<div class="info-box-body">			
+		<div class="info-box-body">
 			<div class="method-summary">
 																																																								<div class="method-definition">
 					<img src="phpdoc/Method.png" alt=" "/>
@@ -823,7 +862,7 @@
 									</div>
 											</div>
 		</div>
-	</div>		
+	</div>
 
 	<a name="sec-vars"></a>
 	<div class="info-box">
@@ -831,14 +870,15 @@
 		<div class="nav-bar">
 			<a href="#sec-description">Description</a> |
 										<a href="#sec-var-summary">Vars</a> (<span class="disabled">details</span>)
-						
-			
-										| 
+
+
+										|
 									<a href="#sec-method-summary">Methods</a> (<a href="#sec-methods">details</a>)
-							
+
 					</div>
 		<div class="info-box-body">
-			
+
+
 <a name="var$allowed" id="$allowed"><!-- --></A>
 <div class="evenrow">
 
@@ -847,7 +887,7 @@
 		<span class="var-title">
 			<span class="var-type">array</span>
 			<span class="var-name">$allowed</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1808">1808</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1886">1886</a></span>)
 		</span>
 	</div>
 
@@ -857,10 +897,10 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$dir_auto_chmod" id="$dir_auto_chmod"><!-- --></A>
@@ -871,7 +911,7 @@
 		<span class="var-title">
 			<span class="var-type">bool</span>
 			<span class="var-name">$dir_auto_chmod</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a837">837</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a915">915</a></span>)
 		</span>
 	</div>
 
@@ -881,10 +921,10 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$dir_auto_create" id="$dir_auto_create"><!-- --></A>
@@ -895,7 +935,7 @@
 		<span class="var-title">
 			<span class="var-type">bool</span>
 			<span class="var-name">$dir_auto_create</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a826">826</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a904">904</a></span>)
 		</span>
 	</div>
 
@@ -905,10 +945,10 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$dir_chmod" id="$dir_chmod"><!-- --></A>
@@ -919,7 +959,7 @@
 		<span class="var-title">
 			<span class="var-type">bool</span>
 			<span class="var-name">$dir_chmod</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a848">848</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a926">926</a></span>)
 		</span>
 	</div>
 
@@ -929,10 +969,10 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$error" id="$error"><!-- --></A>
@@ -943,7 +983,7 @@
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$error</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a736">736</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a755">755</a></span>)
 		</span>
 	</div>
 
@@ -952,10 +992,10 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$file_auto_rename" id="$file_auto_rename"><!-- --></A>
@@ -966,7 +1006,7 @@
 		<span class="var-title">
 			<span class="var-type">bool</span>
 			<span class="var-name">$file_auto_rename</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a815">815</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a893">893</a></span>)
 		</span>
 	</div>
 
@@ -976,10 +1016,10 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$file_dst_name" id="$file_dst_name"><!-- --></A>
@@ -990,7 +1030,7 @@
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$file_dst_name</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a597">597</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a616">616</a></span>)
 		</span>
 	</div>
 
@@ -999,10 +1039,10 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$file_dst_name_body" id="$file_dst_name_body"><!-- --></A>
@@ -1013,7 +1053,7 @@
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$file_dst_name_body</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a605">605</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a624">624</a></span>)
 		</span>
 	</div>
 
@@ -1022,10 +1062,10 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$file_dst_name_ext" id="$file_dst_name_ext"><!-- --></A>
@@ -1036,7 +1076,7 @@
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$file_dst_name_ext</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a613">613</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a632">632</a></span>)
 		</span>
 	</div>
 
@@ -1045,10 +1085,10 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$file_max_size" id="$file_max_size"><!-- --></A>
@@ -1059,7 +1099,7 @@
 		<span class="var-title">
 			<span class="var-type">double</span>
 			<span class="var-name">$file_max_size</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a868">868</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a946">946</a></span>)
 		</span>
 	</div>
 
@@ -1069,10 +1109,10 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$file_name_body_add" id="$file_name_body_add"><!-- --></A>
@@ -1083,30 +1123,53 @@
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$file_name_body_add</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a764">764</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a783">783</a></span>)
 		</span>
 	</div>
 
 	<!-- ========== Info from phpDoc block ========= -->
-<p class="short-description">Set this variable to add a string to the faile name body</p>
+<p class="short-description">Set this variable to append a string to the file name body</p>
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
-<a name="var$file_new_name_body" id="$file_new_name_body"><!-- --></A>
+<a name="var$file_name_body_pre" id="$file_name_body_pre"><!-- --></A>
 <div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string</span>
+			<span class="var-name">$file_name_body_pre</span>
+						(line <span class="line-number"><a href="class.upload.php.html#a791">791</a></span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Set this variable to prepend a string to the file name body</p>
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+
+
+
+
+
+</div>
+<a name="var$file_new_name_body" id="$file_new_name_body"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<img src="phpdoc/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">string</span>
 			<span class="var-name">$file_new_name_body</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a756">756</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a775">775</a></span>)
 		</span>
 	</div>
 
@@ -1115,21 +1178,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$file_new_name_ext" id="$file_new_name_ext"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$file_new_name_ext</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a772">772</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a799">799</a></span>)
 		</span>
 	</div>
 
@@ -1138,21 +1201,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$file_overwrite" id="$file_overwrite"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">bool</span>
 			<span class="var-name">$file_overwrite</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a858">858</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a936">936</a></span>)
 		</span>
 	</div>
 
@@ -1162,21 +1225,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$file_safe_name" id="$file_safe_name"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">boolean</span>
 			<span class="var-name">$file_safe_name</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a780">780</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a807">807</a></span>)
 		</span>
 	</div>
 
@@ -1185,21 +1248,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$file_src_error" id="$file_src_error"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$file_src_error</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a565">565</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a584">584</a></span>)
 		</span>
 	</div>
 
@@ -1208,21 +1271,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$file_src_mime" id="$file_src_mime"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$file_src_mime</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a549">549</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a568">568</a></span>)
 		</span>
 	</div>
 
@@ -1231,21 +1294,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$file_src_name" id="$file_src_name"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$file_src_name</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a525">525</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a544">544</a></span>)
 		</span>
 	</div>
 
@@ -1254,21 +1317,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$file_src_name_body" id="$file_src_name_body"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$file_src_name_body</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a533">533</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a552">552</a></span>)
 		</span>
 	</div>
 
@@ -1277,21 +1340,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$file_src_name_ext" id="$file_src_name_ext"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$file_src_name_ext</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a541">541</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a560">560</a></span>)
 		</span>
 	</div>
 
@@ -1300,21 +1363,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$file_src_size" id="$file_src_size"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">double</span>
 			<span class="var-name">$file_src_size</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a557">557</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a576">576</a></span>)
 		</span>
 	</div>
 
@@ -1323,21 +1386,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$forbidden" id="$forbidden"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">array</span>
 			<span class="var-name">$forbidden</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1821">1821</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1899">1899</a></span>)
 		</span>
 	</div>
 
@@ -1347,21 +1410,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_background_color" id="$image_background_color"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$image_background_color</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1164">1164</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1242">1242</a></span>)
 		</span>
 	</div>
 
@@ -1371,21 +1434,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_bevel" id="$image_bevel"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_bevel</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1638">1638</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1716">1716</a></span>)
 		</span>
 	</div>
 
@@ -1395,21 +1458,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_bevel_color1" id="$image_bevel_color1"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_bevel_color1</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1651">1651</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1729">1729</a></span>)
 		</span>
 	</div>
 
@@ -1419,21 +1482,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_bevel_color2" id="$image_bevel_color2"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_bevel_color2</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1664">1664</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1742">1742</a></span>)
 		</span>
 	</div>
 
@@ -1443,21 +1506,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_border" id="$image_border"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_border</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1684">1684</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1762">1762</a></span>)
 		</span>
 	</div>
 
@@ -1467,21 +1530,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_border_color" id="$image_border_color"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_border_color</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1697">1697</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1775">1775</a></span>)
 		</span>
 	</div>
 
@@ -1491,21 +1554,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_brightness" id="$image_brightness"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_brightness</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1200">1200</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1278">1278</a></span>)
 		</span>
 	</div>
 
@@ -1515,21 +1578,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_contrast" id="$image_contrast"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_contrast</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1212">1212</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1290">1290</a></span>)
 		</span>
 	</div>
 
@@ -1539,21 +1602,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_convert" id="$image_convert"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$image_convert</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a893">893</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a971">971</a></span>)
 		</span>
 	</div>
 
@@ -1563,21 +1626,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_crop" id="$image_crop"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$image_crop</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1612">1612</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1690">1690</a></span>)
 		</span>
 	</div>
 
@@ -1596,21 +1659,21 @@
 				<li><span class="field">var:</span> OR array;</li>
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_default_color" id="$image_default_color"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">boolean</span>
 			<span class="var-name">$image_default_color</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1180">1180</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1258">1258</a></span>)
 		</span>
 	</div>
 
@@ -1620,21 +1683,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_flip" id="$image_flip"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_flip</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1570">1570</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1648">1648</a></span>)
 		</span>
 	</div>
 
@@ -1644,21 +1707,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_frame" id="$image_frame"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_frame</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1715">1715</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1793">1793</a></span>)
 		</span>
 	</div>
 
@@ -1668,21 +1731,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_frame_colors" id="$image_frame_colors"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$image_frame_colors</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1738">1738</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1816">1816</a></span>)
 		</span>
 	</div>
 
@@ -1694,21 +1757,21 @@
 				<li><span class="field">var:</span> OR array;</li>
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_greyscale" id="$image_greyscale"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">boolean;</span>
 			<span class="var-name">$image_greyscale</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1284">1284</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1362">1362</a></span>)
 		</span>
 	</div>
 
@@ -1718,21 +1781,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_is_palette" id="$image_is_palette"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">boolean</span>
 			<span class="var-name">$image_is_palette</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1188">1188</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1266">1266</a></span>)
 		</span>
 	</div>
 
@@ -1741,21 +1804,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_is_transparent" id="$image_is_transparent"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">boolean</span>
 			<span class="var-name">$image_is_transparent</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1139">1139</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1217">1217</a></span>)
 		</span>
 	</div>
 
@@ -1765,21 +1828,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_max_height" id="$image_max_height"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_max_height</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1031">1031</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1109">1109</a></span>)
 		</span>
 	</div>
 
@@ -1789,21 +1852,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_max_pixels" id="$image_max_pixels"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">long</span>
 			<span class="var-name">$image_max_pixels</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1041">1041</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1119">1119</a></span>)
 		</span>
 	</div>
 
@@ -1813,21 +1876,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_max_ratio" id="$image_max_ratio"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">float</span>
 			<span class="var-name">$image_max_ratio</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1053">1053</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1131">1131</a></span>)
 		</span>
 	</div>
 
@@ -1837,21 +1900,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_max_width" id="$image_max_width"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_max_width</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1021">1021</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1099">1099</a></span>)
 		</span>
 	</div>
 
@@ -1861,21 +1924,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_min_height" id="$image_min_height"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_min_height</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1073">1073</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1151">1151</a></span>)
 		</span>
 	</div>
 
@@ -1885,21 +1948,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_min_pixels" id="$image_min_pixels"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">long</span>
 			<span class="var-name">$image_min_pixels</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1083">1083</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1161">1161</a></span>)
 		</span>
 	</div>
 
@@ -1909,21 +1972,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_min_ratio" id="$image_min_ratio"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">float</span>
 			<span class="var-name">$image_min_ratio</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1095">1095</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1173">1173</a></span>)
 		</span>
 	</div>
 
@@ -1933,21 +1996,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_min_width" id="$image_min_width"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_min_width</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1063">1063</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1141">1141</a></span>)
 		</span>
 	</div>
 
@@ -1957,21 +2020,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_negative" id="$image_negative"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">boolean;</span>
 			<span class="var-name">$image_negative</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1274">1274</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1352">1352</a></span>)
 		</span>
 	</div>
 
@@ -1981,21 +2044,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_overlay_color" id="$image_overlay_color"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_overlay_color</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1250">1250</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1328">1328</a></span>)
 		</span>
 	</div>
 
@@ -2005,21 +2068,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_overlay_percent" id="$image_overlay_percent"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_overlay_percent</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1264">1264</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1342">1342</a></span>)
 		</span>
 	</div>
 
@@ -2029,21 +2092,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_precrop" id="$image_precrop"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$image_precrop</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1624">1624</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1702">1702</a></span>)
 		</span>
 	</div>
 
@@ -2054,21 +2117,21 @@
 				<li><span class="field">var:</span> OR array;</li>
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_ratio" id="$image_ratio"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">bool</span>
 			<span class="var-name">$image_ratio</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a923">923</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1001">1001</a></span>)
 		</span>
 	</div>
 
@@ -2078,21 +2141,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_ratio_crop" id="$image_ratio_crop"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">mixed</span>
 			<span class="var-name">$image_ratio_crop</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a939">939</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1017">1017</a></span>)
 		</span>
 	</div>
 
@@ -2102,21 +2165,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_ratio_fill" id="$image_ratio_fill"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">mixed</span>
 			<span class="var-name">$image_ratio_fill</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a956">956</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1034">1034</a></span>)
 		</span>
 	</div>
 
@@ -2126,21 +2189,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_ratio_no_zoom_in" id="$image_ratio_no_zoom_in"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">bool</span>
 			<span class="var-name">$image_ratio_no_zoom_in</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a980">980</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1058">1058</a></span>)
 		</span>
 	</div>
 
@@ -2150,21 +2213,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_ratio_no_zoom_out" id="$image_ratio_no_zoom_out"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">bool</span>
 			<span class="var-name">$image_ratio_no_zoom_out</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a991">991</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1069">1069</a></span>)
 		</span>
 	</div>
 
@@ -2174,21 +2237,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_ratio_pixels" id="$image_ratio_pixels"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">mixed</span>
 			<span class="var-name">$image_ratio_pixels</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a969">969</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1047">1047</a></span>)
 		</span>
 	</div>
 
@@ -2198,21 +2261,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_ratio_x" id="$image_ratio_x"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">bool</span>
 			<span class="var-name">$image_ratio_x</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1001">1001</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1079">1079</a></span>)
 		</span>
 	</div>
 
@@ -2222,21 +2285,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_ratio_y" id="$image_ratio_y"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">bool</span>
 			<span class="var-name">$image_ratio_y</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1011">1011</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1089">1089</a></span>)
 		</span>
 	</div>
 
@@ -2246,21 +2309,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_reflection_color" id="$image_reflection_color"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_reflection_color</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1543">1543</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1621">1621</a></span>)
 		</span>
 	</div>
 
@@ -2270,21 +2333,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_reflection_height" id="$image_reflection_height"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">mixed;</span>
 			<span class="var-name">$image_reflection_height</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1513">1513</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1591">1591</a></span>)
 		</span>
 	</div>
 
@@ -2294,21 +2357,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_reflection_opacity" id="$image_reflection_opacity"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_reflection_opacity</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1558">1558</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1636">1636</a></span>)
 		</span>
 	</div>
 
@@ -2318,21 +2381,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_reflection_space" id="$image_reflection_space"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_reflection_space</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1527">1527</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1605">1605</a></span>)
 		</span>
 	</div>
 
@@ -2342,21 +2405,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_resize" id="$image_resize"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">bool</span>
 			<span class="var-name">$image_resize</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a880">880</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a958">958</a></span>)
 		</span>
 	</div>
 
@@ -2366,21 +2429,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_rotate" id="$image_rotate"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_rotate</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1582">1582</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1660">1660</a></span>)
 		</span>
 	</div>
 
@@ -2390,21 +2453,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_text" id="$image_text"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_text</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1310">1310</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1388">1388</a></span>)
 		</span>
 	</div>
 
@@ -2420,21 +2483,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_text_alignment" id="$image_text_alignment"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_text_alignment</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1486">1486</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1564">1564</a></span>)
 		</span>
 	</div>
 
@@ -2444,21 +2507,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_text_background" id="$image_text_background"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_text_background</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1358">1358</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1436">1436</a></span>)
 		</span>
 	</div>
 
@@ -2468,21 +2531,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_text_background_percent" id="$image_text_background_percent"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_text_background_percent</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1370">1370</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1448">1448</a></span>)
 		</span>
 	</div>
 
@@ -2492,21 +2555,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_text_color" id="$image_text_color"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_text_color</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1334">1334</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1412">1412</a></span>)
 		</span>
 	</div>
 
@@ -2516,21 +2579,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_text_direction" id="$image_text_direction"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_text_direction</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1322">1322</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1400">1400</a></span>)
 		</span>
 	</div>
 
@@ -2540,21 +2603,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_text_font" id="$image_text_font"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">mixed;</span>
 			<span class="var-name">$image_text_font</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1383">1383</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1461">1461</a></span>)
 		</span>
 	</div>
 
@@ -2564,21 +2627,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_text_line_spacing" id="$image_text_line_spacing"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_text_line_spacing</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1500">1500</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1578">1578</a></span>)
 		</span>
 	</div>
 
@@ -2588,21 +2651,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_text_padding" id="$image_text_padding"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_text_padding</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1444">1444</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1522">1522</a></span>)
 		</span>
 	</div>
 
@@ -2612,21 +2675,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_text_padding_x" id="$image_text_padding_x"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_text_padding_x</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1458">1458</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1536">1536</a></span>)
 		</span>
 	</div>
 
@@ -2636,21 +2699,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_text_padding_y" id="$image_text_padding_y"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_text_padding_y</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1472">1472</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1550">1550</a></span>)
 		</span>
 	</div>
 
@@ -2660,21 +2723,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_text_percent" id="$image_text_percent"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_text_percent</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1346">1346</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1424">1424</a></span>)
 		</span>
 	</div>
 
@@ -2684,21 +2747,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_text_position" id="$image_text_position"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_text_position</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1404">1404</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1482">1482</a></span>)
 		</span>
 	</div>
 
@@ -2710,21 +2773,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_text_x" id="$image_text_x"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_text_x</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1417">1417</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1495">1495</a></span>)
 		</span>
 	</div>
 
@@ -2734,21 +2797,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_text_y" id="$image_text_y"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_text_y</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1430">1430</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1508">1508</a></span>)
 		</span>
 	</div>
 
@@ -2758,21 +2821,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_threshold" id="$image_threshold"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_threshold</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1224">1224</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1302">1302</a></span>)
 		</span>
 	</div>
 
@@ -2782,21 +2845,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_tint_color" id="$image_tint_color"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_tint_color</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1236">1236</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1314">1314</a></span>)
 		</span>
 	</div>
 
@@ -2806,21 +2869,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_transparent_color" id="$image_transparent_color"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">boolean</span>
 			<span class="var-name">$image_transparent_color</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1149">1149</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1227">1227</a></span>)
 		</span>
 	</div>
 
@@ -2830,21 +2893,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_watermark" id="$image_watermark"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_watermark</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1752">1752</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1830">1830</a></span>)
 		</span>
 	</div>
 
@@ -2854,21 +2917,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_watermark_position" id="$image_watermark_position"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string;</span>
 			<span class="var-name">$image_watermark_position</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1770">1770</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1848">1848</a></span>)
 		</span>
 	</div>
 
@@ -2878,21 +2941,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_watermark_x" id="$image_watermark_x"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_watermark_x</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1783">1783</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1861">1861</a></span>)
 		</span>
 	</div>
 
@@ -2902,21 +2965,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_watermark_y" id="$image_watermark_y"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_watermark_y</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1796">1796</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1874">1874</a></span>)
 		</span>
 	</div>
 
@@ -2926,21 +2989,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_x" id="$image_x"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_x</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a903">903</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a981">981</a></span>)
 		</span>
 	</div>
 
@@ -2950,21 +3013,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$image_y" id="$image_y"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$image_y</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a913">913</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a991">991</a></span>)
 		</span>
 	</div>
 
@@ -2974,21 +3037,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$jpeg_quality" id="$jpeg_quality"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$jpeg_quality</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1105">1105</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1183">1183</a></span>)
 		</span>
 	</div>
 
@@ -2998,21 +3061,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$jpeg_size" id="$jpeg_size"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$jpeg_size</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1118">1118</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1196">1196</a></span>)
 		</span>
 	</div>
 
@@ -3022,21 +3085,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$language" id="$language"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">array</span>
 			<span class="var-name">$language</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1842">1842</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1920">1920</a></span>)
 		</span>
 	</div>
 
@@ -3046,21 +3109,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$log" id="$log"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$log</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a744">744</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a763">763</a></span>)
 		</span>
 	</div>
 
@@ -3069,21 +3132,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$mime_check" id="$mime_check"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">boolean</span>
 			<span class="var-name">$mime_check</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a790">790</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a817">817</a></span>)
 		</span>
 	</div>
 
@@ -3093,21 +3156,117 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
-<a name="var$no_script" id="$no_script"><!-- --></A>
+<a name="var$mime_file" id="$mime_file"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<img src="phpdoc/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">boolean</span>
+			<span class="var-name">$mime_file</span>
+						(line <span class="line-number"><a href="class.upload.php.html#a842">842</a></span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Set this variable to false if you don't want to check the MIME with UNIX file() command</p>
+<p class="description"><p>This variable is set to true by default for security reason</p></p>
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+
+
+
+
+
+</div>
+<a name="var$mime_fileinfo" id="$mime_fileinfo"><!-- --></A>
 <div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">boolean</span>
+			<span class="var-name">$mime_fileinfo</span>
+						(line <span class="line-number"><a href="class.upload.php.html#a832">832</a></span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Set this variable to false if you don't want to check the MIME with Fileinfo PECL extension</p>
+<p class="description"><p>You can also set it with the path of the magic database file.  If set to true, the class will try to read the MAGIC environment variable    and if it is empty, will default to '/usr/share/file/magic'  If set to an empty string, it will call finfo_open without the path argument</p><p>This variable is set to true by default for security reason</p></p>
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+
+
+
+
+
+</div>
+<a name="var$mime_getimagesize" id="$mime_getimagesize"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<img src="phpdoc/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">boolean</span>
+			<span class="var-name">$mime_getimagesize</span>
+						(line <span class="line-number"><a href="class.upload.php.html#a868">868</a></span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Set this variable to false if you don't want to check the MIME with getimagesize()</p>
+<p class="description"><p>The class tries to get a MIME type from getimagesize()  If no MIME is returned, it tries to guess the MIME type from the file type</p><p>This variable is set to true by default for security reason</p></p>
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+
+
+
+
+
+</div>
+<a name="var$mime_magic" id="$mime_magic"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<img src="phpdoc/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">boolean</span>
+			<span class="var-name">$mime_magic</span>
+						(line <span class="line-number"><a href="class.upload.php.html#a855">855</a></span>)
+		</span>
+	</div>
+
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Set this variable to false if you don't want to check the MIME with the magic.mime file</p>
+<p class="description"><p>The function mime_content_type() will be deprecated,  and this variable will be set to false in a future release</p><p>This variable is set to true by default for security reason</p></p>
+	<ul class="tags">
+				<li><span class="field">access:</span> public</li>
+			</ul>
+
+
+
+
+
+</div>
+<a name="var$no_script" id="$no_script"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<img src="phpdoc/Variable.png" />
+		<span class="var-title">
+			<span class="var-type">boolean</span>
 			<span class="var-name">$no_script</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a798">798</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a876">876</a></span>)
 		</span>
 	</div>
 
@@ -3116,21 +3275,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$no_upload_check" id="$no_upload_check"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">bool</span>
 			<span class="var-name">$no_upload_check</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a718">718</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a737">737</a></span>)
 		</span>
 	</div>
 
@@ -3140,21 +3299,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$preserve_transparency" id="$preserve_transparency"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">integer</span>
 			<span class="var-name">$preserve_transparency</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1129">1129</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1207">1207</a></span>)
 		</span>
 	</div>
 
@@ -3164,21 +3323,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$processed" id="$processed"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">bool</span>
 			<span class="var-name">$processed</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a728">728</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a747">747</a></span>)
 		</span>
 	</div>
 
@@ -3188,21 +3347,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$translation" id="$translation"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">array</span>
 			<span class="var-name">$translation</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a1832">1832</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a1910">1910</a></span>)
 		</span>
 	</div>
 
@@ -3212,21 +3371,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$uploaded" id="$uploaded"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">bool</span>
 			<span class="var-name">$uploaded</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a703">703</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a722">722</a></span>)
 		</span>
 	</div>
 
@@ -3236,21 +3395,21 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
 <a name="var$version" id="$version"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<img src="phpdoc/Variable.png" />
 		<span class="var-title">
 			<span class="var-type">string</span>
 			<span class="var-name">$version</span>
-						(line <span class="line-number"><a href="class.upload.php.html#a517">517</a></span>)
+						(line <span class="line-number"><a href="class.upload.php.html#a536">536</a></span>)
 		</span>
 	</div>
 
@@ -3259,16 +3418,17 @@
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
-	
-		
-		
+
+
+
+
 
 </div>
-						
+
+
 		</div>
 	</div>
-	
+
 	<a name="sec-methods"></a>
 	<div class="info-box">
 		<div class="info-box-title">Methods</div>
@@ -3276,25 +3436,26 @@
 			<a href="#sec-description">Description</a> |
 															<a href="#sec-var-summary">Vars</a> (<a href="#sec-vars">details</a>)
 														<a href="#sec-method-summary">Methods</a> (<span class="disabled">details</span>)
-						
+
 		</div>
 		<div class="info-box-body">
-			<A NAME='method_detail'></A>
+
+<A NAME='method_detail'></A>
 <a name="methodclean" id="clean"><!-- --></a>
-<div class="oddrow">
-	
+<div class="evenrow">
+
 	<div class="method-header">
 		<img src="phpdoc/Method.png" />
-		<span class="method-title">clean</span> (line <span class="line-number"><a href="class.upload.php.html#a4286">4286</a></span>)
-	</div> 
-	
+		<span class="method-title">clean</span> (line <span class="line-number"><a href="class.upload.php.html#a4456">4456</a></span>)
+	</div>
+
 	<!-- ========== Info from phpDoc block ========= -->
 <p class="short-description">Deletes the uploaded file from its temporary location</p>
 <p class="description"><p>When PHP uploads a file, it stores it in a temporary location.  When you <a href="#methodprocess">process</a> the file, you actually copy the resulting file to the given location, it doesn't alter the original file.  Once you have processed the file as many times as you wanted, you can delete the uploaded file.  If there is open_basedir restrictions, the uploaded file is in fact a temporary file</p><p>You might want not to use this function if you work on local files, as it will delete the source file</p></p>
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
+
 	<div class="method-signature">
 		<span class="method-result">void</span>
 		<span class="method-name">
@@ -3302,25 +3463,25 @@
 		</span>
 				()
 			</div>
-	
-		
-			
+
+
+
 	</div>
 <a name="methodgdversion" id="gdversion"><!-- --></a>
-<div class="evenrow">
-	
+<div class="oddrow">
+
 	<div class="method-header">
 		<img src="phpdoc/Method.png" />
-		<span class="method-title">gdversion</span> (line <span class="line-number"><a href="class.upload.php.html#a2499">2499</a></span>)
-	</div> 
-	
+		<span class="method-title">gdversion</span> (line <span class="line-number"><a href="class.upload.php.html#a2660">2660</a></span>)
+	</div>
+
 	<!-- ========== Info from phpDoc block ========= -->
 <p class="short-description">Returns the version of GD</p>
 	<ul class="tags">
 				<li><span class="field">return:</span> GD version</li>
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
+
 	<div class="method-signature">
 		<span class="method-result">float</span>
 		<span class="method-name">
@@ -3328,30 +3489,30 @@
 		</span>
 					([<span class="var-type">boolean</span>&nbsp;<span class="var-name">$full</span> = <span class="var-default">false</span>])
 			</div>
-	
+
 			<ul class="parameters">
 					<li>
 				<span class="var-type">boolean</span>
 				<span class="var-name">$full</span><span class="var-description">: Optional flag to get precise version</span>			</li>
 				</ul>
-		
-			
+
+
 	</div>
 <a name="methodimagebmp" id="imagebmp"><!-- --></a>
-<div class="oddrow">
-	
+<div class="evenrow">
+
 	<div class="method-header">
 		<img src="phpdoc/Method.png" />
-		<span class="method-title">imagebmp</span> (line <span class="line-number"><a href="class.upload.php.html#a4375">4375</a></span>)
-	</div> 
-	
+		<span class="method-title">imagebmp</span> (line <span class="line-number"><a href="class.upload.php.html#a4545">4545</a></span>)
+	</div>
+
 	<!-- ========== Info from phpDoc block ========= -->
 <p class="short-description">Saves a BMP image</p>
 <p class="description"><p>This function has been published on the PHP website, and can be used freely</p></p>
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
+
 	<div class="method-signature">
 		<span class="method-result">void</span>
 		<span class="method-name">
@@ -3359,7 +3520,7 @@
 		</span>
 					(<span class="var-type"></span>&nbsp;<span class="var-name">&$im</span>, [<span class="var-type"></span>&nbsp;<span class="var-name">$filename</span> = <span class="var-default">&quot;&quot;</span>])
 			</div>
-	
+
 			<ul class="parameters">
 					<li>
 				<span class="var-type"></span>
@@ -3368,24 +3529,24 @@
 				<span class="var-type"></span>
 				<span class="var-name">$filename</span>			</li>
 				</ul>
-		
-			
+
+
 	</div>
 <a name="methodimagecreatefrombmp" id="imagecreatefrombmp"><!-- --></a>
-<div class="evenrow">
-	
+<div class="oddrow">
+
 	<div class="method-header">
 		<img src="phpdoc/Method.png" />
-		<span class="method-title">imagecreatefrombmp</span> (line <span class="line-number"><a href="class.upload.php.html#a4300">4300</a></span>)
-	</div> 
-	
+		<span class="method-title">imagecreatefrombmp</span> (line <span class="line-number"><a href="class.upload.php.html#a4470">4470</a></span>)
+	</div>
+
 	<!-- ========== Info from phpDoc block ========= -->
 <p class="short-description">Opens a BMP image</p>
 <p class="description"><p>This function has been written by DHKold, and is used with permission of the author</p></p>
 	<ul class="tags">
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
+
 	<div class="method-signature">
 		<span class="method-result">void</span>
 		<span class="method-name">
@@ -3393,23 +3554,23 @@
 		</span>
 					(<span class="var-type"></span>&nbsp;<span class="var-name">$filename</span>)
 			</div>
-	
+
 			<ul class="parameters">
 					<li>
 				<span class="var-type"></span>
 				<span class="var-name">$filename</span>			</li>
 				</ul>
-		
-			
+
+
 	</div>
 <a name="methodprocess" id="process"><!-- --></a>
-<div class="oddrow">
-	
+<div class="evenrow">
+
 	<div class="method-header">
 		<img src="phpdoc/Method.png" />
-		<span class="method-title">process</span> (line <span class="line-number"><a href="class.upload.php.html#a2734">2734</a></span>)
-	</div> 
-	
+		<span class="method-title">process</span> (line <span class="line-number"><a href="class.upload.php.html#a2895">2895</a></span>)
+	</div>
+
 	<!-- ========== Info from phpDoc block ========= -->
 <p class="short-description">Actually uploads the file, and act on it according to the set processing class variables</p>
 <p class="description"><p>This function copies the uploaded file to the given location, eventually performing actions on it.  Typically, you can call <a href="#methodprocess">process</a> several times for the same file,  for instance to create a resized image and a thumbnail of the same file.  The original uploaded file remains intact in its temporary location, so you can use <a href="#methodprocess">process</a> several times.  You will be able to delete the uploaded file with <a href="#methodclean">clean</a> when you have finished all your <a href="#methodprocess">process</a> calls.</p><p>According to the processing class variables set in the calling file, the file can be renamed,  and if it is an image, can be resized or converted.</p><p>When the processing is completed, and the file copied to its new location, the  processing class variables will be reset to their default value.  This allows you to set new properties, and perform another <a href="#methodprocess">process</a> on the same uploaded file</p><p>If the function is called with a null or empty argument, then it will return the content of the picture</p><p>It will set <a href="#var$processed">processed</a> (and <a href="#var$error">error</a> is an error occurred)</p></p>
@@ -3417,7 +3578,7 @@
 				<li><span class="field">return:</span> Optional content of the image</li>
 				<li><span class="field">access:</span> public</li>
 			</ul>
-	
+
 	<div class="method-signature">
 		<span class="method-result">string</span>
 		<span class="method-name">
@@ -3425,20 +3586,20 @@
 		</span>
 					([<span class="var-type">string</span>&nbsp;<span class="var-name">$server_path</span> = <span class="var-default">null</span>])
 			</div>
-	
+
 			<ul class="parameters">
 					<li>
 				<span class="var-type">string</span>
 				<span class="var-name">$server_path</span><span class="var-description">: Optional path location of the uploaded file, with an ending slash</span>			</li>
 				</ul>
-		
-			
+
+
 	</div>
-						
+
 		</div>
 	</div>
 
-	
+
 	<p class="notes" id="credit">
 
 	</p>
