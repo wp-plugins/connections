@@ -143,7 +143,7 @@ class cnEntryForm
 
 	private $defaultPhoneNumberValues	=	array
 												(
-													array
+													/*array
 													(
 														'type'=>'homephone',
 														'name'=>'Home Phone',
@@ -163,18 +163,18 @@ class cnEntryForm
 														'name'=>'Cell Phone',
 														'number'=>null,
 														'visibility'=>'public'
-													),
+													),*/
 													array
 													(
 														'type'=>'workphone',
-														'name'=>'Work Phone',
+														'name'=>'Main Number',
 														'number'=>null,
 														'visibility'=>'public'
 													),
 													array
 													(
 														'type'=>'workfax',
-														'name'=>'Work Fax',
+														'name'=>'Additional Phone',
 														'number'=>null,
 														'visibility'=>'public'
 													),
@@ -261,11 +261,11 @@ class cnEntryForm
 				
 	    $out =
 		'
-		<div class="form-field connectionsform">	
+		<div class="form-field connectionsform" style="display: none;">	
 				<span class="radio_group">' . $form->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Connection Group"=>"connection_group"),$defaultEntryType) . '</span>
 		</div>
 		
-		<div id="connection_group" class="form-field connectionsform">
+		<div id="connection_group" class="form-field connectionsform" style="display: none;">
 			
 				<label for="connection_group_name">Connection Group Name:</label>
 				<input type="text" name="connection_group_name" value="' . $entry->getGroupName() . '" />';
@@ -318,10 +318,10 @@ class cnEntryForm
 				</div>
 				
 				<div class="organization">
-					<label for="organization">Organization:</label>
+					<label for="organization">Name on door:</label>
 					<input type="text" name="organization" value="' . $entry->getOrganization() . '" />
 					
-					<label for="department">Department:</label>
+					<label for="department">Hours:</label>
 					<input type="text" name="department" value="' . $entry->getDepartment() . '" />
 				</div>
 		</div>
@@ -341,38 +341,38 @@ class cnEntryForm
 				
 		</div>";
 		
-		if ($data->addresses != null) $addressValues = $entry->getAddresses(); else $addressValues = array(array('null'),array('null')); //The empty null is just to make the address section build twice untul jQuery form building can be implemented
+		if ($data->addresses != null) $addressValues = $entry->getAddresses(); else $addressValues = array(array('null')); //The empty null is just to make the address section build twice untul jQuery form building can be implemented
 		$ticker->reset();
 		foreach ($addressValues as $addressRow)
 		{
 			$selectName = "address["  . $ticker->getcount() . "][type]";
 			$out .= "<div class='form-field connectionsform'>";
-				$out .= "<span class='selectbox alignright'>Type: " . $form->buildSelect($selectName,$this->defaultAddressTypes,$addressObject->getType($addressRow)) . "</span>";
+				//$out .= "<span class='selectbox alignright'>Type: " . $form->buildSelect($selectName,$this->defaultAddressTypes,$addressObject->getType($addressRow)) . "</span>";
 				$out .= "<div class='clear'></div>";
 				
-				$out .= "<label for='address'>Address Line 1:</label>";
-				$out .= "<input type='text' name='address[" . $ticker->getcount() . "][address_line1]' value='" . $addressObject->getLineOne($addressRow) . "' />";
+				//$out .= "<label for='address'>Address Line 1:</label>";
+				//$out .= "<input type='text' name='address[" . $ticker->getcount() . "][address_line1]' value='" . $addressObject->getLineOne($addressRow) . "' />";
 	
-				$out .= "<label for='address'>Address Line 2:</label>";
+				$out .= "<label for='address'>Suite Number:</label>";
 				$out .= "<input type='text' name='address[" . $ticker->getcount() . "][address_line2]' value='" . $addressObject->getLineTwo($addressRow) . "' />";
 	
-				$out .= "<div class='input' style='width:60%'>";
-					$out .= "<label for='address'>City:</label>";
-					$out .= "<input type='text' name='address[" . $ticker->getcount() . "][city]' value='" . $addressObject->getCity($addressRow) . "' />";
-				$out .= "</div>";
-				$out .= "<div class='input' style='width:15%'>";
-					$out .= "<label for='address'>State:</label>";
-					$out .= "<input type='text' name='address[" . $ticker->getcount() . "][state]' value='" . $addressObject->getState($addressRow) . "' />";
-				$out .= "</div>";
-				$out .= "<div class='input' style='width:25%'>";
-					$out .= "<label for='address'>Zipcode:</label>";
-					$out .= "<input type='text' name='address[" . $ticker->getcount() . "][zipcode]' value='" . $addressObject->getZipCode($addressRow) . "' />";
-				$out .= "</div>";
+				//$out .= "<div class='input' style='width:60%'>";
+					//$out .= "<label for='address'>City:</label>";
+					//$out .= "<input type='text' name='address[" . $ticker->getcount() . "][city]' value='" . $addressObject->getCity($addressRow) . "' />";
+				//$out .= "</div>";
+				//$out .= "<div class='input' style='width:15%'>";
+					//$out .= "<label for='address'>State:</label>";
+					//$out .= "<input type='text' name='address[" . $ticker->getcount() . "][state]' value='" . $addressObject->getState($addressRow) . "' />";
+				//$out .= "</div>";
+				//$out .= "<div class='input' style='width:25%'>";
+					//$out .= "<label for='address'>Zipcode:</label>";
+					//$out .= "<input type='text' name='address[" . $ticker->getcount() . "][zipcode]' value='" . $addressObject->getZipCode($addressRow) . "' />";
+				//$out .= "</div>";
 				
-				$out .= "<label for='address'>Country</label>";
-				$out .= "<input type='text' name='address[" . $ticker->getcount() . "][country]' value='" . $addressObject->getCountry($addressRow) . "' />";
+				//$out .= "<label for='address'>Country</label>";
+				//$out .= "<input type='text' name='address[" . $ticker->getcount() . "][country]' value='" . $addressObject->getCountry($addressRow) . "' />";
 				
-				$out .= "<input type='hidden' name='phone_numbers[" . $ticker->getcount() . "][visibility]' value='" . $addressObject->getVisibility($addressRow) . "' />";
+				//$out .= "<input type='hidden' name='phone_numbers[" . $ticker->getcount() . "][visibility]' value='" . $addressObject->getVisibility($addressRow) . "' />";
 			
 			$out .= "<div class='clear'></div>";
 			$out .= "</div>";
@@ -416,7 +416,7 @@ class cnEntryForm
 
 
 		if ($data->im != null) $imValues = $entry->getIm(); else $imValues = $this->defaultIMValues;
-		$out .= "<div class='form-field connectionsform im'>";
+		$out .= '<div class="form-field connectionsform im" style="display: none;">';
 			$ticker->reset();
 			foreach ($imValues as $imRow)
 			{
@@ -445,7 +445,7 @@ class cnEntryForm
 		$ticker->reset();
 		$out .= "</div>";
 		
-		$out .= "<div class='form-field connectionsform celebrate'>
+		$out .= "<div class='form-field connectionsform celebrate' style='display: none;'>
 				<span class='selectbox'>Birthday: " . $form->buildSelect('birthday_month',$date->months,$date->getMonth($entry->getBirthday())) . "</span>
 				<span class='selectbox'>" . $form->buildSelect('birthday_day',$date->days,$date->getDay($entry->getBirthday())) . "</span>
 				<br />
@@ -454,12 +454,12 @@ class cnEntryForm
 		</div>
 		
 		<div class='form-field connectionsform'>
-				<label for='bio'>Biographical Info:</label>
+				<label for='bio'>Info:</label>
 				<textarea name='bio' rows='3'>" . $entry->getBio() . "</textarea>
 		</div>
 		
 		<div class='form-field connectionsform'>
-				<label for='notes'>Notes:</label>
+				<label for='notes'>Services:</label>
 				<textarea name='notes' rows='3'>" . $entry->getNotes() . "</textarea>
 		</div>
 		

@@ -956,16 +956,16 @@ class cnPhoneNumber
 				$this->name = "Cell Phone";
 				break;
 			case 'work':
-				$this->name = "Work Phone";
+				$this->name = "Main Phone";
 				break;
 			case 'workphone':
-				$this->name = "Work Phone";
+				$this->name = "Main Phone";
 				break;
 			case 'workfax':
-				$this->name = "Work Fax";
+				$this->name = "Additional Phone";
 				break;
 			case 'fax':
-				$this->name = "Work Fax";
+				$this->name = "Additional Phone";
 				break;
 			
 			default:

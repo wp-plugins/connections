@@ -67,7 +67,7 @@ function connectionsShowViewPage()
 					
 					$out = '<div class="wrap">';
 						$out .= '<div class="form-wrap" style="width:600px; margin: 0 auto;">';
-							$out .= '<h2><a name="new"></a>Add Entry</h2>';
+							$out .= '<h2><a name="new"></a>Add Professional</h2>';
 							
 							$out .= '<form action="admin.php?page=connections&action=add&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
 							 
@@ -150,7 +150,7 @@ function connectionsShowViewPage()
 					
 					$out = '<div class="wrap">';
 						$out .= '<div class="form-wrap" style="width:600px; margin: 0 auto;">';
-							$out .= '<h2><a name="new"></a>Edit Entry</h2>';
+							$out .= '<h2><a name="new"></a>Edit Professional</h2>';
 							
 							$out .= '<form action="admin.php?page=connections&action=update&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
 							 
@@ -314,7 +314,7 @@ function connectionsShowViewPage()
 		
 			<div class="wrap">
 				<div class="icon32" id="icon-connections"><br/></div>
-				<h2>Connections : Entry List</h2>
+				<h2>Professionals</h2>
 				
 				<?php
 					/*
@@ -329,7 +329,7 @@ function connectionsShowViewPage()
 					 * the remaining visibility types are checked and if NOT permitted that is
 					 * appened to the query string.
 					 */
-					/*switch ($connections->options->getVisibilityType($current_user->ID))
+					switch ($connections->options->getVisibilityType($current_user->ID))
 					{
 						case 'public':
 							if (!current_user_can('connections_view_public') && !$connections->options->getAllowPublic())
@@ -391,11 +391,9 @@ function connectionsShowViewPage()
 							(SELECT *, group_name AS order_by FROM ".$wpdb->prefix."connections WHERE group_name != ''" . $visibilityfilter . ")
 							UNION
 							(SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibilityfilter . ")
-							ORDER BY order_by, last_name, first_name";*/
+							ORDER BY order_by, last_name, first_name";
 							
-					$sql = new cnSQL();
-					//$results = $wpdb->get_results($sql);
-					$results = $sql->getEntries();
+					$results = $wpdb->get_results($sql);
 					
 					?>
 					
@@ -412,7 +410,7 @@ function connectionsShowViewPage()
 						?>
 						
 						<div class="alignleft actions">
-							<?php echo $form->buildSelect('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $connections->options->getEntryType($current_user->ID))?>
+							<?php //echo $form->buildSelect('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $connections->options->getEntryType($current_user->ID))?>
 							
 							<?php
 								/**
@@ -609,8 +607,8 @@ function connectionsShowViewPage()
 										}
 										
 										if ($entry->getTitle()) echo "<strong>Title:</strong><br />" . $entry->getTitle() . "<br /><br />";
-										if ($entry->getOrganization() && $entry->getEntryType() != "organization" ) echo "<strong>Organization:</strong><br />" . $entry->getOrganization() . "<br /><br />";
-										if ($entry->getDepartment()) echo "<strong>Department:</strong><br />" . $entry->getDepartment() . "<br /><br />";
+										if ($entry->getOrganization() && $entry->getEntryType() != "organization" ) echo "<strong>Name on door:</strong><br />" . $entry->getOrganization() . "<br /><br />";
+										if ($entry->getDepartment()) echo "<strong>Hours:</strong><br />" . $entry->getDepartment() . "<br /><br />";
 										
 										if ($entry->getAddresses())
 										{
@@ -621,7 +619,7 @@ function connectionsShowViewPage()
 												echo "<div style='margin-bottom: 10px;'>";
 												if ($addressObject->getName($addressRow) != null || $addressObject->getType($addressRow)) echo "<strong>" . $addressObject->getName($addressRow) . "</strong><br />"; //The OR is for compatiblity for 0.2.24 and under
 												if ($addressObject->getLineOne($addressRow) != null) echo $addressObject->getLineOne($addressRow) . "<br />";
-												if ($addressObject->getLineTwo($addressRow) != null) echo $addressObject->getLineTwo($addressRow) . "<br />";
+												if ($addressObject->getLineTwo($addressRow) != null) echo '<strong>Suite:</strong> ' . $addressObject->getLineTwo($addressRow) . "<br />";
 												if ($addressObject->getCity($addressRow) != null) echo $addressObject->getCity($addressRow) . "&nbsp;";
 												if ($addressObject->getState($addressRow) != null) echo $addressObject->getState($addressRow) . "&nbsp;";
 												if ($addressObject->getZipCode($addressRow) != null) echo $addressObject->getZipCode($addressRow) . "<br />";
@@ -684,8 +682,8 @@ function connectionsShowViewPage()
 									echo "<td>&nbsp;</td> \n";
 									echo "<td >&nbsp;</td> \n";
 									echo "<td colspan='3'>";
-										if ($entry->getBio()) echo "<strong>Bio:</strong> " . $entry->getBio() . "<br />"; else echo "&nbsp;";
-										if ($entry->getNotes()) echo "<strong>Notes:</strong> " . $entry->getNotes(); else echo "&nbsp;";
+										if ($entry->getNotes()) echo "<strong>Services:</strong> " . $entry->getNotes() . "<br /><br />"; else echo "&nbsp;";
+										if ($entry->getBio()) echo "<strong>Info:</strong> " . $entry->getBio() . "<br />"; else echo "&nbsp;";
 									echo "</td> \n";
 									echo "<td><strong>Entry ID:</strong> " . $entry->getId();
 										if (!$entry->getImageLinked()) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";

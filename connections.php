@@ -380,14 +380,14 @@ if (!class_exists('connectionsLoad'))
 		public function loadAdminMenus()
 		{
 			//Adds Connections to the top level menu.
-			add_menu_page('Connections : Administration', 'Connections', 'connections_view_entry_list', CN_BASE_NAME, array (&$this, 'showPage'), WP_PLUGIN_URL . '/connections/images/menu.png');
+			add_menu_page('Professionals : Administration', ' Salon Professionals', 'connections_view_entry_list', CN_BASE_NAME, array (&$this, 'showPage'), WP_PLUGIN_URL . '/connections/images/menu.png');
 			
 			//Adds the Connections sub-menus.
-			add_submenu_page(CN_BASE_NAME, 'Connections : Entry List', 'Entry List', 'connections_view_entry_list', CN_BASE_NAME, array (&$this, 'showPage'));
-			add_submenu_page(CN_BASE_NAME, 'Connections : Add Entry','Add Entry', 'connections_add_entry', 'connections_add', array (&$this, 'showPage'));
-			add_submenu_page(CN_BASE_NAME, 'Connections : Settings','Settings', 'connections_change_settings', 'connections_settings', array (&$this, 'showPage'));
-			add_submenu_page(CN_BASE_NAME, 'Connections : Roles &amp; Capabilites','Roles', 'connections_change_roles', 'connections_roles', array (&$this, 'showPage'));
-			add_submenu_page(CN_BASE_NAME, 'Connections : Help','Help', 'connections_view_help', 'connections_help', array (&$this, 'showPage'));
+			add_submenu_page(CN_BASE_NAME, 'Professionals : Professionals List', 'Professionals', 'connections_view_entry_list', CN_BASE_NAME, array (&$this, 'showPage'));
+			add_submenu_page(CN_BASE_NAME, 'Professionals : Add Professional','Add Professional', 'connections_add_entry', 'connections_add', array (&$this, 'showPage'));
+			add_submenu_page(CN_BASE_NAME, 'Professionals : Settings','Settings', 'connections_change_settings', 'connections_settings', array (&$this, 'showPage'));
+			add_submenu_page(CN_BASE_NAME, 'Professionals : Roles &amp; Capabilites','Roles', 'connections_change_roles', 'connections_roles', array (&$this, 'showPage'));
+			add_submenu_page(CN_BASE_NAME, 'Professionals : Help','Help', 'connections_view_help', 'connections_help', array (&$this, 'showPage'));
 		}
 		
 		/**
