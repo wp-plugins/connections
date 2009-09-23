@@ -463,12 +463,13 @@ function connectionsShowViewPage()
 						
 						<div class="tablenav-pages">
 							<?php
-								/*
-								 * Dynamically builds the alpha index based on the available entries.
-								 */
-								foreach ($results as $row)
+								foreach ($results as $key => $row)
 								{
 									$entry = new cnEntry($row);
+									
+									/*
+									 * Dynamically builds the alpha index based on the available entries.
+									 */
 									$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
 									if ($currentLetter != $previousLetter)
 									{
@@ -483,9 +484,20 @@ function connectionsShowViewPage()
 										$setAnchor .= '<a href="#' . $currentLetter . '">' . $currentLetter . '</a> ';
 										$previousLetter = $currentLetter;
 									}
+									
+									/*
+									* Build a sorted list of entries based on address line 2 which stores the Suite number
+									*/
+									if ($entry->getAddresses())
+									{
+										$addresses = $entry->getAddresses();
+										
+										/*if ( $addresses[0]['address_line2'] != null)*/ $orderBySuite[$key] = $addresses[0]['address_line2'] . $entry->getLastName();
+									}
 								}
+								natcasesort($orderBySuite);
 								
-								echo $setAnchor;
+								//echo $setAnchor;
 							?>
 						</div>
 					</div>
@@ -497,7 +509,7 @@ function connectionsShowViewPage()
 				                <th class="manage-column column-cb check-column" id="cb" scope="col"><input type="checkbox"/></th>
 								<th class="col" style="width:10%;"></th>
 								<th scope="col" colspan="2" style="width:50%;">Name</th>
-								<th scope="col" style="width:20%;">Visibility</th>
+								<th scope="col" style="width:20%;">Suite</th>
 								<th scope="col" style="width:20%;">Last Modified</th>
 				            </tr>
 						</thead>
@@ -506,7 +518,7 @@ function connectionsShowViewPage()
 				                <th class="manage-column column-cb check-column" scope="col"><input type="checkbox"/></th>
 								<th class="col" style="width:10%;"></th>
 								<th scope="col" colspan="2" style="width:50%;">Name</th>
-								<th scope="col" style="width:20%;">Visibility</th>
+								<th scope="col" style="width:20%;">Suite</th>
 								<th scope="col" style="width:20%;">Last Modified</th>
 				            </tr>
 						</tfoot>
@@ -514,14 +526,17 @@ function connectionsShowViewPage()
 							
 							<?php
 							
-							foreach ($results as $row) {
-								$entry = new cnEntry($row);
+							//foreach ($results as $row) {
+							foreach ($orderBySuite as $key => $suiteNumber) {
+								//$entry = new cnEntry($row);
+								$entry = new cnEntry($results[$key]);
 								
 								/**
 								 * @TODO: Use the Output class to show entry details.
 								 * @TODO: Add the vCard.
 								 */								
-								$object = new cnOutput($row);
+								//$object = new cnOutput($row);
+								$object = new cnOutput($results[$key]);
 								
 								/*
 								 * This is to skip any entries that are not of the selected type when being filtered.
@@ -534,13 +549,13 @@ function connectionsShowViewPage()
 								/*
 								 * Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
 								 */
-								$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
+								/*$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
 								if ($currentLetter != $previousLetter) {
 									$setAnchor = "<a name='$currentLetter'></a>";
 									$previousLetter = $currentLetter;
 								} else {
 									$setAnchor = null;
-								}
+								}*/
 								
 								/*
 								 * Genreate the edit token for the entry because it has two links.
@@ -551,7 +566,7 @@ function connectionsShowViewPage()
 									echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
 										echo '<td>' . $object->getThumbnailImage() . '</td>';
 										echo '<td  colspan="2">';
-											if ($setAnchor) echo $setAnchor;
+											//if ($setAnchor) echo $setAnchor;
 											echo '<div style="float:right"><a href="#wphead" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" /></a></div>';
 											
 											if (current_user_can('connections_edit_entry'))
@@ -572,7 +587,15 @@ function connectionsShowViewPage()
 												if (current_user_can('connections_delete_entry')) echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections&action=delete&id=' . $entry->getId() . '&token=' . $form->token('delete_' . $entry->getId()) . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
 											echo '</div>';
 									echo "</td> \n";
-									echo "<td ><strong>" . $entry->displayVisibiltyType() . "</strong></td> \n";												
+									echo '<td >';
+										if ($entry->getAddresses())
+										{
+											$addresses = $entry->getAddresses();
+											
+											echo $addresses[0]['address_line2'];
+										}
+										//echo '<strong>' . $entry->displayVisibiltyType() . '</strong>';
+									echo "</td> \n";												
 									echo "<td >" . $entry->getFormattedTimeStamp() . "</td> \n";											
 								echo "</tr> \n";
 								
@@ -685,7 +708,9 @@ function connectionsShowViewPage()
 										if ($entry->getNotes()) echo "<strong>Services:</strong> " . $entry->getNotes() . "<br /><br />"; else echo "&nbsp;";
 										if ($entry->getBio()) echo "<strong>Info:</strong> " . $entry->getBio() . "<br />"; else echo "&nbsp;";
 									echo "</td> \n";
-									echo "<td><strong>Entry ID:</strong> " . $entry->getId();
+									echo "<td>
+										<strong>Entry ID:</strong> " . $entry->getId() . '<br />';
+										echo '<strong>Visibility:</strong> ' . $entry->displayVisibiltyType() . '<br />';
 										if (!$entry->getImageLinked()) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";
 										if ($entry->getImageLinked() && $entry->getImageDisplay()) echo "<br /><strong>Display:</strong> Yes"; else echo "<br /><strong>Display:</strong> No";
 									echo "</td> \n";
