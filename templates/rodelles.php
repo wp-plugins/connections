@@ -1,7 +1,7 @@
 <div class="cn-entry" style="-moz-border-radius:4px; background-color:#7E6957; border:1px solid #E3E3E3; margin:8px 0px; padding:10px;">
 <table width="100%" border="0px" bgcolor="#7E6957" bordercolor="#E3E3E3" cellspacing="0px" cellpadding="0px">
     <tr>
-        <td align="center" rowspan="5">
+        <td align="center" rowspan="4">
         	<?php echo $entry->getCardImage() ?>
         </td>
         <td align="right">
@@ -28,11 +28,6 @@
 	        	<strong>Hours:</strong><br />
 	        	<?php echo $entry->getDepartment() ?>
 			</div>
-        </td>
-    </tr>
-    <tr>
-        <td align="right">
-        	
         </td>
     </tr>
     <tr>
