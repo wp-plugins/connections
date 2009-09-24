@@ -126,12 +126,12 @@ class cnEntry
 	function __construct($data = null)	{
 		$this->id = $data->id;
 		$this->timeStamp = $data->ts;
-		$this->firstName = $data->first_name;
-		$this->lastName = $data->last_name;
-		$this->title = $data->title;
-		$this->organization = $data->organization;
-		$this->department = $data->department;
-		$this->groupName = $data->group_name;
+		$this->firstName = stripcslashes($data->first_name);
+		$this->lastName = stripcslashes($data->last_name);
+		$this->title = stripcslashes($data->title);
+		$this->organization = stripcslashes($data->organization);
+		$this->department = stripcslashes($data->department);
+		$this->groupName = stripcslashes($data->group_name);
 		$this->addresses = unserialize($data->addresses);
 		$this->phoneNumbers = unserialize($data->phone_numbers);
 		$this->emailAddresses = unserialize($data->email);
@@ -139,8 +139,8 @@ class cnEntry
 		$this->websites = unserialize($data->websites);
 		$this->birthday = $data->birthday;
 		$this->anniversary = $data->anniversary;
-		$this->bio = $data->bio;
-		$this->notes = $data->notes;
+		$this->bio = stripcslashes($data->bio);
+		$this->notes = stripcslashes($data->notes);
 		$this->visibility = $data->visibility;
 		
 		$this->options = unserialize($data->options);

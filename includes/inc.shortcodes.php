@@ -70,7 +70,23 @@ function _connections_list($atts, $content=null) {
 				(SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibilityfilter . ")
 				ORDER BY order_by, last_name, first_name";
 		$results = $wpdb->get_results($sql);
+		
+		foreach ($results as $key => $row)
+		{
+			$entry = new cnEntry($row);
+			
+			/*
+			* Build a sorted list of entries based on address line 2 which stores the Suite number
+			*/
+			if ($entry->getAddresses())
+			{
+				$addresses = $entry->getAddresses();
 				
+				/*if ( $addresses[0]['address_line2'] != null)*/ $orderBySuite[$key] = $addresses[0]['address_line2'] . $entry->getLastName();
+			}
+		}
+		if (is_array($orderBySuite)) natcasesort($orderBySuite);
+		
 		if ($results != null) {
 			
 			$out = '<a name="connections-list-head"></a>';
@@ -82,10 +98,12 @@ function _connections_list($atts, $content=null) {
 			
 			$out .=  "<div class='connections-list'>\n";
 			
-			foreach ($results as $row)
+			if (is_array($orderBySuite)) {
+			//foreach ($results as $row)
+			foreach ($orderBySuite as $key => $suiteNumber)
 			{
-				$entry = new cnOutput($row);
-				$vCard = new cnvCard($row);
+				$entry = new cnOutput($results[$key]);
+				$vCard = new cnvCard($results[$key]);
 				
 				/**
 				 * Check whether the current user, if logged in, is permitted to view public, private
@@ -220,6 +238,7 @@ function _connections_list($atts, $content=null) {
 					$out .= '</div>' . "\n";
 				}
 							
+			}
 			}
 			$out .= "</div>\n";
 		}

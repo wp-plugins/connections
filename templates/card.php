@@ -1,35 +1,58 @@
-<div class="cn-entry" style="-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative;">
-	<div style="width:49%; float:left">
-		<?php echo $entry->getCardImage() ?>
-		<div style="clear:both;"></div>
-		<div style="margin-bottom: 10px;">
-			<span style="font-size:larger;font-variant: small-caps"><strong><?php echo $entry->getFullFirstLastNameBlock() ?></strong></span><br />
-			
-			<?php echo $entry->getTitleBlock() ?>
-			<?php echo $entry->getOrgUnitBlock() ?>
-			
-		</div>
-			
-			<?php echo $entry->getAddressBlock() ?>
-	</div>
-		
-	<div align="right">
-	
-		<?php echo $entry->getConnectionGroupBlock() ?>
-		<?php echo $entry->getPhoneNumberBlock() ?>
-		<?php echo $entry->getEmailAddressBlock() ?>
-		<?php echo $entry->getImBlock() ?>
-		<?php echo $entry->getWebsiteBlock() ?>
-		
-		<?php echo $entry->getBirthdayBlock('F j') ?>
-		<?php echo $entry->getAnniversaryBlock() ?>
-		
-	</div>
-	
-	<div style="clear:both"></div>
-	<div class="cn-meta" align="left" style="margin-top: 6px">
-		<span><?php echo $vCard->download() ?></span>
-		<span style="<?php echo $entry->getLastUpdatedStyle() ?>; font-size:x-small; font-variant: small-caps; position: absolute; right: 26px; bottom: 8px;">Updated <?php echo $entry->getHumanTimeDiff() ?> ago</span><span style="position: absolute; right: 3px; bottom: 5px;"><?php echo $entry->returnToTopAnchor() ?></span><br />
-	</div>
-	
+<div class="cn-entry" style="-moz-border-radius:4px; background-color:#7E6957; border:1px solid #E3E3E3; margin:8px 0px; padding:10px;">
+<table width="100%" border="0px" bgcolor="#7E6957" bordercolor="#E3E3E3" cellspacing="0px" cellpadding="0px">
+    <tr>
+        <td align="center" rowspan="4" width="225px" >
+        	<?php echo $entry->getCardImage() ?>
+        </td>
+        <td align="right">
+        	<div style="margin-bottom: 10px;">
+	        	<strong>Services:</strong><br />
+	        	<?php echo $entry->getNotes() ?>
+			</div>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">
+        	<?php echo $entry->getEmailAddressBlock() ?>
+			<?php echo $entry->getWebsiteBlock() ?>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">
+        	<?php echo $entry->getPhoneNumberBlock() ?>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">
+        	<div style="margin-bottom: 10px;">
+	        	<strong>Hours:</strong><br />
+	        	<?php echo $entry->getDepartment() ?>
+			</div>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top">
+        	<div style="color: #57B8A9; font-size: 18px;">
+        		<strong><?php echo $entry->getFullFirstLastNameBlock() ?></strong><br />
+			</div>
+			<?php echo $entry->getTitleBlock() ?><br />
+			<strong>Name on door:</strong> <?php echo $entry->getOrganization() ?><br />
+			<span style="float: left"><strong>Suite:</strong></span> <?php echo $entry->getAddressBlock() ?>
+        </td>
+        <td align="right">
+        	<strong>Info:</strong><br />
+			<div style="margin: 0 0 0 10px; text-align: left;">
+        		<?php echo $entry->getBio() ?>
+			</div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+        	<?php echo $vCard->download() ?>
+        </td>
+		<td align="right">
+        	<?php echo $entry->returnToTopAnchor() ?>
+        </td>
+    </tr>
+</table>
 </div>

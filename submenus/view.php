@@ -495,7 +495,7 @@ function connectionsShowViewPage()
 										/*if ( $addresses[0]['address_line2'] != null)*/ $orderBySuite[$key] = $addresses[0]['address_line2'] . $entry->getLastName();
 									}
 								}
-								natcasesort($orderBySuite);
+								if (is_array($orderBySuite)) natcasesort($orderBySuite);
 								
 								//echo $setAnchor;
 							?>
@@ -525,7 +525,7 @@ function connectionsShowViewPage()
 						<tbody>
 							
 							<?php
-							
+							if (is_array($orderBySuite)) {
 							//foreach ($results as $row) {
 							foreach ($orderBySuite as $key => $suiteNumber) {
 								//$entry = new cnEntry($row);
@@ -571,7 +571,7 @@ function connectionsShowViewPage()
 											
 											if (current_user_can('connections_edit_entry'))
 											{
-												echo '<a class="row-title" title="Edit ' . $entry->getFullFirstLastName() . '" href="admin.php?page=connections&action=edit&id=' . $row->id . '&token=' . $editToken . '"> ' . $entry->getFullLastFirstName() . '</a><br />';
+												echo '<a class="row-title" title="Edit ' . $entry->getFullFirstLastName() . '" href="admin.php?page=connections&action=edit&id=' . $entry->getId() . '&token=' . $editToken . '"> ' . $entry->getFullLastFirstName() . '</a><br />';
 											}
 											else
 											{
@@ -716,7 +716,8 @@ function connectionsShowViewPage()
 									echo "</td> \n";
 								echo "</tr> \n";
 																		
-							} ?>
+							}
+							}?>
 						</tbody>
 			        </table>
 					</form>
