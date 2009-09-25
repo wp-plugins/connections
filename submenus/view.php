@@ -477,9 +477,17 @@ function connectionsShowViewPage()
 										/*
 										 * This is to skip any entries that are not of the selected type when being filtered.
 										 */
-										if ($connections->options->getEntryType($current_user->ID) != "" )
+										if ($connections->options->getEntryType($current_user->ID) != '')
 										{
 											if ($entry->getEntryType() != $connections->options->getEntryType($current_user->ID)) continue;
+										}
+										
+										/*
+										 * This is to skip any entries that are not of the selected visibility when being filtered.
+										 */
+										if ($connections->options->getVisibilityType($current_user->ID) != '')
+										{
+											if ($entry->getVisibility() != $connections->options->getVisibilityType($current_user->ID)) continue;
 										}
 																				
 										$setAnchor .= '<a href="#' . $currentLetter . '">' . $currentLetter . '</a> ';
@@ -531,6 +539,14 @@ function connectionsShowViewPage()
 								if ($connections->options->getEntryType($current_user->ID) != "" )
 								{
 									if ($entry->getEntryType() != $connections->options->getEntryType($current_user->ID)) continue;
+								}
+								
+								/*
+								 * This is to skip any entries that are not of the selected visibility when being filtered.
+								 */
+								if ($connections->options->getVisibilityType($current_user->ID) != '')
+								{
+									if ($entry->getVisibility() != $connections->options->getVisibilityType($current_user->ID)) continue;
 								}
 															
 								/*
