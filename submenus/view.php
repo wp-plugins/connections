@@ -393,10 +393,12 @@ function connectionsShowViewPage()
 							(SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibilityfilter . ")
 							ORDER BY order_by, last_name, first_name";*/
 							
-					$sql = new cnSQL();
 					//$results = $wpdb->get_results($sql);
-					$results = $sql->getEntries();
+					//$results = $sql->getEntries();
+					$results = $connections->db->getEntries();
 					
+					$connections->filter->byEntryType(&$results, $connections->options->getEntryType($current_user->ID));
+					$connections->filter->byEntryVisibility(&$results, $connections->options->getVisibilityType($current_user->ID));
 					?>
 					
 					<form action="admin.php?page=connections&action=do" method="post">
@@ -474,22 +476,6 @@ function connectionsShowViewPage()
 									$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
 									if ($currentLetter != $previousLetter)
 									{
-										/*
-										 * This is to skip any entries that are not of the selected type when being filtered.
-										 */
-										if ($connections->options->getEntryType($current_user->ID) != '')
-										{
-											if ($entry->getEntryType() != $connections->options->getEntryType($current_user->ID)) continue;
-										}
-										
-										/*
-										 * This is to skip any entries that are not of the selected visibility when being filtered.
-										 */
-										if ($connections->options->getVisibilityType($current_user->ID) != '')
-										{
-											if ($entry->getVisibility() != $connections->options->getVisibilityType($current_user->ID)) continue;
-										}
-																				
 										$setAnchor .= '<a href="#' . $currentLetter . '">' . $currentLetter . '</a> ';
 										$previousLetter = $currentLetter;
 									}
@@ -533,25 +519,6 @@ function connectionsShowViewPage()
 								 */								
 								$object = new cnOutput($row);
 								
-								/*
-								 * This is to skip any entries that are not of the selected type when being filtered.
-								 */
-								if ($connections->options->getEntryType($current_user->ID) != "" )
-								{
-									if ($entry->getEntryType() != $connections->options->getEntryType($current_user->ID)) continue;
-								}
-								
-								/*
-								 * This is to skip any entries that are not of the selected visibility when being filtered.
-								 */
-								if ($connections->options->getVisibilityType($current_user->ID) != '')
-								{
-									if ($entry->getVisibility() != $connections->options->getVisibilityType($current_user->ID)) continue;
-								}
-															
-								/*
-								 * Checks the first letter of the last name to see if it is the next letter in the alpha array and sets the anchor.
-								 */
 								$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
 								if ($currentLetter != $previousLetter) {
 									$setAnchor = "<a name='$currentLetter'></a>";

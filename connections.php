@@ -40,10 +40,9 @@ if (!class_exists('connectionsLoad'))
 {
 	class connectionsLoad
 	{
-		/**
-		 * @TODO: Scrup the plug-in to use this global $options.
-		 */
 		public $options;
+		public $db;
+		public $filter;
 		
 		public $errorMessages;
 		public $successMessages;
@@ -135,6 +134,8 @@ if (!class_exists('connectionsLoad'))
 			
 			//SQL objects
 			require_once(WP_PLUGIN_DIR . '/connections/includes/class.sql.php');
+			//Filter objects
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.filters.php');
 			//HTML FORM objects
 			require_once(WP_PLUGIN_DIR . '/connections/includes/class.form.php');
 			//date objects
@@ -152,6 +153,9 @@ if (!class_exists('connectionsLoad'))
 			
 			//shortcodes
 			require_once(WP_PLUGIN_DIR . '/connections/includes/inc.shortcodes.php');
+			
+			$this->db = new cnSQL();
+			$this->filter = new cnFilters();
 		}
 		
 		/**
