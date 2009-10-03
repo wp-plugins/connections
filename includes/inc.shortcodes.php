@@ -3,9 +3,11 @@ add_shortcode('connections_list', '_connections_list');
 function _connections_list($atts, $content=null) {
 	global $wpdb, $connections, $current_user;
 	
+	$convert = new cnConvert();
+	
 	$atts = shortcode_atts( array(
-				'allow_public_override' => 'false',
 				'id' => null,
+				'allow_public_override' => 'false',
 				'private_override' => 'false',
 				'show_alphaindex' => 'false',
 				'repeat_alphaindex' => 'false',
@@ -22,8 +24,30 @@ function _connections_list($atts, $content=null) {
 				'template_name' => 'card',
 				'custom_template'=>'false',
 				), $atts ) ;
+				
+	/*
+	 * Convert some of the $atts values in the array to boolean.
+	 */
+	//$atts['allow_public_override'] = $convert->toBoolean($atts['allow_public_override']);
+	$convert->toBoolean(&$atts['allow_public_override']);
+	//$atts['private_override'] = $convert->toBoolean($atts['private_override']);
+	$convert->toBoolean(&$atts['private_override']);
+	//$atts['show_alphaindex'] = $convert->toBoolean($atts['show_alphaindex']);
+	$convert->toBoolean(&$atts['show_alphaindex']);
+	//$atts['repeat_alphaindex'] = $convert->toBoolean($atts['repeat_alphaindex']);
+	$convert->toBoolean(&$atts['repeat_alphaindex']);
+	//$atts['show_alphahead'] = $convert->toBoolean($atts['show_alphahead']);
+	$convert->toBoolean(&$atts['show_alphahead']);
+	//$atts['custom_template'] = $convert->toBoolean($atts['custom_template']);
+	$convert->toBoolean(&$atts['custom_template']);
 	
-	//$plugin_options = new cnOptions();
+	/*echo gettype($atts['allow_public_override']) . "\n";
+	echo gettype($atts['private_override']) . "\n";
+	echo gettype($atts['show_alphaindex']) . "\n";
+	echo gettype($atts['repeat_alphaindex']) . "\n";
+	echo gettype($atts['show_alphahead']) . "\n";
+	echo gettype($atts['custom_template']) . "\n";*/
+	
 	$form = new cnFormObjects();
 	
 	/**
@@ -39,7 +63,7 @@ function _connections_list($atts, $content=null) {
 	 * and if the shortcode attribute for the override is set and it's value is true. If any of these 
 	 * are false access will not be granted.
 	 */
-	if (!$connections->options->getAllowPublic() && !is_user_logged_in() && $atts['allow_public_override'] !== 'true')
+	if (!is_user_logged_in() && !$connections->options->getAllowPublic() && !$atts['allow_public_override'] && !$atts['private_override'])
 	{
 		return '<p style="-moz-background-clip:border;
 				-moz-border-radius:11px;
@@ -61,7 +85,7 @@ function _connections_list($atts, $content=null) {
 			$visibilityfilter = " AND visibility='public' ";
 		}*/
 		
-		if ($atts['id'] != null) $visibilityfilter = " AND id='" . $atts['id'] . "' ";
+		/*if ($atts['id'] != null) $visibilityfilter = " AND id='" . $atts['id'] . "' ";
 		
 		$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = '' AND group_name = ''" . $visibilityfilter . ")
 				UNION
@@ -69,8 +93,11 @@ function _connections_list($atts, $content=null) {
 				UNION
 				(SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibilityfilter . ")
 				ORDER BY order_by, last_name, first_name";
-		$results = $wpdb->get_results($sql);
-				
+		$results = $wpdb->get_results($sql);*/
+		
+		$results = $connections->db->getEntries($atts['id']);
+		$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
+		
 		if ($results != null) {
 			
 			$out = '<a name="connections-list-head"></a>';
@@ -78,7 +105,7 @@ function _connections_list($atts, $content=null) {
 			 * The alpha index is only displayed if set set to true and not set to repeat using the shortcode attributes.
 			 * If a alpha index is set to repeat, that is handled down separately.
 			 */
-			if ($atts['show_alphaindex'] == 'true' && $atts['repeat_alphaindex'] != 'true') $out .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex(). "</div>";
+			if ($atts['show_alphaindex'] && !$atts['repeat_alphaindex']) $out .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex(). "</div>";
 			
 			$out .=  "<div class='connections-list'>\n";
 			
@@ -99,17 +126,17 @@ function _connections_list($atts, $content=null) {
 				 * @TODO
 				 * Build the query string to query only permitted entries.
 				 */
-				if (is_user_logged_in())
+				/*if (is_user_logged_in())
 				{
 					if ($entry->getVisibility() == 'public' && !current_user_can('connections_view_public') && !$connections->options->getAllowPublic()) continue;
-					if ($entry->getVisibility() == 'private' && !current_user_can('connections_view_private') && $atts['private_override'] == 'false') continue;
+					if ($entry->getVisibility() == 'private' && !current_user_can('connections_view_private') && !$atts['private_override']) continue;
 					if ($entry->getVisibility() == 'unlisted' && !current_user_can('connections_view_unlisted')) continue;
 				}
 				else
 				{
-					if ($entry->getVisibility() == 'private' && $atts['private_override'] == 'false') continue;
+					if ($entry->getVisibility() == 'private' && !$atts['private_override']) continue;
 					if ($entry->getVisibility() == 'unlisted') continue;
-				}
+				}*/
 				
 				/*
 				 * If any of the following variables are set from a previous iteration
@@ -170,11 +197,11 @@ function _connections_list($atts, $content=null) {
 				 */
 				$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
 				if ($currentLetter != $previousLetter && $atts['id'] == null) {
-					if ($atts['show_alphaindex'] == 'true') $setAnchor = '<a name="' . $currentLetter . '"></a>';
+					if ($atts['show_alphaindex']) $setAnchor = '<a name="' . $currentLetter . '"></a>';
 					
-					if ($atts['show_alphaindex'] == 'true' && $atts['repeat_alphaindex'] == 'true') $setAnchor .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
+					if ($atts['show_alphaindex'] && $atts['repeat_alphaindex']) $setAnchor .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
 					
-					if ($atts['show_alphahead'] == 'true') $setAnchor .= '<h4 class="cn-alphahead">' . $currentLetter . '</h4>';
+					if ($atts['show_alphahead']) $setAnchor .= '<h4 class="cn-alphahead">' . $currentLetter . '</h4>';
 					$previousLetter = $currentLetter;
 				} else {
 					$setAnchor = null;
@@ -183,9 +210,9 @@ function _connections_list($atts, $content=null) {
 				/*
 				 * The anchor and/or the alpha head is displayed if set to true using the shortcode attributes.
 				 */
-				if ($atts['show_alphaindex'] == 'true' || $atts['show_alphahead'] == 'true') $out .= $setAnchor;
+				if ($atts['show_alphaindex'] || $atts['show_alphahead']) $out .= $setAnchor;
 				
-				if ($atts['custom_template'] == 'true')
+				if ($atts['custom_template'])
 				{
 					if (is_dir(WP_CONTENT_DIR . '/connections_templates'))
 					{

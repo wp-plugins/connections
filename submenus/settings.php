@@ -107,6 +107,29 @@ function connectionsShowSettinsPage()
 							</tbody>
 						</table>
 					</div>
+					
+					<div class="form-field connectionsform">
+						<table class="form-table">
+							<tbody>
+							
+								<tr valign="top">
+									<th scope="row">
+										Private Entries
+									</th>
+									<td>
+										<label for="allow_private_override">
+											<input type="hidden" value="false" name="settings[allow_private_override]"/>
+											<input type="checkbox" value="true" name="settings[allow_private_override]" id="allow_private_override" 
+												
+											/>
+											Allow shortcode attribute override
+										</label>
+									</td>
+								</tr>
+								
+							</tbody>
+						</table>
+					</div>
 				
 					<div class="form-field connectionsform">
 						<h3>Thumbnail Image Settings</h3>

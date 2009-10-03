@@ -12,19 +12,21 @@ class cnSQL
 		return $wpdb->prefix . CN_TABLE_NAME;
 	}
 	
-	public function getEntries()
+	public function getEntries($id = NULL)
 	{
 		global $wpdb, $connections;
 		
-		$sql = "(SELECT *, `organization` AS `sort_column` FROM " . $this->getTableName() . " WHERE `last_name` = '' AND `group_name` = '')
-				 UNION
-				(SELECT *, `group_name` AS `sort_column` FROM " . $this->getTableName() . " WHERE `group_name` != '')
-				 UNION
-				(SELECT *, `last_name` AS `sort_column` FROM " . $this->getTableName() . " WHERE `last_name` != '')
-				 ORDER BY `sort_column`, `last_name`, `first_name`";
-		$results = $wpdb->get_results($sql);
+		if ($id != NULL) $idString = " AND `id`='" . $id . "' ";
 		
-		return $connections->filter->permitted(&$results);
+		$sql = "(SELECT *, `organization` AS `sort_column` FROM " . $this->getTableName() . " WHERE `last_name` = '' AND `group_name` = ''" . $idString . ")
+				 UNION
+				(SELECT *, `group_name` AS `sort_column` FROM " . $this->getTableName() . " WHERE `group_name` != ''" . $idString . ")
+				 UNION
+				(SELECT *, `last_name` AS `sort_column` FROM " . $this->getTableName() . " WHERE `last_name` != ''" . $idString . ")
+				 ORDER BY `sort_column`, `last_name`, `first_name`";
+		
+		return $wpdb->get_results($sql);
+		
 	}
 }
 

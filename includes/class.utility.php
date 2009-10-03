@@ -1,6 +1,7 @@
 <?php
 
-class cnCounter {
+class cnCounter
+{
      private $step;
      private $count; 
 
@@ -25,5 +26,51 @@ class cnCounter {
           $this->count = 0;
           $this->step = 1;
      }
+}
+
+class cnConvert
+{
+	/**
+	 * Converts the following strings: yes/no; true/false and 0/1 to boolean values.
+	 * If the supplied string does not match one of those values the method will return NULL.
+	 * 
+	 * @param string $value
+	 * @return boolean
+	 */
+	public function toBoolean($value)
+	{
+		switch ($value) 
+		{
+			case 'yes':
+				$value = TRUE;
+			break;
+			
+			case 'no':
+				$value = FALSE;
+			break;
+			
+			case 'true':
+				$value = TRUE;
+			break;
+			
+			case 'false':
+				$value = FALSE;
+			break;
+			
+			case '1':
+				$value = TRUE;
+			break;
+			
+			case '0':
+				$value = FALSE;
+			break;
+			
+			default:
+				$value = NULL;
+			break;
+		}
+		
+		return $value;
+	}
 }
 ?>

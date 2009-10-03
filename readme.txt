@@ -112,9 +112,10 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 == Changelog ==
 
 = 0.5.XX X/X/X =
-* BUG: Fixed a bug when intializing the settings so they are not reset.
+* BUG: Fixed a bug when intializing the settings so they are not reset on activation of the plugin.
 * BUG: Fixed how capabilites were created and managed for public entries.
 * BUG: Fixed how the entry edit link was created which was causing a token mismatch.
+* BUG: Fixed a permission error when using the shortcode override attributes.
 * Updated class.upload.php to version .28
 * Moved all queries to the SQL class.
 * Options class now is used throughout the plug-in rather than creating new instances.
