@@ -396,7 +396,7 @@ function connectionsShowViewPage()
 					//$results = $wpdb->get_results($sql);
 					//$results = $sql->getEntries();
 					$results = $connections->db->getEntries();
-					
+					$connections->filter->permitted(&$results);
 					$connections->filter->byEntryType(&$results, $connections->options->getEntryType($current_user->ID));
 					$connections->filter->byEntryVisibility(&$results, $connections->options->getVisibilityType($current_user->ID));
 					?>

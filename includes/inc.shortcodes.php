@@ -41,12 +41,12 @@ function _connections_list($atts, $content=null) {
 	//$atts['custom_template'] = $convert->toBoolean($atts['custom_template']);
 	$convert->toBoolean(&$atts['custom_template']);
 	
-	/*echo gettype($atts['allow_public_override']) . "\n";
+	echo gettype($atts['allow_public_override']) . "\n";
 	echo gettype($atts['private_override']) . "\n";
 	echo gettype($atts['show_alphaindex']) . "\n";
 	echo gettype($atts['repeat_alphaindex']) . "\n";
 	echo gettype($atts['show_alphahead']) . "\n";
-	echo gettype($atts['custom_template']) . "\n";*/
+	echo gettype($atts['custom_template']) . "\n";
 	
 	$form = new cnFormObjects();
 	
@@ -55,7 +55,7 @@ function _connections_list($atts, $content=null) {
 	 * to ensure that only possible way the next expression will not equal false and give access to the
 	 * entries is for $atts['allow_public_override'] to be set and it's value be true
 	 */
-	if (!$connections->options->getAllowPublicOverride()) unset($atts['allow_public_override']);
+	//if (!$connections->options->getAllowPublicOverride()) unset($atts['allow_public_override']);
 	
 	/**
 	 * Check whether the public is permitted to see the entry list based on if the user is logged in,
@@ -63,7 +63,10 @@ function _connections_list($atts, $content=null) {
 	 * and if the shortcode attribute for the override is set and it's value is true. If any of these 
 	 * are false access will not be granted.
 	 */
-	if (!is_user_logged_in() && !$connections->options->getAllowPublic() && !$atts['allow_public_override'] && !$atts['private_override'])
+	/*if (!is_user_logged_in() && 
+	    !$connections->options->getAllowPublic() && 
+		!$connections->options->getAllowPublicOverride() && 
+		!$atts['allow_public_override'])
 	{
 		return '<p style="-moz-background-clip:border;
 				-moz-border-radius:11px;
@@ -78,7 +81,7 @@ function _connections_list($atts, $content=null) {
 				text-align:center">You do not have sufficient permissions to view these entries.</p>';
 	}
 	else
-	{	
+	{*/
 		/*if (is_user_logged_in() or $atts['private_override'] != 'false') { 
 			$visibilityfilter = " AND (visibility='private' OR visibility='public') ";
 		} else {
@@ -251,7 +254,7 @@ function _connections_list($atts, $content=null) {
 			$out .= "</div>\n";
 		}
 		return $out;
-	}
+	//}
 }
 
 add_shortcode('upcoming_list', '_upcoming_list');

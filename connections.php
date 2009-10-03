@@ -166,22 +166,25 @@ if (!class_exists('connectionsLoad'))
 		{
 			$this->options = new cnOptions();
 			
-			if ($this->options->getAllowPublic() === null) $this->options->setAllowPublic(true);
+			if ($this->options->getAllowPublic() === NULL) $this->options->setAllowPublic(TRUE);
+			if ($this->options->getAllowPublicOverride() === NULL) $this->options->setAllowPublicOverride(FALSE);
 			
-			if ($this->options->getImgThumbQuality() === null) $this->options->setImgThumbQuality(80);
-			if ($this->options->getImgThumbX() === null) $this->options->setImgThumbX(80);
-			if ($this->options->getImgThumbY() === null) $this->options->setImgThumbY(54);
-			if ($this->options->getImgThumbCrop() === null) $this->options->setImgThumbCrop('crop');
+			if ($this->options->getAllowPrivateOverride() === NULL) $this->options->setAllowPrivateOverride(FALSE);
 			
-			if ($this->options->getImgEntryQuality() === null) $this->options->setImgEntryQuality(80);
-			if ($this->options->getImgEntryX() === null) $this->options->setImgEntryX(225);
-			if ($this->options->getImgEntryY() === null) $this->options->setImgEntryY(150);
-			if ($this->options->getImgEntryCrop() === null) $this->options->setImgEntryCrop('crop');
+			if ($this->options->getImgThumbQuality() === NULL) $this->options->setImgThumbQuality(80);
+			if ($this->options->getImgThumbX() === NULL) $this->options->setImgThumbX(80);
+			if ($this->options->getImgThumbY() === NULL) $this->options->setImgThumbY(54);
+			if ($this->options->getImgThumbCrop() === NULL) $this->options->setImgThumbCrop('crop');
 			
-			if ($this->options->getImgProfileQuality() === null) $this->options->setImgProfileQuality(80);
-			if ($this->options->getImgProfileX() === null) $this->options->setImgProfileX(300);
-			if ($this->options->getImgProfileY() === null) $this->options->setImgProfileY(225);
-			if ($this->options->getImgProfileCrop() === null) $this->options->setImgProfileCrop('crop');
+			if ($this->options->getImgEntryQuality() === NULL) $this->options->setImgEntryQuality(80);
+			if ($this->options->getImgEntryX() === NULL) $this->options->setImgEntryX(225);
+			if ($this->options->getImgEntryY() === NULL) $this->options->setImgEntryY(150);
+			if ($this->options->getImgEntryCrop() === NULL) $this->options->setImgEntryCrop('crop');
+			
+			if ($this->options->getImgProfileQuality() === NULL) $this->options->setImgProfileQuality(80);
+			if ($this->options->getImgProfileX() === NULL) $this->options->setImgProfileX(300);
+			if ($this->options->getImgProfileY() === NULL) $this->options->setImgProfileY(225);
+			if ($this->options->getImgProfileCrop() === NULL) $this->options->setImgProfileCrop('crop');
 			
 			$this->options->saveOptions();
 		}

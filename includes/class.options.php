@@ -86,6 +86,8 @@ class cnOptions
 	private $allowPublic;
 	private $allowPublicOverride;
 	
+	private $allowPrivateOverride;
+	
 	private $imgThumbQuality;
 	private $imgThumbX;
 	private $imgThumbY;
@@ -123,6 +125,8 @@ class cnOptions
 		$this->allowPublic = $this->options['settings']['allow_public'];
 		$this->allowPublicOverride = $this->options['settings']['allow_public_override'];
 		
+		$this->allowPrivateOverride = $this->options['settings']['allow_private_override'];
+		
 		$this->imgThumbQuality = $this->options['settings']['image']['thumbnail']['quality'];
 		$this->imgThumbX = $this->options['settings']['image']['thumbnail']['x'];
 		$this->imgThumbY = $this->options['settings']['image']['thumbnail']['y'];
@@ -157,6 +161,8 @@ class cnOptions
 		
 		$this->options['settings']['allow_public'] = $this->allowPublic;
 		$this->options['settings']['allow_public_override'] = $this->allowPublicOverride;
+		
+		$this->options['settings']['allow_private_override'] = $this->allowPrivateOverride;
 		
 		$this->options['settings']['image']['thumbnail']['quality'] = $this->imgThumbQuality;
 		$this->options['settings']['image']['thumbnail']['x'] = $this->imgThumbX;
@@ -212,17 +218,18 @@ class cnOptions
 		
 		$currentRoles = $wp_roles->get_names();
 		
-		if($allowPublic === '0' || $allowPublic === 'true' || $allowPublic === true)
+		if($allowPublic)
 		{
-			$this->allowPublic = true;
+			$this->allowPublic = TRUE;
 			
 			foreach ($currentRoles as $role => $name)
 			{
 				$this->addCapability($role, 'connections_view_public');
 			}
 		}
-		else{
-			$this->allowPublic = false;
+		else
+		{
+			$this->allowPublic = FALSE;
 			/*foreach ($currentRoles as $role => $name)
 			{
 				$this->removeCapability($role, 'connections_view_public');
@@ -245,16 +252,19 @@ class cnOptions
      * @param object $allowPublicOverride
      * @see pluginOptions::$allowPublicOverride
      */
-    public function setAllowPublicOverride($allowPublicOverride)
+    public function setAllowPublicOverride($value)
     {
-        if($allowPublicOverride === '0' || $allowPublicOverride === 'true' || $allowPublicOverride === true)
-		{
-			$this->allowPublicOverride = true;
-		}
-		else
-		{
-			$this->allowPublicOverride = false;
-		}
+        $this->allowPublicOverride = $value;
+    }
+	
+	public function getAllowPrivateOverride()
+    {
+        return $this->allowPrivateOverride;
+    }
+    
+     public function setAllowPrivateOverride($value)
+    {
+        $this->allowPrivateOverride = $value;
     }
 	
 	public function hasCapability($role, $cap)

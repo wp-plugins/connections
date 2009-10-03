@@ -27,15 +27,32 @@ function connectionsShowSettinsPage()
 		
 		if (isset($_POST['submit']))
 		{
-			$connections->options->setAllowPublic($_POST['settings']['allow_public']);
-			
-			if ($_POST['settings']['allow_public_override'] === 'true' && !$connections->options->getAllowPublic())
+			if (isset($_POST['settings']['allow_public']) && $_POST['settings']['allow_public'] === 'true')
 			{
-				$connections->options->setAllowPublicOverride(true);
+				$connections->options->setAllowPublic(TRUE);
 			}
 			else
 			{
-				$connections->options->setAllowPublicOverride(false);
+				$connections->options->setAllowPublic(FALSE);
+			}
+			
+			
+			if ($_POST['settings']['allow_public_override'] === 'true' && !$connections->options->getAllowPublic())
+			{
+				$connections->options->setAllowPublicOverride(TRUE);
+			}
+			else
+			{
+				$connections->options->setAllowPublicOverride(FALSE);
+			}
+			
+			if ($_POST['settings']['allow_private_override'] === 'true')
+			{
+				$connections->options->setAllowPrivateOverride(TRUE);
+			}
+			else
+			{
+				$connections->options->setAllowPrivateOverride(FALSE);
 			}
 			
 			$connections->options->setImgThumbQuality($_POST['settings']['image']['thumbnail']['quality']);
@@ -86,7 +103,6 @@ function connectionsShowSettinsPage()
 									</th>
 									<td>
 										<label for="allow_public">
-											<input type="hidden" value="false" name="settings[allow_public]"/>
 											<input type="checkbox" value="true" name="settings[allow_public]" id="allow_public" 
 												<?php if ($connections->options->getAllowPublic()) echo 'CHECKED ' ?>
 											/>
@@ -94,7 +110,6 @@ function connectionsShowSettinsPage()
 										</label>
 										
 										<label for="allow_public_override">
-											<input type="hidden" value="false" name="settings[allow_public_override]"/>
 											<input type="checkbox" value="true" name="settings[allow_public_override]" id="allow_public_override" 
 												<?php if ($connections->options->getAllowPublicOverride()) echo 'CHECKED ' ?>
 												<?php if ($connections->options->getAllowPublic()) echo 'DISABLED ' ?>
@@ -120,7 +135,7 @@ function connectionsShowSettinsPage()
 										<label for="allow_private_override">
 											<input type="hidden" value="false" name="settings[allow_private_override]"/>
 											<input type="checkbox" value="true" name="settings[allow_private_override]" id="allow_private_override" 
-												
+												<?php if ($connections->options->getAllowPrivateOverride()) echo 'CHECKED ' ?>
 											/>
 											Allow shortcode attribute override
 										</label>
