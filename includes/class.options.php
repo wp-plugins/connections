@@ -115,8 +115,6 @@ class cnOptions
 	 */
 	public function __construct()
 	{
-		//$this->currentUserID = $userID;
-		
 		$this->options = get_option('connections_options');
 		$this->version = $this->options['version'];
 		//$this->entryType = $this->options[$this->currentUserID]['filter']['entry_type'];
@@ -388,9 +386,10 @@ class cnOptions
      * Returns $entryType.
      * @see options::$entryType
      */
-    public function getEntryType($currentUserID)
+    public function getEntryType()
     {
-        return $this->options[$currentUserID]['filter']['entry_type'];
+        //return $this->options[$currentUserID]['filter']['entry_type'];
+		return $this->options[$this->currentUserID]['filter']['entry_type'];
 		//return $this->entryType;
     }
     
@@ -399,10 +398,11 @@ class cnOptions
      * @param object $entryType
      * @see options::$entryType
      */
-    public function setEntryType($entryType, $currentUserID)
+    public function setEntryType($entryType)
     {
-        $this->currentUserID;
+        //$this->currentUserID;
 		$this->entryType = $entryType;
+		$this->saveOptions();
     }
     
     /**
@@ -428,9 +428,9 @@ class cnOptions
      * Returns $visibilityType.
      * @see options::$visibilityType
      */
-    public function getVisibilityType($currentUserID)
+    public function getVisibilityType()
     {
-        return $this->options[$currentUserID]['filter']['visibility_type'];
+        return $this->options[$this->currentUserID]['filter']['visibility_type'];
 		//return $this->visibilityType;
     }
     
@@ -439,10 +439,11 @@ class cnOptions
      * @param object $visibilityType
      * @see options::$visibilityType
      */
-    public function setVisibilityType($visibilityType, $currentUserID)
+    public function setVisibilityType($visibilityType)
     {
-        $this->currentUserID = $currentUserID;
+        //$this->currentUserID = $currentUserID;
 		$this->visibilityType = $visibilityType;
+		$this->saveOptions();
     }
 
     /**
@@ -454,15 +455,10 @@ class cnOptions
         return $this->currentUserID;
     }
     
-    /**
-     * Sets $currentUserID.
-     * @param object $currentUserID
-     * @see pluginOptions::$currentUserID
-     */
-    public function setCurrentUserID($currentUserID)
-    {
-        $this->currentUserID = $currentUserID;
-    }
+	public function setCurrentUserID($id)
+	{
+		$this->currentUserID = $id;
+	}
 	
 	/**
 	 * Set the image default settings

@@ -77,6 +77,11 @@ if (!class_exists('connectionsLoad'))
 		
 		public function start()
 		{
+			global $connections, $current_user;
+		
+			get_currentuserinfo();
+			$connections->options->setCurrentUserID($current_user->ID);
+			
 			if (is_admin())
 			{
 				// Calls the methods to load the admin scripts and CSS.
@@ -115,7 +120,8 @@ if (!class_exists('connectionsLoad'))
 			 * @TODO: Define constants for the plug-in path and URL
 			 */
 			
-			define('CN_CURRENT_VERSION', '0.5.48');
+			define('CN_CURRENT_VERSION', '0.5.50');
+			define('CN_DB_VERSION', '0.1');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
 			define('CN_TABLE_NAME','connections');
@@ -332,34 +338,46 @@ if (!class_exists('connectionsLoad'))
 			
 			$sql = new cnSQL();
 			
-			if ($wpdb->get_var("SHOW TABLES LIKE '{$sql->getTableName()}'")!= $sql->getTableName() )
-			{
-				$table_name = $wpdb->prefix."connections";
+			/**
+			 * @TODO: Build a proper upgeade function for the table. Needed?
+			 */
+			//if ($wpdb->get_var("SHOW TABLES LIKE '{$sql->getTableName()}'")!= $sql->getTableName())
+			//{
+				$table_name = $sql->getTableName();
 			    $sql = "CREATE TABLE " . $table_name . " (
 			        id mediumint(9) NOT NULL AUTO_INCREMENT,
 			        ts TIMESTAMP,
-			        first_name tinytext NOT NULL,
+					date_added tinytext NOT NULL,
+			        entry_type tinytext NOT NULL,
+					visibility tinytext NOT NULL,
+					group_name tinytext NOT NULL,
+					honorable_prefix tinytext NOT NULL,
+					first_name tinytext NOT NULL,
+					middle_name tinytext NOT NULL,
 			        last_name tinytext NOT NULL,
+					honorable_suffix tinytext NOT NULL,
 					title tinytext NOT NULL,
 					organization tinytext NOT NULL,
 					department tinytext NOT NULL,
-					group_name tinytext NOT NULL,
-					birthday tinytext NOT NULL,
-					anniversary tinytext NOT NULL,
-					bio longtext NOT NULL,
-			        notes longtext NOT NULL,
 					addresses longtext NOT NULL,
 					phone_numbers longtext NOT NULL,
 					email longtext NOT NULL,
 					im longtext NOT NULL,
+					social longtext NOT NULL,
 					websites longtext NOT NULL,
+					birthday tinytext NOT NULL,
+					anniversary tinytext NOT NULL,
+					bio longtext NOT NULL,
+			        notes longtext NOT NULL,
 					options longtext NOT NULL,
-					visibility tinytext NOT NULL,
+					added_by mediumint(9) NOT NULL,
+					edited_by mediumint(9) NOT NULL,
+					status tinytext NOT NULL,
 			        PRIMARY KEY  (id)
 			    );";
 			    require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 			    dbDelta($sql);
-			}
+			//}
 			
 			/**
 			 * @TODO: Verify that the table did create.

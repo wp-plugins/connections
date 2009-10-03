@@ -289,10 +289,10 @@ function connectionsShowViewPage()
 			
 			if ($_POST['filter'])
 			{
-				$connections->options->setEntryType($_POST['entry_type'], $current_user->ID);
-				$connections->options->setVisibilityType($_POST['visibility_type'], $current_user->ID);
+				$connections->options->setEntryType($_POST['entry_type']);
+				$connections->options->setVisibilityType($_POST['visibility_type']);
 				
-				$connections->options->saveOptions();
+				//$connections->options->saveOptions();
 			}
 			
 			$showEntryList = true;
@@ -317,88 +317,11 @@ function connectionsShowViewPage()
 				<h2>Connections : Entry List</h2>
 				
 				<?php
-					/*
-					 * This switch will modify the query string based on the user selection
-					 * for the visbility type in the admin.
-					 * 
-					 * The stored visibility filter for the current user is checked against
-					 * the current user's capabilites; if the current user IS NOT permitted
-					 * the query string is set not to query the visibility type and then the
-					 * current users filter is set to NULL to show all. IF the current user
-					 * IS permitted the query string will query the visibility type. Finally
-					 * the remaining visibility types are checked and if NOT permitted that is
-					 * appened to the query string.
-					 */
-					/*switch ($connections->options->getVisibilityType($current_user->ID))
-					{
-						case 'public':
-							if (!current_user_can('connections_view_public') && !$connections->options->getAllowPublic())
-							{
-								$visibilityfilter = " AND NOT visibility='public' ";
-								$connections->options->setVisibilityType('', $current_user->ID);
-								$connections->options->saveOptions();
-							}
-							else
-							{
-								$visibilityfilter = " AND visibility='public' ";
-							}
-							if (!current_user_can('connections_view_private')) $visibilityfilter .= " AND NOT visibility='private' ";
-							if (!current_user_can('connections_view_unlisted')) $visibilityfilter .= " AND NOT visibility='unlisted' ";
-													
-							break;
-							
-						case 'private':
-							if (!current_user_can('connections_view_private'))
-							{
-								$visibilityfilter = " AND NOT visibility='private' ";
-								$connections->options->setVisibilityType('', $current_user->ID);
-								$connections->options->saveOptions();
-							}
-							else
-							{
-								$visibilityfilter = " AND visibility='private' ";
-							}
-							if (!current_user_can('connections_view_public') && !$connections->options->getAllowPublic()) $visibilityfilter .= " AND NOT visibility='public' ";
-							if (!current_user_can('connections_view_unlisted')) $visibilityfilter .= " AND NOT visibility='unlisted' ";
-							
-							break;
-							
-						case 'unlisted':
-							if (!current_user_can('connections_view_unlisted'))
-							{
-								$visibilityfilter = " AND NOT visibility='unlisted' ";
-								$connections->options->setVisibilityType('', $current_user->ID);
-								$connections->options->saveOptions();
-							}
-							else
-							{
-								$visibilityfilter = " AND visibility='unlisted' ";
-							}
-							if (!current_user_can('connections_view_public') && !$connections->options->getAllowPublic()) $visibilityfilter .= " AND NOT visibility='public' ";
-							if (!current_user_can('connections_view_private')) $visibilityfilter .= " AND NOT visibility='private' ";
-							
-							break;
-						
-						default:
-							if (!current_user_can('connections_view_public') && !$connections->options->getAllowPublic()) $visibilityfilter .= " AND NOT visibility='public' ";
-							if (!current_user_can('connections_view_private')) $visibilityfilter .= " AND NOT visibility='private' ";
-							if (!current_user_can('connections_view_unlisted')) $visibilityfilter .= " AND NOT visibility='unlisted' ";
-							break;
-					}
 					
-					$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = '' AND group_name = ''" . $visibilityfilter . ")
-							UNION
-							(SELECT *, group_name AS order_by FROM ".$wpdb->prefix."connections WHERE group_name != ''" . $visibilityfilter . ")
-							UNION
-							(SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibilityfilter . ")
-							ORDER BY order_by, last_name, first_name";*/
-							
-					//$results = $wpdb->get_results($sql);
-					//$results = $sql->getEntries();
 					$results = $connections->db->getEntries();
 					$connections->filter->permitted(&$results);
-					$connections->filter->byEntryType(&$results, $connections->options->getEntryType($current_user->ID));
-					$connections->filter->byEntryVisibility(&$results, $connections->options->getVisibilityType($current_user->ID));
+					$connections->filter->byEntryType(&$results, $connections->options->getEntryType());
+					$connections->filter->byEntryVisibility(&$results, $connections->options->getVisibilityType());
 					?>
 					
 					<form action="admin.php?page=connections&action=do" method="post">

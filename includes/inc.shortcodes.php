@@ -41,220 +41,147 @@ function _connections_list($atts, $content=null) {
 	//$atts['custom_template'] = $convert->toBoolean($atts['custom_template']);
 	$convert->toBoolean(&$atts['custom_template']);
 	
+	/*
 	echo gettype($atts['allow_public_override']) . "\n";
 	echo gettype($atts['private_override']) . "\n";
 	echo gettype($atts['show_alphaindex']) . "\n";
 	echo gettype($atts['repeat_alphaindex']) . "\n";
 	echo gettype($atts['show_alphahead']) . "\n";
 	echo gettype($atts['custom_template']) . "\n";
+	*/
 	
 	$form = new cnFormObjects();
 	
-	/**
-	 * If the view public entries override shortcode attribute is not permitted the attribute is unset
-	 * to ensure that only possible way the next expression will not equal false and give access to the
-	 * entries is for $atts['allow_public_override'] to be set and it's value be true
-	 */
-	//if (!$connections->options->getAllowPublicOverride()) unset($atts['allow_public_override']);
+	$results = $connections->db->getEntries($atts['id']);
+	$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
 	
-	/**
-	 * Check whether the public is permitted to see the entry list based on if the user is logged in,
-	 * if the the settings are set to allow public entries to be listed for a user that is not logged in
-	 * and if the shortcode attribute for the override is set and it's value is true. If any of these 
-	 * are false access will not be granted.
-	 */
-	/*if (!is_user_logged_in() && 
-	    !$connections->options->getAllowPublic() && 
-		!$connections->options->getAllowPublicOverride() && 
-		!$atts['allow_public_override'])
-	{
-		return '<p style="-moz-background-clip:border;
-				-moz-border-radius:11px;
-				background:#FFFFFF none repeat scroll 0 0;
-				border:1px solid #DFDFDF;
-				color:#333333;
-				display:block;
-				font-size:12px;
-				line-height:18px;
-				margin:25px auto 20px;
-				padding:1em 2em;
-				text-align:center">You do not have sufficient permissions to view these entries.</p>';
-	}
-	else
-	{*/
-		/*if (is_user_logged_in() or $atts['private_override'] != 'false') { 
-			$visibilityfilter = " AND (visibility='private' OR visibility='public') ";
-		} else {
-			$visibilityfilter = " AND visibility='public' ";
-		}*/
+	if ($results != null) {
 		
-		/*if ($atts['id'] != null) $visibilityfilter = " AND id='" . $atts['id'] . "' ";
+		$out = '<a name="connections-list-head"></a>';
+		/*
+		 * The alpha index is only displayed if set set to true and not set to repeat using the shortcode attributes.
+		 * If a alpha index is set to repeat, that is handled down separately.
+		 */
+		if ($atts['show_alphaindex'] && !$atts['repeat_alphaindex']) $out .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex(). "</div>";
 		
-		$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = '' AND group_name = ''" . $visibilityfilter . ")
-				UNION
-				(SELECT *, group_name AS order_by FROM ".$wpdb->prefix."connections WHERE group_name != ''" . $visibilityfilter . ")
-				UNION
-				(SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != ''" . $visibilityfilter . ")
-				ORDER BY order_by, last_name, first_name";
-		$results = $wpdb->get_results($sql);*/
+		$out .=  "<div class='connections-list'>\n";
 		
-		$results = $connections->db->getEntries($atts['id']);
-		$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
-		
-		if ($results != null) {
+		foreach ($results as $row)
+		{
+			$entry = new cnOutput($row);
+			$vCard = new cnvCard($row);
 			
-			$out = '<a name="connections-list-head"></a>';
+			
+			if (isset($continue)) unset($continue);
+			if (isset($cities)) unset($cities);
+			if (isset($states)) unset($states);
+			if (isset($zipcodes)) unset($zipcodes);
+			if (isset($countries)) unset($countries);
+			if (isset($setAnchor)) unset($setAnchor);
+			
 			/*
-			 * The alpha index is only displayed if set set to true and not set to repeat using the shortcode attributes.
-			 * If a alpha index is set to repeat, that is handled down separately.
+			 * First check to make sure there is data stored in the address array.
+			 * Then cycle thru each address, building separate arrays for city, state, zip and country.
 			 */
-			if ($atts['show_alphaindex'] && !$atts['repeat_alphaindex']) $out .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex(). "</div>";
-			
-			$out .=  "<div class='connections-list'>\n";
-			
-			foreach ($results as $row)
+			if ($entry->getAddresses())
 			{
-				$entry = new cnOutput($row);
-				$vCard = new cnvCard($row);
-				
-				/**
-				 * Check whether the current user, if logged in, is permitted to view public, private
-				 * or unlisted entries and filter those where permission has not been granted. If unregistered
-				 * visitors and users not logged in are permitted to view public entries so should a logged in
-				 * user regardless of the set capability
-				 * 
-				 * If unregistered visitors and users not logged in; private and unlisted entries are not displayed
-				 * unless the private override attribute is set to true then private entries will be displayed.
-				 * 
-				 * @TODO
-				 * Build the query string to query only permitted entries.
-				 */
-				/*if (is_user_logged_in())
+				$addressObject = new cnAddresses;
+				foreach ($entry->getAddresses() as $addressRow)
 				{
-					if ($entry->getVisibility() == 'public' && !current_user_can('connections_view_public') && !$connections->options->getAllowPublic()) continue;
-					if ($entry->getVisibility() == 'private' && !current_user_can('connections_view_private') && !$atts['private_override']) continue;
-					if ($entry->getVisibility() == 'unlisted' && !current_user_can('connections_view_unlisted')) continue;
-				}
-				else
-				{
-					if ($entry->getVisibility() == 'private' && !$atts['private_override']) continue;
-					if ($entry->getVisibility() == 'unlisted') continue;
-				}*/
+					if ($addressObject->getCity($addressRow) != null) $cities[] = $addressObject->getCity($addressRow);
+					if ($addressObject->getState($addressRow) != null) $states[] = $addressObject->getState($addressRow);
+					if ($addressObject->getZipCode($addressRow) != null) $zipcodes[] = $addressObject->getZipCode($addressRow);
+					if ($addressObject->getCountry($addressRow) != null) $countries[] = $addressObject->getCountry($addressRow);
+				}			
+			}
+			
+			/*
+			 * Here we filter out the entries that are wanted based on the
+			 * filter attributes that may have been used in the shortcode.
+			 * 
+			 * NOTE: The '@' operator is used to suppress PHP generated errors. This is done
+			 * because not every entry will have addresses to populate the arrays created above.
+			 */
+			if ($atts['list_type'] != 'all' && $atts['list_type'] != $entry->getEntryType())			$continue = true;
+			if ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != null)				$continue = true;
+			if ($entry->getTitle() != $atts['title'] && $atts['title'] != null)							$continue = true;
+			if ($entry->getOrganization() != $atts['organization'] && $atts['organization'] != null) 	$continue = true;
+			if ($entry->getDepartment() != $atts['department'] && $atts['department'] != null) 			$continue = true;
+			if (@!in_array($atts['city'], $cities) && $atts['city'] != null) 							$continue = true;
+			if (@!in_array($atts['state'], $states) && $atts['state'] != null) 							$continue = true;
+			if (@!in_array($atts['zip_code'], $zipcodes) && $atts['zip_code'] != null) 					$continue = true;
+			if (@!in_array($atts['country'], $countries) && $atts['country'] != null) 					$continue = true;
+			
+			/*
+			 * If any of the above filters returned true, the script will continue to the next entry.
+			 */
+			if ($continue == true) continue;
+	
+			/*
+			 * Checks the first letter of the last name to see if it is the next
+			 * letter in the alpha array and sets the anchor.
+			 * 
+			 * If the alpha index is set to repeat it will append to the anchor.
+			 * 
+			 * If the alpha head set to true it will append the alpha head to the anchor.
+			 */
+			$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
+			if ($currentLetter != $previousLetter && $atts['id'] == null) {
+				if ($atts['show_alphaindex']) $setAnchor = '<a name="' . $currentLetter . '"></a>';
 				
-				/*
-				 * If any of the following variables are set from a previous iteration
-				 * they are unset.
-				 */
-				if (isset($continue)) unset($continue);
-				if (isset($cities)) unset($cities);
-				if (isset($states)) unset($states);
-				if (isset($zipcodes)) unset($zipcodes);
-				if (isset($countries)) unset($countries);
-				if (isset($setAnchor)) unset($setAnchor);
+				if ($atts['show_alphaindex'] && $atts['repeat_alphaindex']) $setAnchor .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
 				
-				/*
-				 * First check to make sure there is data stored in the address array.
-				 * Then cycle thru each address, building separate arrays for city, state, zip and country.
-				 */
-				if ($entry->getAddresses())
+				if ($atts['show_alphahead']) $setAnchor .= '<h4 class="cn-alphahead">' . $currentLetter . '</h4>';
+				$previousLetter = $currentLetter;
+			} else {
+				$setAnchor = null;
+			}
+			
+			/*
+			 * The anchor and/or the alpha head is displayed if set to true using the shortcode attributes.
+			 */
+			if ($atts['show_alphaindex'] || $atts['show_alphahead']) $out .= $setAnchor;
+			
+			if ($atts['custom_template'])
+			{
+				if (is_dir(WP_CONTENT_DIR . '/connections_templates'))
 				{
-					$addressObject = new cnAddresses;
-					foreach ($entry->getAddresses() as $addressRow)
+					if (file_exists(WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php'))
 					{
-						if ($addressObject->getCity($addressRow) != null) $cities[] = $addressObject->getCity($addressRow);
-						if ($addressObject->getState($addressRow) != null) $states[] = $addressObject->getState($addressRow);
-						if ($addressObject->getZipCode($addressRow) != null) $zipcodes[] = $addressObject->getZipCode($addressRow);
-						if ($addressObject->getCountry($addressRow) != null) $countries[] = $addressObject->getCountry($addressRow);
-					}			
-				}
-				
-				/*
-				 * Here we filter out the entries that are wanted based on the
-				 * filter attributes that may have been used in the shortcode.
-				 * 
-				 * NOTE: The '@' operator is used to suppress PHP generated errors. This is done
-				 * because not every entry will have addresses to populate the arrays created above.
-				 */
-				if ($atts['list_type'] != 'all' && $atts['list_type'] != $entry->getEntryType())			$continue = true;
-				if ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != null)				$continue = true;
-				if ($entry->getTitle() != $atts['title'] && $atts['title'] != null)							$continue = true;
-				if ($entry->getOrganization() != $atts['organization'] && $atts['organization'] != null) 	$continue = true;
-				if ($entry->getDepartment() != $atts['department'] && $atts['department'] != null) 			$continue = true;
-				if (@!in_array($atts['city'], $cities) && $atts['city'] != null) 							$continue = true;
-				if (@!in_array($atts['state'], $states) && $atts['state'] != null) 							$continue = true;
-				if (@!in_array($atts['zip_code'], $zipcodes) && $atts['zip_code'] != null) 					$continue = true;
-				if (@!in_array($atts['country'], $countries) && $atts['country'] != null) 					$continue = true;
-				
-				/*
-				 * If any of the above filters returned true, the script will continue to the next entry.
-				 */
-				if ($continue == true) continue;
-		
-				/*
-				 * Checks the first letter of the last name to see if it is the next
-				 * letter in the alpha array and sets the anchor.
-				 * 
-				 * If the alpha index is set to repeat it will append to the anchor.
-				 * 
-				 * If the alpha head set to true it will append the alpha head to the anchor.
-				 */
-				$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
-				if ($currentLetter != $previousLetter && $atts['id'] == null) {
-					if ($atts['show_alphaindex']) $setAnchor = '<a name="' . $currentLetter . '"></a>';
-					
-					if ($atts['show_alphaindex'] && $atts['repeat_alphaindex']) $setAnchor .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
-					
-					if ($atts['show_alphahead']) $setAnchor .= '<h4 class="cn-alphahead">' . $currentLetter . '</h4>';
-					$previousLetter = $currentLetter;
-				} else {
-					$setAnchor = null;
-				}
-				
-				/*
-				 * The anchor and/or the alpha head is displayed if set to true using the shortcode attributes.
-				 */
-				if ($atts['show_alphaindex'] || $atts['show_alphahead']) $out .= $setAnchor;
-				
-				if ($atts['custom_template'])
-				{
-					if (is_dir(WP_CONTENT_DIR . '/connections_templates'))
-					{
-						if (file_exists(WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php'))
-						{
-							// Custom Template Name
-							$template = WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php';
-						}
-						else
-						{
-							$out .= '<p style="color:red; font-weight:bold; text-align:center;">ERROR CUSTOM TEMPLATE DOES NOT EXIST</p>';
-						}
+						// Custom Template Name
+						$template = WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php';
 					}
 					else
 					{
-						$out .= '<p style="color:red; font-weight:bold; text-align:center;">ERROR CUSTOM TEMPLATE DIRECTORY DOES NOT EXSIT</p>';
+						$out .= '<p style="color:red; font-weight:bold; text-align:center;">ERROR CUSTOM TEMPLATE DOES NOT EXIST</p>';
 					}
 				}
 				else
 				{
-					// Use the specified default template
-					$template = WP_PLUGIN_DIR . '/connections/templates/' .  $atts['template_name'] . '.php';
+					$out .= '<p style="color:red; font-weight:bold; text-align:center;">ERROR CUSTOM TEMPLATE DIRECTORY DOES NOT EXSIT</p>';
 				}
-				
-				if (isset($template))
-				{
-					$out .= '<div class="vcard">' . "\n";
-						ob_start();
-					    include($template);
-					    $out .= ob_get_contents();
-					    ob_end_clean();
-					$out .= '</div>' . "\n";
-				}
-							
 			}
-			$out .= "</div>\n";
+			else
+			{
+				// Use the specified default template
+				$template = WP_PLUGIN_DIR . '/connections/templates/' .  $atts['template_name'] . '.php';
+			}
+			
+			if (isset($template))
+			{
+				$out .= '<div class="vcard">' . "\n";
+					ob_start();
+				    include($template);
+				    $out .= ob_get_contents();
+				    ob_end_clean();
+				$out .= '</div>' . "\n";
+			}
+						
 		}
-		return $out;
-	//}
+		$out .= "</div>\n";
+	}
+	return $out;
+	
 }
 
 add_shortcode('upcoming_list', '_upcoming_list');

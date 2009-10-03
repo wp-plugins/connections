@@ -126,12 +126,12 @@ class cnEntry
 	function __construct($data = null)	{
 		$this->id = $data->id;
 		$this->timeStamp = $data->ts;
-		$this->firstName = $data->first_name;
-		$this->lastName = $data->last_name;
-		$this->title = $data->title;
-		$this->organization = $data->organization;
-		$this->department = $data->department;
-		$this->groupName = $data->group_name;
+		$this->firstName = stripslashes($data->first_name);
+		$this->lastName = stripslashes($data->last_name);
+		$this->title = stripslashes($data->title);
+		$this->organization = stripslashes($data->organization);
+		$this->department = stripslashes($data->department);
+		$this->groupName = stripslashes($data->group_name);
 		$this->addresses = unserialize($data->addresses);
 		$this->phoneNumbers = unserialize($data->phone_numbers);
 		$this->emailAddresses = unserialize($data->email);
@@ -139,8 +139,8 @@ class cnEntry
 		$this->websites = unserialize($data->websites);
 		$this->birthday = $data->birthday;
 		$this->anniversary = $data->anniversary;
-		$this->bio = $data->bio;
-		$this->notes = $data->notes;
+		$this->bio = stripslashes($data->bio);
+		$this->notes = stripslashes($data->notes);
 		$this->visibility = $data->visibility;
 		
 		$this->options = unserialize($data->options);
@@ -908,6 +908,10 @@ class cnEntry
 	
 	public function delete($id)
 	{
+		/**
+		 * @TODO: Move to the cnSQL class.
+		 */
+		
 		global $wpdb;
 		
 		$wpdb->query($wpdb->prepare('DELETE FROM ' . $wpdb->prefix . 'connections WHERE id="' . $wpdb->escape($id) . '"'));

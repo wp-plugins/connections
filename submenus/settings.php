@@ -106,7 +106,8 @@ function connectionsShowSettinsPage()
 											<input type="checkbox" value="true" name="settings[allow_public]" id="allow_public" 
 												<?php if ($connections->options->getAllowPublic()) echo 'CHECKED ' ?>
 											/>
-											Allow unregistered visitors and users not logged in to view entries
+											Allow unregistered visitors and users not logged in to view entries<br />
+											<small>(When disabled, use roles to define which roles may view the public entries.)</small>
 										</label>
 										
 										<label for="allow_public_override">
@@ -183,7 +184,7 @@ function connectionsShowSettinsPage()
 										Crop
 									</th>
 									<td>
-										<?php echo $form->buildRadio('settings[image][thumbnail][crop]', 'image_thumbnail_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $connections->options->getImgThumbCrop()); ?>
+										<?php echo $form->buildRadio('settings[image][thumbnail][crop]', 'image_thumbnail_crop', array('Enlarge and crop (maintain aspect ratio)' => 'crop', 'Shrink to fit (maintain aspect ratio)' => 'fill', 'None' => 'none'), $connections->options->getImgThumbCrop()); ?>
 									</td>
 								</tr>
 								
@@ -229,7 +230,7 @@ function connectionsShowSettinsPage()
 										Crop
 									</th>
 									<td>
-										<?php echo $form->buildRadio('settings[image][entry][crop]', 'image_entry_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $connections->options->getImgEntryCrop()); ?>
+										<?php echo $form->buildRadio('settings[image][entry][crop]', 'image_entry_crop', array('Enlarge and crop (maintain aspect ratio)' => 'crop', 'Shrink to fit (maintain aspect ratio)' => 'fill', 'None' => 'none'), $connections->options->getImgEntryCrop()); ?>
 									</td>
 								</tr>
 								
@@ -274,7 +275,7 @@ function connectionsShowSettinsPage()
 										Crop
 									</th>
 									<td>
-										<?php echo $form->buildRadio('settings[image][profile][crop]', 'image_profile_crop', array('Enlarge and crop' => 'crop', 'Shrink to fit' => 'fill', 'None' => 'none'), $connections->options->getImgProfileCrop()); ?>
+										<?php echo $form->buildRadio('settings[image][profile][crop]', 'image_profile_crop', array('Enlarge and crop (maintain aspect ratio)' => 'crop', 'Shrink to fit (maintain aspect ratio)' => 'fill', 'None' => 'none'), $connections->options->getImgProfileCrop()); ?>
 									</td>
 								</tr>
 							
