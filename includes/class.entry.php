@@ -17,6 +17,8 @@ class cnEntry
 	 */
 	private $timeStamp;
 	
+	private $dateAdded;
+	
 	/**
 	 * String: First Name
 	 * @var string
@@ -126,6 +128,7 @@ class cnEntry
 	function __construct($data = null)	{
 		$this->id = $data->id;
 		$this->timeStamp = $data->ts;
+		$this->dateAdded = (integer) $data->date_added;
 		$this->firstName = stripslashes($data->first_name);
 		$this->lastName = stripslashes($data->last_name);
 		$this->title = stripslashes($data->title);
@@ -179,14 +182,14 @@ class cnEntry
      * @param string $format
      * @see entry::$timeStamp
      */
-    public function getFormattedTimeStamp($format=null)
+    public function getFormattedTimeStamp($format = NULL)
     {
         if (!$format)
 		{
 			$format = "m/d/Y";
 		}
 		
-		$formattedTimeStamp = date($format,strtotime($this->timeStamp));
+		$formattedTimeStamp = date($format, strtotime($this->timeStamp));
 		
 		return $formattedTimeStamp;
     }
@@ -206,6 +209,25 @@ class cnEntry
 	public function getHumanTimeDiff()
 	{
 		return human_time_diff(strtotime($this->getUnixTimeStamp()));
+	}
+	
+	public function getDateAdded($format = NULL)
+	{
+		if ($this->dateAdded != NULL)
+		{
+			if (!$format)
+			{
+				$format = 'm/d/Y';
+			}
+			
+			$formattedTimeStamp = date($format, $this->dateAdded);
+			
+			return $formattedTimeStamp;
+		}
+		else
+		{
+			return 'Unknown';
+		}
 	}
 	
     /**
@@ -851,6 +873,7 @@ class cnEntry
 		$this->setOptions();
 		
 		$sql = "UPDATE ".$wpdb->prefix."connections SET
+			entry_type    = '".$wpdb->escape($this->entryType)."',
 			first_name    = '".$wpdb->escape($this->firstName)."',
 			last_name     = '".$wpdb->escape($this->lastName)."',
 			title    	  = '".$wpdb->escape($this->title)."',
@@ -885,23 +908,25 @@ class cnEntry
 		$this->setOptions();
 		
 		$sql = "INSERT INTO ".$wpdb->prefix."connections SET
+			date_added    = '".$wpdb->escape(time())."',
+			entry_type    = '".$wpdb->escape($this->entryType)."',
+			visibility    = '".$wpdb->escape($this->visibility)."',
+			group_name	  = '".$wpdb->escape($this->groupName)."',
 			first_name    = '".$wpdb->escape($this->firstName)."',
 			last_name     = '".$wpdb->escape($this->lastName)."',
 			title    	  = '".$wpdb->escape($this->title)."',
 			organization  = '".$wpdb->escape($this->organization)."',
 			department    = '".$wpdb->escape($this->department)."',
-			group_name	  = '".$wpdb->escape($this->groupName)."',
-			visibility    = '".$wpdb->escape($this->visibility)."',
-			birthday      = '".$wpdb->escape($this->birthday)."',
-			anniversary   = '".$wpdb->escape($this->anniversary)."',
 			addresses     = '".$wpdb->escape($this->addresses)."',
 			phone_numbers = '".$wpdb->escape($this->phoneNumbers)."',
 			email	      = '".$wpdb->escape($this->emailAddresses)."',
 			im  	      = '".$wpdb->escape($this->im)."',
 			websites      = '".$wpdb->escape($this->websites)."',
-			options       = '".$wpdb->escape($this->options)."',
+			birthday      = '".$wpdb->escape($this->birthday)."',
+			anniversary   = '".$wpdb->escape($this->anniversary)."',
 			bio           = '".$wpdb->escape($this->bio)."',
-			notes         = '".$wpdb->escape($this->notes)."'";
+			notes         = '".$wpdb->escape($this->notes)."',
+			options       = '".$wpdb->escape($this->options)."'";
 		
 		return $wpdb->query($wpdb->prepare($sql));
 	}

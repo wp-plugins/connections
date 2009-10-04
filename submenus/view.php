@@ -317,6 +317,29 @@ function connectionsShowViewPage()
 				<h2>Connections : Entry List</h2>
 				
 				<?php
+					/*
+					 * Reset the user's cached visibility filter if they no longer have access.
+					 * This must be done before the filter is applied.
+					 */
+					switch ($connections->options->getVisibilityType())
+					{
+						case 'public':
+							if (!current_user_can('connections_view_public')) $connections->options->setVisibilityType('');
+						break;
+						
+						case 'private':
+							if (!current_user_can('connections_view_private')) $connections->options->setVisibilityType('');
+						break;
+						
+						case 'unlisted':
+							if (!current_user_can('connections_view_unlisted')) $connections->options->setVisibilityType('');
+						break;
+						
+						default:
+							$connections->options->setVisibilityType('');
+						break;
+					}
+					
 					
 					$results = $connections->db->getEntries();
 					$connections->filter->permitted(&$results);
@@ -340,7 +363,7 @@ function connectionsShowViewPage()
 							<?php echo $form->buildSelect('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $connections->options->getEntryType($current_user->ID))?>
 							
 							<?php
-								/**
+								/*
 								 * Builds the visibilty select list base on current user capabilities.
 								 */
 								if (current_user_can('connections_view_public') || $connections->options->getAllowPublic()) $visibilitySelect['public'] = 'Show Public';
@@ -349,9 +372,12 @@ function connectionsShowViewPage()
 								
 								if (isset($visibilitySelect))
 								{
+									/*
+									 * Add the 'Show All' option and echo the list.
+									 */
 									$showAll[''] = 'Show All';
 									$visibilitySelect = $showAll + $visibilitySelect;
-									echo $form->buildSelect('visibility_type', $visibilitySelect, $connections->options->getVisibilityType($current_user->ID));
+									echo $form->buildSelect('visibility_type', $visibilitySelect, $connections->options->getVisibilityType());
 								}
 							?>
 							<input id="doaction" class="button-secondary action" type="submit" name="filter" value="Filter" />
@@ -593,7 +619,9 @@ function connectionsShowViewPage()
 										if ($entry->getBio()) echo "<strong>Bio:</strong> " . $entry->getBio() . "<br />"; else echo "&nbsp;";
 										if ($entry->getNotes()) echo "<strong>Notes:</strong> " . $entry->getNotes(); else echo "&nbsp;";
 									echo "</td> \n";
-									echo "<td><strong>Entry ID:</strong> " . $entry->getId();
+									echo "<td>
+										<strong>Entry ID:</strong> " . $entry->getId() . '<br />' . "
+										<strong>Date Added:</strong> " . $entry->getDateAdded() . '<br />';
 										if (!$entry->getImageLinked()) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";
 										if ($entry->getImageLinked() && $entry->getImageDisplay()) echo "<br /><strong>Display:</strong> Yes"; else echo "<br /><strong>Display:</strong> No";
 									echo "</td> \n";
