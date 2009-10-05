@@ -293,6 +293,7 @@ function connectionsShowViewPage()
 				$connections->options->setVisibilityType($_POST['visibility_type']);
 				
 				//$connections->options->saveOptions();
+				$connections->currentUser->setFilterEntryType($_POST['entry_type']);
 			}
 			
 			$showEntryList = true;

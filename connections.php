@@ -40,6 +40,7 @@ if (!class_exists('connectionsLoad'))
 {
 	class connectionsLoad
 	{
+		public $currentUser;
 		public $options;
 		public $db;
 		public $filter;
@@ -81,6 +82,7 @@ if (!class_exists('connectionsLoad'))
 		
 			get_currentuserinfo();
 			$connections->options->setCurrentUserID($current_user->ID);
+			$connections->currentUser->setID($current_user->ID);
 			
 			if (is_admin())
 			{
@@ -138,6 +140,8 @@ if (!class_exists('connectionsLoad'))
 			//GPL PHP upload class from http://www.verot.net/php_class_upload.htm
 			require_once(WP_PLUGIN_DIR . '/connections/includes/php_class_upload/class.upload.php');
 			
+			//Current User objects
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.user.php');
 			//SQL objects
 			require_once(WP_PLUGIN_DIR . '/connections/includes/class.sql.php');
 			//Filter objects
@@ -160,6 +164,7 @@ if (!class_exists('connectionsLoad'))
 			//shortcodes
 			require_once(WP_PLUGIN_DIR . '/connections/includes/inc.shortcodes.php');
 			
+			$this->currentUser = new cnUser();
 			$this->db = new cnSQL();
 			$this->filter = new cnFilters();
 		}
