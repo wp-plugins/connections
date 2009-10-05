@@ -125,6 +125,9 @@ class cnEntry
 	private $entryType;
 	private $connectionGroup;
 	
+	private $addedBy;
+	private $editedBy;
+	
 	function __construct($data = null)	{
 		$this->id = $data->id;
 		$this->timeStamp = $data->ts;
@@ -155,6 +158,9 @@ class cnEntry
 		$this->imageNameOriginal = $this->options['image']['name']['original'];
 		$this->entryType = $this->options['entry']['type'];
 		$this->connectionGroup = $this->options['connection_group'];
+		
+		$this->addedBy = $data->added_by;
+		$this->editedBy = $data->edited_by;
 	}
 
     /**
@@ -829,6 +835,36 @@ class cnEntry
         $this->options['image']['name']['original'] = $imageNameOriginal;
     }
     
+	public function getAddedBy()
+	{
+		$addedBy = get_userdata($this->addedBy);
+		
+		if (!$addedBy->display_name == NULL)
+		{
+			return $addedBy->display_name;
+		}
+		else
+		{
+			return 'Unknown';
+		}
+		
+	}
+	
+	public function getEditedBy()
+	{
+		$editedBy = get_userdata($this->editedBy);
+		
+		if (!$editedBy->display_name == NULL)
+		{
+			return $editedBy->display_name;
+		}
+		else
+		{
+			return 'Unknown';
+		}
+		
+	}
+	
     /**
      * Returns $options.
      * @see entry::$options
@@ -863,7 +899,7 @@ class cnEntry
 	
 	public function update()
 	{
-		global$wpdb;
+		global $wpdb, $connections;
 		
 		$this->addresses = serialize($this->addresses);
 		$this->phoneNumbers = serialize($this->phoneNumbers);
@@ -890,7 +926,9 @@ class cnEntry
 			websites      = '".$wpdb->escape($this->websites)."',
 			options       = '".$wpdb->escape($this->options)."',
 			bio           = '".$wpdb->escape($this->bio)."',
-			notes         = '".$wpdb->escape($this->notes)."'
+			notes         = '".$wpdb->escape($this->notes)."',
+			edited_by     = '".$wpdb->escape($connections->options->getCurrentUserID())."',
+			status	      = '".$wpdb->escape('approved')."'
 			WHERE id ='".$wpdb->escape($this->id)."'";
 		
 		return $wpdb->query($wpdb->prepare($sql));
@@ -898,7 +936,7 @@ class cnEntry
 	
 	public function save()
 	{
-		global$wpdb;
+		global $wpdb, $connections;
 		
 		$this->addresses = serialize($this->addresses);
 		$this->phoneNumbers = serialize($this->phoneNumbers);
@@ -926,7 +964,10 @@ class cnEntry
 			anniversary   = '".$wpdb->escape($this->anniversary)."',
 			bio           = '".$wpdb->escape($this->bio)."',
 			notes         = '".$wpdb->escape($this->notes)."',
-			options       = '".$wpdb->escape($this->options)."'";
+			options       = '".$wpdb->escape($this->options)."',
+			added_by      = '".$wpdb->escape($connections->options->getCurrentUserID())."',
+			edited_by     = '".$wpdb->escape($connections->options->getCurrentUserID())."',
+			status	      = '".$wpdb->escape('approved')."'";
 		
 		return $wpdb->query($wpdb->prepare($sql));
 	}

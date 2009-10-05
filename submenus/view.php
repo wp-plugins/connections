@@ -507,7 +507,10 @@ function connectionsShowViewPage()
 											echo '</div>';
 									echo "</td> \n";
 									echo "<td ><strong>" . $entry->displayVisibiltyType() . "</strong></td> \n";												
-									echo "<td >" . $entry->getFormattedTimeStamp() . "</td> \n";											
+									echo '<td >';
+										echo '<strong>On:</strong> ' . $entry->getFormattedTimeStamp() . '<br />';
+										echo '<strong>By:</strong> ' . $entry->getEditedBy();
+									echo "</td> \n";											
 								echo "</tr> \n";
 								
 								echo "<tr class='child-row-" . $entry->getId() . " entrydetails' id='contact-" . $entry->getId() . "-detail' style='display:none;'>";
@@ -619,9 +622,10 @@ function connectionsShowViewPage()
 										if ($entry->getBio()) echo "<strong>Bio:</strong> " . $entry->getBio() . "<br />"; else echo "&nbsp;";
 										if ($entry->getNotes()) echo "<strong>Notes:</strong> " . $entry->getNotes(); else echo "&nbsp;";
 									echo "</td> \n";
-									echo "<td>
-										<strong>Entry ID:</strong> " . $entry->getId() . '<br />' . "
-										<strong>Date Added:</strong> " . $entry->getDateAdded() . '<br />';
+									echo '<td>
+										<strong>Entry ID:</strong> ' . $entry->getId() . '<br />' . '
+										<strong>Date Added:</strong> ' . $entry->getDateAdded() . '<br />
+										<strong>Added By:</strong> ' . $entry->getAddedBy() . '<br />';
 										if (!$entry->getImageLinked()) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";
 										if ($entry->getImageLinked() && $entry->getImageDisplay()) echo "<br /><strong>Display:</strong> Yes"; else echo "<br /><strong>Display:</strong> No";
 									echo "</td> \n";

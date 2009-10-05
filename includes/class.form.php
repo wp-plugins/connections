@@ -304,11 +304,11 @@ class cnEntryForm
 		<div class="form-field connectionsform">
 				<div class="namefield">
 					<div class="input inputhalfwidth">
-						<label for="first_name">First name:</label>
+						<label for="first_name">First Name:</label>
 						<input type="text" name="first_name" value="' . $entry->getFirstName() . '" />
 					</div>
 					<div class="input inputhalfwidth">
-						<label for="last_name">Last name:</label>
+						<label for="last_name">Last Name:</label>
 						<input type="text" name="last_name" value="' . $entry->getLastName() . '" />
 					</div>
 					<div class="clear"></div>
@@ -323,6 +323,18 @@ class cnEntryForm
 					
 					<label for="department">Department:</label>
 					<input type="text" name="department" value="' . $entry->getDepartment() . '" />
+					
+					<div id="contact_name">
+						<div class="input inputhalfwidth">
+							<label for="contact_first_name">Contact First Name:</label>
+							<input type="text" name="contact_first_name" value="" />
+						</div>
+						<div class="input inputhalfwidth">
+							<label for="contact_last_name">Contact Last Name:</label>
+							<input type="text" name="contact_last_name" value="" />
+						</div>
+						<div class="clear"></div>
+					</div>
 				</div>
 		</div>
 		

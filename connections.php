@@ -121,7 +121,7 @@ if (!class_exists('connectionsLoad'))
 			 */
 			
 			define('CN_CURRENT_VERSION', '0.5.50');
-			define('CN_DB_VERSION', '0.1');
+			define('CN_DB_VERSION', '0.1.0');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
 			define('CN_TABLE_NAME','connections');
@@ -339,7 +339,7 @@ if (!class_exists('connectionsLoad'))
 			$sql = new cnSQL();
 			
 			/**
-			 * @TODO: Build a proper upgeade function for the table. Needed?
+			 * @TODO: Build a proper upgeade function for the table.
 			 */
 			//if ($wpdb->get_var("SHOW TABLES LIKE '{$sql->getTableName()}'")!= $sql->getTableName())
 			//{
@@ -359,6 +359,8 @@ if (!class_exists('connectionsLoad'))
 					title tinytext NOT NULL,
 					organization tinytext NOT NULL,
 					department tinytext NOT NULL,
+					contact_first_name tinytext NOT NULL,
+					contact_last_name tinytext NOT NULL,
 					addresses longtext NOT NULL,
 					phone_numbers longtext NOT NULL,
 					email longtext NOT NULL,
@@ -497,6 +499,10 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function showPage()
 		{
+			/*
+			 * Upgrade page to go here.
+			 */
+			
 			switch ($_GET['page'])
 			{
 				case 'connections':

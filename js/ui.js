@@ -46,6 +46,7 @@ jQuery(document).ready(function(){
 			.click(function(){
 				jQuery('#connection_group').slideUp();
 				jQuery('.namefield').slideDown();
+				jQuery('#contact_name').slideUp();
 				jQuery('.home').slideDown();
 				jQuery('.homephone').slideDown();
 				jQuery('.homefax').slideDown();
@@ -62,6 +63,7 @@ jQuery(document).ready(function(){
 			.click(function(){
 				jQuery('#connection_group').slideUp();
 				jQuery('.namefield').slideUp();
+				jQuery('#contact_name').slideDown();
 				jQuery('.home').slideUp();
 				jQuery('.homephone').slideUp();
 				jQuery('.homefax').slideUp();
@@ -97,6 +99,7 @@ jQuery(document).ready(function(){
 		{
 			case 'individual':
 				jQuery('#connection_group').slideUp();
+				jQuery('#contact_name').slideUp();
 				break;
 			
 			case 'organization':
