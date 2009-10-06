@@ -120,9 +120,10 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Moved all queries to the SQL class.
 * Options class now is used throughout the plug-in rather than creating new instances.
 * Renamed all the classes to be more unique to help avoid conflict with other plug-ins.
-* Re-worked the way method used to store the cached entry list filters.
+* Re-worked the way method used to store the cached entry list filters to use the user_meta table.
 * Capturing more meta datawhen added/ updating entries; date added, added by, last edited by.
-* Added Contact First/Last name for the organization entry type.
+* Added Contact First/Last name for the organization entry type. Support extended to hCard and vCard.
+* Added honorable pre/suffix and middle name. Support extended to hCard and vCard.
 * Added a setting to disable the private override shortcode attribute.
 * Added a filter class that can easily be extended. Currently supports filtering by visibility and entry type.
 * Added a permission filter. All queries are run thru this filter removing any entries the current user is not permitted to view.

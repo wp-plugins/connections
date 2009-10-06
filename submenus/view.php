@@ -289,11 +289,12 @@ function connectionsShowViewPage()
 			
 			if ($_POST['filter'])
 			{
-				$connections->options->setEntryType($_POST['entry_type']);
-				$connections->options->setVisibilityType($_POST['visibility_type']);
+				//$connections->options->setEntryType($_POST['entry_type']);
+				//$connections->options->setVisibilityType($_POST['visibility_type']);
 				
 				//$connections->options->saveOptions();
 				$connections->currentUser->setFilterEntryType($_POST['entry_type']);
+				$connections->currentUser->setFilterVisibility($_POST['visibility_type']);
 			}
 			
 			$showEntryList = true;
@@ -318,34 +319,10 @@ function connectionsShowViewPage()
 				<h2>Connections : Entry List</h2>
 				
 				<?php
-					/*
-					 * Reset the user's cached visibility filter if they no longer have access.
-					 * This must be done before the filter is applied.
-					 */
-					switch ($connections->options->getVisibilityType())
-					{
-						case 'public':
-							if (!current_user_can('connections_view_public')) $connections->options->setVisibilityType('');
-						break;
-						
-						case 'private':
-							if (!current_user_can('connections_view_private')) $connections->options->setVisibilityType('');
-						break;
-						
-						case 'unlisted':
-							if (!current_user_can('connections_view_unlisted')) $connections->options->setVisibilityType('');
-						break;
-						
-						default:
-							$connections->options->setVisibilityType('');
-						break;
-					}
-					
-					
 					$results = $connections->db->getEntries();
 					$connections->filter->permitted(&$results);
-					$connections->filter->byEntryType(&$results, $connections->options->getEntryType());
-					$connections->filter->byEntryVisibility(&$results, $connections->options->getVisibilityType());
+					$connections->filter->byEntryType(&$results, $connections->currentUser->getFilterEntryType());
+					$connections->filter->byEntryVisibility(&$results, $connections->currentUser->getFilterVisibility());
 					?>
 					
 					<form action="admin.php?page=connections&action=do" method="post">
@@ -361,7 +338,7 @@ function connectionsShowViewPage()
 						?>
 						
 						<div class="alignleft actions">
-							<?php echo $form->buildSelect('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $connections->options->getEntryType($current_user->ID))?>
+							<?php echo $form->buildSelect('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $connections->currentUser->getFilterEntryType())?>
 							
 							<?php
 								/*
@@ -378,7 +355,7 @@ function connectionsShowViewPage()
 									 */
 									$showAll[''] = 'Show All';
 									$visibilitySelect = $showAll + $visibilitySelect;
-									echo $form->buildSelect('visibility_type', $visibilitySelect, $connections->options->getVisibilityType());
+									echo $form->buildSelect('visibility_type', $visibilitySelect, $connections->currentUser->getFilterVisibility());
 								}
 							?>
 							<input id="doaction" class="button-secondary action" type="submit" name="filter" value="Filter" />

@@ -17,24 +17,6 @@ class cnOptions
 	 */
 	private $version;
 	
-	/**
-	 * String: holds the last set entry type for the persistant filter
-	 * @var string
-	 */
-	private $entryType;
-	
-	/**
-	 * String: holds the last set visibility type for the persistant filter
-	 * @var string
-	 */
-	private $visibilityType;
-	
-	/**
-	 * Interger: stores the current WP user ID
-	 * @var interger
-	 */
-	private $currentUserID;
-	
 	private $defaultCapabilities = array(
 								'connections_view_entry_list' => 'View Entry List',
 								'connections_add_entry' => 'Add Entry',
@@ -383,29 +365,6 @@ class cnOptions
 	}
 	
     /**
-     * Returns $entryType.
-     * @see options::$entryType
-     */
-    public function getEntryType()
-    {
-        //return $this->options[$currentUserID]['filter']['entry_type'];
-		return $this->options[$this->currentUserID]['filter']['entry_type'];
-		//return $this->entryType;
-    }
-    
-    /**
-     * Sets $entryType.
-     * @param object $entryType
-     * @see options::$entryType
-     */
-    public function setEntryType($entryType)
-    {
-        //$this->currentUserID;
-		$this->entryType = $entryType;
-		$this->saveOptions();
-    }
-    
-    /**
      * Returns $version.
      * @see options::$version
      */
@@ -424,42 +383,6 @@ class cnOptions
         $this->version = $version;
     }
     
-    /**
-     * Returns $visibilityType.
-     * @see options::$visibilityType
-     */
-    public function getVisibilityType()
-    {
-        return $this->options[$this->currentUserID]['filter']['visibility_type'];
-		//return $this->visibilityType;
-    }
-    
-    /**
-     * Sets $visibilityType.
-     * @param object $visibilityType
-     * @see options::$visibilityType
-     */
-    public function setVisibilityType($visibilityType)
-    {
-        //$this->currentUserID = $currentUserID;
-		$this->visibilityType = $visibilityType;
-		$this->saveOptions();
-    }
-
-    /**
-     * Returns $currentUserID.
-     * @see pluginOptions::$currentUserID
-     */
-    public function getCurrentUserID()
-    {
-        return $this->currentUserID;
-    }
-    
-	public function setCurrentUserID($id)
-	{
-		$this->currentUserID = $id;
-	}
-	
 	/**
 	 * Set the image default settings
 	 */

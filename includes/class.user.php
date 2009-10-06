@@ -31,25 +31,86 @@ class cnUser
 	
 	public function getFilterEntryType()
     {
-        return $this->options[$this->currentUserID]['filter']['entry_type'];
+        $user_meta = get_usermeta($this->ID, 'connections');
+		
+		if (!$user_meta == NULL)
+		{
+			return $user_meta['filter']['entry_type'];
+		}
+		else
+		{
+			return '';
+		}
     }
     
     public function setFilterEntryType($entryType)
     {
-        //$this->entryType = $entryType;
-		//$this->saveOptions();
-		update_usermeta($this->ID, 'connections_filter_entry_type', $entryType);
+        $user_meta = get_usermeta($this->ID, 'connections');
+		$user_meta['filter']['entry_type'] = $entryType;
+		update_usermeta($this->ID, 'connections', $user_meta);
     }
 	
 	public function getFilterVisibility()
     {
-        return $this->options[$this->currentUserID]['filter']['visibility_type'];
+        
+		$user_meta = get_usermeta($this->ID, 'connections');
+		
+		if (!$user_meta == NULL)
+		{
+			/*
+			 * Reset the user's cached visibility filter if they no longer have access.
+			 */
+			switch ($user_meta['filter']['visibility'])
+			{
+				case 'public':
+					if (!current_user_can('connections_view_public'))
+					{
+						return '';
+					}
+					else
+					{
+						return $user_meta['filter']['visibility'];
+					}
+				break;
+				
+				case 'private':
+					if (!current_user_can('connections_view_private'))
+					{
+						return '';
+					}
+					else
+					{
+						return $user_meta['filter']['visibility'];
+					}
+				break;
+				
+				case 'unlisted':
+					if (!current_user_can('connections_view_unlisted'))
+					{
+						return '';
+					}
+					else
+					{
+						return $user_meta['filter']['visibility'];
+					}
+				break;
+				
+				default:
+					return '';
+				break;
+			}
+		}
+		else
+		{
+			return '';
+		}
     }
     
     public function setFilterVisibility($visibility)
     {
-        $this->visibilityType = $visibility;
-		$this->saveOptions();
+        $user_meta = get_usermeta($this->ID, 'connections');
+		$user_meta['filter']['visibility'] = $visibility;
+		update_usermeta($this->ID, 'connections', $user_meta);
     }
 }
 ?>

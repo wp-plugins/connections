@@ -303,16 +303,30 @@ class cnEntryForm
 		
 		<div class="form-field connectionsform">
 				<div class="namefield">
-					<div class="input inputhalfwidth">
-						<label for="first_name">First Name:</label>
-						<input type="text" name="first_name" value="' . $entry->getFirstName() . '" />
-					</div>
-					<div class="input inputhalfwidth">
-						<label for="last_name">Last Name:</label>
-						<input type="text" name="last_name" value="' . $entry->getLastName() . '" />
-					</div>
-					<div class="clear"></div>
-						
+					
+					<label for="honorable_prefix">Prefix:
+						<select name="honorable_prefix">
+							<option>Mr.</option>
+							<option>Ms.</option>
+						</select>
+					</label>
+				
+					<label for="first_name">First Name:</label>
+					<input type="text" name="first_name" value="' . $entry->getFirstName() . '" />
+					
+					<label for="middle_name">Middle Name:</label>
+					<input type="text" name="middle_name" value="" />
+				
+					<label for="last_name">Last Name:</label>
+					<input type="text" name="last_name" value="' . $entry->getLastName() . '" />
+				
+					<label for="honorable_suffix">Suffix:
+						<select name="honorable_suffix">
+							<option>Jr.</option>
+							<option>MD</option>
+						</select>
+					</label>
+					
 					<label for="title">Title:</label>
 					<input type="text" name="title" value="' . $entry->getTitle() . '" />
 				</div>

@@ -81,7 +81,6 @@ if (!class_exists('connectionsLoad'))
 			global $connections, $current_user;
 		
 			get_currentuserinfo();
-			$connections->options->setCurrentUserID($current_user->ID);
 			$connections->currentUser->setID($current_user->ID);
 			
 			if (is_admin())
