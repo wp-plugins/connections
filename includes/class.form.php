@@ -297,12 +297,16 @@ class cnEntryForm
 					}						
 					
 				$out .= '</div>';
-				$out .= '<p class="add"><a id="add_button" class="button">Add Connection</a></p>';
+				$out .= '<p class="add"><a id="add_relation" class="button">Add Connection</a></p>';
+				
+				/**
+				 * @TODO: Move the inline style to the stylesheet.
+				 */
 			$out .= '
 		</div>
 		
-		<div class="form-field connectionsform">
-				<div class="namefield">
+		<div class="form-field connectionsform namefield">
+				<div class="">
 					
 					<label for="honorable_prefix">Prefix:
 						<select name="honorable_prefix">
@@ -311,16 +315,22 @@ class cnEntryForm
 						</select>
 					</label>
 				
-					<label for="first_name">First Name:</label>
-					<input type="text" name="first_name" value="' . $entry->getFirstName() . '" />
+					<div style="float: left; width: 35%">
+						<label for="first_name">First Name:</label>
+						<input type="text" name="first_name" value="' . $entry->getFirstName() . '" />
+					</div>
 					
-					<label for="middle_name">Middle Name:</label>
-					<input type="text" name="middle_name" value="" />
+					<div style="float: left; width: 30%">
+						<label for="middle_name">Middle Name:</label>
+						<input type="text" name="middle_name" value="' . $entry->getMiddleName() . '" />
+					</div>
 				
-					<label for="last_name">Last Name:</label>
-					<input type="text" name="last_name" value="' . $entry->getLastName() . '" />
+					<div style="float: left; width: 35%">
+						<label for="last_name">Last Name:</label>
+						<input type="text" name="last_name" value="' . $entry->getLastName() . '" />
+					</div>
 				
-					<label for="honorable_suffix">Suffix:
+					<label for="honorable_suffix" style="clear: both;">Suffix:
 						<select name="honorable_suffix">
 							<option>Jr.</option>
 							<option>MD</option>
@@ -330,7 +340,9 @@ class cnEntryForm
 					<label for="title">Title:</label>
 					<input type="text" name="title" value="' . $entry->getTitle() . '" />
 				</div>
-				
+			</div>
+			
+			<div class="form-field connectionsform">
 				<div class="organization">
 					<label for="organization">Organization:</label>
 					<input type="text" name="organization" value="' . $entry->getOrganization() . '" />
@@ -341,11 +353,11 @@ class cnEntryForm
 					<div id="contact_name">
 						<div class="input inputhalfwidth">
 							<label for="contact_first_name">Contact First Name:</label>
-							<input type="text" name="contact_first_name" value="" />
+							<input type="text" name="contact_first_name" value="' . $entry->getContactFirstName() . '" />
 						</div>
 						<div class="input inputhalfwidth">
 							<label for="contact_last_name">Contact Last Name:</label>
-							<input type="text" name="contact_last_name" value="" />
+							<input type="text" name="contact_last_name" value="' . $entry->getContactLastName() . '" />
 						</div>
 						<div class="clear"></div>
 					</div>
@@ -456,6 +468,20 @@ class cnEntryForm
 			$ticker->reset();
 		$out .= "</div>";
 		
+		$out .= '<div class="form-field connectionsform socialmedia">';
+			$out .= '<div id="socialmedia">';
+				
+				// --> Start template for Social Media IDs <-- \\
+				$out .= '<textarea id="socialmedia_row_base" style="display: none">';
+					$out .= $form->buildSelect('socialmedia[::FIELD::][type]', $connections->options->getDefaultSocialMediaValues());
+					$out .= '<input type="text" name="socialmedia[::FIELD::][id]" value="" style="width: 375px"/>';
+				$out .= '</textarea>';
+				// --> End template for Social Media IDs <-- \\
+			
+			$out .= '</div>';
+			$out .= '<p class="add"><a id="add_socialmedia" class="button">Add Social Media ID</a></p>';
+		$out .= '</div>';
+		
 		if ($data->websites != null) $websiteValues = $entry->getWebsites(); else $websiteValues = array(array()); //Empty array as a place holder
 		$out .= "<div class='form-field connectionsform'>";
 		$ticker->reset();
@@ -537,10 +563,13 @@ class cnEntryForm
 		$entry->setGroupName($_POST['connection_group_name']);
 		$entry->setConnectionGroup($_POST['connection_group']);
 		$entry->setFirstName($_POST['first_name']);
+		$entry->setMiddleName($_POST['middle_name']);
 		$entry->setLastName($_POST['last_name']);
 		$entry->setTitle($_POST['title']);
 		$entry->setOrganization($_POST['organization']);
 		$entry->setDepartment($_POST['department']);
+		$entry->setContactFirstName($_POST['contact_first_name']);
+		$entry->setContactLastName($_POST['contact_last_name']);
 		$entry->setAddresses($_POST['address']);
 		$entry->setPhoneNumbers($_POST['phone_numbers']);
 		$entry->setEmailAddresses($_POST['email']);

@@ -65,6 +65,8 @@ class cnOptions
 											'wife' =>"Wife"
 											);
 	
+	private $defaultSocialMediaValues = array('facebook' => 'Facebook ID', 'mysapce' => 'MySpace ID', 'twitter' => 'Twitter ID');
+	
 	private $allowPublic;
 	private $allowPublicOverride;
 	
@@ -777,7 +779,12 @@ class cnOptions
     {
         return $this->defaultConnectionGroupValues;
     }
-
+	
+	public function getDefaultSocialMediaValues()
+    {
+        return $this->defaultSocialMediaValues;
+    }
+	
     public function getConnectionRelation($value)
     {
         return $this->defaultConnectionGroupValues[$value];

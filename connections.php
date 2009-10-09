@@ -349,7 +349,7 @@ if (!class_exists('connectionsLoad'))
 			//{
 				$table_name = $sql->getTableName();
 			    $sql = "CREATE TABLE " . $table_name . " (
-			        id mediumint(9) NOT NULL AUTO_INCREMENT,
+			        id bigint(20) NOT NULL AUTO_INCREMENT,
 			        ts TIMESTAMP,
 					date_added tinytext NOT NULL,
 			        entry_type tinytext NOT NULL,
@@ -376,9 +376,10 @@ if (!class_exists('connectionsLoad'))
 					bio longtext NOT NULL,
 			        notes longtext NOT NULL,
 					options longtext NOT NULL,
-					added_by mediumint(9) NOT NULL,
-					edited_by mediumint(9) NOT NULL,
-					status tinytext NOT NULL,
+					added_by bigint(20) NOT NULL,
+					edited_by bigint(20) NOT NULL,
+					owner bigint(20) NOT NULL,
+					status varchar(20) NOT NULL,
 			        PRIMARY KEY  (id)
 			    );";
 			    require_once(ABSPATH . 'wp-admin/upgrade-functions.php');

@@ -25,6 +25,8 @@ class cnEntry
 	 */
 	private $firstName;
 	
+	private $middleName;
+	
 	/**
 	 * String: Last Name
 	 * @var string
@@ -48,6 +50,10 @@ class cnEntry
 	 * @var string
 	 */
 	private $department;
+	
+	private $contactFirstName;
+	
+	private $contactLastName;
 	
 	/**
 	 * String: Connection Group Name
@@ -133,9 +139,12 @@ class cnEntry
 		$this->timeStamp = $data->ts;
 		$this->dateAdded = (integer) $data->date_added;
 		$this->firstName = stripslashes($data->first_name);
+		$this->middleName = stripslashes($data->middle_name);
 		$this->lastName = stripslashes($data->last_name);
 		$this->title = stripslashes($data->title);
 		$this->organization = stripslashes($data->organization);
+		$this->contactFirstName = stripslashes($data->contact_first_name);
+		$this->contactLastName = stripslashes($data->contact_last_name);
 		$this->department = stripslashes($data->department);
 		$this->groupName = stripslashes($data->group_name);
 		$this->addresses = unserialize($data->addresses);
@@ -256,6 +265,16 @@ class cnEntry
         $this->firstName = $firstName;
     }
     
+	public function getMiddleName()
+    {
+        return $this->middleName;
+    }
+    
+    public function setMiddleName($middleName)
+    {
+        $this->middleName = $middleName;
+    }
+	
     /**
      * The last name if the entry type is an individual.
      * If entry type is set to connection group the method will return the group name.
@@ -302,7 +321,7 @@ class cnEntry
         switch ($this->getEntryType())
 		{
 			case 'individual':
-				return $this->getFirstName() . ' ' . $this->getLastName();
+				return $this->getFirstName() . ' ' . $this->getMiddleName() . ' ' . $this->getLastName();
 			break;
 			
 			case 'organization':
@@ -314,7 +333,7 @@ class cnEntry
 			break;
 			
 			default:
-				return $this->getFirstName() . ' ' . $this->getLastName();
+				return $this->getFirstName() . ' ' . $this->getMiddleName() . ' ' . $this->getLastName();
 			break;
 		}
     }
@@ -331,7 +350,7 @@ class cnEntry
     	switch ($this->getEntryType())
 		{
 			case 'individual':
-				return $this->getLastName() . ', ' . $this->getFirstName();
+				return $this->getLastName() . ', ' . $this->getFirstName() . ' ' . $this->getMiddleName();
 			break;
 			
 			case 'organization':
@@ -407,7 +426,27 @@ class cnEntry
     {
         $this->department = $department;
     }
-
+	
+	public function getContactFirstName()
+	{
+		return $this->contactFirstName;
+	}
+	
+	public function setContactFirstName($contactFirstName)
+	{
+		$this->contactFirstName = $contactFirstName;
+	}
+	
+	public function getContactLastName()
+	{
+		return $this->contactLastName;
+	}
+	
+	public function setContactLastName($contactLastName)
+	{
+		$this->contactLastName = $contactLastName;
+	}
+	
     /**
      * Returns $groupName.
      * @see entry::$groupName
@@ -911,10 +950,13 @@ class cnEntry
 		$sql = "UPDATE ".$wpdb->prefix."connections SET
 			entry_type    = '".$wpdb->escape($this->entryType)."',
 			first_name    = '".$wpdb->escape($this->firstName)."',
+			middle_name   = '".$wpdb->escape($this->middleName)."',
 			last_name     = '".$wpdb->escape($this->lastName)."',
 			title    	  = '".$wpdb->escape($this->title)."',
 			organization  = '".$wpdb->escape($this->organization)."',
 			department    = '".$wpdb->escape($this->department)."',
+			contact_first_name = '".$wpdb->escape($this->contactFirstName)."',
+			contact_last_name  = '".$wpdb->escape($this->contactLastName)."',
 			group_name	  = '".$wpdb->escape($this->groupName)."',
 			visibility    = '".$wpdb->escape($this->visibility)."',
 			birthday      = '".$wpdb->escape($this->birthday)."',
@@ -927,7 +969,7 @@ class cnEntry
 			options       = '".$wpdb->escape($this->options)."',
 			bio           = '".$wpdb->escape($this->bio)."',
 			notes         = '".$wpdb->escape($this->notes)."',
-			edited_by     = '".$wpdb->escape($connections->options->getCurrentUserID())."',
+			edited_by     = '".$wpdb->escape($connections->currentUser->getID())."',
 			status	      = '".$wpdb->escape('approved')."'
 			WHERE id ='".$wpdb->escape($this->id)."'";
 		
@@ -951,10 +993,13 @@ class cnEntry
 			visibility    = '".$wpdb->escape($this->visibility)."',
 			group_name	  = '".$wpdb->escape($this->groupName)."',
 			first_name    = '".$wpdb->escape($this->firstName)."',
+			middle_name   = '".$wpdb->escape($this->middleName)."',
 			last_name     = '".$wpdb->escape($this->lastName)."',
 			title    	  = '".$wpdb->escape($this->title)."',
 			organization  = '".$wpdb->escape($this->organization)."',
 			department    = '".$wpdb->escape($this->department)."',
+			contact_first_name = '".$wpdb->escape($this->contactFirstName)."',
+			contact_last_name = '".$wpdb->escape($this->contactLastName)."',
 			addresses     = '".$wpdb->escape($this->addresses)."',
 			phone_numbers = '".$wpdb->escape($this->phoneNumbers)."',
 			email	      = '".$wpdb->escape($this->emailAddresses)."',
@@ -965,8 +1010,8 @@ class cnEntry
 			bio           = '".$wpdb->escape($this->bio)."',
 			notes         = '".$wpdb->escape($this->notes)."',
 			options       = '".$wpdb->escape($this->options)."',
-			added_by      = '".$wpdb->escape($connections->options->getCurrentUserID())."',
-			edited_by     = '".$wpdb->escape($connections->options->getCurrentUserID())."',
+			added_by      = '".$wpdb->escape($connections->currentUser->getID())."',
+			edited_by     = '".$wpdb->escape($connections->currentUser->getID())."',
 			status	      = '".$wpdb->escape('approved')."'";
 		
 		return $wpdb->query($wpdb->prepare($sql));

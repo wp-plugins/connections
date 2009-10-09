@@ -127,7 +127,7 @@ jQuery(document).ready(function(){
 		var intCount = 0;
 		//var jRelations = (jQuery('#relation_row_base').html());
 		
-		jQuery('#add_button')
+		jQuery('#add_relation')
 			.click(function() {
 				var jRelations = (jQuery('#relation_row_base').text());
 				
@@ -142,11 +142,29 @@ jQuery(document).ready(function(){
 			});
 	});
 	
-	
+	jQuery(function() {
+		var intCount = 0;
+		//var jRelations = (jQuery('#socialmedia_row_base').html());
+		
+		jQuery('#add_socialmedia')
+			.click(function() {
+				var jRelations = (jQuery('#socialmedia_row_base').text());
+				
+				jRelations = jRelations.replace(
+					new RegExp('::FIELD::', 'gi'),
+					intCount
+					);
+				
+				jQuery('#socialmedia').append( '<div id="socialmedia_row_' + intCount + '" class="socialmedia_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeRelationRow(\'#socialmedia_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				
+				intCount++;
+			});
+	});
 
 });
 
 function removeRelationRow(id)
 	{
-		jQuery(id).remove();
+		//jQuery(id).remove();
+		jQuery(id).slideUp('slow', function() {jQuery(id).remove});
 	}
