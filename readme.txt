@@ -35,14 +35,13 @@ Connections is a simple to use address book or business directory that is highly
 * **0.5.1** Added additional filters for addresses. [User requested.](http://wordpress.org/support/topic/248568)
 
 = New features coming in the next version: =
-* Make the Connection Group relations in the front end entry list clickable to bring up the entry's specific details.
+* Assign entries to groups and have the option to display those groups in a page/post
 * Add social media fields
 * Add honorable pre/suffix
 * Add middle name
 
 = Upcoming features: =
-* Add CRM features
-* Assign entries to groups and have the option to display those groups in a page/post
+* Make the Connection Group relations in the front end entry list clickable to bring up the entry's specific details.
 * Sidebar widget
 * Dashboard widget
 * An update request form
@@ -54,8 +53,6 @@ Connections is a simple to use address book or business directory that is highly
 * Option to manage the relation types
 * Multiple images per entry or video
 * Gravatar support
-* Custom fields
-* Import/Export
 * Backup
 * ...and any suggestion that I may receive...
 
@@ -127,6 +124,7 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Added a setting to disable the private override shortcode attribute.
 * Added a filter class that can easily be extended. Currently supports filtering by visibility and entry type.
 * Added a permission filter. All queries are run thru this filter removing any entries the current user is not permitted to view.
+* Changed it so the upgrade message and version error only show on the Connections admin pages.
 
 = 0.5.48 9/14/2009 =
 * Fixed a jQuery bug in IE8.

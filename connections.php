@@ -88,21 +88,6 @@ if (!class_exists('connectionsLoad'))
 				// Calls the methods to load the admin scripts and CSS.
 				add_action('admin_print_scripts', array(&$this, 'loadAdminScripts') );
 				add_action('admin_print_styles', array(&$this, 'loadAdminStyles') );
-				
-				if ($this->options->getVersion() != CN_CURRENT_VERSION)
-				{
-					/**
-					 * @TODO: More descriptive error message.
-					 */
-					add_action('admin_notices', create_function('', 'echo \'<div id="message" class="error"><p><strong>ERROR: </strong>The version of Connections installed is newer than ther version last activated. Please deactive and then reactivate Connections.</p></div>\';') );
-				}
-				
-				if (get_option('connections_installed'))
-				{
-					add_action( 'admin_notices', create_function('', 'echo \'<div id="message" class="updated fade"><p><strong>' . get_option('connections_installed') . '</strong></p></div>\';') );
-					// Remove the admin install message set during activation.
-					delete_option('connections_installed');
-				}
 			}
 			else
 			{
@@ -121,7 +106,7 @@ if (!class_exists('connectionsLoad'))
 			 * @TODO: Define constants for the plug-in path and URL
 			 */
 			
-			define('CN_CURRENT_VERSION', '0.5.50');
+			define('CN_CURRENT_VERSION', '0.5.51');
 			define('CN_DB_VERSION', '0.1.0');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
@@ -343,7 +328,7 @@ if (!class_exists('connectionsLoad'))
 			$sql = new cnSQL();
 			
 			/**
-			 * @TODO: Build a proper upgeade function for the table.
+			 * @TODO: Build a proper upgrade function for the table.
 			 */
 			//if ($wpdb->get_var("SHOW TABLES LIKE '{$sql->getTableName()}'")!= $sql->getTableName())
 			//{
@@ -417,6 +402,7 @@ if (!class_exists('connectionsLoad'))
 			//Adds the Connections sub-menus.
 			add_submenu_page(CN_BASE_NAME, 'Connections : Entry List', 'Entry List', 'connections_view_entry_list', CN_BASE_NAME, array (&$this, 'showPage'));
 			add_submenu_page(CN_BASE_NAME, 'Connections : Add Entry','Add Entry', 'connections_add_entry', 'connections_add', array (&$this, 'showPage'));
+			add_submenu_page(CN_BASE_NAME, 'Connections : Categories','Categories', 'connections_edit_categories', 'connections_categories', array (&$this, 'showPage'));
 			add_submenu_page(CN_BASE_NAME, 'Connections : Settings','Settings', 'connections_change_settings', 'connections_settings', array (&$this, 'showPage'));
 			add_submenu_page(CN_BASE_NAME, 'Connections : Roles &amp; Capabilites','Roles', 'connections_change_roles', 'connections_roles', array (&$this, 'showPage'));
 			add_submenu_page(CN_BASE_NAME, 'Connections : Help','Help', 'connections_view_help', 'connections_help', array (&$this, 'showPage'));
@@ -504,9 +490,21 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function showPage()
 		{
-			/*
-			 * Upgrade page to go here.
+			/**
+			 * @TODO: Upgrade page to go here.
 			 */
+			
+			if ($this->options->getVersion() != CN_CURRENT_VERSION)
+			{
+				echo '<div id="message" class="error"><p><strong>ERROR: </strong>The version of Connections installed is newer than the version last activated. Please deactive and then reactivate Connections.</p></div>';
+			}
+			
+			if (get_option('connections_installed'))
+			{
+				echo '<div id="message" class="updated fade"><p><strong>' . get_option('connections_installed') . '</strong></p></div>';
+				// Remove the admin install message set during activation.
+				delete_option('connections_installed');
+			}
 			
 			switch ($_GET['page'])
 			{
@@ -520,9 +518,14 @@ if (!class_exists('connectionsLoad'))
 					connectionsShowAddPage();
 				break;
 				
+				case 'connections_categories':
+					include_once ( dirname (__FILE__) . '/submenus/categories.php' );
+					connectionsShowCategoriesPage();
+				break;
+				
 				case 'connections_settings':
 					include_once ( dirname (__FILE__) . '/submenus/settings.php' );
-					connectionsShowSettinsPage();
+					connectionsShowSettingsPage();
 				break;
 				
 				case 'connections_roles':

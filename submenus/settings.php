@@ -1,5 +1,5 @@
 <?php
-function connectionsShowSettinsPage()
+function connectionsShowSettingsPage()
 {
 	/*
 	 * Check whether user can edit Settings

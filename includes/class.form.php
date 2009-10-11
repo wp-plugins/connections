@@ -545,7 +545,7 @@ class cnEntryForm
 				// --> Start template for Phone Numbers <-- \\
 				$out .= '<textarea id="phone_number_row_base" style="display: none">';
 					$out .= $form->buildSelect('phone_numbers[::FIELD::][type]', $this->defaultPhoneNumberTypes);
-					$out .= '<input type="text" name="phone_numbers[::FIELD::][number]" value="" style="width: 375px"/>';
+					$out .= '<input type="text" name="phone_numbers[::FIELD::][number]" value="" style="width: 30%"/>';
 					$out .= '<input type="hidden" name="phone_numbers[::FIELD::][visibility]" value="public" />';
 				$out .= '</textarea>';
 				// --> End template for Phone Numbers <-- \\
@@ -564,7 +564,7 @@ class cnEntryForm
 							$token = $form->token($entry->getId());
 							$out .= '<div class="phone_number_row" id="phone_number_row_'  . $token . '">';
 								$out .= $form->buildSelect('phone_numbers[' . $token . '][type]', $this->defaultPhoneNumberTypes, $phoneNumberObject->getType($phoneNumberRow));
-								$out .= '<input type="text" name="phone_numbers[' . $token . '][number]" value="' . $phoneNumberObject->getNumber($phoneNumberRow) . '" style="width: 375px"/>';
+								$out .= '<input type="text" name="phone_numbers[' . $token . '][number]" value="' . $phoneNumberObject->getNumber($phoneNumberRow) . '" style="width: 30%"/>';
 								$out .= '<input type="hidden" name="phone_numbers[' . $token . '][visibility]" value="' . $phoneNumberObject->getVisibility($phoneNumberRow) . '" />';
 								$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#address_row_'. $token . '\'); return false;">Remove</a>';
 							$out .= '</div>';
@@ -623,7 +623,7 @@ class cnEntryForm
 				// --> Start template for Email Addresses <-- \\
 				$out .= '<textarea id="email_address_row_base" style="display: none">';
 					$out .= $form->buildSelect('email[::FIELD::][type]', $this->defaultEmailTypes);
-					$out .= '<input type="text" name="email[::FIELD::][address]" value="" style="width: 375px"/>';
+					$out .= '<input type="text" name="email[::FIELD::][address]" value="" style="width: 30%"/>';
 					$out .= '<input type="hidden" name="email[::FIELD::][visibility]" value="public" />';
 				$out .= '</textarea>';
 				// --> End template for Email Addresses <-- \\
@@ -642,7 +642,7 @@ class cnEntryForm
 							$token = $form->token($entry->getId());
 							$out .= '<div class="email_address_row" id="email_address_row_'  . $token . '">';
 								$out .= $form->buildSelect('email[' . $token . '][type]', $this->defaultEmailTypes, $emailObject->getType($emailRow));
-								$out .= '<input type="text" name="email[' . $token . '][address]" value="' . $emailObject->getAddress($emailRow) . '" style="width: 375px"/>';
+								$out .= '<input type="text" name="email[' . $token . '][address]" value="' . $emailObject->getAddress($emailRow) . '" style="width: 30%"/>';
 								$out .= '<input type="hidden" name="email[' . $token . '][visibility]" value="' . $emailObject->getVisibility($emailRow) . '" />';
 								$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#email_address_row_'. $token . '\'); return false;">Remove</a>';
 							$out .= '</div>';

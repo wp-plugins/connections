@@ -25,6 +25,7 @@ class cnOptions
 								'connections_view_public' => 'View Public Entries',
 								'connections_view_private' => 'View Private Entries',
 								'connections_view_unlisted' => 'View Unlisted Entries',
+								'connections_edit_categories' => 'Edit Categories',
 								'connections_change_settings' => 'Change Settings',
 								'connections_change_roles' => 'Change Role Capabilities',
 								'connections_view_help' => 'View Help'
@@ -65,7 +66,7 @@ class cnOptions
 											'wife' =>"Wife"
 											);
 	
-	private $defaultSocialMediaValues = array('facebook' => 'Facebook ID', 'mysapce' => 'MySpace ID', 'twitter' => 'Twitter ID');
+	private $defaultSocialMediaValues = array('facebook' => 'Facebook', 'linked-in' => 'Linked-in', 'mysapce' => 'MySpace', 'twitter' => 'Twitter');
 	
 	private $allowPublic;
 	private $allowPublicOverride;
