@@ -91,6 +91,8 @@ class cnEntry
 	 */
 	private $im;
 	
+	private $socialMedia;
+	
 	/**
 	 * Unix time: Birthday.
 	 * @var unix time
@@ -151,6 +153,7 @@ class cnEntry
 		$this->phoneNumbers = unserialize($data->phone_numbers);
 		$this->emailAddresses = unserialize($data->email);
 		$this->im = unserialize($data->im);
+		$this->socialMedia = unserialize($data->social);
 		$this->websites = unserialize($data->websites);
 		$this->birthday = $data->birthday;
 		$this->anniversary = $data->anniversary;
@@ -540,6 +543,16 @@ class cnEntry
     public function setIm($im)
     {
         $this->im = $im;
+    }
+	
+	public function getSocialMedia()
+    {
+        return $this->socialMedia;
+    }
+    
+    public function setSocialMedia($socialMedia)
+    {
+        $this->socialMedia = $socialMedia;
     }
 
     /**
@@ -944,6 +957,7 @@ class cnEntry
 		$this->phoneNumbers = serialize($this->phoneNumbers);
 		$this->emailAddresses = serialize($this->emailAddresses);
 		$this->im = serialize($this->im);
+		$this->socialMedia = serialize($this->socialMedia);
 		$this->websites = serialize($this->websites);
 		$this->setOptions();
 		
@@ -965,6 +979,7 @@ class cnEntry
 			phone_numbers = '".$wpdb->escape($this->phoneNumbers)."',
 			email	      = '".$wpdb->escape($this->emailAddresses)."',
 			im  	      = '".$wpdb->escape($this->im)."',
+			social 	      = '".$wpdb->escape($this->socialMedia)."',
 			websites      = '".$wpdb->escape($this->websites)."',
 			options       = '".$wpdb->escape($this->options)."',
 			bio           = '".$wpdb->escape($this->bio)."',
@@ -984,6 +999,7 @@ class cnEntry
 		$this->phoneNumbers = serialize($this->phoneNumbers);
 		$this->emailAddresses = serialize($this->emailAddresses);
 		$this->im = serialize($this->im);
+		$this->socialMedia = serialize($this->socialMedia);
 		$this->websites = serialize($this->websites);
 		$this->setOptions();
 		
@@ -1004,6 +1020,7 @@ class cnEntry
 			phone_numbers = '".$wpdb->escape($this->phoneNumbers)."',
 			email	      = '".$wpdb->escape($this->emailAddresses)."',
 			im  	      = '".$wpdb->escape($this->im)."',
+			social 	      = '".$wpdb->escape($this->socialMedia)."',
 			websites      = '".$wpdb->escape($this->websites)."',
 			birthday      = '".$wpdb->escape($this->birthday)."',
 			anniversary   = '".$wpdb->escape($this->anniversary)."',
@@ -1712,8 +1729,35 @@ class cnIM
      */
     public function getType($data)
     {
-        $this->type = $data['type'];
-		return $this->type;
+       $this->type = $data['name'];
+	   
+	   // Switch is to maintain compatibility with versions 0.5.48 and older
+	   switch ($this->type)
+		{
+			case 'AIM':
+				return 'aim';
+			break;
+			
+			case 'Yahoo IM':
+				return 'yahoo';
+			break;
+			
+			case 'Jabber / Google Talk':
+				return 'jabber';
+			break;
+			
+			case 'Messenger':
+				return 'messenger';
+			break;
+			
+			default:
+				$this->type = $data['type'];
+				return $this->type;
+			break;
+		}
+		
+		//$this->type = $data['type'];
+		//return $this->type;
     }
     
     /**
@@ -1732,8 +1776,35 @@ class cnIM
      */
     public function getName($data)
     {
-        $this->name = $data['name'];
-		return $this->name;
+       $this->type = $data['type'];
+	   
+	   // Switch is to maintain compatibility with versions 0.5.48 and older
+	   switch ($this->type)
+		{
+			case 'aim':
+				return 'AIM';
+			break;
+			
+			case 'yahoo':
+				return 'Yahoo IM';
+			break;
+			
+			case 'jabber':
+				return 'Jabber / Google Talk';
+			break;
+			
+			case 'messenger':
+				return 'Messenger';
+			break;
+			
+			default:
+				$this->name = $data['name'];
+				return $this->name;
+			break;
+		}
+	   
+	    //$this->name = $data['name'];
+		//return $this->name;
     }
     
     /**
@@ -1789,4 +1860,102 @@ class cnIM
 
 }
 
+/**
+ * Extracts Social MEdia IDs from an array of IDs
+ * 
+ * $type
+ * $name
+ * $id
+ * $visibility
+ */
+class cnSocialMedia
+{
+	/**
+	 * String: IM protocal
+	 * @var string
+	 */
+	private $type;
+		
+	/**
+	 * IM ID
+	 * @var string
+	 */
+	private $id;
+	
+	/**
+	 * String: public, private, unlisted
+	 * @var string
+	 */
+	private $visibility;
+    
+    /**
+     * Returns $type.
+     * @see im::$type
+     */
+    public function getType($data)
+    {
+       $this->type = $data['type'];
+		return $this->type;
+    }
+    
+	public function getName($data)
+	{
+		global $connections;
+		
+		$socialMediaValues = $connections->options->getDefaultSocialMediaValues();
+		return $socialMediaValues[$data['type']];
+	}
+	
+    /**
+     * Sets $type.
+     * @param string $type
+     * @see im::$type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+	/**
+     * Returns $id.
+     * @param $data 
+     * @see im::$id
+     */
+    public function getId($data)
+    {
+        $this->id = $data['id'];
+		return $this->id;
+    }
+    
+    /**
+     * Sets $id.
+     * @param string $id
+     * @see im::$id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+    
+    /**
+     * Returns $visibility.
+     * @see im::$visibility
+     */
+    public function getVisibility($data)
+    {
+        $this->visibility = $data['visibility'];
+		return $this->visibility;
+    }
+    
+    /**
+     * Sets $visibility.
+     * @param string $visibility public, private, unlisted
+     * @see im::$visibility
+     */
+    public function setVisibility($visibility)
+    {
+        $this->visibility = $visibility;
+    }
+
+}
 ?>

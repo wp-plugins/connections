@@ -136,7 +136,7 @@ jQuery(document).ready(function(){
 					intCount
 					);
 				
-				jQuery('#relations').append( '<div id="relation_row_' + intCount + '" class="relation_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeRelationRow(\'#relation_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				jQuery('#relations').append( '<div id="relation_row_' + intCount + '" class="relation_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#relation_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
 				
 				intCount++;
 			});
@@ -144,18 +144,95 @@ jQuery(document).ready(function(){
 	
 	jQuery(function() {
 		var intCount = 0;
-		//var jRelations = (jQuery('#socialmedia_row_base').html());
+		//var jRelations = (jQuery('#social_media_row_base').html());
 		
-		jQuery('#add_socialmedia')
+		jQuery('#add_social_media')
 			.click(function() {
-				var jRelations = (jQuery('#socialmedia_row_base').text());
+				var jRelations = (jQuery('#social_media_row_base').text());
 				
 				jRelations = jRelations.replace(
 					new RegExp('::FIELD::', 'gi'),
 					intCount
 					);
 				
-				jQuery('#socialmedia').append( '<div id="socialmedia_row_' + intCount + '" class="socialmedia_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeRelationRow(\'#socialmedia_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				jQuery('#social_media').append( '<div id="social_media_row_' + intCount + '" class="social_media_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#social_media_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				
+				intCount++;
+			});
+	});
+	
+	jQuery(function() {
+		var intCount = 0;
+		//var jRelations = (jQuery('#address_row_base').html());
+		
+		jQuery('#add_address')
+			.click(function() {
+				var jRelations = (jQuery('#address_row_base').text());
+				
+				jRelations = jRelations.replace(
+					new RegExp('::FIELD::', 'gi'),
+					intCount
+					);
+				
+				//jQuery('#addresses').append( '<div id="address_row_' + intCount + '" class="address_row">' + jRelations + '<br /><a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#address_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				jQuery('#addresses').append( '<div id="address_row_' + intCount + '" class="address_row">' + jRelations + '</div>' );
+				
+				intCount++;
+			});
+	});
+	
+	jQuery(function() {
+		var intCount = 0;
+		//var jRelations = (jQuery('#phone_number_row_base').html());
+		
+		jQuery('#add_phone_number')
+			.click(function() {
+				var jRelations = (jQuery('#phone_number_row_base').text());
+				
+				jRelations = jRelations.replace(
+					new RegExp('::FIELD::', 'gi'),
+					intCount
+					);
+				
+				jQuery('#phone_numbers').append( '<div id="phone_number_row_' + intCount + '" class="phone_number_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#phone_number_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				
+				intCount++;
+			});
+	});
+	
+	jQuery(function() {
+		var intCount = 0;
+		//var jRelations = (jQuery('#email_address_row_base').html());
+		
+		jQuery('#add_email_address')
+			.click(function() {
+				var jRelations = (jQuery('#email_address_row_base').text());
+				
+				jRelations = jRelations.replace(
+					new RegExp('::FIELD::', 'gi'),
+					intCount
+					);
+				
+				jQuery('#email_addresses').append( '<div id="email_address_row_' + intCount + '" class="email_address_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#email_address_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				
+				intCount++;
+			});
+	});
+	
+	jQuery(function() {
+		var intCount = 0;
+		//var jRelations = (jQuery('#im_row_base').html());
+		
+		jQuery('#add_im_id')
+			.click(function() {
+				var jRelations = (jQuery('#im_row_base').text());
+				
+				jRelations = jRelations.replace(
+					new RegExp('::FIELD::', 'gi'),
+					intCount
+					);
+				
+				jQuery('#im_ids').append( '<div id="im_row_' + intCount + '" class="im_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#im_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
 				
 				intCount++;
 			});
@@ -163,8 +240,8 @@ jQuery(document).ready(function(){
 
 });
 
-function removeRelationRow(id)
+function removeEntryRow(id)
 	{
-		//jQuery(id).remove();
-		jQuery(id).slideUp('slow', function() {jQuery(id).remove});
+		jQuery(id).remove();
+		//jQuery(id).slideUp('slow', function() {jQuery(id).remove});
 	}

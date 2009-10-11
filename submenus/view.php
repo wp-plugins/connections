@@ -565,6 +565,16 @@ function connectionsShowViewPage()
 											}
 										}
 										
+										if ($entry->getSocialMedia())
+										{
+											$socialMediaObject = new cnSocialMedia();
+											
+											foreach ($entry->getSocialMedia() as $socialMediaRow)
+											{
+												if ($socialMediaObject->getId($socialMediaRow) != "") echo "<strong>" . $socialMediaObject->getName($socialMediaRow) . ":</strong><br />" . $socialMediaObject->getId($socialMediaRow) . "<br /><br />";
+											}
+										}
+										
 										if ($entry->getWebsites())
 										{
 											$websiteObject = new cnWebsite();

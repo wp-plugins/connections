@@ -140,6 +140,15 @@ class cnEntryForm
 												'school'=>'School',
 												'other'=>'Other'
 											);
+											
+	private $defaultPhoneNumberTypes	=	array
+											(
+												'homephone'=>'Home Phone',
+												'homefax'=>'Home Fax',
+												'cellphone'=>'Cell Phone',
+												'workphone'=>'Work Phone',
+												'workfax'=>'Work Fax'
+											);
 
 	private $defaultPhoneNumberValues	=	array
 												(
@@ -179,6 +188,12 @@ class cnEntryForm
 														'visibility'=>'public'
 													),
 												);
+	
+	private $defaultEmailTypes  =   array
+									(
+										'personal'=>'Personal',
+										'work'=>'Work'
+									);
 	
 	private $defaultEmailValues = 	array
 										(
@@ -229,6 +244,14 @@ class cnEntryForm
 										),
 									);
 	
+	private $defaultIMTypes  =   array
+									(
+										'aim'=>'AIM',
+										'yahoo'=>'Yahoo IM',
+										'jabber'=>'Jabber / Google Talk',
+										'messenger'=>'Messenger'
+									);
+	
 	/**
 	 * Builds the input/edit entry form.
 	 * @return HTML form
@@ -248,6 +271,7 @@ class cnEntryForm
 		$phoneNumberObject = new cnPhoneNumber();
 		$emailObject = new cnEmail();
 		$imObject = new cnIM();
+		$socialMediaObject = new cnSocialMedia();
 		$websiteObject = new cnWebsite();
 		$options = unserialize($data->options);
 		$date = new cnDate();
@@ -379,7 +403,8 @@ class cnEntryForm
 				
 		</div>";
 		
-		if ($data->addresses != null) $addressValues = $entry->getAddresses(); else $addressValues = array(array('null'),array('null')); //The empty null is just to make the address section build twice untul jQuery form building can be implemented
+		
+		/*if ($data->addresses != null) $addressValues = $entry->getAddresses(); else $addressValues = array(array('null'),array('null')); //The empty null is just to make the address section build twice untul jQuery form building can be implemented
 		$ticker->reset();
 		foreach ($addressValues as $addressRow)
 		{
@@ -410,15 +435,154 @@ class cnEntryForm
 				$out .= "<label for='address'>Country</label>";
 				$out .= "<input type='text' name='address[" . $ticker->getcount() . "][country]' value='" . $addressObject->getCountry($addressRow) . "' />";
 				
-				$out .= "<input type='hidden' name='phone_numbers[" . $ticker->getcount() . "][visibility]' value='" . $addressObject->getVisibility($addressRow) . "' />";
+				$out .= "<input type='hidden' name='address[" . $ticker->getcount() . "][visibility]' value='" . $addressObject->getVisibility($addressRow) . "' />";
 			
 			$out .= "<div class='clear'></div>";
 			$out .= "</div>";
 			$ticker->step();
 		}
-		$ticker->reset();
+		$ticker->reset();*/
 		
-		if ($data->phone_numbers != null) $phoneNumberValues = $entry->getPhoneNumbers(); else $phoneNumberValues = $this->defaultPhoneNumberValues;
+		$out .= '<div class="form-field connectionsform addresses">';
+			$out .= '<div id="addresses">';
+				
+				// --> Start template for Addresses <-- \\
+				$out .= '<textarea id="address_row_base" style="display: none">';
+					$out .= '<div class="address">';
+						$out .= '<span class="selectbox alignright">Type: ' . $form->buildSelect('address[::FIELD::][type]',$this->defaultAddressTypes,$addressObject->getType($addressRow)) . '</span>';
+						$out .= '<div class="clear"></div>';
+						
+							$out .= '<label for="address">Address Line 1:</label>';
+							$out .= '<input type="text" name="address[::FIELD::][address_line1]" value="" />';
+				
+							$out .= '<label for="address">Address Line 2:</label>';
+							$out .= '<input type="text" name="address[::FIELD::][address_line2]" value="" />';
+				
+							$out .= '<div class="input" style="width:60%">';
+								$out .= '<label for="address">City:</label>';
+								$out .= '<input type="text" name="address[::FIELD::][city]" value="" />';
+							$out .= '</div>';
+							$out .= '<div class="input" style="width:15%">';
+								$out .= '<label for="address">State:</label>';
+								$out .= '<input type="text" name="address[::FIELD::][state]" value="" />';
+							$out .= '</div>';
+							$out .= '<div class="input" style="width:25%">';
+								$out .= '<label for="address">Zipcode:</label>';
+								$out .= '<input type="text" name="address[::FIELD::][zipcode]" value="" />';
+							$out .= '</div>';
+							
+							$out .= '<label for="address">Country</label>';
+							$out .= '<input type="text" name="address[::FIELD::][country]" value="" />';
+							
+							$out .= '<input type="hidden" name="address[::FIELD::][visibility]" value="public" />';
+						
+							$out .= '<div class="clear"></div>';
+							$out .= '<br />';
+							$out .= '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#address_row_::FIELD::\'); return false;">Remove</a>';
+					$out .= '</div>';
+				$out .= '</textarea>';
+				// --> End template for Addresses <-- \\
+				
+				if ($data->addresses != null)
+				{
+					$addressValues = $entry->getAddresses();
+					$ticker->reset();
+					
+					if ($addressValues != null)
+					{
+						foreach ($addressValues as $addressRow)
+						{
+							$token = $form->token($entry->getId());
+							$out .= '<div class="address_row" id="address_row_'  . $token . '">';
+								$selectName = 'address['  . $token . '][type]';
+							
+								$out .= '<span class="selectbox alignright">Type: ' . $form->buildSelect($selectName,$this->defaultAddressTypes,$addressObject->getType($addressRow)) . '</span>';
+								$out .= '<div class="clear"></div>';
+								
+								$out .= '<label for="address">Address Line 1:</label>';
+								$out .= '<input type="text" name="address[' . $token . '][address_line1]" value="' . $addressObject->getLineOne($addressRow) . '" />';
+					
+								$out .= '<label for="address">Address Line 2:</label>';
+								$out .= '<input type="text" name="address[' . $token . '][address_line2]" value="' . $addressObject->getLineTwo($addressRow) . '" />';
+					
+								$out .= '<div class="input" style="width:60%">';
+									$out .= '<label for="address">City:</label>';
+									$out .= '<input type="text" name="address[' . $token . '][city]" value="' . $addressObject->getCity($addressRow) . '" />';
+								$out .= '</div>';
+								$out .= '<div class="input" style="width:15%">';
+									$out .= '<label for="address">State:</label>';
+									$out .= '<input type="text" name="address[' . $token . '][state]" value="' . $addressObject->getState($addressRow) . '" />';
+								$out .= '</div>';
+								$out .= '<div class="input" style="width:25%">';
+									$out .= '<label for="address">Zipcode:</label>';
+									$out .= '<input type="text" name="address[' . $token . '][zipcode]" value="' . $addressObject->getZipCode($addressRow) . '" />';
+								$out .= '</div>';
+								
+								$out .= '<label for="address">Country</label>';
+								$out .= '<input type="text" name="address[' . $token . '][country]" value="' . $addressObject->getCountry($addressRow) . '" />';
+								
+								$out .= '<input type="hidden" name="address[' . $token . '][visibility]" value="' . $addressObject->getVisibility($addressRow) . '" />';
+							
+								$out .= '<div class="clear"></div>';
+								$out .= '<br />';
+								$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#address_row_'. $token . '\'); return false;">Remove</a>';
+							$out .= '</div>';
+							
+							$ticker->step();
+						}
+					}
+					$ticker->reset();
+				}
+				
+			$out .= '</div>';
+			$out .= '<p class="add"><a id="add_address" class="button">Add Address</a></p>';
+		$out .= '</div>';
+		
+		
+		$out .= '<div class="form-field connectionsform phone_numbers">';
+			$out .= '<div id="phone_numbers">';
+				
+				// --> Start template for Phone Numbers <-- \\
+				$out .= '<textarea id="phone_number_row_base" style="display: none">';
+					$out .= $form->buildSelect('phone_numbers[::FIELD::][type]', $this->defaultPhoneNumberTypes);
+					$out .= '<input type="text" name="phone_numbers[::FIELD::][number]" value="" style="width: 375px"/>';
+					$out .= '<input type="hidden" name="phone_numbers[::FIELD::][visibility]" value="public" />';
+				$out .= '</textarea>';
+				// --> End template for Phone Numbers <-- \\
+				
+				if ($data->phone_numbers != null)
+				{
+					$phoneNumberValues = $entry->getPhoneNumbers();
+					$ticker->reset();
+					
+					if ($phoneNumberValues != null)
+					{
+						foreach ($phoneNumberValues as $phoneNumberRow)
+						{
+							if ($phoneNumberObject->getNumber($phoneNumberRow) != null)
+							{
+							$token = $form->token($entry->getId());
+							$out .= '<div class="phone_number_row" id="phone_number_row_'  . $token . '">';
+								$out .= $form->buildSelect('phone_numbers[' . $token . '][type]', $this->defaultPhoneNumberTypes, $phoneNumberObject->getType($phoneNumberRow));
+								$out .= '<input type="text" name="phone_numbers[' . $token . '][number]" value="' . $phoneNumberObject->getNumber($phoneNumberRow) . '" style="width: 375px"/>';
+								$out .= '<input type="hidden" name="phone_numbers[' . $token . '][visibility]" value="' . $phoneNumberObject->getVisibility($phoneNumberRow) . '" />';
+								$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#address_row_'. $token . '\'); return false;">Remove</a>';
+							$out .= '</div>';
+							
+							$ticker->step();
+							}
+						}
+						$ticker->reset();
+					}
+				}
+				
+			
+			$out .= '</div>';
+			$out .= '<p class="add"><a id="add_phone_number" class="button">Add Phone Number</a></p>';
+		$out .= '</div>';
+		
+		
+		/*if ($data->phone_numbers != null) $phoneNumberValues = $entry->getPhoneNumbers(); else $phoneNumberValues = $this->defaultPhoneNumberValues;
 		$out .= "<div class='form-field connectionsform'>";
 			$ticker->reset();
 			foreach ($phoneNumberValues as $phoneNumberRow)
@@ -432,10 +596,10 @@ class cnEntryForm
 				$out .= "</div>";
 			}
 			$ticker->reset();
-		$out .= "</div>";
+		$out .= "</div>";*/
 
 
-		if ($data->email != null) $emailValues = $entry->getEmailAddresses(); else $emailValues = $this->defaultEmailValues;
+		/*if ($data->email != null) $emailValues = $entry->getEmailAddresses(); else $emailValues = $this->defaultEmailValues;
 		$out .= "<div class='form-field connectionsform'>";
 			$ticker->reset();
 			foreach ($emailValues as $emailRow)
@@ -450,10 +614,52 @@ class cnEntryForm
 				$out .= "</div>";
 			}
 			$ticker->reset();
-		$out .= "</div>";
+		$out .= "</div>";*/
+		
+		
+		$out .= '<div class="form-field connectionsform email">';
+			$out .= '<div id="email_addresses">';
+				
+				// --> Start template for Email Addresses <-- \\
+				$out .= '<textarea id="email_address_row_base" style="display: none">';
+					$out .= $form->buildSelect('email[::FIELD::][type]', $this->defaultEmailTypes);
+					$out .= '<input type="text" name="email[::FIELD::][address]" value="" style="width: 375px"/>';
+					$out .= '<input type="hidden" name="email[::FIELD::][visibility]" value="public" />';
+				$out .= '</textarea>';
+				// --> End template for Email Addresses <-- \\
+				
+				if ($data->email != null)
+				{
+					$emailValues = $entry->getEmailAddresses();
+					$ticker->reset();
+					
+					if ($emailValues != null)
+					{
+						foreach ($emailValues as $emailRow)
+						{
+							if ($emailObject->getAddress($emailRow) != null)
+							{
+							$token = $form->token($entry->getId());
+							$out .= '<div class="email_address_row" id="email_address_row_'  . $token . '">';
+								$out .= $form->buildSelect('email[' . $token . '][type]', $this->defaultEmailTypes, $emailObject->getType($emailRow));
+								$out .= '<input type="text" name="email[' . $token . '][address]" value="' . $emailObject->getAddress($emailRow) . '" style="width: 375px"/>';
+								$out .= '<input type="hidden" name="email[' . $token . '][visibility]" value="' . $emailObject->getVisibility($emailRow) . '" />';
+								$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#email_address_row_'. $token . '\'); return false;">Remove</a>';
+							$out .= '</div>';
+							
+							$ticker->step();
+							}
+						}
+						$ticker->reset();
+					}
+				}
+				
+			$out .= '</div>';
+			$out .= '<p class="add"><a id="add_email_address" class="button">Add Email Address</a></p>';
+		$out .= '</div>';
+		
 
-
-		if ($data->im != null) $imValues = $entry->getIm(); else $imValues = $this->defaultIMValues;
+		/*if ($data->im != null) $imValues = $entry->getIm(); else $imValues = $this->defaultIMValues;
 		$out .= "<div class='form-field connectionsform im'>";
 			$ticker->reset();
 			foreach ($imValues as $imRow)
@@ -466,20 +672,90 @@ class cnEntryForm
 				$ticker->step();
 			}
 			$ticker->reset();
-		$out .= "</div>";
+		$out .= "</div>";*/
+		
+		
+		$out .= '<div class="form-field connectionsform im">';
+			$out .= '<div id="im_ids">';
+				
+				// --> Start template for IM IDs <-- \\
+				$out .= '<textarea id="im_row_base" style="display: none">';
+					$out .= $form->buildSelect('im[::FIELD::][type]', $this->defaultIMTypes);
+					$out .= '<input type="text" name="im[::FIELD::][id]" value="" style="width: 30%"/>';
+					$out .= '<input type="hidden" name="im[::FIELD::][visibility]" value="public" />';
+				$out .= '</textarea>';
+				// --> End template for IM IDs <-- \\
+				
+				if ($data->im != null)
+				{
+					$imValues = $entry->getIm();
+					$ticker->reset();
+					
+					if ($imValues != null)
+					{
+						foreach ($imValues as $imRow)
+						{
+							if ($imObject->getId($imRow) != null)
+							{
+							$token = $form->token($entry->getId());
+							$out .= '<div class="im_row" id="im_row_'  . $token . '">';
+								$out .= $form->buildSelect('im[' . $token . '][type]', $this->defaultIMTypes, $imObject->getType($imRow));
+								$out .= '<input type="text" name="im[' . $token . '][id]" value="' . $imObject->getId($imRow) . '" style="width: 30%"/>';
+								$out .= '<input type="hidden" name="im[' . $token . '][visibility]" value="' . $imObject->getVisibility($imRow) . '" />';
+								$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#im_row_'. $token . '\'); return false;">Remove</a>';
+							$out .= '</div>';
+							
+							$ticker->step();
+							}
+						}
+						$ticker->reset();
+					}
+				}
+				
+			$out .= '</div>';
+			$out .= '<p class="add"><a id="add_im_id" class="button">Add Messenger ID</a></p>';
+		$out .= '</div>';
+		
 		
 		$out .= '<div class="form-field connectionsform socialmedia">';
-			$out .= '<div id="socialmedia">';
+			$out .= '<div id="social_media">';
 				
 				// --> Start template for Social Media IDs <-- \\
-				$out .= '<textarea id="socialmedia_row_base" style="display: none">';
-					$out .= $form->buildSelect('socialmedia[::FIELD::][type]', $connections->options->getDefaultSocialMediaValues());
-					$out .= '<input type="text" name="socialmedia[::FIELD::][id]" value="" style="width: 375px"/>';
+				$out .= '<textarea id="social_media_row_base" style="display: none">';
+					$out .= $form->buildSelect('social_media[::FIELD::][type]', $connections->options->getDefaultSocialMediaValues());
+					$out .= '<input type="text" name="social_media[::FIELD::][id]" value="" style="width: 30%"/>';
+					$out .= '<input type="hidden" name="social_media[::FIELD::][visibility]" value="personal"/>';
 				$out .= '</textarea>';
 				// --> End template for Social Media IDs <-- \\
+				
+				if ($data->social != null)
+				{
+					$socialMediaValues = $entry->getSocialMedia();
+					$ticker->reset();
+					
+					if ($socialMediaValues != null)
+					{
+						foreach ($socialMediaValues as $socialMediaRow)
+						{
+							if ($socialMediaObject->getId($socialMediaRow) != null)
+							{
+							$token = $form->token($entry->getId());
+							$out .= '<div class="social_media_row" id="social_media_row_'  . $token . '">';
+								$out .= $form->buildSelect('social_media[' . $token . '][type]', $connections->options->getDefaultSocialMediaValues(), $socialMediaObject->getType($socialMediaRow));
+								$out .= '<input type="text" name="social_media[' . $token . '][id]" value="' . $socialMediaObject->getId($socialMediaRow) . '" style="width: 30%"/>';
+								$out .= '<input type="hidden" name="social_media[' . $token . '][visibility]" value="' . $socialMediaObject->getVisibility($socialMediaRow) . '" />';
+								$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#social_media_row_'. $token . '\'); return false;">Remove</a>';
+							$out .= '</div>';
+							
+							$ticker->step();
+							}
+						}
+						$ticker->reset();
+					}
+				}
 			
 			$out .= '</div>';
-			$out .= '<p class="add"><a id="add_socialmedia" class="button">Add Social Media ID</a></p>';
+			$out .= '<p class="add"><a id="add_social_media" class="button">Add Social Media ID</a></p>';
 		$out .= '</div>';
 		
 		if ($data->websites != null) $websiteValues = $entry->getWebsites(); else $websiteValues = array(array()); //Empty array as a place holder
@@ -574,6 +850,7 @@ class cnEntryForm
 		$entry->setPhoneNumbers($_POST['phone_numbers']);
 		$entry->setEmailAddresses($_POST['email']);
 		$entry->setIm($_POST['im']);
+		$entry->setSocialMedia($_POST['social_media']);
 		$entry->setWebsites($_POST['websites']);
 		$entry->setBirthday($_POST['birthday_day'], $_POST['birthday_month']);
 		$entry->setAnniversary($_POST['anniversary_day'], $_POST['anniversary_month']);
