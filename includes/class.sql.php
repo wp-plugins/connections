@@ -36,11 +36,11 @@ class cnSQL
 		
 		if ($id != NULL) $idString = " AND `id`='" . $id . "' ";
 		
-		$sql = "(SELECT *, `organization` AS `sort_column` FROM " . $this->getTableName() . " WHERE `last_name` = '' AND `group_name` = ''" . $idString . ")
+		$sql = "(SELECT *, `organization` AS `sort_column` FROM " . $this->getEntryTableName() . " WHERE `last_name` = '' AND `group_name` = ''" . $idString . ")
 				 UNION
-				(SELECT *, `group_name` AS `sort_column` FROM " . $this->getTableName() . " WHERE `group_name` != ''" . $idString . ")
+				(SELECT *, `group_name` AS `sort_column` FROM " . $this->getEntryTableName() . " WHERE `group_name` != ''" . $idString . ")
 				 UNION
-				(SELECT *, `last_name` AS `sort_column` FROM " . $this->getTableName() . " WHERE `last_name` != ''" . $idString . ")
+				(SELECT *, `last_name` AS `sort_column` FROM " . $this->getEntryTableName() . " WHERE `last_name` != ''" . $idString . ")
 				 ORDER BY `sort_column`, `last_name`, `first_name`";
 		
 		return $wpdb->get_results($sql);

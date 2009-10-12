@@ -44,6 +44,7 @@ if (!class_exists('connectionsLoad'))
 		public $options;
 		public $db;
 		public $filter;
+		public $term;
 		
 		public $errorMessages;
 		public $successMessages;
@@ -57,6 +58,7 @@ if (!class_exists('connectionsLoad'))
 			$this->sessionCheck();
 			$this->loadConstants();
 			$this->loadDependencies();
+			$this->initDependencies();
 			$this->initOptions();
 			$this->initErrorMessages();
 			$this->initSuccessMessages();
@@ -129,6 +131,8 @@ if (!class_exists('connectionsLoad'))
 			
 			//Current User objects
 			require_once(WP_PLUGIN_DIR . '/connections/includes/class.user.php');
+			//Terms Objects
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.terms.php');
 			//SQL objects
 			require_once(WP_PLUGIN_DIR . '/connections/includes/class.sql.php');
 			//Filter objects
@@ -151,9 +155,15 @@ if (!class_exists('connectionsLoad'))
 			//shortcodes
 			require_once(WP_PLUGIN_DIR . '/connections/includes/inc.shortcodes.php');
 			
+			
+		}
+		
+		private function initDependencies()
+		{
 			$this->currentUser = new cnUser();
 			$this->db = new cnSQL();
 			$this->filter = new cnFilters();
+			$this->term = new cnTerms();
 		}
 		
 		/**
