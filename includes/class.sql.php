@@ -6,10 +6,28 @@
  */
 class cnSQL
 {
-	public function getTableName()
+	public function getEntryTableName()
 	{
 		global $wpdb;
-		return $wpdb->prefix . CN_TABLE_NAME;
+		return $wpdb->prefix . CN_ENTRY_TABLE_NAME;
+	}
+	
+	public function getTermsTableName()
+	{
+		global $wpdb;
+		return $wpdb->prefix . CN_TERMS_TABLE_NAME;
+	}
+	
+	public function getTermTaxonomyTableName()
+	{
+		global $wpdb;
+		return $wpdb->prefix . CN_TERM_TAXONOMY_TABLE_NAME;
+	}
+	
+	public function getTermRelationshipTableName()
+	{
+		global $wpdb;
+		return $wpdb->prefix . CN_TERM_RELATIONSHIP_TABLE_NAME;
 	}
 	
 	public function getEntries($id = NULL)
