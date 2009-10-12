@@ -464,6 +464,7 @@ if (!class_exists('connectionsLoad'))
 			{
 				case CN_BASE_NAME:
 				case 'connections_add':
+				case 'connections_categories':
 				case 'connections_settings':
 				case 'connections_roles':
 				case 'connections_help':
@@ -508,6 +509,7 @@ if (!class_exists('connectionsLoad'))
 			{
 				case CN_BASE_NAME:
 				case 'connections_add':
+				case 'connections_categories':
 				case 'connections_settings':
 				case 'connections_roles':
 				case 'connections_help':

@@ -26,7 +26,7 @@ function connectionsShowCategoriesPage()
 		?>
 			<div class="wrap nosubsub">
 				<div class="icon32" id="icon-connections"><br/></div>
-				<h2>Connections : Entry List</h2>
+				<h2>Connections : Categories</h2>
 				
 				<div id="col-container">
 				
@@ -88,24 +88,24 @@ function connectionsShowCategoriesPage()
 								
 								<form class="add:the-list: validate" action="#" method="post" id="addcat" name="addcat">
 								
-								<div class="form-field form-required">
+								<div class="form-field form-required connectionsform">
 									<label for="cat_name">Category Name</label>
 									<input type="text" aria-required="true" size="40" value="" id="cat_name" name="cat_name"/>
 								</div>
 								
-								<div class="form-field">
+								<div class="form-field connectionsform">
 									<label for="category_nicename">Category Slug</label>
 									<input type="text" size="40" value="" id="category_nicename" name="category_nicename"/>
 								</div>
 								
-								<div class="form-field">
+								<div class="form-field connectionsform">
 									<label for="category_parent">Category Parent</label>
 									<select class="postform" id="category_parent" name="category_parent">
 										<option value="">None</option>
 									</select>
 								</div>
 								
-								<div class="form-field">
+								<div class="form-field connectionsform">
 									<label for="category_description">Description</label>
 									<textarea cols="40" rows="5" id="category_description" name="category_description"></textarea>
 								</div>
