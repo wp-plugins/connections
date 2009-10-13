@@ -392,7 +392,9 @@ if (!class_exists('connectionsLoad'))
 					name varchar(200) NOT NULL,
 					slug varchar(200) NOT NULL,
 					term_group bigint(10) NOT NULL,
-			        PRIMARY KEY  (term_id)
+			        PRIMARY KEY  (term_id),
+					UNIQUE KEY slug (slug),
+					INDEX name (name)
 			    );";
 			    
 			    dbDelta($termsTable);
@@ -408,7 +410,9 @@ if (!class_exists('connectionsLoad'))
 					description longtext NOT NULL,
 					parent bigint(20) NOT NULL,
 					count bigint(20) NOT NULL,
-			        PRIMARY KEY  (term_taxonomy_id)
+			        PRIMARY KEY  (term_taxonomy_id),
+					UNIQUE KEY term_id_taxonomy (term_id, taxonomy),
+					INDEX taxonomy (taxonomy)
 			    );";
 			    
 			    dbDelta($termTaxonomyTable);
@@ -421,7 +425,8 @@ if (!class_exists('connectionsLoad'))
 			        entry_id bigint(20) NOT NULL,
 					term_taxonomy_id bigint(20) NOT NULL,
 					term_order int(11) NOT NULL,
-			        PRIMARY KEY  (entry_id)
+			        PRIMARY KEY (entry_id,term_taxonomy_id),
+					KEY term_taxonomy_id (term_taxonomy_id)
 			    );";
 			    
 			    dbDelta($termTermRelationshipTable);
