@@ -22,7 +22,7 @@ function connectionsShowCategoriesPage()
 	else
 	{
 		global $connections;
-		
+		print_r($connections->category->getCategories());
 		?>
 			<div class="wrap nosubsub">
 				<div class="icon32" id="icon-connections"><br/></div>

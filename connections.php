@@ -45,6 +45,7 @@ if (!class_exists('connectionsLoad'))
 		public $db;
 		public $filter;
 		public $term;
+		public $category;
 		
 		public $errorMessages;
 		public $successMessages;
@@ -133,6 +134,8 @@ if (!class_exists('connectionsLoad'))
 			require_once(WP_PLUGIN_DIR . '/connections/includes/class.user.php');
 			//Terms Objects
 			require_once(WP_PLUGIN_DIR . '/connections/includes/class.terms.php');
+			//Category Objects
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.category.php');
 			//SQL objects
 			require_once(WP_PLUGIN_DIR . '/connections/includes/class.sql.php');
 			//Filter objects
@@ -164,6 +167,7 @@ if (!class_exists('connectionsLoad'))
 			$this->db = new cnSQL();
 			$this->filter = new cnFilters();
 			$this->term = new cnTerms();
+			$this->category = new cnCategory();
 		}
 		
 		/**
