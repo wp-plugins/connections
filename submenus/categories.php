@@ -22,7 +22,51 @@ function connectionsShowCategoriesPage()
 	else
 	{
 		global $connections;
-		print_r($connections->category->getCategories());
+		$rowClass = '';
+			
+		//print_r($connections->category->getCategories());
+		
+		function buildTableRow($parents, $level = 0)
+		{
+			foreach ($parents as $child)
+			{
+				$out .= buildTableRowHTML($child, $level);
+				
+				if (is_array($child->children))
+				{
+					++$level;
+					$out .= buildTableRow($child->children, $level);
+					--$level;
+				}
+				
+			}
+			
+			$level = 0;
+			return $out;
+		}
+		
+		function buildTableRowHTML($term, $level)
+		{
+			global $rowClass;
+			
+			$pad = str_repeat('&#8212; ', max(0, $level));
+			$rowClass = 'alternate' == $rowClass ? '' : 'alternate';
+			
+			$out = '<tr id="cat-' . $term->term_id . '" class="' . $rowClass . '">';
+				$out .= '<th class="check-column"></th>';
+				$out .= '<td class="name column-name"><a class="row-title" href"#>' . $pad . $term->name . '</a><br />';
+					$out .= '<div class="row-actions">';
+						$out .= '<span class="edit"><a href="#">Edit</a> | </span>';
+						$out .= '<span class="delete"><a href="#">Delete</a></span>';
+					$out .= '</div>';
+				$out .= '</td>';
+				$out .= '<td class="description column-description">' . $term->description . '</td>';
+				$out .= '<td class="slug column-slug">' . $term->slug . '</td>';
+				$out .= '<td class="posts column-posts num">' . $term->count . '</td>';
+			$out .= '</tr>';
+			
+			return $out;
+		}
 		?>
 			<div class="wrap nosubsub">
 				<div class="icon32" id="icon-connections"><br/></div>
@@ -40,7 +84,6 @@ function connectionsShowCategoriesPage()
 											<option value="delete">Delete</option>
 										</select>
 										<input type="submit" class="button-secondary action" id="doaction" name="doaction" value="Apply"/>
-										<input type="hidden" value="6f87843e9c" name="_wpnonce" id="_wpnonce"/><input type="hidden" value="/wp-admin/categories.php" name="_wp_http_referer"/>
 									</div>
 									
 									<br class="clear"/>
@@ -55,7 +98,7 @@ function connectionsShowCategoriesPage()
 											<th class="manage-column column-name" id="name" scope="col">Name</th>
 											<th class="manage-column column-description" id="description" scope="col">Description</th>
 											<th class="manage-column column-slug" id="slug" scope="col">Slug</th>
-											<th class="manage-column column-posts num" id="posts" scope="col">Posts</th>
+											<th class="manage-column column-posts num" id="posts" scope="col">Entries</th>
 										</tr>
 									</thead>
 								
@@ -65,11 +108,24 @@ function connectionsShowCategoriesPage()
 											<th class="manage-column column-name" scope="col">Name</th>
 											<th class="manage-column column-description" scope="col">Description</th>
 											<th class="manage-column column-slug" scope="col">Slug</th>
-											<th class="manage-column column-posts num" scope="col">Posts</th>
+											<th class="manage-column column-posts num" scope="col">Entries</th>
 										</tr>
 									</tfoot>
 								
 									<tbody class="list:cat" id="the-list">
+										<?php
+											/*foreach ($connections->category->getCategories() as $row)
+											{
+												echo '<tr id="cat-' . $row->term_id . '">';
+													echo '<th class="check-column"></th>';
+													echo '<td class="name column-name">' . $row->name . '</td>';
+													echo '<td class="description column-description">' . $row->description . '</td>';
+													echo '<td class="slug column-slug">' . $row->slug . '</td>';
+													echo '<td class="posts column-posts num">' . $row->count . '</td>';
+												echo '</tr>';
+											}*/
+											echo buildTableRow($connections->category->getCategories());
+										?>
 									</tbody>
 								</table>
 							</form>
