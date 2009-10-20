@@ -23,19 +23,33 @@ function connectionsShowCategoriesPage()
 	{
 		global $connections;
 		$rowClass = '';
-			
-		//print_r($connections->category->getCategories());
+		$category = new cnCategory($result);
+		//print_r($connections->retrieve->categories());
+		//print_r($connections->retrieve->category('10'));
+		
+		if (isset($_GET['action']))
+		{
+			switch ($_GET['action'])
+			{
+				case 'edit':
+					$result = $connections->retrieve->category(attribute_escape($_GET['id']));
+					$category = new cnCategory($result);
+				break;
+			}
+		}
 		
 		function buildTableRow($parents, $level = 0)
 		{
 			foreach ($parents as $child)
 			{
+				$category = new cnCategory($child);
+				
 				$out .= buildTableRowHTML($child, $level);
 				
-				if (is_array($child->children))
+				if (is_array($category->getChildren()))
 				{
 					++$level;
-					$out .= buildTableRow($child->children, $level);
+					$out .= buildTableRow($category->getChildren(), $level);
 					--$level;
 				}
 				
@@ -49,20 +63,21 @@ function connectionsShowCategoriesPage()
 		{
 			global $rowClass;
 			
+			$category = new cnCategory($term);
 			$pad = str_repeat('&#8212; ', max(0, $level));
 			$rowClass = 'alternate' == $rowClass ? '' : 'alternate';
 			
-			$out = '<tr id="cat-' . $term->term_id . '" class="' . $rowClass . '">';
+			$out = '<tr id="cat-' . $category->getId() . '" class="' . $rowClass . '">';
 				$out .= '<th class="check-column"></th>';
-				$out .= '<td class="name column-name"><a class="row-title" href"#>' . $pad . $term->name . '</a><br />';
+				$out .= '<td class="name column-name"><a class="row-title" href="admin.php?page=connections_categories&action=edit&id=' . $category->getId() . '">' . $pad . $category->getName() . '</a><br />';
 					$out .= '<div class="row-actions">';
 						$out .= '<span class="edit"><a href="#">Edit</a> | </span>';
 						$out .= '<span class="delete"><a href="#">Delete</a></span>';
 					$out .= '</div>';
 				$out .= '</td>';
-				$out .= '<td class="description column-description">' . $term->description . '</td>';
-				$out .= '<td class="slug column-slug">' . $term->slug . '</td>';
-				$out .= '<td class="posts column-posts num">' . $term->count . '</td>';
+				$out .= '<td class="description column-description">' . $category->getDescription() . '</td>';
+				$out .= '<td class="slug column-slug">' . $category->getSlug() . '</td>';
+				$out .= '<td class="posts column-posts num">' . $category->getCount() . '</td>';
 			$out .= '</tr>';
 			
 			return $out;
@@ -114,17 +129,7 @@ function connectionsShowCategoriesPage()
 								
 									<tbody class="list:cat" id="the-list">
 										<?php
-											/*foreach ($connections->category->getCategories() as $row)
-											{
-												echo '<tr id="cat-' . $row->term_id . '">';
-													echo '<th class="check-column"></th>';
-													echo '<td class="name column-name">' . $row->name . '</td>';
-													echo '<td class="description column-description">' . $row->description . '</td>';
-													echo '<td class="slug column-slug">' . $row->slug . '</td>';
-													echo '<td class="posts column-posts num">' . $row->count . '</td>';
-												echo '</tr>';
-											}*/
-											echo buildTableRow($connections->category->getCategories());
+											echo buildTableRow($connections->retrieve->categories());
 										?>
 									</tbody>
 								</table>
@@ -146,12 +151,12 @@ function connectionsShowCategoriesPage()
 								
 								<div class="form-field form-required connectionsform">
 									<label for="cat_name">Category Name</label>
-									<input type="text" aria-required="true" size="40" value="" id="cat_name" name="cat_name"/>
+									<input type="text" aria-required="true" size="40" value="<?php echo $category->getName() ?>" id="cat_name" name="cat_name"/>
 								</div>
 								
 								<div class="form-field connectionsform">
 									<label for="category_nicename">Category Slug</label>
-									<input type="text" size="40" value="" id="category_nicename" name="category_nicename"/>
+									<input type="text" size="40" value="<?php echo $category->getSlug() ?>" id="category_nicename" name="category_nicename"/>
 								</div>
 								
 								<div class="form-field connectionsform">

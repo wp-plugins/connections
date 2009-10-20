@@ -26,7 +26,7 @@ class cnTerms
 	{
 		global $wpdb;
 		
-		$query = "SELECT t.*, tt.* from wp_connections_terms AS t INNER JOIN wp_connections_term_taxonomy AS tt ON t.term_id = tt.term_id WHERE tt.taxonomy IN ('$taxonomies') ORDER BY 'name'";
+		$query = "SELECT t.*, tt.* from " . CN_TERMS_TABLE_NAME . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE_NAME . " AS tt ON t.term_id = tt.term_id WHERE tt.taxonomy IN ('$taxonomies') ORDER BY 'name'";
 		
 		$terms = $wpdb->get_results($query);
 		
@@ -62,6 +62,15 @@ class cnTerms
 		
 		//return $this->termChildren;
 		return $terms;
+	}
+	
+	public function getTerm($id, $taxonomy)
+	{
+		global $wpdb;
+		
+		$query = "SELECT t.*, tt.* from " . CN_TERMS_TABLE_NAME . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE_NAME . " AS tt ON t.term_id = tt.term_id WHERE tt.taxonomy='$taxonomy' AND t.term_id='$id'";
+		
+		return $wpdb->get_row($query);
 	}
 	
 	private function getChildren($termID, $terms, $taxonomies)

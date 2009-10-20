@@ -14,7 +14,7 @@ function connectionsShowViewPage()
 	
 	$form = new cnFormObjects();
 	$showEntryList = true;
-		
+	
 	switch ($_GET['action'])
 	{
 		case 'copy':
@@ -319,7 +319,7 @@ function connectionsShowViewPage()
 				<h2>Connections : Entry List</h2>
 				
 				<?php
-					$results = $connections->db->getEntries();
+					$results = $connections->retrieve->entries();
 					$connections->filter->permitted(&$results);
 					$connections->filter->byEntryType(&$results, $connections->currentUser->getFilterEntryType());
 					$connections->filter->byEntryVisibility(&$results, $connections->currentUser->getFilterVisibility());

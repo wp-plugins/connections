@@ -52,7 +52,7 @@ function _connections_list($atts, $content=null) {
 	
 	$form = new cnFormObjects();
 	
-	$results = $connections->db->getEntries($atts['id']);
+	$results = $connections->retrieve->entries($atts['id']);
 	$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
 	
 	if ($results != null) {

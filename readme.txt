@@ -114,7 +114,8 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * BUG: Fixed how the entry edit link was created which was causing a token mismatch.
 * BUG: Fixed a permission error when using the shortcode override attributes.
 * Updated class.upload.php to version .28
-* Moved all queries to the SQL class.
+* Remove SQL class, didn't make sense to use it.
+* Defined table names as constants.
 * Options class now is used throughout the plug-in rather than creating new instances.
 * Renamed all the classes to be more unique to help avoid conflict with other plug-ins.
 * Re-worked the way method used to store the cached entry list filters to use the user_meta table.
