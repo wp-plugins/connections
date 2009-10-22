@@ -26,7 +26,7 @@ class cnTerms
 	{
 		global $wpdb;
 		
-		$query = "SELECT t.*, tt.* from " . CN_TERMS_TABLE_NAME . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE_NAME . " AS tt ON t.term_id = tt.term_id WHERE tt.taxonomy IN ('$taxonomies') ORDER BY 'name'";
+		$query = "SELECT t.*, tt.* from " . CN_TERMS_TABLE_NAME . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE_NAME . " AS tt ON t.term_id = tt.term_id WHERE tt.taxonomy IN ('$taxonomies') ORDER BY `name`";
 		
 		$terms = $wpdb->get_results($query);
 		

@@ -195,6 +195,39 @@ class cnCategory
     public function setTermGroup($termGroup) {
         $this->termGroup = $termGroup;
     }
+	
+	public function save()
+	{
+		global $wpdb, $connections;
+		
+		$sql = "INSERT INTO " . CN_TERMS_TABLE_NAME . " SET
+			name    	= '".$wpdb->escape($this->name)."',
+			slug    	= '".$wpdb->escape($this->slug)."',
+			term_group	= '0'";
+		
+		/**
+		 * @TODO: Error check the inster and return error
+		 */
+		$wpdb->query($wpdb->prepare($sql));
+		unset($sql);
+		
+		// Not quite sure how the wpdb class sets this variable???
+		$term_id = (int) $wpdb->insert_id;
+		
+		
+		$sql = "INSERT INTO " . CN_TERM_TAXONOMY_TABLE_NAME . " SET
+			term_id    	= '".$wpdb->escape($term_id)."',
+			taxonomy   	= 'category',
+			description	= '".$wpdb->escape($this->description)."',
+			count		= '0',
+			parent		= '0'";
+		
+		/**
+		 * @TODO: Error check the inster and return error
+		 */
+		$wpdb->query($wpdb->prepare($sql));
+		unset($sql);
+	}
     
 }
 
