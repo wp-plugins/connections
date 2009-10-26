@@ -198,37 +198,26 @@ class cnCategory
 	
 	public function save()
 	{
-		global $wpdb, $connections;
+		global $connections;
 		
-		$sql = "INSERT INTO " . CN_TERMS_TABLE_NAME . " SET
-			name    	= '".$wpdb->escape($this->name)."',
-			slug    	= '".$wpdb->escape($this->slug)."',
-			term_group	= '0'";
+		$attributes['slug'] = $this->slug;
+		$attributes['description'] = $this->description;
+		$attributes['parent'] = $this->parent;
 		
-		/**
-		 * @TODO: Error check the inster and return error
-		 */
-		$wpdb->query($wpdb->prepare($sql));
-		unset($sql);
-		
-		// Not quite sure how the wpdb class sets this variable???
-		$term_id = (int) $wpdb->insert_id;
-		
-		
-		$sql = "INSERT INTO " . CN_TERM_TAXONOMY_TABLE_NAME . " SET
-			term_id    	= '".$wpdb->escape($term_id)."',
-			taxonomy   	= 'category',
-			description	= '".$wpdb->escape($this->description)."',
-			count		= '0',
-			parent		= '0'";
-		
-		/**
-		 * @TODO: Error check the inster and return error
-		 */
-		$wpdb->query($wpdb->prepare($sql));
-		unset($sql);
+		$connections->term->addTerm($this->name, 'category', $attributes);
 	}
     
+	public function update()
+	{
+		global $connections;
+		
+		$attributes['name'] = $this->name;
+		$attributes['slug'] = $this->slug;
+		$attributes['description'] = $this->description;
+		$attributes['parent'] = $this->parent;
+		
+		$connections->term->updateTerm($this->id, 'category', $attributes);
+	}
 }
 
 ?>

@@ -79,6 +79,7 @@ function connectionsShowCategoriesPage()
 			$out = '<div class="form-field form-required connectionsform">';
 				$out .= '<label for="cat_name">Category Name</label>';
 				$out .= '<input type="text" aria-required="true" size="40" value="' . $category->getName() . '" id="category_name" name="category_name"/>';
+				$out .= '<input type="hidden" value="' . $category->getID() . '" id="category_id" name="category_id"/>';
 			$out .= '</div>';
 			
 			$out .= '<div class="form-field connectionsform">';
@@ -112,9 +113,9 @@ function connectionsShowCategoriesPage()
 						echo '<div class="form-wrap" style="width:600px; margin: 0 auto;">';
 							echo '<h2><a name="new"></a>Edit Category</h2>';
 					
-							echo '<form action="#" method="post" id="addcat" name="addcat">';
+							echo '<form action="admin.php?page=connections_categories" method="post" id="addcat" name="addcat">';
 								showForm($result);
-								echo '<p class="submit"><input class="button-primary" type="submit" value="Update Category" name="submit" class="button"/></p>';
+								echo '<p class="submit"><input class="button-primary" type="submit" value="Update Category" name="update" class="button"/></p>';
 							echo '</form>';
 					
 						echo '</div>';
@@ -124,7 +125,7 @@ function connectionsShowCategoriesPage()
 		}
 		else
 		{
-			if (isset($_POST['submit']))
+			if (isset($_POST['add']))
 			{
 				$category = new cnCategory();
 				
@@ -138,6 +139,24 @@ function connectionsShowCategoriesPage()
 				$category->save();
 				echo 'SAVE';
 			}
+			
+			if (isset($_POST['update']))
+			{
+				$category = new cnCategory();
+				
+				$category->setID($_POST['category_id']);
+				$category->setName($_POST['category_name']);
+				$category->setSlug($_POST['category_slug']);
+				$category->setDescription($_POST['category_description']);
+				
+				echo $category->getID();
+				echo $category->getName();
+				echo $category->getSlug();
+				echo $category->getDescription();
+				$category->update();
+				echo 'UPDATE';
+			}
+			
 			?>
 				<div class="wrap nosubsub">
 					<div class="icon32" id="icon-connections"><br/></div>
@@ -206,7 +225,7 @@ function connectionsShowCategoriesPage()
 											<?php
 												showForm();
 											?>
-										<p class="submit"><input type="submit" value="Save Category" name="submit" class="button"/></p>
+										<p class="submit"><input type="submit" value="Save Category" name="add" class="button"/></p>
 									</form>
 								</div>
 							</div>

@@ -122,6 +122,81 @@ class cnTerms
 			return FALSE;
 		}
 	}
+	
+	public function addTerm($term, $taxonomy, $attributes)
+	{
+		global $wpdb, $connections;
+		
+		$slug = $attributes['slug'];
+		$description = $attributes['description'];
+		$parent = $attributes['parent'];
+		
+		$sql = "INSERT INTO " . CN_TERMS_TABLE_NAME . " SET
+			name    	= '" . $wpdb->escape($term) . "',
+			slug    	= '" . $wpdb->escape($slug) . "',
+			term_group	= '0'";
+		
+		/**
+		 * @TODO: Error check the insert and return error
+		 */
+		$wpdb->query($wpdb->prepare($sql));
+		unset($sql);
+		
+		// Not quite sure how the wpdb class sets this variable???
+		$term_id = (int) $wpdb->insert_id;
+		
+		
+		$sql = "INSERT INTO " . CN_TERM_TAXONOMY_TABLE_NAME . " SET
+			term_id    	= '" . $wpdb->escape($term_id) . "',
+			taxonomy   	= '" . $wpdb->escape($taxonomy) . "',
+			description	= '" . $wpdb->escape($description) . "',
+			count		= '0',
+			parent		= '" . $wpdb->escape($parent) . "'";
+		
+		/**
+		 * @TODO: Error check the insert and return error
+		 */
+		$wpdb->query($wpdb->prepare($sql));
+		unset($sql);
+	}
+	
+	public function updateTerm($termID, $taxonomy, $attributes)
+	{
+		global $wpdb, $connections;
+		
+		$name = $attributes['name'];
+		$slug = $attributes['slug'];
+		$description = $attributes['description'];
+		$parent = $attributes['parent'];
+		
+		$sql = "UPDATE " . CN_TERMS_TABLE_NAME . " SET
+			name		= '" . $wpdb->escape($name) . "',
+			slug		= '" . $wpdb->escape($slug) . "',
+			term_group	= '0'
+			WHERE term_id = '" . $wpdb->escape($termID) . "'";
+		
+		/**
+		 * @TODO: Error check the insert and return error
+		 */
+		$wpdb->query($wpdb->prepare($sql));
+		unset($sql);	
+		
+		$ttID = $wpdb->get_var( $wpdb->prepare( "SELECT tt.term_taxonomy_id FROM " . CN_TERM_TAXONOMY_TABLE_NAME . " AS tt INNER JOIN " . CN_TERMS_TABLE_NAME . " AS t ON tt.term_id = t.term_id WHERE tt.taxonomy = %s AND t.term_id = %d", $taxonomy, $termID) );
+		
+		$sql = "UPDATE " . CN_TERM_TAXONOMY_TABLE_NAME . " SET
+			term_id		= '" . $wpdb->escape($termID) . "',
+			taxonomy	= '" . $wpdb->escape($taxonomy) . "',
+			description	= '" . $wpdb->escape($description) . "',
+			count		= '0'
+			WHERE term_taxonomy_id 	= '" . $wpdb->escape($ttID) . "'";
+		
+		/**
+		 * @TODO: Error check the insert and return error
+		 */
+		$wpdb->query($wpdb->prepare($sql));
+		unset($sql);
+	
+	}
 }
 
 ?>
