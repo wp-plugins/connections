@@ -961,7 +961,7 @@ class cnEntry
 		$this->websites = serialize($this->websites);
 		$this->setOptions();
 		
-		$sql = "UPDATE " . CN_ENTRY_TABLE_NAME . " SET
+		$sql = "UPDATE " . CN_ENTRY_TABLE . " SET
 			entry_type    = '".$wpdb->escape($this->entryType)."',
 			first_name    = '".$wpdb->escape($this->firstName)."',
 			middle_name   = '".$wpdb->escape($this->middleName)."',
@@ -1003,7 +1003,7 @@ class cnEntry
 		$this->websites = serialize($this->websites);
 		$this->setOptions();
 		
-		$sql = "INSERT INTO " . CN_ENTRY_TABLE_NAME . " SET
+		$sql = "INSERT INTO " . CN_ENTRY_TABLE . " SET
 			date_added    = '".$wpdb->escape(time())."',
 			entry_type    = '".$wpdb->escape($this->entryType)."',
 			visibility    = '".$wpdb->escape($this->visibility)."',
@@ -1042,7 +1042,7 @@ class cnEntry
 		
 		global $wpdb;
 		
-		$wpdb->query($wpdb->prepare('DELETE FROM ' . CN_ENTRY_TABLE_NAME . ' WHERE id="' . $wpdb->escape($id) . '"'));
+		$wpdb->query($wpdb->prepare('DELETE FROM ' . CN_ENTRY_TABLE . ' WHERE id="' . $wpdb->escape($id) . '"'));
 	}
 	
 }

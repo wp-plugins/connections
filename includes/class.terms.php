@@ -26,7 +26,7 @@ class cnTerms
 	{
 		global $wpdb;
 		
-		$query = "SELECT t.*, tt.* from " . CN_TERMS_TABLE_NAME . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE_NAME . " AS tt ON t.term_id = tt.term_id WHERE tt.taxonomy IN ('$taxonomies') ORDER BY `name`";
+		$query = "SELECT t.*, tt.* from " . CN_TERMS_TABLE . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE . " AS tt ON t.term_id = tt.term_id WHERE tt.taxonomy IN ('$taxonomies') ORDER BY `name`";
 		
 		$terms = $wpdb->get_results($query);
 		
@@ -68,7 +68,7 @@ class cnTerms
 	{
 		global $wpdb;
 		
-		$query = "SELECT t.*, tt.* from " . CN_TERMS_TABLE_NAME . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE_NAME . " AS tt ON t.term_id = tt.term_id WHERE tt.taxonomy='$taxonomy' AND t.term_id='$id'";
+		$query = "SELECT t.*, tt.* from " . CN_TERMS_TABLE . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE . " AS tt ON t.term_id = tt.term_id WHERE tt.taxonomy='$taxonomy' AND t.term_id='$id'";
 		
 		return $wpdb->get_row($query);
 	}
@@ -131,7 +131,9 @@ class cnTerms
 		$description = $attributes['description'];
 		$parent = $attributes['parent'];
 		
-		$sql = "INSERT INTO " . CN_TERMS_TABLE_NAME . " SET
+		$this->getUniqueSlug(&$slug, $term);
+		
+		$sql = "INSERT INTO " . CN_TERMS_TABLE . " SET
 			name    	= '" . $wpdb->escape($term) . "',
 			slug    	= '" . $wpdb->escape($slug) . "',
 			term_group	= '0'";
@@ -146,7 +148,7 @@ class cnTerms
 		$term_id = (int) $wpdb->insert_id;
 		
 		
-		$sql = "INSERT INTO " . CN_TERM_TAXONOMY_TABLE_NAME . " SET
+		$sql = "INSERT INTO " . CN_TERM_TAXONOMY_TABLE . " SET
 			term_id    	= '" . $wpdb->escape($term_id) . "',
 			taxonomy   	= '" . $wpdb->escape($taxonomy) . "',
 			description	= '" . $wpdb->escape($description) . "',
@@ -169,7 +171,9 @@ class cnTerms
 		$description = $attributes['description'];
 		$parent = $attributes['parent'];
 		
-		$sql = "UPDATE " . CN_TERMS_TABLE_NAME . " SET
+		$this->getUniqueSlug(&$slug, $name);
+		
+		$sql = "UPDATE " . CN_TERMS_TABLE . " SET
 			name		= '" . $wpdb->escape($name) . "',
 			slug		= '" . $wpdb->escape($slug) . "',
 			term_group	= '0'
@@ -181,13 +185,12 @@ class cnTerms
 		$wpdb->query($wpdb->prepare($sql));
 		unset($sql);	
 		
-		$ttID = $wpdb->get_var( $wpdb->prepare( "SELECT tt.term_taxonomy_id FROM " . CN_TERM_TAXONOMY_TABLE_NAME . " AS tt INNER JOIN " . CN_TERMS_TABLE_NAME . " AS t ON tt.term_id = t.term_id WHERE tt.taxonomy = %s AND t.term_id = %d", $taxonomy, $termID) );
+		$ttID = $wpdb->get_var( $wpdb->prepare( "SELECT tt.term_taxonomy_id FROM " . CN_TERM_TAXONOMY_TABLE . " AS tt INNER JOIN " . CN_TERMS_TABLE . " AS t ON tt.term_id = t.term_id WHERE tt.taxonomy = %s AND t.term_id = %d", $taxonomy, $termID) );
 		
-		$sql = "UPDATE " . CN_TERM_TAXONOMY_TABLE_NAME . " SET
+		$sql = "UPDATE " . CN_TERM_TAXONOMY_TABLE . " SET
 			term_id		= '" . $wpdb->escape($termID) . "',
 			taxonomy	= '" . $wpdb->escape($taxonomy) . "',
-			description	= '" . $wpdb->escape($description) . "',
-			count		= '0'
+			description	= '" . $wpdb->escape($description) . "'
 			WHERE term_taxonomy_id 	= '" . $wpdb->escape($ttID) . "'";
 		
 		/**
@@ -196,6 +199,38 @@ class cnTerms
 		$wpdb->query($wpdb->prepare($sql));
 		unset($sql);
 	
+	}
+	
+	private function getUniqueSlug($slug, $term)
+	{
+		global $wpdb;
+  		
+		if (empty($slug))
+		{
+			//If the slug is empty assign the $slug the $term name
+			$slug = $term;
+		}
+		
+		// WP function -- formatting class
+		sanitize_title(&$slug);
+		
+		$query = $wpdb->prepare( "SELECT slug FROM " . CN_TERMS_TABLE . " WHERE slug = %s", $slug );
+		
+		if ( $wpdb->get_var( $query ) )
+		{
+			$num = 2;
+			do
+			{
+				$alt_slug = $slug . "-$num";
+				$num++;
+				$slug_check = $wpdb->get_var( $wpdb->prepare( "SELECT slug FROM " . CN_TERMS_TABLE . " WHERE slug = %s", $alt_slug ) );
+			}
+			while ( $slug_check );
+			$slug = $alt_slug;
+		}
+		
+		return $slug;
+		
 	}
 }
 

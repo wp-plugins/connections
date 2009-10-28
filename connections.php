@@ -113,10 +113,10 @@ if (!class_exists('connectionsLoad'))
 			define('CN_DB_VERSION', '0.1.0');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
-			define('CN_ENTRY_TABLE_NAME', $wpdb->prefix . 'connections');
-			define('CN_TERMS_TABLE_NAME', $wpdb->prefix . 'connections_terms');
-			define('CN_TERM_TAXONOMY_TABLE_NAME', $wpdb->prefix . 'connections_term_taxonomy');
-			define('CN_TERM_RELATIONSHIP_TABLE_NAME', $wpdb->prefix . 'connections_term_relationships');
+			define('CN_ENTRY_TABLE', $wpdb->prefix . 'connections');
+			define('CN_TERMS_TABLE', $wpdb->prefix . 'connections_terms');
+			define('CN_TERM_TAXONOMY_TABLE', $wpdb->prefix . 'connections_term_taxonomy');
+			define('CN_TERM_RELATIONSHIP_TABLE', $wpdb->prefix . 'connections_term_relationships');
 			define('CN_BASE_NAME', plugin_basename( dirname(__FILE__)) );
 		}
 		
@@ -349,7 +349,7 @@ if (!class_exists('connectionsLoad'))
 			//if ($wpdb->get_var("SHOW TABLES LIKE '{$sql->getTableName()}'")!= $sql->getTableName())
 			//{
 				//$table_name = $this->db->getEntryTableName();
-			    $entryTable = "CREATE TABLE " . CN_ENTRY_TABLE_NAME . " (
+			    $entryTable = "CREATE TABLE " . CN_ENTRY_TABLE . " (
 			        id bigint(20) NOT NULL AUTO_INCREMENT,
 			        ts TIMESTAMP,
 					date_added tinytext NOT NULL,
@@ -387,10 +387,10 @@ if (!class_exists('connectionsLoad'))
 			    dbDelta($entryTable);
 			//}
 			
-			if ($wpdb->get_var("SHOW TABLES LIKE 'CN_TERMS_TABLE_NAME'") != CN_TERMS_TABLE_NAME)
+			if ($wpdb->get_var("SHOW TABLES LIKE 'CN_TERMS_TABLE'") != CN_TERMS_TABLE)
 			{
 				//$table_name = $this->db->getTermsTableName();
-			    $termsTable = "CREATE TABLE " . CN_TERMS_TABLE_NAME . " (
+			    $termsTable = "CREATE TABLE " . CN_TERMS_TABLE . " (
 			        term_id bigint(20) NOT NULL AUTO_INCREMENT,
 					name varchar(200) NOT NULL,
 					slug varchar(200) NOT NULL,
@@ -403,10 +403,10 @@ if (!class_exists('connectionsLoad'))
 			    dbDelta($termsTable);
 			}
 			
-			if ($wpdb->get_var("SHOW TABLES LIKE 'CN_TERM_TAXONOMY_TABLE_NAME'") != CN_TERM_TAXONOMY_TABLE_NAME)
+			if ($wpdb->get_var("SHOW TABLES LIKE 'CN_TERM_TAXONOMY_TABLE'") != CN_TERM_TAXONOMY_TABLE)
 			{
 				//$table_name = $this->db->getTermTaxonomyTableName();
-			    $termTaxonomyTable = "CREATE TABLE " . CN_TERM_TAXONOMY_TABLE_NAME . " (
+			    $termTaxonomyTable = "CREATE TABLE " . CN_TERM_TAXONOMY_TABLE . " (
 			        term_taxonomy_id bigint(20) NOT NULL AUTO_INCREMENT,
 					term_id bigint(20) NOT NULL,
 					taxonomy varchar(32) NOT NULL,
@@ -421,10 +421,10 @@ if (!class_exists('connectionsLoad'))
 			    dbDelta($termTaxonomyTable);
 			}
 			
-			if ($wpdb->get_var("SHOW TABLES LIKE 'CN_TERM_RELATIONSHIP_TABLE_NAME'") != CN_TERM_RELATIONSHIP_TABLE_NAME)
+			if ($wpdb->get_var("SHOW TABLES LIKE 'CN_TERM_RELATIONSHIP_TABLE'") != CN_TERM_RELATIONSHIP_TABLE)
 			{
 				//$table_name = $this->db->getTermRelationshipTableName();
-			    $termTermRelationshipTable = "CREATE TABLE " . CN_TERM_RELATIONSHIP_TABLE_NAME . " (
+			    $termTermRelationshipTable = "CREATE TABLE " . CN_TERM_RELATIONSHIP_TABLE . " (
 			        entry_id bigint(20) NOT NULL,
 					term_taxonomy_id bigint(20) NOT NULL,
 					term_order int(11) NOT NULL,

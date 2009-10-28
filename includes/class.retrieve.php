@@ -8,11 +8,11 @@ class cnRetrieve
 		
 		if ($id != NULL) $idString = " AND `id`='" . $id . "' ";
 		
-		$sql = "(SELECT *, `organization` AS `sort_column` FROM " . CN_ENTRY_TABLE_NAME . " WHERE `last_name` = '' AND `group_name` = ''" . $idString . ")
+		$sql = "(SELECT *, `organization` AS `sort_column` FROM " . CN_ENTRY_TABLE . " WHERE `last_name` = '' AND `group_name` = ''" . $idString . ")
 				 UNION
-				(SELECT *, `group_name` AS `sort_column` FROM " . CN_ENTRY_TABLE_NAME . " WHERE `group_name` != ''" . $idString . ")
+				(SELECT *, `group_name` AS `sort_column` FROM " . CN_ENTRY_TABLE . " WHERE `group_name` != ''" . $idString . ")
 				 UNION
-				(SELECT *, `last_name` AS `sort_column` FROM " . CN_ENTRY_TABLE_NAME . " WHERE `last_name` != ''" . $idString . ")
+				(SELECT *, `last_name` AS `sort_column` FROM " . CN_ENTRY_TABLE . " WHERE `last_name` != ''" . $idString . ")
 				 ORDER BY `sort_column`, `last_name`, `first_name`";
 		
 		return $wpdb->get_results($sql);
