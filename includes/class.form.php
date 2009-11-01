@@ -1053,6 +1053,103 @@ class cnEntryForm
 		$results = array('success'=>$success, 'error'=>$error, 'image_names'=>$image);
 		return $results;
 	}
+	
+}
+
+class cnCategoryObjects
+{
+	private $rowClass = '';
+		
+	public function buildCategoryRow($type, $parents, $level = 0, $selected = NULL)
+	{
+		foreach ($parents as $child)
+		{
+			$category = new cnCategory($child);
+			
+			if ($type === 'table') $out .= $this->buildTableRowHTML($child, $level);
+			if ($type === 'option') $out .= $this->buildOptionRowHTML($child, $level, $selected);
+			
+			if (is_array($category->getChildren()))
+			{
+				++$level;
+				if ($type === 'table') $out .= $this->buildCategoryRow('table', $category->getChildren(), $level);
+				if ($type === 'option') $out .= $this->buildCategoryRow('option', $category->getChildren(), $level, $selected);
+				--$level;
+			}
+			
+		}
+		
+		$level = 0;
+		return $out;
+	}
+	
+	private function buildTableRowHTML($term, $level)
+	{
+		$category = new cnCategory($term);
+		$pad = str_repeat('&#8212; ', max(0, $level));
+		$this->rowClass = 'alternate' == $this->rowClass ? '' : 'alternate';
+		
+		$out = '<tr id="cat-' . $category->getId() . '" class="' . $this->rowClass . '">';
+			$out .= '<th class="check-column"></th>';
+			$out .= '<td class="name column-name"><a class="row-title" href="admin.php?page=connections_categories&action=edit&id=' . $category->getId() . '">' . $pad . $category->getName() . '</a><br />';
+				$out .= '<div class="row-actions">';
+					$out .= '<span class="edit"><a href="admin.php?page=connections_categories&action=edit&id=' . $category->getId() . '">Edit</a> | </span>';
+					$out .= '<span class="delete"><a href="admin.php?page=connections_categories&action=delete&id=' . $category->getId() . '">Delete</a></span>';
+				$out .= '</div>';
+			$out .= '</td>';
+			$out .= '<td class="description column-description">' . $category->getDescription() . '</td>';
+			$out .= '<td class="slug column-slug">' . $category->getSlug() . '</td>';
+			$out .= '<td class="posts column-posts num">' . $category->getCount() . '</td>';
+		$out .= '</tr>';
+		
+		return $out;
+	}
+	
+	private function buildOptionRowHTML($term, $level, $selected)
+	{
+		global $rowClass;
+		
+		$category = new cnCategory($term);
+		$pad = str_repeat('&nbsp;&nbsp;&nbsp;', max(0, $level));
+		if ($selected == $category->getId()) $selectString = ' SELECTED ';
+		
+		$out = '<option value="' . $category->getId() . '"' . $selectString . '>' . $pad . $category->getName() . '</option>';
+		
+		return $out;
+	}
+	
+	public function showForm($data = NULL)
+	{
+		global $connections;
+		$category = new cnCategory($data);
+		$parent = new cnCategory($connections->retrieve->category($category->getParent()));
+		
+		$out = '<div class="form-field form-required connectionsform">';
+			$out .= '<label for="cat_name">Category Name</label>';
+			$out .= '<input type="text" aria-required="true" size="40" value="' . $category->getName() . '" id="category_name" name="category_name"/>';
+			$out .= '<input type="hidden" value="' . $category->getID() . '" id="category_id" name="category_id"/>';
+		$out .= '</div>';
+		
+		$out .= '<div class="form-field connectionsform">';
+			$out .= '<label for="category_nicename">Category Slug</label>';
+			$out .= '<input type="text" size="40" value="' . $category->getSlug() . '" id="category_slug" name="category_slug"/>';
+		$out .= '</div>';
+		
+		$out .= '<div class="form-field connectionsform">';
+			$out .= '<label for="category_parent">Category Parent</label>';
+			$out .= '<select class="postform" id="category_parent" name="category_parent">';
+				$out .= '<option value="0">None</option>';
+				$out .= $this->buildCategoryRow('option', $connections->retrieve->categories(), $level, $parent->getID());
+			$out .= '</select>';
+		$out .= '</div>';
+		
+		$out .= '<div class="form-field connectionsform">';
+			$out .= '<label for="category_description">Description</label>';
+			$out .= '<textarea cols="40" rows="5" id="category_description" name="category_description">' . $category->getDescription() . '</textarea>';
+		$out .= '</div>';
+		
+		echo $out;
+	}
 }
 
 ?>

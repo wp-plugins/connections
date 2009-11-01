@@ -270,6 +270,8 @@ if (!class_exists('connectionsLoad'))
 			$this->errorMessages->add('capability_add', 'You are not authorized to add entries. Please contact the admin if you received this message in error.');
 			$this->errorMessages->add('capability_delete', 'You are not authorized to delete entries. Please contact the admin if you received this message in error.');
 			$this->errorMessages->add('capability_edit', 'You are not authorized to edit entries. Please contact the admin if you received this message in error.');
+			
+			$this->errorMessages->add('category_self_parent', 'Category can not be a parent of itself.');
 		}
 		
 		/**

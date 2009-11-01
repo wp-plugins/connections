@@ -1036,10 +1036,6 @@ class cnEntry
 	
 	public function delete($id)
 	{
-		/**
-		 * @TODO: Move to the cnSQL class.
-		 */
-		
 		global $wpdb;
 		
 		$wpdb->query($wpdb->prepare('DELETE FROM ' . CN_ENTRY_TABLE . ' WHERE id="' . $wpdb->escape($id) . '"'));

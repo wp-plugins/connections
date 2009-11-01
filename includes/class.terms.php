@@ -133,6 +133,10 @@ class cnTerms
 		
 		$this->getUniqueSlug(&$slug, $term);
 		
+		/**
+		 * @TODO: Make sure the term doesn't exist before adding it.
+		 * If term does exist, only the taxonomy table needs to be updated.
+		 */
 		$sql = "INSERT INTO " . CN_TERMS_TABLE . " SET
 			name    	= '" . $wpdb->escape($term) . "',
 			slug    	= '" . $wpdb->escape($slug) . "',
@@ -168,8 +172,8 @@ class cnTerms
 		
 		$name = $attributes['name'];
 		$slug = $attributes['slug'];
-		$description = $attributes['description'];
 		$parent = $attributes['parent'];
+		$description = $attributes['description'];
 		
 		$this->getUniqueSlug(&$slug, $name);
 		
@@ -190,7 +194,8 @@ class cnTerms
 		$sql = "UPDATE " . CN_TERM_TAXONOMY_TABLE . " SET
 			term_id		= '" . $wpdb->escape($termID) . "',
 			taxonomy	= '" . $wpdb->escape($taxonomy) . "',
-			description	= '" . $wpdb->escape($description) . "'
+			description	= '" . $wpdb->escape($description) . "',
+			parent		= '" . $wpdb->escape($parent) . "'
 			WHERE term_taxonomy_id 	= '" . $wpdb->escape($ttID) . "'";
 		
 		/**
@@ -199,6 +204,47 @@ class cnTerms
 		$wpdb->query($wpdb->prepare($sql));
 		unset($sql);
 	
+	}
+	
+	/**
+	 * Remove a term from the database.
+	 * 
+	 * If the term contains children terms, the children terms will be updated
+	 * to the deleted term parent.
+	 * 
+	 * @param int $id Term ID
+	 * @param int $id Term Parent ID
+	 * @param string $taxonomy Taxonomy Name
+	 */
+	public function deleteTerm($id, $parent, $taxonomy)
+	{
+		global $wpdb;
+		
+		$childrenTerms = $wpdb->get_col( "SELECT `term_taxonomy_id` FROM " . CN_TERM_TAXONOMY_TABLE . " WHERE `parent` = " . (int)$id );
+		
+		// Move the children terms to the parent term.
+		foreach ($childrenTerms as $childID)
+		{
+				$sql = "UPDATE " . CN_TERM_TAXONOMY_TABLE . " SET
+				parent			= '" . $wpdb->escape($parent) . "'
+				WHERE parent	= '" . $wpdb->escape($id) . "'";
+			
+			/**
+			 * @TODO: Error check the insert and return error
+			 */
+			$wpdb->query($wpdb->prepare($sql));
+			unset($sql);
+		}
+		
+		// Delete the term taxonomy.
+		$wpdb->query($wpdb->prepare("DELETE FROM " . CN_TERM_TAXONOMY_TABLE . " WHERE term_taxonomy_id = %d", $id ));
+		
+		// Delete the term if no taxonomies use it.
+		if ( !$wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . CN_TERM_TAXONOMY_TABLE . " WHERE term_id = %d", $id) ) )
+		{
+			$wpdb->query( $wpdb->prepare( "DELETE FROM " . CN_TERMS_TABLE . " WHERE term_id = %d", $id) );
+		}
+		
 	}
 	
 	private function getUniqueSlug($slug, $term)

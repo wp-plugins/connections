@@ -213,10 +213,23 @@ class cnCategory
 		
 		$attributes['name'] = $this->name;
 		$attributes['slug'] = $this->slug;
+		$attributes['parent']= $this->parent;
 		$attributes['description'] = $this->description;
-		$attributes['parent'] = $this->parent;
+		
+		if ($this->id === $this->parent)
+		{
+			$connections->setErrorMessage('category_self_parent');
+			return;
+		}
 		
 		$connections->term->updateTerm($this->id, 'category', $attributes);
+	}
+	
+	public function delete()
+	{
+		global $connections;
+		
+		$connections->term->deleteTerm($this->id, $this->parent, 'category');
 	}
 }
 

@@ -22,146 +22,76 @@ function connectionsShowCategoriesPage()
 	else
 	{
 		global $connections;
-		$rowClass = '';
+		$categoryObjects = new cnCategoryObjects();
+		$showPage = TRUE;
 		
-		//print_r($connections->retrieve->categories());
-		//print_r($connections->retrieve->category('10'));
-		
-		function buildTableRow($parents, $level = 0)
+		switch ($_GET['action'])
 		{
-			foreach ($parents as $child)
-			{
-				$category = new cnCategory($child);
+			case 'edit':
+				$result = $connections->retrieve->category(attribute_escape($_GET['id']));
 				
-				$out .= buildTableRowHTML($child, $level);
+				echo '<div class="wrap">';
+					echo '<div class="form-wrap" style="width:600px; margin: 0 auto;">';
+						echo '<h2><a name="new"></a>Edit Category</h2>';
 				
-				if (is_array($category->getChildren()))
-				{
-					++$level;
-					$out .= buildTableRow($category->getChildren(), $level);
-					--$level;
-				}
+						echo '<form action="admin.php?page=connections_categories&action=update" method="post" id="addcat" name="updatecategory">';
+							$categoryObjects->showForm($result);
+							echo '<p class="submit"><input class="button-primary" type="submit" value="Update Category" name="update" class="button"/></p>';
+						echo '</form>';
 				
-			}
-			
-			$level = 0;
-			return $out;
-		}
-		
-		function buildTableRowHTML($term, $level)
-		{
-			global $rowClass;
-			
-			$category = new cnCategory($term);
-			$pad = str_repeat('&#8212; ', max(0, $level));
-			$rowClass = 'alternate' == $rowClass ? '' : 'alternate';
-			
-			$out = '<tr id="cat-' . $category->getId() . '" class="' . $rowClass . '">';
-				$out .= '<th class="check-column"></th>';
-				$out .= '<td class="name column-name"><a class="row-title" href="admin.php?page=connections_categories&action=edit&id=' . $category->getId() . '">' . $pad . $category->getName() . '</a><br />';
-					$out .= '<div class="row-actions">';
-						$out .= '<span class="edit"><a href="#">Edit</a> | </span>';
-						$out .= '<span class="delete"><a href="#">Delete</a></span>';
-					$out .= '</div>';
-				$out .= '</td>';
-				$out .= '<td class="description column-description">' . $category->getDescription() . '</td>';
-				$out .= '<td class="slug column-slug">' . $category->getSlug() . '</td>';
-				$out .= '<td class="posts column-posts num">' . $category->getCount() . '</td>';
-			$out .= '</tr>';
-			
-			return $out;
-		}
-		
-		function showForm($data = NULL)
-		{
-			$category = new cnCategory($data);
-			
-			$out = '<div class="form-field form-required connectionsform">';
-				$out .= '<label for="cat_name">Category Name</label>';
-				$out .= '<input type="text" aria-required="true" size="40" value="' . $category->getName() . '" id="category_name" name="category_name"/>';
-				$out .= '<input type="hidden" value="' . $category->getID() . '" id="category_id" name="category_id"/>';
-			$out .= '</div>';
-			
-			$out .= '<div class="form-field connectionsform">';
-				$out .= '<label for="category_nicename">Category Slug</label>';
-				$out .= '<input type="text" size="40" value="' . $category->getSlug() . '" id="category_slug" name="category_slug"/>';
-			$out .= '</div>';
-			
-			$out .= '<div class="form-field connectionsform">';
-				$out .= '<label for="category_parent">Category Parent</label>';
-				$out .= '<select class="postform" id="category_parent" name="category_parent">';
-					$out .= '<option value="">None</option>';
-				$out .= '</select>';
-			$out .= '</div>';
-			
-			$out .= '<div class="form-field connectionsform">';
-				$out .= '<label for="category_description">Description</label>';
-				$out .= '<textarea cols="40" rows="5" id="category_description" name="category_description">' . $category->getDescription() . '</textarea>';
-			$out .= '</div>';
-			
-			echo $out;
-		}
-		
-		if (isset($_GET['action']))
-		{
-			switch ($_GET['action'])
-			{
-				case 'edit':
-					$result = $connections->retrieve->category(attribute_escape($_GET['id']));
-					
-					echo '<div class="wrap">';
-						echo '<div class="form-wrap" style="width:600px; margin: 0 auto;">';
-							echo '<h2><a name="new"></a>Edit Category</h2>';
-					
-							echo '<form action="admin.php?page=connections_categories" method="post" id="addcat" name="addcat">';
-								showForm($result);
-								echo '<p class="submit"><input class="button-primary" type="submit" value="Update Category" name="update" class="button"/></p>';
-							echo '</form>';
-					
-						echo '</div>';
 					echo '</div>';
-				break;
-			}
+				echo '</div>';
+				
+				$showPage = FALSE;
+			break;
+			
+			case 'addcategory':
+				if (isset($_POST['add']))
+				{
+					$category = new cnCategory();
+					
+					$category->setName($_POST['category_name']);
+					$category->setSlug($_POST['category_slug']);
+					$category->setParent($_POST['category_parent']);
+					$category->setDescription($_POST['category_description']);
+					
+					$category->save();
+				}
+				$showPage = TRUE;
+			break;
+			
+			case 'update':
+				if (isset($_POST['update']))
+				{
+					$category = new cnCategory();
+					
+					$category->setID($_POST['category_id']);
+					$category->setName($_POST['category_name']);
+					$category->setParent($_POST['category_parent']);
+					$category->setSlug($_POST['category_slug']);
+					$category->setDescription($_POST['category_description']);
+					
+					$category->update();
+				}
+				$showPage = TRUE;
+			break;
+			
+			case 'delete':
+				$result = $connections->retrieve->category(attribute_escape($_GET['id']));
+				$category = new cnCategory($result);
+				$category->delete();
+				$showPage = TRUE;
+			break;
+			
 		}
-		else
+		
+		if ($showPage === TRUE)
 		{
-			if (isset($_POST['add']))
-			{
-				$category = new cnCategory();
-				
-				$category->setName($_POST['category_name']);
-				$category->setSlug($_POST['category_slug']);
-				$category->setDescription($_POST['category_description']);
-				
-				echo $category->getName();
-				echo $category->getSlug();
-				echo $category->getDescription();
-				$category->save();
-				echo 'SAVE';
-			}
-			
-			if (isset($_POST['update']))
-			{
-				$category = new cnCategory();
-				
-				$category->setID($_POST['category_id']);
-				$category->setName($_POST['category_name']);
-				$category->setSlug($_POST['category_slug']);
-				$category->setDescription($_POST['category_description']);
-				
-				echo $category->getID();
-				echo $category->getName();
-				echo $category->getSlug();
-				echo $category->getDescription();
-				$category->update();
-				echo 'UPDATE';
-			}
-			
 			?>
 				<div class="wrap nosubsub">
 					<div class="icon32" id="icon-connections"><br/></div>
 					<h2>Connections : Categories</h2>
-					
+					<?php echo $connections->displayMessages(); ?>
 					<div id="col-container">
 					
 						<div id="col-right">
@@ -204,7 +134,7 @@ function connectionsShowCategoriesPage()
 									
 										<tbody class="list:cat" id="the-list">
 											<?php
-												echo buildTableRow($connections->retrieve->categories());
+												echo $categoryObjects->buildCategoryRow('table', $connections->retrieve->categories());
 											?>
 										</tbody>
 									</table>
@@ -221,9 +151,9 @@ function connectionsShowCategoriesPage()
 							<div class="col-wrap">
 								<div class="form-wrap">
 									<h3>Add Category</h3>
-										<form action="admin.php?page=connections_categories" method="post" id="addcat" name="addcat">
+										<form action="admin.php?page=connections_categories&action=addcategory" method="post" id="addcat" name="addcat">
 											<?php
-												showForm();
+												$categoryObjects->showForm();
 											?>
 										<p class="submit"><input type="submit" value="Save Category" name="add" class="button"/></p>
 									</form>
