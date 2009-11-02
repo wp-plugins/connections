@@ -272,6 +272,9 @@ if (!class_exists('connectionsLoad'))
 			$this->errorMessages->add('capability_edit', 'You are not authorized to edit entries. Please contact the admin if you received this message in error.');
 			
 			$this->errorMessages->add('category_self_parent', 'Category can not be a parent of itself.');
+			$this->errorMessages->add('category_delete_uncategorized', 'The Uncategorized category can not be deleted.');
+			$this->errorMessages->add('category_update_uncategorized', 'The Uncategorized category can not be altered.');
+			$this->errorMessages->add('category_add_uncategorized', 'The Uncategorized category already exists.');
 		}
 		
 		/**
@@ -291,7 +294,14 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function setErrorMessage($errorMessage)
 		{
-			$_SESSION['cn_session']['messages'][]  = array('error' => $errorMessage);
+			$messages = $_SESSION['cn_session']['messages'];
+			
+			// If the error message is slready stored, no need to store it twice.
+			// Error supression is used incase no messages have been stored.
+			if (@!in_array(array('error' => $errorMessage), $messages))
+			{
+				$_SESSION['cn_session']['messages'][]  = array('error' => $errorMessage);
+			}
 		}
 		
 		/**
@@ -308,6 +318,10 @@ if (!class_exists('connectionsLoad'))
 			$this->successMessages->add('form_entry_delete', 'The entry has been deleted.');
 			$this->successMessages->add('form_entry_delete_bulk', 'Entry(ies) have been deleted.');
 			$this->successMessages->add('form_entry_visibility_bulk', 'Entry(ies) visibility have been updated.');
+			
+			$this->successMessages->add('category_deleted', 'Catergory(ies) have been deleted.');
+			$this->successMessages->add('category_updated', 'Catergory has been updated.');
+			$this->successMessages->add('category_added', 'Catergory has been added.');
 		}
 		
 		/**
@@ -327,12 +341,14 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function setSuccessMessage($successMessage)
 		{
-			//if (get_option('connections_messages')) $messages = get_option('connections_messages');
+			$messages = $_SESSION['cn_session']['messages'];
 			
-			//$messages[] = array('success' => $successMessage);
-			$_SESSION['cn_session']['messages'][]  = array('success' => $successMessage);
-			
-			//update_option('connections_messages', $messages);
+			// If the success message is slready stored, no need to store it twice.
+			// Error supression is used incase no messages have been stored.
+			if (@!in_array(array('success' => $successMessage), $messages))
+			{
+				$_SESSION['cn_session']['messages'][]  = array('success' => $successMessage);
+			}
 		}
 						
 		/**

@@ -20,7 +20,7 @@ class cnTerms
 	 * 
 	 * @param array $taxonomies
 	 * @param array $arguments [optional]
-	 * @return 
+	 * @return array
 	 */
 	public function getTerms($taxonomies, $arguments = NULL)
 	{
@@ -123,6 +123,20 @@ class cnTerms
 		}
 	}
 	
+	/**
+	 * Adds a new term.
+	 * 
+	 * $term - (string) Term name.
+	 * $taxonomy - (string) taxonomy of the term to be updated
+	 * $attributes - (array)	slug - (string)
+	 * 							parent - (int)
+	 * 							description - (string)
+	 *  
+	 * @param int $term
+	 * @param string $taxonomy
+	 * @param array $attributes
+	 * @return 
+	 */
 	public function addTerm($term, $taxonomy, $attributes)
 	{
 		global $wpdb, $connections;
@@ -164,8 +178,25 @@ class cnTerms
 		 */
 		$wpdb->query($wpdb->prepare($sql));
 		unset($sql);
+		
+		return TRUE;
 	}
 	
+	/**
+	 * Updates a term.
+	 * 
+	 * $termID - (int) ID of the term to be updated
+	 * $taxonomy - (string) taxonomy of the term to be updated
+	 * $attributes - (array)	name - (string)
+	 * 							slug - (string)
+	 * 							parent - (int)
+	 * 							description - (string)
+	 * 
+	 * @param int $termID
+	 * @param string $taxonomy
+	 * @param array $attributes
+	 * @return bool
+	 */
 	public function updateTerm($termID, $taxonomy, $attributes)
 	{
 		global $wpdb, $connections;
@@ -203,7 +234,8 @@ class cnTerms
 		 */
 		$wpdb->query($wpdb->prepare($sql));
 		unset($sql);
-	
+		
+		return TRUE;	
 	}
 	
 	/**
@@ -215,6 +247,7 @@ class cnTerms
 	 * @param int $id Term ID
 	 * @param int $id Term Parent ID
 	 * @param string $taxonomy Taxonomy Name
+	 * @return bool
 	 */
 	public function deleteTerm($id, $parent, $taxonomy)
 	{
@@ -245,8 +278,16 @@ class cnTerms
 			$wpdb->query( $wpdb->prepare( "DELETE FROM " . CN_TERMS_TABLE . " WHERE term_id = %d", $id) );
 		}
 		
+		return TRUE;		
 	}
 	
+	/**
+	 * Returns a unique sanitized slug for insetion in the database.
+	 * 
+	 * @param string $slug
+	 * @param string $term
+	 * @return string
+	 */
 	private function getUniqueSlug($slug, $term)
 	{
 		global $wpdb;

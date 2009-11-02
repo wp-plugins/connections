@@ -196,6 +196,11 @@ class cnCategory
         $this->termGroup = $termGroup;
     }
 	
+	/**
+	 * Saves the category to the database via the cnTerm class.
+	 * 
+	 * @return The success or error message.
+	 */
 	public function save()
 	{
 		global $connections;
@@ -204,9 +209,22 @@ class cnCategory
 		$attributes['description'] = $this->description;
 		$attributes['parent'] = $this->parent;
 		
-		$connections->term->addTerm($this->name, 'category', $attributes);
+		// Do not add the uncategorized category
+		if (strtolower($this->name) != 'uncategorized')
+		{
+			if ($connections->term->addTerm($this->name, 'category', $attributes)) $connections->setSuccessMessage('category_added');
+		}
+		else
+		{
+			$connections->setErrorMessage('category_add_uncategorized');
+		}
 	}
     
+	/**
+	 * Updates the category to the database via the cnTerm class.
+	 * 
+	 * @return The success or error message.
+	 */
 	public function update()
 	{
 		global $connections;
@@ -216,20 +234,42 @@ class cnCategory
 		$attributes['parent']= $this->parent;
 		$attributes['description'] = $this->description;
 		
+		// Make sure the category isn't being set to itself as a parent.
 		if ($this->id === $this->parent)
 		{
 			$connections->setErrorMessage('category_self_parent');
 			return;
 		}
 		
-		$connections->term->updateTerm($this->id, 'category', $attributes);
+		// Do not change the uncategorized category
+		if ($this->slug != 'uncategorized')
+		{
+			if ($connections->term->updateTerm($this->id, 'category', $attributes)) $connections->setSuccessMessage('category_updated');
+		}
+		else
+		{
+			$connections->setErrorMessage('category_update_uncategorized');
+		}
 	}
 	
+	/**
+	 * Deletes the category from the database via the cnTerm class.
+	 * 
+	 * @return The success or error message.
+	 */
 	public function delete()
 	{
 		global $connections;
 		
-		$connections->term->deleteTerm($this->id, $this->parent, 'category');
+		// Do not delete the uncategorized category
+		if ($this->slug != 'uncategorized')
+		{
+			if ($connections->term->deleteTerm($this->id, $this->parent, 'category')) $connections->setSuccessMessage('category_deleted');
+		}
+		else
+		{
+			$connections->setErrorMessage('category_delete_uncategorized');
+		}
 	}
 }
 

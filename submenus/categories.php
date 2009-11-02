@@ -83,6 +83,16 @@ function connectionsShowCategoriesPage()
 				$showPage = TRUE;
 			break;
 			
+			case 'bulk_delete':
+				foreach ( (array) $_POST['category'] as $cat_ID )
+				{
+					$result = $connections->retrieve->category(attribute_escape($cat_ID));
+					$category = new cnCategory($result);
+					$category->delete();
+					$showPage = TRUE;
+				}
+			break;
+			
 		}
 		
 		if ($showPage === TRUE)
@@ -96,7 +106,7 @@ function connectionsShowCategoriesPage()
 					
 						<div id="col-right">
 							<div class="col-wrap">
-								<form method="get" action="" id="posts-filter">
+								<form method="post" action="admin.php?page=connections_categories&action=bulk_delete" id="posts-filter">
 									<div class="tablenav">
 										<div class="alignleft actions">
 											<select name="action">

@@ -1090,7 +1090,9 @@ class cnCategoryObjects
 		$this->rowClass = 'alternate' == $this->rowClass ? '' : 'alternate';
 		
 		$out = '<tr id="cat-' . $category->getId() . '" class="' . $this->rowClass . '">';
-			$out .= '<th class="check-column"></th>';
+			$out .= '<th class="check-column">';
+				$out .= '<input type="checkbox" name="category[]" value="' . $category->getId() . '"/>';
+			$out .= '</th>';
 			$out .= '<td class="name column-name"><a class="row-title" href="admin.php?page=connections_categories&action=edit&id=' . $category->getId() . '">' . $pad . $category->getName() . '</a><br />';
 				$out .= '<div class="row-actions">';
 					$out .= '<span class="edit"><a href="admin.php?page=connections_categories&action=edit&id=' . $category->getId() . '">Edit</a> | </span>';
