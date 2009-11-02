@@ -108,7 +108,7 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 
 == Changelog ==
 
-= 0.5.45 9/14/2009 =
+= 0.5.48 9/14/2009 =
 * Fixed a jQuery bug in IE8.
 * The alpha index in the admin is now dynamic. It will only show letters for entries in you list.
 
