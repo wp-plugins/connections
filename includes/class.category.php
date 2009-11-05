@@ -212,7 +212,14 @@ class cnCategory
 		// Do not add the uncategorized category
 		if (strtolower($this->name) != 'uncategorized')
 		{
-			if ($connections->term->addTerm($this->name, 'category', $attributes)) $connections->setSuccessMessage('category_added');
+			if ($connections->term->addTerm($this->name, 'category', $attributes))
+			{
+				$connections->setSuccessMessage('category_added');
+			}
+			else
+			{
+				$connections->setErrorMessage('category_add_failed');
+			}
 		}
 		else
 		{
@@ -244,7 +251,14 @@ class cnCategory
 		// Do not change the uncategorized category
 		if ($this->slug != 'uncategorized')
 		{
-			if ($connections->term->updateTerm($this->id, 'category', $attributes)) $connections->setSuccessMessage('category_updated');
+			if ($connections->term->updateTerm($this->id, 'category', $attributes))
+			{
+				$connections->setSuccessMessage('category_updated');
+			}
+			else
+			{
+				$connections->setErrorMessage('category_update_failed');
+			}
 		}
 		else
 		{
@@ -264,7 +278,14 @@ class cnCategory
 		// Do not delete the uncategorized category
 		if ($this->slug != 'uncategorized')
 		{
-			if ($connections->term->deleteTerm($this->id, $this->parent, 'category')) $connections->setSuccessMessage('category_deleted');
+			if ($connections->term->deleteTerm($this->id, $this->parent, 'category'))
+			{
+				$connections->setSuccessMessage('category_deleted');
+			}
+			else
+			{
+				$connections->setErrorMessage('category_delete_failed');
+			}
 		}
 		else
 		{

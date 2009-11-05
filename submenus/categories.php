@@ -22,31 +22,38 @@ function connectionsShowCategoriesPage()
 	else
 	{
 		global $connections;
+		$form = new cnFormObjects();
 		$categoryObjects = new cnCategoryObjects();
 		$showPage = TRUE;
 		
 		switch ($_GET['action'])
 		{
 			case 'edit':
-				$result = $connections->retrieve->category(attribute_escape($_GET['id']));
+				$id = attribute_escape($_GET['id']);
 				
-				echo '<div class="wrap">';
-					echo '<div class="form-wrap" style="width:600px; margin: 0 auto;">';
-						echo '<h2><a name="new"></a>Edit Category</h2>';
-				
-						echo '<form action="admin.php?page=connections_categories&action=update" method="post" id="addcat" name="updatecategory">';
-							$categoryObjects->showForm($result);
-							echo '<p class="submit"><input class="button-primary" type="submit" value="Update Category" name="update" class="button"/></p>';
-						echo '</form>';
-				
+				if ($form->tokenCheck('category_edit_' . $id, $_GET['token']))
+				{
+					$result = $connections->retrieve->category($id);
+					
+					echo '<div class="wrap">';
+						echo '<div class="form-wrap" style="width:600px; margin: 0 auto;">';
+							echo '<h2><a name="new"></a>Edit Category</h2>';
+					
+							echo '<form action="admin.php?page=connections_categories&action=update" method="post" id="addcat" name="updatecategory">';
+								$categoryObjects->showForm($result);
+								echo '<p class="submit"><input class="button-primary" type="submit" value="Update Category" name="update" class="button"/></p>';
+							echo '</form>';
+					
+						echo '</div>';
 					echo '</div>';
-				echo '</div>';
-				
-				$showPage = FALSE;
+					
+					unset($id);
+					$showPage = FALSE;
+				}
 			break;
 			
 			case 'addcategory':
-				if (isset($_POST['add']))
+				if (isset($_POST['add']) && $form->tokenCheck($_POST['form_id'], $_POST['token']))
 				{
 					$category = new cnCategory();
 					
@@ -61,7 +68,7 @@ function connectionsShowCategoriesPage()
 			break;
 			
 			case 'update':
-				if (isset($_POST['update']))
+				if (isset($_POST['update']) && $form->tokenCheck($_POST['form_id'], $_POST['token']))
 				{
 					$category = new cnCategory();
 					
@@ -77,20 +84,30 @@ function connectionsShowCategoriesPage()
 			break;
 			
 			case 'delete':
-				$result = $connections->retrieve->category(attribute_escape($_GET['id']));
-				$category = new cnCategory($result);
-				$category->delete();
+				$id = attribute_escape($_GET['id']);
+				
+				if ($form->tokenCheck('category_delete_' . $id, $_GET['token']))
+				{
+					$result = $connections->retrieve->category($id);
+					$category = new cnCategory($result);
+					$category->delete();
+					
+					unset($id);
+				}
 				$showPage = TRUE;
 			break;
 			
 			case 'bulk_delete':
-				foreach ( (array) $_POST['category'] as $cat_ID )
+				if (isset($_POST['doaction']) && $form->tokenCheck($_POST['form_id'], $_POST['token']))
 				{
-					$result = $connections->retrieve->category(attribute_escape($cat_ID));
-					$category = new cnCategory($result);
-					$category->delete();
-					$showPage = TRUE;
+					foreach ( (array) $_POST['category'] as $cat_ID )
+					{
+						$result = $connections->retrieve->category(attribute_escape($cat_ID));
+						$category = new cnCategory($result);
+						$category->delete();
+					}
 				}
+				$showPage = TRUE;
 			break;
 			
 		}
@@ -118,6 +135,9 @@ function connectionsShowCategoriesPage()
 										
 										<br class="clear"/>
 									</div>
+									
+									<input type="hidden" name="form_id" value="category_action_form" />
+									<input type="hidden" name="token" value="<?php echo $form->token('category_action_form') ?>" />
 									
 									<div class="clear"/></div>
 								

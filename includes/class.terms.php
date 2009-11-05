@@ -135,7 +135,7 @@ class cnTerms
 	 * @param int $term
 	 * @param string $taxonomy
 	 * @param array $attributes
-	 * @return 
+	 * @return bool
 	 */
 	public function addTerm($term, $taxonomy, $attributes)
 	{
@@ -156,10 +156,8 @@ class cnTerms
 			slug    	= '" . $wpdb->escape($slug) . "',
 			term_group	= '0'";
 		
-		/**
-		 * @TODO: Error check the insert and return error
-		 */
-		$wpdb->query($wpdb->prepare($sql));
+		// If insert fails return NULL.
+		if (!$wpdb->query($wpdb->prepare($sql))) return;
 		unset($sql);
 		
 		// Not quite sure how the wpdb class sets this variable???
@@ -206,6 +204,21 @@ class cnTerms
 		$parent = $attributes['parent'];
 		$description = $attributes['description'];
 		
+		/*
+		 * Empty the slug first so the update won't fail because
+		 * of the need of a unique slug.
+		 * 
+		 * Why can't a row be updated that must have a unique value
+		 * if the slug value isn't being changed??????
+		 */
+		$sql = "UPDATE " . CN_TERMS_TABLE . " SET
+				slug		= ''
+				WHERE term_id = '" . $wpdb->escape($termID) . "'";
+			
+		// If insert fails return NULL.
+		if (!$wpdb->query($wpdb->prepare($sql))) return;
+		unset($sql);
+		
 		$this->getUniqueSlug(&$slug, $name);
 		
 		$sql = "UPDATE " . CN_TERMS_TABLE . " SET
@@ -214,11 +227,10 @@ class cnTerms
 			term_group	= '0'
 			WHERE term_id = '" . $wpdb->escape($termID) . "'";
 		
-		/**
-		 * @TODO: Error check the insert and return error
-		 */
-		$wpdb->query($wpdb->prepare($sql));
-		unset($sql);	
+		// If insert fails return NULL.
+		if (!$wpdb->query($wpdb->prepare($sql))) return;
+		unset($sql);
+					
 		
 		$ttID = $wpdb->get_var( $wpdb->prepare( "SELECT tt.term_taxonomy_id FROM " . CN_TERM_TAXONOMY_TABLE . " AS tt INNER JOIN " . CN_TERMS_TABLE . " AS t ON tt.term_id = t.term_id WHERE tt.taxonomy = %s AND t.term_id = %d", $taxonomy, $termID) );
 		
@@ -270,7 +282,8 @@ class cnTerms
 		}
 		
 		// Delete the term taxonomy.
-		$wpdb->query($wpdb->prepare("DELETE FROM " . CN_TERM_TAXONOMY_TABLE . " WHERE term_taxonomy_id = %d", $id ));
+		// If insert fails return NULL.
+		if (!$wpdb->query($wpdb->prepare("DELETE FROM " . CN_TERM_TAXONOMY_TABLE . " WHERE term_taxonomy_id = %d", $id ))) return;
 		
 		// Delete the term if no taxonomies use it.
 		if ( !$wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . CN_TERM_TAXONOMY_TABLE . " WHERE term_id = %d", $id) ) )
@@ -282,10 +295,10 @@ class cnTerms
 	}
 	
 	/**
-	 * Returns a unique sanitized slug for insetion in the database.
+	 * Returns a unique sanitized slug for insertion in the database.
 	 * 
 	 * @param string $slug
-	 * @param string $term
+	 * @param string $term Name
 	 * @return string
 	 */
 	private function getUniqueSlug($slug, $term)

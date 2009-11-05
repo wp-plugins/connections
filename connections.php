@@ -264,6 +264,7 @@ if (!class_exists('connectionsLoad'))
 			$this->errorMessages->add('form_no_entry_id', 'No entry ID.');
 			$this->errorMessages->add('form_no_entry_token', 'No entry token.');
 			$this->errorMessages->add('form_no_session_token', 'No session token.');
+			$this->errorMessages->add('form_no_token', 'No form token.');
 			
 			$this->errorMessages->add('capability_view_entry_list', 'You are not authorized to view the entry list. Please contact the admin if you received this message in error.');
 			
@@ -275,6 +276,9 @@ if (!class_exists('connectionsLoad'))
 			$this->errorMessages->add('category_delete_uncategorized', 'The Uncategorized category can not be deleted.');
 			$this->errorMessages->add('category_update_uncategorized', 'The Uncategorized category can not be altered.');
 			$this->errorMessages->add('category_add_uncategorized', 'The Uncategorized category already exists.');
+			$this->errorMessages->add('category_add_failed', 'Failed to add category.');
+			$this->errorMessages->add('category_update_failed', 'Failed to update category.');
+			$this->errorMessages->add('category_delete_failed', 'Failed to delete category.');
 		}
 		
 		/**
