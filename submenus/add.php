@@ -37,28 +37,30 @@ function connectionsShowAddPage()
 			
 			<h2>Connections : Add Entry</h2>
 			
-			<div class="form-wrap" style="width:600px; margin: 0 auto;">
-				<h3><a name="new"></a>Add Entry</h3>
-				<?php 
-					$attr = array(
-								 'action' => 'admin.php?page=connections_add&action=add',
-								 'method' => 'post',
-								 'enctype' => 'multipart/form-data',
-								 );
-					
-					echo $form->open($attr);
-					echo $entryForm->displayForm();
-					echo '<input type="hidden" name="formId" value="entry_form" />';
-					echo '<input type="hidden" name="token" value="' . $form->token("entry_form") . '" />';
-				?>
-					<!--<div class="stuffbox" id="poststuff">
-						<h3>Submit</h3>
-						<input class="button-primary" type="submit" name="save" value="Add Address" />
-					</div>-->
-					<p class="submit">
-						<input class="button-primary" type="submit" name="save" value="Add Address" />
-					</p>
-				<?php echo $form->close(); ?>
+			<div class="form-wrap" style="width:880px; margin: 0 auto;">
+				
+				<div id="poststuff" class="metabox-holder has-right-sidebar">
+					<?php 
+						$attr = array(
+									 'action' => 'admin.php?page=connections_add&action=add',
+									 'method' => 'post',
+									 'enctype' => 'multipart/form-data',
+									 );
+						
+						echo $form->open($attr);
+						echo $entryForm->displayForm();
+						echo '<input type="hidden" name="formId" value="entry_form" />';
+						echo '<input type="hidden" name="token" value="' . $form->token("entry_form") . '" />';
+					?>
+						<!--<div class="stuffbox" id="poststuff">
+							<h3>Submit</h3>
+							<input class="button-primary" type="submit" name="save" value="Add Address" />
+						</div>
+						<p class="submit">
+							<input class="button-primary" type="submit" name="save" value="Add Address" />
+						</p>-->
+					<?php echo $form->close(); ?>
+				</div>
 			</div>
 		</div>
 		
