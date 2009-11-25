@@ -29,7 +29,9 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 /**
  * @TODO: The settings and roles form need the nonce setup.
  */
-
+/**
+ * @TODO: Add support for SSL using the CN_PLUGIN_URL constant throughout.
+ */
 /**
  * @TODO: Fix bug. The output class will output entry divs for some data fields.
  */
@@ -105,9 +107,6 @@ if (!class_exists('connectionsLoad'))
 		private function loadConstants()
 		{
 			global $wpdb;
-			/**
-			 * @TODO: Define constants for the plug-in path and URL
-			 */
 			
 			define('CN_CURRENT_VERSION', '0.5.51');
 			define('CN_DB_VERSION', '0.1.0');
@@ -118,6 +117,18 @@ if (!class_exists('connectionsLoad'))
 			define('CN_TERM_TAXONOMY_TABLE', $wpdb->prefix . 'connections_term_taxonomy');
 			define('CN_TERM_RELATIONSHIP_TABLE', $wpdb->prefix . 'connections_term_relationships');
 			define('CN_BASE_NAME', plugin_basename( dirname(__FILE__)) );
+			
+			$siteURL = get_option('siteurl');
+			if(is_ssl())
+			{
+				$siteURL = str_replace("http://", "https://", $siteURL);
+			}
+			
+			/*
+			 * Defines the URL to the plugin folder setting.
+			 * @author: Ben Klocek
+			 */
+			define('CN_PLUGIN_URL', $siteURL.'/wp-content/plugins/' . CN_BASE_NAME);
 		}
 		
 		private function loadDependencies()
