@@ -302,6 +302,7 @@ class cnEntryForm
 		//$plugin_options = new cnOptions();
 		
 		$form = new cnFormObjects();
+		$categoryObjects = new cnCategoryObjects();
 		$entry = new cnEntry($data);
 		$addressObject = new cnAddresses();
 		$phoneNumberObject = new cnPhoneNumber();
@@ -340,6 +341,17 @@ class cnEntryForm
 					$out .= '<div id="major-publishing-actions">';
 						$out .= '<div id="publishing-action"><input class="button-primary" type="submit" name="save" value="Add Address" /></div>';
 						$out .= '<div class="clear"></div>';
+					$out .= '</div>';
+				$out .= '</div>';
+			$out .= '</div>';
+			
+			$out .= '<div id="categorydiv" class="postbox">';
+				$out .= '<h3>Categories</h3>';
+				$out .= '<div class="inside">';
+					$out .= '<div id="categories-all" class="tabs-panel">';
+						$out .= '<ul class="categorychecklist">';
+							$out .= $categoryObjects->buildCategoryRow('checklist', $connections->retrieve->categories());
+						$out .= '</ul>';
 					$out .= '</div>';
 				$out .= '</div>';
 			$out .= '</div>';
@@ -1129,12 +1141,14 @@ class cnCategoryObjects
 			
 			if ($type === 'table') $out .= $this->buildTableRowHTML($child, $level);
 			if ($type === 'option') $out .= $this->buildOptionRowHTML($child, $level, $selected);
+			if ($type === 'checklist') $out .= $this->buildCheckListHTML($child, $level, $selected);
 			
 			if (is_array($category->getChildren()))
 			{
 				++$level;
 				if ($type === 'table') $out .= $this->buildCategoryRow('table', $category->getChildren(), $level);
 				if ($type === 'option') $out .= $this->buildCategoryRow('option', $category->getChildren(), $level, $selected);
+				if ($type === 'checklist') $out .= $this->buildCategoryRow('checklist', $category->getChildren(), $level, $selected);
 				--$level;
 			}
 			
@@ -1184,6 +1198,20 @@ class cnCategoryObjects
 		if ($selected == $category->getId()) $selectString = ' SELECTED ';
 		
 		$out = '<option value="' . $category->getId() . '"' . $selectString . '>' . $pad . $category->getName() . '</option>';
+		
+		return $out;
+	}
+	
+	private function buildCheckListHTML($term, $level, $selected)
+	{
+		global $rowClass;
+		
+		$category = new cnCategory($term);
+		$pad = str_repeat('&nbsp;&nbsp;&nbsp;', max(0, $level));
+		if ($selected == $category->getId()) $selectString = ' SELECTED ';
+		
+		//$out = '<option value="' . $category->getId() . '"' . $selectString . '>' . $pad . $category->getName() . '</option>';
+		$out = '<li id="category-' . $category->getId() . '" class="category"><label class="selectit">' . $pad . '<input id="check-category-' . $category->getId() . '" type="checkbox" name="entry_category[]" value"' . $category->getId() . '"' . $selectString . '> ' . $category->getName() . '</input></label></li>';
 		
 		return $out;
 	}

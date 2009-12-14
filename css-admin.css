@@ -1,9 +1,9 @@
-div.wrap ol  {
+div#toc ol  {
 	list-style-type: decimal !important;
 	padding-left: 40px !important;
 }
 
-div.wrap ul {
+div#toc ul {
 	list-style-type: disc !important;
 	padding-left: 40px !important;
 }

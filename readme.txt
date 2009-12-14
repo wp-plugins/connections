@@ -126,7 +126,7 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Added a filter class that can easily be extended. Currently supports filtering by visibility and entry type.
 * Added a permission filter. All queries are run thru this filter removing any entries the current user is not permitted to view.
 * Changed it so the upgrade message and version error only show on the Connections admin pages.
-* Add support for SSL connections.
+* Added support for SSL connections.
 
 = 0.5.48 9/14/2009 =
 * Fixed a jQuery bug in IE8.
