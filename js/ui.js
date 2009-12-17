@@ -47,13 +47,13 @@ jQuery(document).ready(function(){
 				jQuery('#connection_group').slideUp();
 				jQuery('.namefield').slideDown();
 				jQuery('#contact_name').slideUp();
-				jQuery('.home').slideDown();
-				jQuery('.homephone').slideDown();
-				jQuery('.homefax').slideDown();
-				jQuery('.personal').slideDown();
-				jQuery('.cell').slideDown();
-				jQuery('.cellphone').slideDown();
-				jQuery('.im').slideDown();
+				//jQuery('.home').slideDown();
+				//jQuery('.homephone').slideDown();
+				//jQuery('.homefax').slideDown();
+				//jQuery('.personal').slideDown();
+				//jQuery('.cell').slideDown();
+				//jQuery('.cellphone').slideDown();
+				//jQuery('.im').slideDown();
 				jQuery('.celebrate').slideDown();
 			});
 	});
@@ -64,13 +64,13 @@ jQuery(document).ready(function(){
 				jQuery('#connection_group').slideUp();
 				jQuery('.namefield').slideUp();
 				jQuery('#contact_name').slideDown();
-				jQuery('.home').slideUp();
-				jQuery('.homephone').slideUp();
-				jQuery('.homefax').slideUp();
-				jQuery('.personal').slideUp();
-				jQuery('.cell').slideUp();
-				jQuery('.cellphone').slideUp();
-				jQuery('.im').slideUp();
+				//jQuery('.home').slideUp();
+				//jQuery('.homephone').slideUp();
+				//jQuery('.homefax').slideUp();
+				//jQuery('.personal').slideUp();
+				//jQuery('.cell').slideUp();
+				//jQuery('.cellphone').slideUp();
+				//jQuery('.im').slideUp();
 				jQuery('.celebrate').slideUp();
 			});
 	});
@@ -80,13 +80,13 @@ jQuery(document).ready(function(){
 			.click(function(){
 				jQuery('#connection_group').slideDown();
 				jQuery('.namefield').slideUp();
-				jQuery('.home').slideDown();
-				jQuery('.homephone').slideDown();
-				jQuery('.homefax').slideDown();
-				jQuery('.personal').slideDown();
-				jQuery('.cell').slideDown();
-				jQuery('.cellphone').slideDown();
-				jQuery('.im').slideDown();
+				//jQuery('.home').slideDown();
+				//jQuery('.homephone').slideDown();
+				//jQuery('.homefax').slideDown();
+				//jQuery('.personal').slideDown();
+				//jQuery('.cell').slideDown();
+				//jQuery('.cellphone').slideDown();
+				//jQuery('.im').slideDown();
 				jQuery('.celebrate').slideUp();
 			});
 	});
@@ -105,13 +105,13 @@ jQuery(document).ready(function(){
 			case 'organization':
 				jQuery('#connection_group').slideUp();
 				jQuery('.namefield').slideUp();
-				jQuery('.home').slideUp();
-				jQuery('.homephone').slideUp();
-				jQuery('.homefax').slideUp();
-				jQuery('.personal').slideUp();
-				jQuery('.cell').slideUp();
-				jQuery('.cellphone').slideUp();
-				jQuery('.im').slideUp();
+				//jQuery('.home').slideUp();
+				//jQuery('.homephone').slideUp();
+				//jQuery('.homefax').slideUp();
+				//jQuery('.personal').slideUp();
+				//jQuery('.cell').slideUp();
+				//jQuery('.cellphone').slideUp();
+				//jQuery('.im').slideUp();
 				jQuery('.celebrate').slideUp();
 				break;
 			
@@ -155,7 +155,8 @@ jQuery(document).ready(function(){
 					intCount
 					);
 				
-				jQuery('#social_media').append( '<div id="social_media_row_' + intCount + '" class="social_media_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#social_media_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				//jQuery('#social_media').append( '<div id="social_media_row_' + intCount + '" class="social_media_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#social_media_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				jQuery('#social_media').append( '<div id="social_media_row_' + intCount + '" class="social_media_row">' + jRelations + '</div>' );
 				
 				intCount++;
 			});
@@ -194,7 +195,8 @@ jQuery(document).ready(function(){
 					intCount
 					);
 				
-				jQuery('#phone_numbers').append( '<div id="phone_number_row_' + intCount + '" class="phone_number_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#phone_number_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				//jQuery('#phone_numbers').append( '<div id="phone_number_row_' + intCount + '" class="phone_number_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#phone_number_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				jQuery('#phone_numbers').append( '<div id="phone_number_row_' + intCount + '" class="phone_number_row">' + jRelations  + '</div>' );
 				
 				intCount++;
 			});
@@ -213,7 +215,8 @@ jQuery(document).ready(function(){
 					intCount
 					);
 				
-				jQuery('#email_addresses').append( '<div id="email_address_row_' + intCount + '" class="email_address_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#email_address_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				//jQuery('#email_addresses').append( '<div id="email_address_row_' + intCount + '" class="email_address_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#email_address_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				jQuery('#email_addresses').append( '<div id="email_address_row_' + intCount + '" class="email_address_row">' + jRelations + '</div>' );
 				
 				intCount++;
 			});
@@ -232,7 +235,8 @@ jQuery(document).ready(function(){
 					intCount
 					);
 				
-				jQuery('#im_ids').append( '<div id="im_row_' + intCount + '" class="im_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#im_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				//jQuery('#im_ids').append( '<div id="im_row_' + intCount + '" class="im_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#im_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				jQuery('#im_ids').append( '<div id="im_row_' + intCount + '" class="im_row">' + jRelations + '</div>' );
 				
 				intCount++;
 			});

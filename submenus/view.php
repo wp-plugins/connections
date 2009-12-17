@@ -28,7 +28,7 @@ function connectionsShowViewPage()
 				 * performing the copy. This should hopefully prevent user from accessing
 				 * entries for which they do not have permission
 				 */
-				if (isset($_GET['id']))
+				/*if (isset($_GET['id']))
 				{
 					$id = $_GET['id'];
 				}
@@ -56,9 +56,11 @@ function connectionsShowViewPage()
 				{
 					$error = true;
 					$connections->setErrorMessage('form_no_session_token');
-				}
+				}*/
 				
-				if ($sessionToken === $token && !$error)
+				$id = attribute_escape($_GET['id']);
+				if ($form->tokenCheck('copy_' . $id, $_GET['token']))
+				//if ($sessionToken === $token && !$error)
 				{
 					$entryForm = new cnEntryForm();
 					$form = new cnFormObjects();
@@ -66,21 +68,23 @@ function connectionsShowViewPage()
 					$entry = $entry->get($_GET['id']);
 					
 					$out = '<div class="wrap">';
-						$out .= '<div class="form-wrap" style="width:600px; margin: 0 auto;">';
-							$out .= '<h2><a name="new"></a>Add Entry</h2>';
-							
-							$out .= '<form action="admin.php?page=connections&action=add&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
-							 
-								$out .= $entryForm->displayForm($entry);
+						$out .= '<div class="form-wrap" style="width:880px; margin: 0 auto;">';
+							$out .= '<div id="poststuff" class="metabox-holder has-right-sidebar">';
+								$out .= '<h2><a name="new"></a>Add Entry</h2>';
 								
-								$out .= '<input type="hidden" name="formId" value="entry_form" />';
-								$out .= '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
-								
-								$out .= '<p class="submit">';
-									$out .= '<input  class="button-primary" type="submit" name="save" value="Save" />';
-									$out .= '<a href="admin.php?page=connections" class="button button-warning">Cancel</a>';
-								$out .= '</p>';
-							$out .= '</form>';
+								$out .= '<form action="admin.php?page=connections&action=add&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
+								 
+									$out .= $entryForm->displayForm($entry);
+									
+									$out .= '<input type="hidden" name="formId" value="entry_form" />';
+									$out .= '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
+									
+									/*$out .= '<p class="submit">';
+										$out .= '<input  class="button-primary" type="submit" name="save" value="Save" />';
+										$out .= '<a href="admin.php?page=connections" class="button button-warning">Cancel</a>';
+									$out .= '</p>';*/
+								$out .= '</form>';
+							$out .= '</div>';
 						$out .= '</div>';
 					$out .= '</div>';
 				
@@ -111,7 +115,7 @@ function connectionsShowViewPage()
 				 * performing the copy. This should hopefully prevent user from accessing
 				 * entries for which they do not have permission
 				 */
-				if (isset($_GET['id']))
+				/*if (isset($_GET['id']))
 				{
 					$id = $_GET['id'];
 				}
@@ -139,9 +143,11 @@ function connectionsShowViewPage()
 				{
 					$error = true;
 					$connections->setErrorMessage('form_no_session_token');
-				}
+				}*/
 				
-				if ($sessionToken === $token && !$error)
+				$id = attribute_escape($_GET['id']);
+				if ($form->tokenCheck('edit_' . $id, $_GET['token']))
+				//if ($sessionToken === $token && !$error)
 				{
 					$entryForm = new cnEntryForm();
 					$form = new cnFormObjects();
@@ -149,21 +155,23 @@ function connectionsShowViewPage()
 					$entry = $entry->get($_GET['id']);
 					
 					$out = '<div class="wrap">';
-						$out .= '<div class="form-wrap" style="width:600px; margin: 0 auto;">';
-							$out .= '<h2><a name="new"></a>Edit Entry</h2>';
-							
-							$out .= '<form action="admin.php?page=connections&action=update&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
-							 
-								$out .= $entryForm->displayForm($entry);
+						$out .= '<div class="form-wrap" style="width:880px; margin: 0 auto;">';
+							$out .= '<div id="poststuff" class="metabox-holder has-right-sidebar">';
+								$out .= '<h2><a name="new"></a>Edit Entry</h2>';
 								
-								$out .= '<input type="hidden" name="formId" value="entry_form" />';
-								$out .= '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
-								
-								$out .= '<p class="submit">';
-									$out .= '<input  class="button-primary" type="submit" name="update" value="Update" />';
-									$out .= '<a href="admin.php?page=connections" class="button button-warning">Cancel</a>';
-								$out .= '</p>';
-							$out .= '</form>';
+								$out .= '<form action="admin.php?page=connections&action=update&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
+								 
+									$out .= $entryForm->displayForm($entry);
+									
+									$out .= '<input type="hidden" name="formId" value="entry_form" />';
+									$out .= '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
+									
+									/*$out .= '<p class="submit">';
+										$out .= '<input  class="button-primary" type="submit" name="update" value="Update" />';
+										$out .= '<a href="admin.php?page=connections" class="button button-warning">Cancel</a>';
+									$out .= '</p>';*/
+								$out .= '</form>';
+							$out .= '</div>';
 						$out .= '</div>';
 					$out .= '</div>';
 					
