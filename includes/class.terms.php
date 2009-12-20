@@ -332,6 +332,88 @@ class cnTerms
 		return $slug;
 		
 	}
+	
+	/**
+	 * Creates the entry and term relationships.
+	 * 
+	 * @param int $entryID		
+	 * @param array $categoryID
+	 * 
+	 * @return bool
+	 */
+	public function setEntryCategories($entryID, $categoryID)
+	{
+		/**
+		 * @TODO: Return success/fail bool on insert.
+		 */
+		global $wpdb;
+		
+		// Purge all ralationships currently related to an entry if rationships exist.
+		if ( $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID) ) )
+		{
+			$wpdb->query( $wpdb->prepare( "DELETE FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID) );
+		}
+		
+		// Create the new relationships.
+		
+		if (!empty($categoryID))
+		{
+			foreach ($categoryID as $termTaxonomyID)
+			{
+				$wpdb->query( $wpdb->prepare( "INSERT INTO " . CN_TERM_RELATIONSHIP_TABLE . " SET entry_id = %d, term_taxonomy_id = %d, term_order = 0", $entryID, $termTaxonomyID) );
+				
+				$wpdb->query($wpdb->prepare($sql));
+			
+			}
+		}
+		
+	}
+	
+	/**
+	 * Retrieve the entry's term relationships.
+	 * 
+	 * @param integer $entryID
+	 * @return ocject
+	 */
+	public function getEntryRelationships($entryID)
+	{
+		/**
+		 * @TODO: Return success/fail bool on select.
+		 */
+		global $wpdb;
+		
+		$termRelationships = $wpdb->get_results( $wpdb->prepare( "SELECT term_taxonomy_id FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID), ARRAY_A );
+		
+		if (!empty($termRelationships))
+		{
+			foreach ($termRelationships as $termID)
+			{
+				$termIDArray[] = $termID['term_taxonomy_id'];
+			}
+		}
+		
+		return $termIDArray;
+	}
+	
+	/**
+	 * Deletes all entry's relationships.
+	 * 
+	 * @param interger $entryID
+	 * @return bool
+	 */
+	public function deleteEntryRelationships($entryID)
+	{
+		/**
+		 * @TODO: Return success/fail bool on insert.
+		 */
+		global $wpdb;
+		
+		// Purge all ralationships currently related to an entry if rationships exist.
+		if ( $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID) ) )
+		{
+			$wpdb->query( $wpdb->prepare( "DELETE FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID) );
+		}
+	}
 }
 
 ?>

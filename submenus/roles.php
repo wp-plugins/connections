@@ -72,8 +72,12 @@ function connectionsShowRolesPage()
 				<div class="form-wrap">
 					
 					<?php
-						foreach ($wp_roles->get_names() as $role => $name)
+						$editable_roles = get_editable_roles();
+						
+						foreach( $editable_roles as $role => $details )
 						{
+							$name = translate_user_role($details['name'] );	
+							
 							// the admininistrator should always have all capabilities
 							if ($role == 'administrator') continue;
 							

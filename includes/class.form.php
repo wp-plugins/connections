@@ -301,11 +301,12 @@ class cnEntryForm
 	{
 		//global $wpdb, $current_user;
 		global $wpdb, $connections;
-	
+		
 		//get_currentuserinfo();
 		//$plugin_options = new cnOptions();
 		
 		$form = new cnFormObjects();
+		//$category = new cnCategory();
 		$categoryObjects = new cnCategoryObjects();
 		$entry = new cnEntry($data);
 		$addressObject = new cnAddresses();
@@ -333,19 +334,24 @@ class cnEntryForm
 		
 		$out = '<div id="side-info-column" class="inner-sidebar">';
 			
-			$out .= '<div class="postbox">';
-				$out .= '<h3>Entry Type</h3>';
-				$out .= '<div class="inside">';
-					$out .= $form->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Connection Group"=>"connection_group"),$defaultEntryType);
-				$out .= '</div>';
-			$out .= '</div>';
+			//$out .= '<div class="postbox">';
+				//$out .= '<h3>Entry Type</h3>';
+				//$out .= '<div class="inside">';
+					//$out .= $form->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Connection Group"=>"connection_group"),$defaultEntryType);
+				//$out .= '</div>';
+			//$out .= '</div>';
 			
 			$out .= '<div class="postbox" id="submitdiv">';
 				$out .= '<h3>Publish</h3>';
 				$out .= '<div class="inside">';
 					$out .= '<div id="minor-publishing">';
-						$out .= '<span class="radio_group">' . $form->buildRadio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$defaultVisibility) . '</span>';
-						$out .= '<div class="clear"></div>';
+						$out .= '<div id="entry-type">';
+							$out .= $form->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Connection Group"=>"connection_group"),$defaultEntryType);
+						$out .= '</div>';
+						$out .= '<div id="visibility">';
+							$out .= '<span class="radio_group">' . $form->buildRadio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$defaultVisibility) . '</span>';
+							$out .= '<div class="clear"></div>';
+						$out .= '</div>';
 					$out .= '</div>';
 					$out .= '<div id="major-publishing-actions">';
 						
@@ -385,7 +391,8 @@ class cnEntryForm
 				$out .= '<div class="inside">';
 					$out .= '<div id="categories-all" class="tabs-panel">';
 						$out .= '<ul class="categorychecklist">';
-							$out .= $categoryObjects->buildCategoryRow('checklist', $connections->retrieve->categories());
+							//$out .= $categoryObjects->buildCategoryRow('checklist', $connections->retrieve->categories(), NULL, $category->getEntryCategories($entry->getId()));
+							$out .= $categoryObjects->buildCategoryRow('checklist', $connections->retrieve->categories(), NULL, $entry->getCategories($entry->getId()));
 						$out .= '</ul>';
 					$out .= '</div>';
 				$out .= '</div>';
@@ -822,12 +829,12 @@ class cnEntryForm
 			
 			<div class='form-field connectionsform'>
 					<label for='bio'>Biographical Info:</label>
-					<textarea name='bio' rows='3'>" . $entry->getBio() . "</textarea>
+					<textarea name='bio' rows='15'>" . $entry->getBio() . "</textarea>
 			</div>
 			
 			<div class='form-field connectionsform'>
 					<label for='notes'>Notes:</label>
-					<textarea name='notes' rows='3'>" . $entry->getNotes() . "</textarea>
+					<textarea name='notes' rows='5'>" . $entry->getNotes() . "</textarea>
 			</div>";
 			
 			//$out .=
@@ -868,7 +875,9 @@ class cnEntryForm
 	
 	public function processEntry()
 	{
+		global $wpdb;
 		$entry = new cnEntry();
+		//$category = new cnCategory();
 		
 		// If copying/editing an entry, the entry data is loaded into the class 
 		// properties and then properties are overwritten by the POST data as needed.
@@ -949,6 +958,7 @@ class cnEntryForm
 					$error = '<p><strong>Entry could not be added.</strong></p>';
 				}
 				$success .= "<p><strong>Entry added.</strong></p> \n";
+				$entry->setID((int) $wpdb->insert_id);
 			break;
 			
 			case 'update':
@@ -958,11 +968,18 @@ class cnEntryForm
 				}
 				
 				$success .= "<p><strong>The entry has been updated.</strong></p> \n";
+				$entryID = (int) $entry->getId();
 			break;
 		}
 							
 		if (!$error)
 		{
+			/*
+			 * If the entry was added sucessfully, now the category realtionships wil be set.
+			 */
+			//$category->setEntryCategories($entryID, $_POST['entry_category']);
+			$entry->setCategories($_POST['entry_category']);
+			
 			unset($_SESSION['cn_session']['formTokens']);
 			unset($entry);
 			
@@ -1171,16 +1188,19 @@ class cnCategoryObjects
 		return $out;
 	}
 	
-	private function buildCheckListHTML($term, $level, $selected)
+	private function buildCheckListHTML($term, $level, $checked)
 	{
 		global $rowClass;
 		
 		$category = new cnCategory($term);
 		$pad = str_repeat('&nbsp;&nbsp;&nbsp;', max(0, $level));
-		if ($selected == $category->getId()) $selectString = ' SELECTED ';
 		
-		//$out = '<option value="' . $category->getId() . '"' . $selectString . '>' . $pad . $category->getName() . '</option>';
-		$out = '<li id="category-' . $category->getId() . '" class="category"><label class="selectit">' . $pad . '<input id="check-category-' . $category->getId() . '" type="checkbox" name="entry_category[]" value"' . $category->getId() . '"' . $selectString . '> ' . $category->getName() . '</input></label></li>';
+		if (!empty($checked))
+		{
+			if (in_array($category->getId(), $checked)) $checkString = ' CHECKED ';
+		}
+		
+		$out = '<li id="category-' . $category->getId() . '" class="category"><label class="selectit">' . $pad . '<input id="check-category-' . $category->getId() . '" type="checkbox" name="entry_category[]" value="' . $category->getId() . '" ' . $checkString . '> ' . $category->getName() . '</input></label></li>';
 		
 		return $out;
 	}

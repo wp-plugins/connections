@@ -2,8 +2,8 @@
 Contributors: Steven A. Zahm
 Donate link: http://connections-pro.com/
 Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, user, users, vcard
-Requires at least: 2.7
-Tested up to: 2.8.4
+Requires at least: 2.8
+Tested up to: 2.9
 Stable tag: 0.5.48
 Connections is a simple to use addressbook or business directory that is highly customizable.
 
@@ -35,7 +35,7 @@ Connections is a simple to use address book or business directory that is highly
 * **0.5.1** Added additional filters for addresses. [User requested.](http://wordpress.org/support/topic/248568)
 
 = New features coming in the next version: =
-* Assign entries to groups and have the option to display those groups in a page/post
+* Assign entries to categories and have the option to display those groups in a page/post
 * Add social media fields
 * Add honorable pre/suffix
 * Add middle name
@@ -70,13 +70,6 @@ Connections is a simple to use address book or business directory that is highly
 == Screenshots ==
 [Samples and screenshots can be found here](http://connections-pro.com/?page_id=52)
 
-Here are a couple of sites using Connections as a business directory.
-
-[Frisco Notary](http://www.frisconotary.com/directory/)
-
-[Tipmasters of Merdian](http://www.tipmasters.biz/index.php/directory/)
-
-[Deaf and Hard of Hearing Services Center, Inc.](http://www.deafhh.net/wp/interpreters-2/)
 
 == Installation ==
 1. Upload the `connections` directory to the `/wp-content/plugins/` directory.
@@ -126,7 +119,8 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Added a filter class that can easily be extended. Currently supports filtering by visibility and entry type.
 * Added a permission filter. All queries are run thru this filter removing any entries the current user is not permitted to view.
 * Changed it so the upgrade message and version error only show on the Connections admin pages.
-* Added support for SSL connections.
+* Started to enable support for SSL connections.
+* Changed minimum supported WP version to 2.8 [Used 2.8 only function for editable roles]
 
 = 0.5.48 9/14/2009 =
 * Fixed a jQuery bug in IE8.
