@@ -80,7 +80,7 @@ class cnTerms
 	 * @param string | int -- Search term
 	 * @param string $taxonomy
 	 * 
-	 * @return mixed | False or object
+	 * @return mixed | False or term object
 	 */
 	public function getTermBy($field, $value, $taxonomy)
 	{
