@@ -197,60 +197,6 @@ class cnCategory
     }
 	
 	/**
-	 * Creates the entry and catergory relationships via the cnTerm class.
-	 * 
-	 * @param int $entryID		
-	 * @param array $categoryID
-	 * 
-	 * @return The success or error message.
-	 */
-	public function OLDsetEntryCategories($entryID, $categoryID)
-	{
-		global $connections;
-		
-		/**
-		 * @TODO: Set and return the success or error message.
-		 */
-		
-		$connections->term->setEntryCategories($entryID, $categoryID);
-	}
-	
-	/**
-	 * Retrieve the entry's and catergory relationships via the cnTerm class.
-	 * 
-	 * @param int $entryID
-	 * 
-	 * @return object
-	 */
-	public function OLDgetEntryCategories($entryID)
-	{
-		global $connections;
-		
-		/**
-		 * @TODO: Set and return the success or error message.
-		 */
-		
-		return $connections->term->getEntryRelationships($entryID);
-	}
-	
-	/**
-	 * Deletes all entry's categories.
-	 * 
-	 * @param interger $entryID
-	 * @return bool
-	 */
-	public function OLDdeleteEntryCategories($entryID)
-	{
-		global $connections;
-		
-		/**
-		 * @TODO: Set and return the success or error message.
-		 */
-		
-		return $connections->term->deleteEntryRelationships($entryID);
-	}
-	
-	/**
 	 * Saves the category to the database via the cnTerm class.
 	 * 
 	 * @return The success or error message.

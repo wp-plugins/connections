@@ -73,6 +73,48 @@ class cnTerms
 		return $wpdb->get_row($query);
 	}
 	
+	/**
+	 * Get term data by 'name', 'id' or 'slug'.
+	 * 
+	 * @param string $field
+	 * @param string | int -- Search term
+	 * @param string $taxonomy
+	 * 
+	 * @return mixed | False or object
+	 */
+	public function getTermBy($field, $value, $taxonomy)
+	{
+		global $wpdb;
+		
+		if ( 'slug' == $field )
+		{
+			$field = 't.slug';
+			$value = sanitize_title($value);
+			if ( empty($value) ) return false;
+		}
+		else if ( 'name' == $field )
+		{
+			// Assume already escaped
+			$value = stripslashes($value);
+			$field = 't.name';
+		} else
+		{
+			$field = 't.term_id';
+			$value = (int) $value;
+		}
+
+		$term = $wpdb->get_row( $wpdb->prepare( "SELECT t.*, tt.* FROM " . CN_TERMS_TABLE . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE . " AS tt ON t.term_id = tt.term_id WHERE tt.taxonomy = %s AND $field = %s LIMIT 1", $taxonomy, $value) );
+		
+		if ( !$term )
+		{
+			return false;
+		}
+		else
+		{
+			return $term;
+		}
+	}
+	
 	private function getChildren($termID, $terms, $taxonomies)
 	{
 		foreach ($terms as $key => $term)
@@ -336,12 +378,15 @@ class cnTerms
 	/**
 	 * Creates the entry and term relationships.
 	 * 
+	 * If the term $IDs is empty then the uncatergorized catergory is set as the relationship.
+	 * NOTE: Only if the taxonomy is 'category'
+	 * 
 	 * @param int $entryID		
 	 * @param array $categoryID
 	 * 
 	 * @return bool
 	 */
-	public function setEntryCategories($entryID, $categoryID)
+	public function setTermRelationships($entryID, $IDs)
 	{
 		/**
 		 * @TODO: Return success/fail bool on insert.
@@ -354,17 +399,24 @@ class cnTerms
 			$wpdb->query( $wpdb->prepare( "DELETE FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID) );
 		}
 		
-		// Create the new relationships.
-		
-		if (!empty($categoryID))
+		// Create the new relationships. Else if empty then the uncatorgorized category is set.
+		if (!empty($IDs))
 		{
-			foreach ($categoryID as $termTaxonomyID)
+			foreach ($IDs as $termID)
 			{
-				$wpdb->query( $wpdb->prepare( "INSERT INTO " . CN_TERM_RELATIONSHIP_TABLE . " SET entry_id = %d, term_taxonomy_id = %d, term_order = 0", $entryID, $termTaxonomyID) );
-				
-				$wpdb->query($wpdb->prepare($sql));
-			
+				$wpdb->query( $wpdb->prepare( "INSERT INTO " . CN_TERM_RELATIONSHIP_TABLE . " SET entry_id = %d, term_taxonomy_id = %d, term_order = 0", $entryID, $termID) );
 			}
+		}
+		else
+		{
+			/*
+			 * @TODO: this should only happen if the taxonomy is 'category'.
+			 */
+			
+			// Retrieve the Uncategorized term data
+			$term = $this->getTermBy('slug', 'uncategorized', 'category');
+			
+			$wpdb->query( $wpdb->prepare( "INSERT INTO " . CN_TERM_RELATIONSHIP_TABLE . " SET entry_id = %d, term_taxonomy_id = %d, term_order = 0", $entryID, $term->term_id) );
 		}
 		
 	}
@@ -373,9 +425,10 @@ class cnTerms
 	 * Retrieve the entry's term relationships.
 	 * 
 	 * @param integer $entryID
-	 * @return ocject
+	 * 
+	 * @return mixed | False or array of term relationships.
 	 */
-	public function getEntryRelationships($entryID)
+	public function getTermRelationships($entryID)
 	{
 		/**
 		 * @TODO: Return success/fail bool on select.
@@ -399,9 +452,10 @@ class cnTerms
 	 * Deletes all entry's relationships.
 	 * 
 	 * @param interger $entryID
+	 * 
 	 * @return bool
 	 */
-	public function deleteEntryRelationships($entryID)
+	public function deleteTermRelationships($entryID)
 	{
 		/**
 		 * @TODO: Return success/fail bool on insert.

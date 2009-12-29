@@ -392,7 +392,8 @@ class cnEntryForm
 					$out .= '<div id="categories-all" class="tabs-panel">';
 						$out .= '<ul class="categorychecklist">';
 							//$out .= $categoryObjects->buildCategoryRow('checklist', $connections->retrieve->categories(), NULL, $category->getEntryCategories($entry->getId()));
-							$out .= $categoryObjects->buildCategoryRow('checklist', $connections->retrieve->categories(), NULL, $entry->getCategories($entry->getId()));
+							//$out .= $categoryObjects->buildCategoryRow('checklist', $connections->retrieve->categories(), NULL, $entry->getCategories($entry->getId()));
+							$out .= $categoryObjects->buildCategoryRow('checklist', $connections->retrieve->categories(), NULL, $connections->term->getTermRelationships($entry->getId()));
 						$out .= '</ul>';
 					$out .= '</div>';
 				$out .= '</div>';
@@ -875,7 +876,7 @@ class cnEntryForm
 	
 	public function processEntry()
 	{
-		global $wpdb;
+		global $wpdb, $connections;
 		$entry = new cnEntry();
 		//$category = new cnCategory();
 		
@@ -958,7 +959,8 @@ class cnEntryForm
 					$error = '<p><strong>Entry could not be added.</strong></p>';
 				}
 				$success .= "<p><strong>Entry added.</strong></p> \n";
-				$entry->setID((int) $wpdb->insert_id);
+				//$entry->setID((int) $wpdb->insert_id);
+				$entryID = (int) $wpdb->insert_id;
 			break;
 			
 			case 'update':
@@ -975,10 +977,9 @@ class cnEntryForm
 		if (!$error)
 		{
 			/*
-			 * If the entry was added sucessfully, now the category realtionships wil be set.
+			 * If the entry was added sucessfully, now the term realtionships wil be set.
 			 */
-			//$category->setEntryCategories($entryID, $_POST['entry_category']);
-			$entry->setCategories($_POST['entry_category']);
+			$connections->term->setTermRelationships($entryID, $_POST['entry_category']);
 			
 			unset($_SESSION['cn_session']['formTokens']);
 			unset($entry);

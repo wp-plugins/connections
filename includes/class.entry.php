@@ -1036,7 +1036,7 @@ class cnEntry
 	
 	public function delete($id)
 	{
-		global $wpdb;
+		global $wpdb, $connections;
 		$category = new cnCategory();
 		
 		$wpdb->query($wpdb->prepare('DELETE FROM ' . CN_ENTRY_TABLE . ' WHERE id="' . $wpdb->escape($id) . '"'));
@@ -1045,62 +1045,7 @@ class cnEntry
 		 * @TODO Only delete the category relationships if deleting the entry was successful
 		 */
 		
-		$this->deleteCategories($id);
-	}
-	
-	
-	/**
-	 * Creates the entry and catergory relationships via the cnTerm class.
-	 * 
-	 * @param int $entryID		
-	 * @param array $categoryID
-	 * 
-	 * @return The success or error message.
-	 */
-	public function setCategories($categories)
-	{
-		global $connections;
-		
-		/**
-		 * @TODO: Set and return the success or error message.
-		 */
-		
-		$connections->term->setEntryCategories($this->id, $categories);
-	}
-	
-	/**
-	 * Retrieve the entry's and catergory relationships via the cnTerm class.
-	 * 
-	 * @param int $entryID
-	 * 
-	 * @return object
-	 */
-	public function getCategories()
-	{
-		global $connections;
-		
-		/**
-		 * @TODO: Set and return the success or error message.
-		 */
-		
-		return $connections->term->getEntryRelationships($this->id);
-	}
-	
-	/**
-	 * Deletes all entry's categories.
-	 * 
-	 * @param interger $entryID
-	 * @return bool
-	 */
-	private function deleteCategories($id)
-	{
-		global $connections;
-		
-		/**
-		 * @TODO: Set and return the success or error message.
-		 */
-		
-		return $connections->term->deleteEntryRelationships($id);
+		$connections->term->deleteTermRelationships($id);
 	}
 	
 }
