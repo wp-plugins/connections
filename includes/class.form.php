@@ -979,7 +979,7 @@ class cnEntryForm
 			/*
 			 * If the entry was added sucessfully, now the term realtionships wil be set.
 			 */
-			$connections->term->setTermRelationships($entryID, $_POST['entry_category']);
+			$connections->term->setTermRelationships($entryID, $_POST['entry_category'], 'category');
 			
 			unset($_SESSION['cn_session']['formTokens']);
 			unset($entry);
