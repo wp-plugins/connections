@@ -13,6 +13,7 @@
 					</div>
 					
 					<?php
+						// Build the address query for Google.
 						if ($entry->getAddresses())
 						{
 							$addressObject = new cnAddresses;
@@ -26,7 +27,7 @@
 								if ($addressObject->getCity($addressRow) != null) $map_link .= $addressObject->getCity($addressRow) . '+';
 								if ($addressObject->getState($addressRow) != null) $map_link .= $addressObject->getState($addressRow) . '+';
 								if ($addressObject->getZipCode($addressRow) != null) $map_link .= $addressObject->getZipCode($addressRow);
-																		
+								continue; // Only store the address info from the first address.							
 							}
 							
 							// Google Maps parameters
@@ -58,9 +59,55 @@
 					?>
 				</div>
 	        </td>
-	        <td align="right" valign="top">
+	        <td align="right" valign="top" style="text-align: right;">
 	        	<div style="clear:both; margin: 5px 5px;">
-		        	<?php echo $entry->getPhoneNumberBlock() ?>
+		        	<?php
+						if ($entry->getPhoneNumbers())
+						{
+							$phoneNumberObject = new cnPhoneNumber();
+							echo '<div class="phone_numbers" style="margin-bottom: 10px;">' . "\n";
+							foreach ($entry->getPhoneNumbers() as $phoneNumberRow) 
+							{
+								if ($phoneNumberObject->getNumber($phoneNumberRow) != null)
+								{
+									switch ($phoneNumberRow['type'])
+									{
+										case 'home':
+											$phoneNumberName = 'Home Phone';
+											break;
+										case 'homephone':
+											$phoneNumberName = 'Home Phone';
+											break;
+										case 'homefax':
+											$phoneNumberName = 'Home Fax';
+											break;
+										case 'cell':
+											$phoneNumberName = 'Cell Phone';
+											break;
+										case 'cellphone':
+											$phoneNumberName = 'Cell Phone';
+											break;
+										case 'work':
+											$phoneNumberName = 'Phone';
+											break;
+										case 'workphone':
+											$phoneNumberName = 'Phone';
+											break;
+										case 'workfax':
+											$phoneNumberName = 'Fax';
+											break;
+										case 'fax':
+											$phoneNumberName = 'Fax';
+											break;
+									}
+									
+									//Type for hCard compatibility. Hidden.
+									echo  '<strong>' . $phoneNumberName . '</strong>: <span class="tel">' . $entry->gethCardTelType($phoneNumberRow) . '<span class="value">' .  $phoneNumberObject->getNumber($phoneNumberRow) . '</span></span><br />' . "\n";
+								}
+							}
+							echo '</div>' . "\n";
+						}
+					?>
 					<?php echo $entry->getAddressBlock(); ?>
 					<?php echo $entry->getEmailAddressBlock() ?>
 					<?php echo $entry->getImBlock() ?>
@@ -74,6 +121,7 @@
 								foreach ($entry->getWebsites() as $websiteRow)
 								{
 									if ($websiteObject->getAddress($websiteRow) != null) $anchorOut .= '<a class="url" href="' . $websiteObject->getAddress($websiteRow) . '" target="_blank">Visit Website</a>' . "\n";
+									continue; // Only show the first stored web address
 								}
 							}
 						?>
@@ -87,7 +135,7 @@
 	        <td valign="bottom">
 	        	<?php echo $vCard->download() ?><?php if (!empty($anchorOut)) echo ' | ' . $anchorOut; ?>
 	        </td>
-			<td align="right" valign="bottom">
+			<td align="right" valign="bottom"  style="text-align: right;">
 				
 				<?php if ($entry->getNotes() != '') { ?>
 				
