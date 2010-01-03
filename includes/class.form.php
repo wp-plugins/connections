@@ -500,11 +500,11 @@ class cnEntryForm
 							<div class="input inputhalfwidth">
 								<label for="contact_last_name">Contact Last Name:</label>
 								<input type="text" name="contact_last_name" value="' . $entry->getContactLastName() . '" />
-							</div>';*/
+							</div>
 							
-							$out .= '
 							<div class="clear"></div>
-						</div>
+						</div>';*/
+					$out .= '
 					</div>
 			</div>
 			
