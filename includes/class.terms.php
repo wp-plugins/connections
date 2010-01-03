@@ -307,32 +307,54 @@ class cnTerms
 	{
 		global $wpdb;
 		
-		$childrenTerms = $wpdb->get_col( "SELECT `term_taxonomy_id` FROM " . CN_TERM_TAXONOMY_TABLE . " WHERE `parent` = " . (int)$id );
+		// Store the entry ids that are using the term to be deleted.
+		$termRelations = $wpdb->get_col($wpdb->prepare( "SELECT DISTINCT entry_id FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE term_taxonomy_id = %d", (int) $id ) );
+		
+		$childrenTerms = $wpdb->get_col($wpdb->prepare( "SELECT term_taxonomy_id FROM " . CN_TERM_TAXONOMY_TABLE . " WHERE parent = %d", (int) $id ) );
 		
 		// Move the children terms to the parent term.
 		foreach ($childrenTerms as $childID)
 		{
-				$sql = "UPDATE " . CN_TERM_TAXONOMY_TABLE . " SET
-				parent			= '" . $wpdb->escape($parent) . "'
-				WHERE parent	= '" . $wpdb->escape($id) . "'";
-			
 			/**
 			 * @TODO: Error check the insert and return error
 			 */
-			$wpdb->query($wpdb->prepare($sql));
-			unset($sql);
+			$wpdb->query($wpdb->prepare("UPDATE " . CN_TERM_TAXONOMY_TABLE . " SET parent = %d WHERE parent	= %d", (int) $parent, (int) $id ));
 		}
 		
 		// Delete the term taxonomy.
-		// If insert fails return NULL.
-		if (!$wpdb->query($wpdb->prepare("DELETE FROM " . CN_TERM_TAXONOMY_TABLE . " WHERE term_taxonomy_id = %d", $id ))) return;
+		// If delete fails return FALSE.
+		if (!$wpdb->query($wpdb->prepare("DELETE FROM " . CN_TERM_TAXONOMY_TABLE . " WHERE term_taxonomy_id = %d", $id ))) return FALSE;
+		
+		// Delete the term relationships.
+		// If delete fails return FALSE.
+		if (!$wpdb->query($wpdb->prepare("DELETE FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE term_taxonomy_id = %d", $id ))) return FALSE;
 		
 		// Delete the term if no taxonomies use it.
-		if ( !$wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . CN_TERM_TAXONOMY_TABLE . " WHERE term_id = %d", $id) ) )
+		if ( !$wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . CN_TERM_TAXONOMY_TABLE . " WHERE term_id = %d", $id ) ) )
 		{
-			$wpdb->query( $wpdb->prepare( "DELETE FROM " . CN_TERMS_TABLE . " WHERE term_id = %d", $id) );
+			$wpdb->query( $wpdb->prepare( "DELETE FROM " . CN_TERMS_TABLE . " WHERE term_id = %d", $id ) );
 		}
 		
+		/*
+		 * Cycle through each of the entry ids that used the term that was deleted.
+		 * If the count is null update the the term relationship to include the Uncategoried term.
+		 * Then update the Uncategorized term count.
+		 */
+		foreach ($termRelations as $entryID)
+		{
+			if ( !$wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID ) ) )
+			{
+				// Retrieve the Uncategorized term data
+				$term = $this->getTermBy('slug', 'uncategorized', 'category');
+				
+				$wpdb->query( $wpdb->prepare( "INSERT INTO " . CN_TERM_RELATIONSHIP_TABLE . " SET entry_id = %d, term_taxonomy_id = %d, term_order = 0", $entryID, $term->term_id) );
+			
+				$termCount = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE term_taxonomy_id = %d", $term->term_id) );
+				$wpdb->query( $wpdb->prepare( "UPDATE " . CN_TERM_TAXONOMY_TABLE . " SET count = %d WHERE term_taxonomy_id = %d", $termCount, $term->term_id) );
+			}
+		}
+		
+		// If everthing went well, return TRUE.
 		return TRUE;		
 	}
 	
@@ -461,17 +483,9 @@ class cnTerms
 		 */
 		global $wpdb;
 		
-		$termRelationships = $wpdb->get_results( $wpdb->prepare( "SELECT term_taxonomy_id FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID), ARRAY_A );
+		$termRelationships = $wpdb->get_col( $wpdb->prepare( "SELECT term_taxonomy_id FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID ) );
 		
-		if (!empty($termRelationships))
-		{
-			foreach ($termRelationships as $termID)
-			{
-				$termIDArray[] = $termID['term_taxonomy_id'];
-			}
-		}
-		
-		return $termIDArray;
+		return $termRelationships;
 	}
 	
 	/**

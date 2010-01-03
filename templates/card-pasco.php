@@ -1,5 +1,5 @@
 <div id="entry_id_<?php echo $entry->getId(); ?>" class="cn-entry" style="-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative; width: 523px;">
-	<table width="100%" border="0px" bgcolor="#FFFFFF" bordercolor="#E3E3E3" cellspacing="0px" cellpadding="0px">
+	<table width="100%" border="0px" bgcolor="#FFFFFF" bordercolor="#E3E3E3" cellspacing="0px" cellpadding="0px" style="width: 100%">
 	    <tr>
 	        <td align="left" width="55%" valign="top">
 	        	<div style="clear:both; margin: 0 5px;">
@@ -27,7 +27,7 @@
 								if ($addressObject->getCity($addressRow) != null) $map_link .= $addressObject->getCity($addressRow) . '+';
 								if ($addressObject->getState($addressRow) != null) $map_link .= $addressObject->getState($addressRow) . '+';
 								if ($addressObject->getZipCode($addressRow) != null) $map_link .= $addressObject->getZipCode($addressRow);
-								continue; // Only store the address info from the first address.							
+								break; // Only store the address info from the first address.							
 							}
 							
 							// Google Maps parameters
@@ -121,7 +121,7 @@
 								foreach ($entry->getWebsites() as $websiteRow)
 								{
 									if ($websiteObject->getAddress($websiteRow) != null) $anchorOut .= '<a class="url" href="' . $websiteObject->getAddress($websiteRow) . '" target="_blank">Visit Website</a>' . "\n";
-									continue; // Only show the first stored web address
+									break; // Only show the first stored web address
 								}
 							}
 						?>
