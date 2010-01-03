@@ -32,7 +32,7 @@ class cnOutput extends cnEntry
         switch ($this->getEntryType())
 		{
 			case 'individual':
-				return '<span class="fn n">' . '<span class="given-name">' . $this->getFirstName() . '</span>' . ' ' . '<span class="family-name">' . $this->getLastName() . '</span></span>';
+				return '<span class="fn n">' . '<span class="given-name">' . $this->getFirstName() . '</span> ' . '<span class="additional-name">' . $this->getMiddleName() . '</span> ' . '<span class="family-name">' . $this->getLastName() . '</span></span>';
 			break;
 			
 			case 'organization':
@@ -44,7 +44,7 @@ class cnOutput extends cnEntry
 			break;
 			
 			default:
-				return '<span class="fn n">' . '<span class="given-name">' . $this->getFirstName() . '</span>' . ' ' . '<span class="family-name">' . $this->getLastName() . '</span></span>';
+				return '<span class="fn n">' . '<span class="given-name">' . $this->getFirstName() . '</span> ' . '<span class="additional-name">' . $this->getMiddleName() . '</span> ' . '<span class="family-name">' . $this->getLastName() . '</span></span>';
 			break;
 		}
 		
@@ -62,7 +62,7 @@ class cnOutput extends cnEntry
     	switch ($this->getEntryType())
 		{
 			case 'individual':
-				return '<span class="fn n">' . '<span class="family-name">' . $this->getLastName() . '</span>' . ', ' . '<span class="given-name">' . $this->getFirstName() . '</span></span>';
+				return '<span class="fn n">' . '<span class="family-name">' . $this->getLastName() . '</span>' . ', ' . '<span class="given-name">' . $this->getFirstName() . '</span> <span class="additional-name">' . $this->getMiddleName() . '</span></span>';
 			break;
 			
 			case 'organization':

@@ -12,7 +12,7 @@ class cnvCard extends cnEntry
 							'display_name'=>$this->getFullFirstLastName(),
 							'first_name'=>$this->getFirstName(),
 							'last_name'=>$this->getLastName(),
-							'additional_name'=>null,
+							'additional_name'=>$this->getMiddleName(),
 							'name_prefix'=>null,
 							'name_suffix'=>null,
 							'nickname'=>null,
