@@ -445,13 +445,13 @@ class cnEntryForm
 			<div class="form-field connectionsform namefield">
 					<div class="">';
 						
-						$out .= '
+						/*$out .= '
 						<label for="honorable_prefix">Prefix:
 							<select name="honorable_prefix">
 								<option>Mr.</option>
 								<option>Ms.</option>
 							</select>
-						</label>';
+						</label>';*/
 					
 						$out .= '
 						<div style="float: left; width: 35%">
@@ -469,13 +469,13 @@ class cnEntryForm
 							<input type="text" name="last_name" value="' . $entry->getLastName() . '" />
 						</div>';
 					
-						$out .= '
+						/*$out .= '
 						<label for="honorable_suffix" style="clear: both;">Suffix:
 							<select name="honorable_suffix">
 								<option>Jr.</option>
 								<option>MD</option>
 							</select>
-						</label>';
+						</label>';*/
 						
 						$out .= '
 						<label for="title">Title:</label>
