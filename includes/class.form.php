@@ -489,8 +489,9 @@ class cnEntryForm
 						<input type="text" name="organization" value="' . $entry->getOrganization() . '" />
 						
 						<label for="department">Department:</label>
-						<input type="text" name="department" value="' . $entry->getDepartment() . '" />
+						<input type="text" name="department" value="' . $entry->getDepartment() . '" />';
 						
+						/*$out .= '
 						<div id="contact_name">
 							<div class="input inputhalfwidth">
 								<label for="contact_first_name">Contact First Name:</label>
@@ -499,7 +500,9 @@ class cnEntryForm
 							<div class="input inputhalfwidth">
 								<label for="contact_last_name">Contact Last Name:</label>
 								<input type="text" name="contact_last_name" value="' . $entry->getContactLastName() . '" />
-							</div>
+							</div>';*/
+							
+							$out .= '
 							<div class="clear"></div>
 						</div>
 					</div>

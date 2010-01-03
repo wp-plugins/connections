@@ -487,7 +487,9 @@ if (!class_exists('connectionsLoad'))
 		{
 			global $options;
 			
+			/* This should be occur in the unistall hook
 			$this->options->removeDefaultCapabilities();
+			*/
 			$this->options->saveOptions();
 		}
 				
