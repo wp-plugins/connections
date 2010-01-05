@@ -13,6 +13,8 @@ function connectionsShowViewPage()
 	//$plugin_options = new cnOptions();
 	
 	$form = new cnFormObjects();
+	$categoryObjects = new cnCategoryObjects();
+	
 	$showEntryList = true;
 	
 	switch ($_GET['action'])
@@ -303,6 +305,7 @@ function connectionsShowViewPage()
 				//$connections->options->saveOptions();
 				$connections->currentUser->setFilterEntryType($_POST['entry_type']);
 				$connections->currentUser->setFilterVisibility($_POST['visibility_type']);
+				$connections->currentUser->setFilterCategory($_POST['category']);
 			}
 			
 			$showEntryList = true;
@@ -331,7 +334,7 @@ function connectionsShowViewPage()
 					$connections->filter->permitted(&$results);
 					$connections->filter->byEntryType(&$results, $connections->currentUser->getFilterEntryType());
 					$connections->filter->byEntryVisibility(&$results, $connections->currentUser->getFilterVisibility());
-					?>
+				?>
 					
 					<form action="admin.php?page=connections&action=do" method="post">
 					
@@ -346,7 +349,14 @@ function connectionsShowViewPage()
 						?>
 						
 						<div class="alignleft actions">
-							<?php echo $form->buildSelect('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $connections->currentUser->getFilterEntryType())?>
+							<?php
+								echo '<select class="postform" id="category" name="category">';
+									echo '<option value="0">Show All Categories</option>';
+									echo $categoryObjects->buildCategoryRow('option', $connections->retrieve->categories(), $level, $connections->currentUser->getFilterCategory());
+								echo '</select>';
+								
+								echo $form->buildSelect('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $connections->currentUser->getFilterEntryType());
+							?>
 							
 							<?php
 								/*

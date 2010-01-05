@@ -112,5 +112,26 @@ class cnUser
 		$user_meta['filter']['visibility'] = $visibility;
 		update_usermeta($this->ID, 'connections', $user_meta);
     }
+	
+	public function getFilterCategory()
+    {
+        $user_meta = get_usermeta($this->ID, 'connections');
+		
+		if (!$user_meta == NULL)
+		{
+			return $user_meta['filter']['category'];
+		}
+		else
+		{
+			return '';
+		}
+    }
+    
+    public function setFilterCategory($id)
+    {
+        $user_meta = get_usermeta($this->ID, 'connections');
+		$user_meta['filter']['category'] = $id;
+		update_usermeta($this->ID, 'connections', $user_meta);
+    }
 }
 ?>
