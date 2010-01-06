@@ -356,6 +356,9 @@ function connectionsShowViewPage()
 								echo '</select>';
 								
 								echo $form->buildSelect('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $connections->currentUser->getFilterEntryType());
+								
+								//$test = $connections->retrieve->categoryChildrenIDs('73');
+								//print_r($test);
 							?>
 							
 							<?php

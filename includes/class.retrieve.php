@@ -40,6 +40,13 @@ class cnRetrieve
 		
 		return $connections->term->getTerm($id, 'category');
 	}
+	
+	public function categoryChildrenIDs($id)
+	{
+		global $connections;
+		
+		return $connections->term->getTermChildrenIDs($id);
+	}
 }
 
 ?>

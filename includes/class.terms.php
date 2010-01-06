@@ -11,6 +11,8 @@ class cnTerms
 	 */
 	private $termChildren = array();
 	
+	private $termChildrenIDs = array();
+	
 	/**
 	 * Returns all the terms under a taxonomy type.
 	 * 
@@ -163,6 +165,34 @@ class cnTerms
 		{
 			return FALSE;
 		}
+	}
+	
+	/**
+	 * Returns all the children term IDs of the parent term ID
+	 * 
+	 * @param integer $id
+	 * @return array
+	 */
+	public function getTermChildrenIDs($id)
+	{
+		global $wpdb;
+		
+		$query = $wpdb->prepare( "SELECT DISTINCT tt.term_id from " . CN_TERMS_TABLE . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE . " AS tt ON t.term_id = tt.term_id WHERE parent = %d ", $id);
+		
+		$childrenIDs = $wpdb->get_col($query);
+		
+		
+		if (!empty($childrenIDs))
+		{
+			foreach ($childrenIDs as $ttID)
+			{
+				$this->termChildrenIDs[] = $ttID;
+				
+				$this->getTermChildrenIDs($ttID);
+			}
+		}
+		
+		return $this->termChildrenIDs;
 	}
 	
 	/**
