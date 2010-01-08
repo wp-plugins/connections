@@ -449,7 +449,7 @@ class cnTerms
 		if ( $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID) ) )
 		{
 			// Before the purge, grab the current term relationships so the term counts can be properly updated.
-			$previousTermIDs = $wpdb->get_results( $wpdb->prepare( "SELECT term_taxonomy_id FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID), ARRAY_N );
+			$previousTermIDs = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT term_taxonomy_id FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID) );
 			
 			// Purge all term relationships.
 			$wpdb->query( $wpdb->prepare( "DELETE FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID) );
@@ -479,11 +479,14 @@ class cnTerms
 		}
 		
 		// Merge the entry's previous term IDs with the newly selected term IDs unless it already exists in the current term IDs array.
-		foreach ($previousTermIDs as $currentID)
+		if (!empty($previousTermIDs))
 		{
-			if (!in_array($currentID[0], $termIDs))
+			foreach ($previousTermIDs as $currentID)
 			{
-				$termIDs = array_merge($termIDs, $currentID);
+				if (!in_array($currentID, $termIDs))
+				{
+					$termIDs[] = $currentID;
+				}
 			}
 		}
 		

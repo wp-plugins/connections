@@ -6,43 +6,57 @@ class cnRetrieve
 	 * @param array $id [optional]
 	 * @return object
 	 */
-	public function entries($id = NULL)
+	public function entries($atts = NULL)
 	{
 		global $wpdb, $connections;
 		
 		/*
 		 * Set the default attributes array if not supplied.
 		 */
-		if (!isset($atts['ids'])) $atts['ids'] = NULL;
-		if (!isset($atts['filter_category_id'])) $atts['filter_category_id'] = $connections->currentUser->getFilterCategory();
+		if (!isset($atts['id'])) $atts['id'] = NULL;
+		// If user is in the admin the stored category filter ID is used for the default value.
+		if (!isset($atts['category']) && is_admin()) $atts['category'] = $connections->currentUser->getFilterCategory();
+		// If user is in the front end the default value is NULL.
+		if (!isset($atts['category']) && !is_admin()) $atts['category'] = NULL;
 		
-		if (!empty($atts['filter_category_id']))
+		if (!empty($atts['category']))
 		{
-			$categoryIDs = $this->categoryChildrenIDs($atts['filter_category_id']);
-			$categoryIDs[] = $atts['filter_category_id'];
+			// Retieve the children category IDs
+			$categoryIDs = $this->categoryChildrenIDs($atts['category']);
+			// Add the parent category ID to the array.
+			$categoryIDs[] = $atts['category'];
 			
 			$catString = implode("', '", $categoryIDs);
 			
-			$entryRelationships = $wpdb->get_col( "SELECT DISTINCT entry_id FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE term_taxonomy_id IN ('" . $catString . "')" );
+			$entryIDs = $wpdb->get_col( "SELECT DISTINCT entry_id FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE term_taxonomy_id IN ('" . $catString . "')" );
 			
-			$entryRelationships = implode("', '", $entryRelationships);
+			if (!empty($entryIDs))
+			{
+				$entryIDs = implode("', '", $entryIDs);
+			}
+			else
+			{
+				$entryIDs = "'NONE'";
+			}
 		}
 		
-		/*
-		 * Replace the default attributes with the supplied attributes.
-		 */
-		$atts['ids'] = $id;
+		//$atts['id'] = $id; // This can be removed once the shortcode is programmed to pass the $atts array.
 		
 		/*
 		 * Convert the supplied ids value to an array if it is not and then convert it to a
 		 * comma delimited string for use in the query.
 		 */
-		if (!is_array($atts['ids']) && !empty($atts['ids']))
+		if (!is_array($atts['id']) && !empty($atts['id']))
 		{
-			$atts['ids'] = array($atts['ids']);
+			// Trim the space characters if present.
+			$atts['id'] = str_replace(' ', '', $atts['id']);
+			// Convert to array.
+			$atts['id'] = explode(',', $atts['id']);
+			// Convert to a comma delimited string for the sql query.
+			$atts['id'] = implode("', '", $atts['id']);
 		}
 		
-		if (!empty($atts['ids']) || !empty($entryRelationships)) $idString = " AND `id` IN ('" . @implode("', '", $atts['ids']) . $entryRelationships . "') ";
+		if (!empty($atts['id']) || !empty($entryIDs)) $idString = " AND `id` IN ('" . $atts['id'] . $entryIDs . "') ";
 		
 		$sql = "(SELECT *, `organization` AS `sort_column` FROM " . CN_ENTRY_TABLE . " WHERE `last_name` = '' AND `group_name` = ''" . $idString . ")
 				 UNION

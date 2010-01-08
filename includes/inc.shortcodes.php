@@ -7,6 +7,7 @@ function _connections_list($atts, $content=null) {
 	
 	$atts = shortcode_atts( array(
 				'id' => null,
+				'category' => null,
 				'allow_public_override' => 'false',
 				'private_override' => 'false',
 				'show_alphaindex' => 'false',
@@ -52,7 +53,7 @@ function _connections_list($atts, $content=null) {
 	
 	$form = new cnFormObjects();
 	
-	$results = $connections->retrieve->entries($atts['id']);
+	$results = $connections->retrieve->entries($atts);
 	$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
 	
 	if ($results != null) {
