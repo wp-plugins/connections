@@ -160,7 +160,7 @@ function cnAddTableColumn($tableName, $columnName, $sql)
 	}
 	
 	// didn't find it try to create it.
-	$wpdb->query("ALTER TABLE $tableName ADD $columnName " . $sql);
+	$wpdb->query("ALTER TABLE $tableName ADD `$columnName` " . $sql);
 	
 	// we cannot directly tell that whether this succeeded!
 	foreach ($wpdb->get_col("SHOW COLUMNS FROM $tableName") as $column )
