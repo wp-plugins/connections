@@ -115,6 +115,21 @@ function cnRunDBUpgrade()
 			echo '<li>Adding Column... "contact_last_name"' . "</li>\n";
 			if (cnAddTableColumn(CN_ENTRY_TABLE, 'contact_last_name', 'tinytext NOT NULL AFTER contact_first_name')) echo '<ul><li>SUCCESS</li></ul>';
 			echo '</ul>';
+		
+			echo '<h4>Adding default term relationship.</h4>';
+			
+			// Add the Uncategorized category to all previous entries.
+			$term = $connections->term->getTermBy('slug', 'uncategorized', 'category');
+			
+			$entryIDs = $wpdb->get_col( "SELECT id FROM " . CN_ENTRY_TABLE );
+			
+			$termID[] = $term->term_taxonomy_id;
+			
+			foreach ($entryIDs as $entryID)
+			{
+				$connections->term->setTermRelationships($entryID, $termID, 'category');
+			}
+			
 		}
 		
 		echo '<h4>Upgrade completed.' . "</h4>\n";
