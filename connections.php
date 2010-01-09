@@ -107,7 +107,7 @@ if (!class_exists('connectionsLoad'))
 		{
 			global $wpdb;
 			
-			define('CN_CURRENT_VERSION', '0.5.51');
+			define('CN_CURRENT_VERSION', '0.6.0');
 			define('CN_DB_VERSION', '0.1.0');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
@@ -395,15 +395,15 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function activate()
 		{
-			global $wpdb;
+			global $wpdb, $connections;
 			require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 			
 			
 			/**
 			 * @TODO: Build a proper upgrade function for the table.
 			 */
-			//if ($wpdb->get_var("SHOW TABLES LIKE '{$sql->getTableName()}'")!= $sql->getTableName())
-			//{
+			if ($wpdb->get_var("SHOW TABLES LIKE 'CN_ENTRY_TABLE'") != CN_ENTRY_TABLE)
+			{
 				//$table_name = $this->db->getEntryTableName();
 			    $entryTable = "CREATE TABLE " . CN_ENTRY_TABLE . " (
 			        id bigint(20) NOT NULL AUTO_INCREMENT,
@@ -441,7 +441,7 @@ if (!class_exists('connectionsLoad'))
 			    );";
 			    
 			    dbDelta($entryTable);
-			//}
+			}
 			
 			if ($wpdb->get_var("SHOW TABLES LIKE 'CN_TERMS_TABLE'") != CN_TERMS_TABLE)
 			{
@@ -494,7 +494,18 @@ if (!class_exists('connectionsLoad'))
 			
 			$this->options->setDefaultCapabilities();
 			$this->options->setVersion(CN_CURRENT_VERSION);
-			$this->options->saveOptions();
+			
+			// Check if the Uncategorized term exists and if it doesn't create it.
+			$term = $connections->term->getTermBy('slug', 'uncategorized', 'category');
+			
+			if (empty($term))
+			{
+				$attributes['slug'] = '';
+				$attributes['parent'] = 0;
+				$attributes['description'] = 'Entries not assigned to a category will automatically be assigned to this category and deleting a category which has been assigned to an entry will reassign that entry to this category. This category can not be editted or deleted.';
+				
+				$connections->term->addTerm('Uncategorized', 'category', $attributes);
+			}
 			
 			update_option('connections_installed', 'The Connections plug-in version ' . $this->options->getVersion() . ' has been installed or upgraded.');
 		}
@@ -618,6 +629,14 @@ if (!class_exists('connectionsLoad'))
 			if ($this->options->getVersion() != CN_CURRENT_VERSION)
 			{
 				echo '<div id="message" class="error"><p><strong>ERROR: </strong>The version of Connections installed is newer than the version last activated. Please deactive and then reactivate Connections.</p></div>';
+				return;
+			}
+			
+			if ($this->options->getDBVersion() != CN_DB_VERSION)
+			{
+				include_once ( dirname (__FILE__) . '/includes/inc.upgrade.php' );
+				connectionsShowUpgradePage();
+				return;
 			}
 			
 			if (get_option('connections_installed'))

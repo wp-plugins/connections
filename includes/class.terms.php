@@ -357,7 +357,7 @@ class cnTerms
 		
 		// Delete the term relationships.
 		// If delete fails return FALSE.
-		if (!$wpdb->query($wpdb->prepare("DELETE FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE term_taxonomy_id = %d", $id ))) return FALSE;
+		$wpdb->query($wpdb->prepare("DELETE FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE term_taxonomy_id = %d", $id ));
 		
 		// Delete the term if no taxonomies use it.
 		if ( !$wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . CN_TERM_TAXONOMY_TABLE . " WHERE term_id = %d", $id ) ) )
@@ -452,7 +452,8 @@ class cnTerms
 			$previousTermIDs = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT term_taxonomy_id FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID) );
 			
 			// Purge all term relationships.
-			$wpdb->query( $wpdb->prepare( "DELETE FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID) );
+			// $wpdb->query( $wpdb->prepare( "DELETE FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID) );
+			$this->deleteTermRelationships($entryID);
 		}
 		
 		// Create the new relationships. Else if empty then the uncatorgorized category is set.
@@ -538,7 +539,20 @@ class cnTerms
 		// Purge all ralationships currently related to an entry if rationships exist.
 		if ( $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID) ) )
 		{
+			// Before the purge, grab the current term relationships so the term counts can be properly updated.
+			$termIDs = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT term_taxonomy_id FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID) );
+						
 			$wpdb->query( $wpdb->prepare( "DELETE FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE entry_id = %d", $entryID) );
+		}
+				
+		// Now the term counts need to be updated.
+		if (!empty($termIDs))
+		{
+			foreach ($termIDs as $termID)
+			{
+				$termCount = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE term_taxonomy_id = %d", $termID) );
+				$wpdb->query( $wpdb->prepare( "UPDATE " . CN_TERM_TAXONOMY_TABLE . " SET count = %d WHERE term_taxonomy_id = %d", $termCount, $termID) );
+			}
 		}
 	}
 }

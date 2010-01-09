@@ -86,6 +86,9 @@ table.connections tr.entrynotes td {border-color:transparent #DFDFDF #DFDFDF;}
 /* Field Styles */
 #fieldsdiv a {display: block; font-style: normal; text-align: center; width: 230px}
 
+/* Upgrade Page Stles */
+div#connections-upgrade ul {padding-left: 20px !important; list-style-type: disc !important;}
+
 /*
  * Might need these two style to fix the display. we'll see after 2.8.1 is released.
  */

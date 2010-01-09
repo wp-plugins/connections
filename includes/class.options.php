@@ -17,6 +17,12 @@ class cnOptions
 	 */
 	private $version;
 	
+	/**
+	 * String: plugin db version
+	 * @var string
+	 */
+	private $dbVersion;
+	
 	private $defaultCapabilities = array(
 								'connections_view_entry_list' => 'View Entry List',
 								'connections_add_entry' => 'Add Entry',
@@ -102,6 +108,7 @@ class cnOptions
 	{
 		$this->options = get_option('connections_options');
 		$this->version = $this->options['version'];
+		$this->dbVersion = $this->options['db_version'];
 		//$this->entryType = $this->options[$this->currentUserID]['filter']['entry_type'];
 		//$this->visibilityType = $this->options[$this->currentUserID]['filter']['visibility_type'];
 		
@@ -138,6 +145,7 @@ class cnOptions
 	public function saveOptions()
 	{
 		$this->options['version'] = $this->version;
+		$this->options['db_version'] = $this->dbVersion;
 		
 		$this->options[$this->currentUserID]['filter']['entry_type'] = $this->entryType;
 		$this->options[$this->currentUserID]['filter']['visibility_type'] = $this->visibilityType;
@@ -384,8 +392,40 @@ class cnOptions
     public function setVersion($version)
     {
         $this->version = $version;
+		$this->saveOptions();
     }
     
+	/**
+     * Returns $dbVersion.
+     * @see options::$dbVersion
+     */
+    public function getDBVersion()
+    {
+        /*
+		 * The db version wasn't in plug-in versions prior to 0.5.48 so we'll return the 0.0.9
+		 * for the database upgrade method.
+		 */
+		if (empty($this->dbVersion))
+		{
+			return '0.0.9';
+		}
+		else
+		{
+			return $this->dbVersion;
+		}
+    }
+    
+    /**
+     * Sets $dbVersion.
+     * @param string $dbVersion
+     * @see options::$dbVersion
+     */
+    public function setDBVersion($version)
+    {
+        $this->dbVersion = $version;
+		$this->saveOptions();
+    }
+	
 	/**
 	 * Set the image default settings
 	 */
