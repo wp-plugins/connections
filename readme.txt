@@ -101,7 +101,7 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 
 == Changelog ==
 
-= 0.5.XX X/X/X =
+= 0.6.0 X/X/X =
 * BUG: Fixed a bug when intializing the settings so they are not reset on activation of the plugin.
 * BUG: Fixed how capabilites were created and managed for public entries.
 * BUG: Fixed how the entry edit link was created which was causing a token mismatch.
@@ -120,6 +120,9 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Changed it so the upgrade message and version error only show on the Connections admin pages.
 * Started to enable support for SSL connections.
 * Changed minimum supported WP version to 2.8 [Used 2.8 only function for editable roles]
+* Add check for $_SESSION save path and throw an error if it isn't found.
+* Add category support.
+* Add upgrade routine to support new features.
 
 = 0.5.48 9/14/2009 =
 * Fixed a jQuery bug in IE8.
