@@ -49,6 +49,7 @@ class cnFormObjects
 		@session_start();
 		$_SESSION['cn_session']['formTokens'][$formId]['token'] = $token;
 		$_SESSION['cn_session']['formTokens'][$formId]['token_timestamp'] = time();
+		@session_write_close();
 		
 		return $token;
 	}
@@ -1177,7 +1178,10 @@ class cnCategoryObjects
 			$out .= '</td>';
 			$out .= '<td class="description column-description">' . $category->getDescription() . '</td>';
 			$out .= '<td class="slug column-slug">' . $category->getSlug() . '</td>';
-			$out .= '<td class="posts column-posts num">' . $category->getCount() . '</td>';
+			$out .= '<td>';
+				$out .= '<strong>Count:</strong> ' . $category->getCount() . '<br />';
+				$out .= '<strong>ID:</strong> ' . $category->getId();
+			$out .= '</td>';
 		$out .= '</tr>';
 		
 		return $out;

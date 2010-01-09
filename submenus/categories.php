@@ -148,7 +148,7 @@ function connectionsShowCategoriesPage()
 												<th class="manage-column column-name" id="name" scope="col">Name</th>
 												<th class="manage-column column-description" id="description" scope="col">Description</th>
 												<th class="manage-column column-slug" id="slug" scope="col">Slug</th>
-												<th class="manage-column column-posts num" id="posts" scope="col">Entries</th>
+												<th class="manage-column column-posts" id="posts" scope="col">Info</th>
 											</tr>
 										</thead>
 									
@@ -158,7 +158,7 @@ function connectionsShowCategoriesPage()
 												<th class="manage-column column-name" scope="col">Name</th>
 												<th class="manage-column column-description" scope="col">Description</th>
 												<th class="manage-column column-slug" scope="col">Slug</th>
-												<th class="manage-column column-posts num" scope="col">Entries</th>
+												<th class="manage-column column-posts" scope="col">Info</th>
 											</tr>
 										</tfoot>
 									

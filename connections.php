@@ -38,6 +38,10 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 /**
  * @TODO: Add plug-in version to the Javascript and CSS hooks.
  */
+
+// Start the $_SESSION
+if (!session_id()) @session_start();
+
 if (!class_exists('connectionsLoad'))
 {
 	class connectionsLoad
@@ -53,11 +57,6 @@ if (!class_exists('connectionsLoad'))
 		
 		public function __construct()
 		{
-			if (!isset($_SESSION)) @session_start();
-			$_SESSION['cn_session']['active'] = true;
-			$_SESSION['cn_session']['messages'];
-						
-			$this->sessionCheck();
 			$this->loadConstants();
 			$this->loadDependencies();
 			$this->initDependencies();
@@ -217,7 +216,7 @@ if (!class_exists('connectionsLoad'))
 			 * Run a quick check to see if the $_SESSION is started and verify that Connections data isn't being
 			 * overwritten and notify the user of errors.
 			 */
-			if (!isset($_SESSION))
+			/*if (!isset($_SESSION))
 			{
 				add_action('admin_notices', create_function('', 'echo \'<div id="message" class="error"><p><strong>ERROR: </strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in or the webserver configuration is preventing it from being used.</p></div>\';') );
 			}
@@ -225,7 +224,28 @@ if (!class_exists('connectionsLoad'))
 			if (!$_SESSION['cn_session']['active'] == true)
 			{
 				add_action('admin_notices', create_function('', 'echo \'<div id="message" class="error"><p><strong>ERROR: </strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in seems to be resetting the values needed for Connections.</p></div>\';') );
+			}*/
+			
+			$session_save_path = session_save_path();
+			
+			if (strpos ($session_save_path, ";") !== FALSE)
+			{
+				$session_save_path = substr ( $session_save_path, strpos ($session_save_path, ";")+1 );
 			}
+			
+			if(is_dir($session_save_path))
+			{
+				if(!is_writable($session_save_path))
+				{
+					echo '<div id="message" class="error"><p><strong>ERROR: </strong>' . $this->errorMessages->get_error_message('session_path_not_writable') . '</p></div>';
+				}
+			}
+			else
+			{
+				echo '<div id="message" class="error"><p><strong>ERROR: </strong>' . $this->errorMessages->get_error_message('session_path_does_not_exist') . '</p></div>';
+			}
+			
+
 		}
 		
 		public function displayMessages()
@@ -255,7 +275,7 @@ if (!class_exists('connectionsLoad'))
 					}
 				}
 			}
-			delete_option('connections_messages');
+			//delete_option('connections_messages');
 			unset($_SESSION['cn_session']['messages']);
 			return $output;
 		}
@@ -270,6 +290,9 @@ if (!class_exists('connectionsLoad'))
 			 * @TODO: Add error codes.
 			 */
 			$this->errorMessages = new WP_Error();
+			
+			$this->errorMessages->add('session_path_does_not_exist', 'The $_SESSION save path does not exist.');
+			$this->errorMessages->add('session_path_not_writable', 'The $_SESSION save path is not writable.');
 			
 			$this->errorMessages->add('form_token_mismatch', 'Token mismatch.');
 			$this->errorMessages->add('form_no_entry_id', 'No entry ID.');
@@ -422,8 +445,7 @@ if (!class_exists('connectionsLoad'))
 			
 			if ($wpdb->get_var("SHOW TABLES LIKE 'CN_TERMS_TABLE'") != CN_TERMS_TABLE)
 			{
-				//$table_name = $this->db->getTermsTableName();
-			    $termsTable = "CREATE TABLE " . CN_TERMS_TABLE . " (
+				$termsTable = "CREATE TABLE " . CN_TERMS_TABLE . " (
 			        term_id bigint(20) NOT NULL AUTO_INCREMENT,
 					name varchar(200) NOT NULL,
 					slug varchar(200) NOT NULL,
@@ -438,8 +460,7 @@ if (!class_exists('connectionsLoad'))
 			
 			if ($wpdb->get_var("SHOW TABLES LIKE 'CN_TERM_TAXONOMY_TABLE'") != CN_TERM_TAXONOMY_TABLE)
 			{
-				//$table_name = $this->db->getTermTaxonomyTableName();
-			    $termTaxonomyTable = "CREATE TABLE " . CN_TERM_TAXONOMY_TABLE . " (
+				$termTaxonomyTable = "CREATE TABLE " . CN_TERM_TAXONOMY_TABLE . " (
 			        term_taxonomy_id bigint(20) NOT NULL AUTO_INCREMENT,
 					term_id bigint(20) NOT NULL,
 					taxonomy varchar(32) NOT NULL,
@@ -456,8 +477,7 @@ if (!class_exists('connectionsLoad'))
 			
 			if ($wpdb->get_var("SHOW TABLES LIKE 'CN_TERM_RELATIONSHIP_TABLE'") != CN_TERM_RELATIONSHIP_TABLE)
 			{
-				//$table_name = $this->db->getTermRelationshipTableName();
-			    $termTermRelationshipTable = "CREATE TABLE " . CN_TERM_RELATIONSHIP_TABLE . " (
+				$termTermRelationshipTable = "CREATE TABLE " . CN_TERM_RELATIONSHIP_TABLE . " (
 			        entry_id bigint(20) NOT NULL,
 					term_taxonomy_id bigint(20) NOT NULL,
 					term_order int(11) NOT NULL,
@@ -606,6 +626,8 @@ if (!class_exists('connectionsLoad'))
 				// Remove the admin install message set during activation.
 				delete_option('connections_installed');
 			}
+			
+			$this->sessionCheck();
 			
 			switch ($_GET['page'])
 			{
