@@ -502,7 +502,7 @@ if (!class_exists('connectionsLoad'))
 			{
 				$attributes['slug'] = '';
 				$attributes['parent'] = 0;
-				$attributes['description'] = 'Entries not assigned to a category will automatically be assigned to this category and deleting a category which has been assigned to an entry will reassign that entry to this category. This category can not be editted or deleted.';
+				$attributes['description'] = 'Entries not assigned to a category will automatically be assigned to this category and deleting a category which has been assigned to an entry will reassign that entry to this category. This category can not be edited or deleted.';
 				
 				$connections->term->addTerm('Uncategorized', 'category', $attributes);
 			}
