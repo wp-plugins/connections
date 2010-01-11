@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: Steven A. Zahm
 Donate link: http://connections-pro.com/
-Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, user, users, vcard
+Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, business directory, business-directory, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, user, users, vcard
 Requires at least: 2.8
 Tested up to: 2.9
 Stable tag: 0.5.48
@@ -14,44 +14,41 @@ Connections is a simple to use address book or business directory that is highly
 = Admin Features =
 * Built-in help page
 * Selectable entry type; Individual / Organization / Connection Group 
-* Each entry has selectable visibility. You can choose between, public, private and unlisted
-* Image support
-* Copy entries
-* Bulk actions that include setting the visibility on deleting entries
-* Filters that is persistent per user between sessions and browsers
-* **0.5.47** Added extensive role support.
-* **0.5.47** Added the ability to set custom image sizes.
-* **0.5.47** Added the ability to determine how an image should be scaled and cropped.
+* Each entry has selectable visibility. You can choose between, public, private and unlisted.
+* Image support with the ability to set custom images sizes and how they should be scaled and cropped.
+* Copy entries.
+* Bulk actions that include setting the visibility on deleting entries.
+* Filters that are persistent per user between sessions and browsers.
+* Extensive role support.
+* Category Support. Categories can be hierarchical and entries can be assigned to any number of categoies.
 
 = Frontend Features =
 * xHTML Transition output
 * Custom template support
-* Shortcode filter attributes for the entry list
-* Alternate output list templates; single entry, multiple entry (default) and profile view
+* Shortcode filter attributes for the entry list that include being able to filter by last name, title, organization, department, city, state, zip, country and category.
+* Shortcode attributes for choosing the supplied templates or custom templates which include; single entry, multiple entry (default) and profile view templates.
+* Shortcode attribute to repeat the alpha index and the beginning of each character change. [User requested.](http://wordpress.org/support/topic/266754)
+* Shortcode attribute to show the current character at the beginning of each character group. [User requested.](http://wordpress.org/support/topic/266754)
 * Entries output in [hCard](http://microformats.org/wiki/hcard) compatible format.
 * Download the vCard of an individual entry that can be imported into you email application.
-* **0.5.1** Added a shortcode attribute to repeat the alpha index and the beginning of each character change. [User requested.](http://wordpress.org/support/topic/266754)
-* **0.5.1** Added a shortcode attribute to show the current character at the beginning of each character group. [User requested.](http://wordpress.org/support/topic/266754)
-* **0.5.1** Added additional filters for addresses. [User requested.](http://wordpress.org/support/topic/248568)
+
+= New features this version: =
+* Category support.
+* Redesigned entry input form.
+* Support for social media ids/links
+* Middle name input for an individual.
+* Capturing more meta data when added/updating entries; date added, added by, last edited by.
 
 = New features coming in the next version: =
-* Assign entries to categories and have the option to display those groups in a page/post
-* Add social media fields
 * Add honorable pre/suffix
-* Add middle name
+* Contact name for the organization entry type.
 
 = Upcoming features: =
+* Pagination
+* Search
+* Localization
 * Make the Connection Group relations in the front end entry list clickable to bring up the entry's specific details.
-* Sidebar widget
-* Dashboard widget
-* An update request form
-* A link for easy printing of the entry list
-* A link for printing out a list of birthdays and anniversaries
-* Integration with WP users to permit registered users to maintain their own info, mostly likely this will be optional on a per entry instance and an import method
-* Option to manage the address types
-* Option to customize the input form
-* Option to manage the relation types
-* Multiple images per entry or video
+* Integration with WP users to permit registered users to maintain their own info with optional moderation.
 * Gravatar support
 * Backup
 * ...and any suggestion that I may receive...
@@ -78,32 +75,13 @@ Connections is a simple to use address book or business directory that is highly
 
 
 == Frequently Asked Questions ==
-
-= Upgrading =
-Make sure to de-activate and then re-activate Connections to upgrade.
-
-= Why don't all individuals show when I use the list_type option in the shortcode? =
-Older versions of this plugin didn't set this property to an entry. To fix; edit all entries that should appear in the list by selecting the appropriate type and then save the entry.
-
-
-= I get this error upon activation — "Parse error: syntax error, unexpected T_STRING, expecting T_OLD_FUNCTION or T_FUNCTION or T_VAR or '}' in *YOUR WP PATH* /wp-content/plugins/connections/includes/date.php on line 11", what is this? =
-
-This plugin requires PHP 5. Turn on or ask your web host to turn on PHP 5 support. **OR** because the .php extension defaults to PHP 4 on your web server. The easiest fix is to add a handler that maps .php to PHP 5. If you have cPanel, you can do this easily by clicking on “Apache Handlers” and adding a mapping for “php” to “application/x-httpd-php5″ and that should fix the problem.
-
-* This plugin is developed and tested in Firefox. If your using IE and something doesn't work, try it again in Firefox.
-* This plugin is also under active development and as such features and settings could change. You may also have to re-enter or edit your entries after an upgrade. An effort will be made to keep this to a minimum.
-* It also should be mentioned that I am not a web designer nor am I a PHP programmer, this plugin is being developed out of a need and for the learning experience.
-* If support is needed use the forum on the wordpress.org site. Title the post "[Plugin: Connections] Your Problem". Also be sure to tag the post with "connections".
-
-= Why do dotted underlines show under the dates? =
-
-Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>` tag is needed for hCalendar event compatibility. To remove this from the styling, add `.vevent abbr{border:0}` to your theme's CSS.
+[FAQs can be found here](http://connections-pro.com/?page_id=56)
 
 == Changelog ==
 
 = 0.6.0 X/X/X =
-* BUG: Fixed a bug when intializing the settings so they are not reset on activation of the plugin.
-* BUG: Fixed how capabilites were created and managed for public entries.
+* BUG: Fixed a bug when initializing the settings so they are not reset on activation of the plugin.
+* BUG: Fixed how capabilities were created and managed for public entries.
 * BUG: Fixed how the entry edit link was created which was causing a token mismatch.
 * BUG: Fixed a permission error when using the shortcode override attributes.
 * Updated class.upload.php to version .28
@@ -112,7 +90,7 @@ Some browsers put a dotted underline or border on each `<abbr>` tag. The `<abbr>
 * Options class now is used throughout the plug-in rather than creating new instances.
 * Renamed all the classes to be more unique to help avoid conflict with other plug-ins.
 * Re-worked the way method used to store the cached entry list filters to use the user_meta table.
-* Capturing more meta datawhen added/ updating entries; date added, added by, last edited by.
+* Capturing more meta data when added/updating entries; date added, added by, last edited by.
 * Added and middle name. Support extended to hCard and vCard.
 * Added a setting to disable the private override shortcode attribute.
 * Added a filter class that can easily be extended. Currently supports filtering by visibility and entry type.
