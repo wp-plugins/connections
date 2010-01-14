@@ -359,11 +359,11 @@ class cnEntryForm
 						switch ($action)
 						{
 							case 'edit':
-								$out .= '<a href="admin.php?page=connections" class="button button-warning">Cancel</a><div id="publishing-action"><input  class="button-primary" type="submit" name="update" value="Update" /></div>';
+								$out .= '<div id="cancel-button"><a href="admin.php?page=connections" class="button button-warning">Cancel</a></div><div id="publishing-action"><input  class="button-primary" type="submit" name="update" value="Update" /></div>';
 							break;
 							
 							case 'copy':
-								$out .= '<a href="admin.php?page=connections" class="button button-warning">Cancel</a><div id="publishing-action"><input class="button-primary" type="submit" name="save" value="Add Entry" /></div>';;
+								$out .= '<div id="cancel-button"><a href="admin.php?page=connections" class="button button-warning">Cancel</a></div><div id="publishing-action"><input class="button-primary" type="submit" name="save" value="Add Entry" /></div>';;
 							break;
 							
 							default:
@@ -921,15 +921,23 @@ class cnEntryForm
 		if ($_FILES['original_image']['error'] != 4) {
 			$image_proccess_results = $this->processImages();
 			
-			$entry->setImageLinked(true);
-			$entry->setImageDisplay(true);
-			$entry->setImageNameThumbnail($image_proccess_results['image_names']['thumbnail']);
-			$entry->setImageNameCard($image_proccess_results['image_names']['entry']);
-			$entry->setImageNameProfile($image_proccess_results['image_names']['profile']);
-			$entry->setImageNameOriginal($image_proccess_results['image_names']['original']);
-			
 			$error = $image_proccess_results['error'];
 			$success = $image_proccess_results['success'];
+			
+			if (empty($error))
+			{
+				$entry->setImageLinked(true);
+				$entry->setImageDisplay(true);
+				$entry->setImageNameThumbnail($image_proccess_results['image_names']['thumbnail']);
+				$entry->setImageNameCard($image_proccess_results['image_names']['entry']);
+				$entry->setImageNameProfile($image_proccess_results['image_names']['profile']);
+				$entry->setImageNameOriginal($image_proccess_results['image_names']['original']);
+			}
+			else
+			{
+				$entry->setImageLinked(false);
+				$entry->setImageDisplay(false);
+			}
 		}
 		
 		// If copying an entry, the image visibility property is set based on the user's choice.
@@ -1023,6 +1031,7 @@ class cnEntryForm
 			if ($process_image->uploaded) {
 				// Saves the uploaded image with no changes to the wp_content/connection_images/ dir.
 				// If needed this will create the upload dir and chmod it.
+				$process_image->allowed				= array('image/jpeg','image/gif','image/png');
 				$process_image->auto_create_dir		= true;
 				$process_image->auto_chmod_dir		= true;
 				$process_image->file_safe_name		= true;
@@ -1042,6 +1051,7 @@ class cnEntryForm
 				
 				// Creates the profile image and saves it to the wp_content/connection_images/ dir.
 				// If needed this will create the upload dir and chmod it.
+				$process_image->allowed				= array('image/jpeg','image/gif','image/png');
 				$process_image->auto_create_dir		= true;
 				$process_image->auto_chmod_dir		= true;
 				$process_image->file_safe_name		= true;
@@ -1066,6 +1076,7 @@ class cnEntryForm
 				
 				// Creates the entry image and saves it to the wp_content/connection_images/ dir.
 				// If needed this will create the upload dir and chmod it.
+				$process_image->allowed				= array('image/jpeg','image/gif','image/png');
 				$process_image->auto_create_dir		= true;
 				$process_image->auto_chmod_dir		= true;
 				$process_image->file_safe_name		= true;
