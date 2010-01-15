@@ -58,12 +58,17 @@ class cnFilters
 								if (!$publicOverride)
 								{
 									$continue = TRUE;
+									
 								}
 							}
 							else
 							{
-								$continue = TRUE;
+								$continue = FALSE;
 							}
+						}
+						else
+						{
+							$continue = FALSE;
 						}
 					break;
 					

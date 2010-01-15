@@ -116,40 +116,9 @@ function connectionsShowViewPage()
 				 * Make sure the action token and $_SESSION token are set and equal before
 				 * performing the copy. This should hopefully prevent user from accessing
 				 * entries for which they do not have permission
-				 */
-				/*if (isset($_GET['id']))
-				{
-					$id = $_GET['id'];
-				}
-				else
-				{
-					$error = true;
-					$connections->setErrorMessage('form_no_entry_id');
-				}
-				
-				if (isset($_GET['token']))
-				{
-					$token = $_GET['token'];
-				}
-				else
-				{
-					$error = true;
-					$connections->setErrorMessage('form_no_entry_token');
-				}
-				
-				if (isset($_SESSION['cn_session']['formTokens']['edit_' . $_GET['id']]['token']))
-				{
-					$sessionToken = $_SESSION['cn_session']['formTokens']['edit_' . $_GET['id']]['token'];
-				}
-				else
-				{
-					$error = true;
-					$connections->setErrorMessage('form_no_session_token');
-				}*/
-				
+				 */			
 				$id = attribute_escape($_GET['id']);
 				if ($form->tokenCheck('edit_' . $id, $_GET['token']))
-				//if ($sessionToken === $token && !$error)
 				{
 					$entryForm = new cnEntryForm();
 					$form = new cnFormObjects();
@@ -168,10 +137,6 @@ function connectionsShowViewPage()
 									$out .= '<input type="hidden" name="formId" value="entry_form" />';
 									$out .= '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
 									
-									/*$out .= '<p class="submit">';
-										$out .= '<input  class="button-primary" type="submit" name="update" value="Update" />';
-										$out .= '<a href="admin.php?page=connections" class="button button-warning">Cancel</a>';
-									$out .= '</p>';*/
 								$out .= '</form>';
 							$out .= '</div>';
 						$out .= '</div>';
@@ -299,10 +264,6 @@ function connectionsShowViewPage()
 			
 			if ($_POST['filter'])
 			{
-				//$connections->options->setEntryType($_POST['entry_type']);
-				//$connections->options->setVisibilityType($_POST['visibility_type']);
-				
-				//$connections->options->saveOptions();
 				$connections->currentUser->setFilterEntryType($_POST['entry_type']);
 				$connections->currentUser->setFilterVisibility($_POST['visibility_type']);
 				$connections->currentUser->setFilterCategory($_POST['category']);
@@ -496,9 +457,7 @@ function connectionsShowViewPage()
 											
 											echo '<div class="row-actions">';
 												echo '<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a> | ';
-												//if (current_user_can('connections_edit_entry')) echo '<a class="editbutton" href="admin.php?page=connections&action=editform&id=' . $entry->getId() . '&editid=true&token=' . $editToken . '" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | ';
 												if (current_user_can('connections_edit_entry')) echo '<a class="editbutton" href="admin.php?page=connections&action=edit&id=' . $entry->getId() . '&token=' . $editToken . '" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | ';
-												//if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="admin.php?page=connections&action=editform&id=' . $entry->getId() . '&copyid=true&token=' . $form->token('copy_' . $entry->getId()) . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
 												if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="admin.php?page=connections&action=copy&id=' . $entry->getId() . '&token=' . $form->token('copy_' . $entry->getId()) . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
 												if (current_user_can('connections_delete_entry')) echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections&action=delete&id=' . $entry->getId() . '&token=' . $form->token('delete_' . $entry->getId()) . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
 											echo '</div>';
@@ -515,9 +474,16 @@ function connectionsShowViewPage()
 									echo "<td >&nbsp;</td> \n";
 									echo "<td colspan='2'>";
 										
+										
+										/*
+										 * Check if the entry has relations. Count the relations and then cycle thru each relation.
+										 * Before the out check that the related entry still exists. If it does and the current user
+										 * has edit capabilites the edit link will be displayed. If the user does not have edit capabilities
+										 * the only the relation will be shown. After all relations have been output insert a <br>
+										 * for spacing [@TODO: NOTE: this should be done with styles].
+										 */
 										if ($entry->getConnectionGroup())
 										{
-											//$connections = $entry->getConnectionGroup();
 											$count = count($entry->getConnectionGroup());
 											$i = 0;
 											
@@ -526,12 +492,18 @@ function connectionsShowViewPage()
 												$relation = new cnEntry();
 												$relation->set($key);
 												
-												/**
-												 * @TODO: Edit link for relation should only show if the current user has edit capabilities.
-												 * @TODO: First check to make sure a relation exists before out. Relation could have been deleted.
-												 */
+												if ($relation->getId())
+												{
+													if (current_user_can('connections_edit_entry'))
+													{
+														echo '<strong>' . $connections->options->getConnectionRelation($value) . ':</strong> ' . '<a href="admin.php?page=connections&action=edit&id=' . $relation->getId() . '&token=' . $form->token('edit_' . $relation->getId()) . '"" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a><br />' . "\n";
+													}
+													else
+													{
+														echo '<strong>' . $connections->options->getConnectionRelation($value) . ':</strong> ' . $relation->getFullFirstLastName() . '<br />' . "\n";
+													}
+												}
 												
-												echo '<strong>' . $connections->options->getConnectionRelation($value) . ':</strong> ' . '<a href="admin.php?page=connections&action=edit&id=' . $relation->getId() . '&token=' . $form->token('edit_' . $relation->getId()) . '"" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a>' . '<br />' . "\n";
 												if ($count - 1 == $i) echo '<br />'; // Insert a break after all connections are listed.
 												$i++;
 												unset($relation);

@@ -392,8 +392,6 @@ class cnEntryForm
 				$out .= '<div class="inside">';
 					$out .= '<div id="categories-all" class="tabs-panel">';
 						$out .= '<ul class="categorychecklist">';
-							//$out .= $categoryObjects->buildCategoryRow('checklist', $connections->retrieve->categories(), NULL, $category->getEntryCategories($entry->getId()));
-							//$out .= $categoryObjects->buildCategoryRow('checklist', $connections->retrieve->categories(), NULL, $entry->getCategories($entry->getId()));
 							$out .= $categoryObjects->buildCategoryRow('checklist', $connections->retrieve->categories(), NULL, $connections->term->getTermRelationships($entry->getId()));
 						$out .= '</ul>';
 					$out .= '</div>';
@@ -423,11 +421,12 @@ class cnEntryForm
 							{
 								$relation = new cnEntry();
 								$relation->set($key);
+								$token = $form->token($relation->getId());
 								
-								$out .= '<div id="relation_row_' . $relation->getId() . '" class="relation_row">';
-									$out .= $this->getEntrySelect('connection_group[' . $relation->getId() . '][entry_id]', $key);
-									$out .= $form->buildSelect('connection_group[' . $relation->getId() . '][relation]', $connections->options->getDefaultConnectionGroupValues(), $value);
-									$out .= '<a href="#" id="remove_button_' . $i . '" class="button button-warning" onClick="removeRelationRow(\'#relation_row_' . $relation->getId() . '\'); return false;">Remove</a>';
+								$out .= '<div id="relation_row_' . $token . '" class="relation_row">';
+									$out .= $this->getEntrySelect('connection_group[' . $token . '][entry_id]', $key);
+									$out .= $form->buildSelect('connection_group[' . $token . '][relation]', $connections->options->getDefaultConnectionGroupValues(), $value);
+									$out .= '<a href="#" id="remove_button_' . $token . '" class="button button-warning" onClick="removeEntryRow(\'#relation_row_' . $token . '\'); return false;">Remove</a>';
 								$out .= '</div>';
 								
 								unset($relation);
