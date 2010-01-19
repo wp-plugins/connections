@@ -134,6 +134,7 @@ function cnRunDBUpgrade()
 		
 		if (version_compare($dbVersion, '0.1.1', '<'))
 		{
+			echo '<h4>Upgrade from database version ' . $connections->options->getDBVersion() . ' to database version ' . CN_DB_VERSION . ".</h4>\n";
 			echo '<h4>Setting all current entries to the "approved" status.' . "</h4>\n";
 			
 			$results = $connections->retrieve->entries();
