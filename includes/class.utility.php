@@ -73,4 +73,73 @@ class cnConvert
 		return $value;
 	}
 }
+
+class cnFormatting
+{
+	/**
+	 * Sanitize the input string. HTML tags can be permitted.
+	 * The permitted tags can be suppled in an array.
+	 * 
+	 * @TODO: Finish the code needed to support the $permittedTags array.
+	 * 
+	 * @param string $string
+	 * @param bool $allowHTML [optional]
+	 * @param array $permittedTags [optional]
+	 * @return string
+	 */
+	public function sanitizeString($string, $allowHTML = FALSE, $permittedTags = NULL)
+	{
+		// Ensure all tags are closed.
+		$balancedText = balanceTags($string, TRUE);
+		
+		// Strip all tags except the permitted.
+		if (!$allowHTML)
+		{
+			$strippedText = strip_tags($balancedText);
+		}
+		else
+		{
+			$strippedText = strip_tags($balancedText, '<p><b><strong><i><em><br>');
+		}
+		
+		// Strip all script and style tags.
+		$strippedText = preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', $strippedText );
+		
+		// Escape text using the WordPress method and then strip slashes.
+		$escapedText = stripslashes(esc_attr($strippedText));
+		
+		if ($allowHTML)
+		{
+			// Allow <p> and </p>
+			$escapedText = str_replace('&lt;p&gt;', '<p>', $escapedText);
+			$escapedText = str_replace('&lt;/p&gt;', '</p>', $escapedText);
+			
+			// Allow <b> and </b>
+			$escapedText = str_replace('&lt;b&gt;', '<b>', $escapedText);
+			$escapedText = str_replace('&lt;/b&gt;', '</b>', $escapedText);
+			
+			// Allow <strong> and </strong>
+			$escapedText = str_replace('&lt;strong&gt;', '<strong>', $escapedText);
+			$escapedText = str_replace('&lt;/strong&gt;', '</strong>', $escapedText);
+			
+			// Allow <i> and </i>
+			$escapedText = str_replace('&lt;i&gt;', '<i>', $escapedText);
+			$escapedText = str_replace('&lt;/i&gt;', '</i>', $escapedText);
+			
+			// Allow <em> and </em>
+			$escapedText = str_replace('&lt;strong&gt;', '<em>', $escapedText);
+			$escapedText = str_replace('&lt;/strong&gt;', '</em>', $escapedText);
+			
+			// Allow <br> and <br/> and <br />
+			$escapedText = str_replace('&lt;br&gt;', '<br />', $escapedText);
+			$escapedText = str_replace('&lt;br/&gt;', '<br />', $escapedText);
+			$escapedText = str_replace('&lt;br /&gt;', '<br />', $escapedText);
+		}
+		
+		// Remove line breaks.
+		$escapedText = preg_replace('/[\r\n\t ]+/', ' ', $escapedText);
+		
+		return trim($escapedText);
+	}
+}
 ?>

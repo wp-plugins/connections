@@ -132,6 +132,19 @@ function cnRunDBUpgrade()
 			
 		}
 		
+		if (version_compare($dbVersion, '0.1.1', '<'))
+		{
+			echo '<h4>Setting all current entries to the "approved" status.' . "</h4>\n";
+			
+			$results = $connections->retrieve->entries();
+			
+			foreach ($results as $result)
+			{
+				$entry = new cnEntry($result);
+				$entry->update();
+			}
+		}
+		
 		echo '<h4>Upgrade completed.' . "</h4>\n";
 		echo '<h4><a href="' . $urlPath . '">Continue</a></h4>';
 		$wpdb->hide_errors();

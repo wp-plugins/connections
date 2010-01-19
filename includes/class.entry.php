@@ -136,19 +136,22 @@ class cnEntry
 	private $addedBy;
 	private $editedBy;
 	
-	function __construct($data = null)	{
+	private $format;
+	
+	function __construct($data = null)
+	{
 		$this->id = $data->id;
 		$this->timeStamp = $data->ts;
 		$this->dateAdded = (integer) $data->date_added;
-		$this->firstName = stripslashes($data->first_name);
-		$this->middleName = stripslashes($data->middle_name);
-		$this->lastName = stripslashes($data->last_name);
-		$this->title = stripslashes($data->title);
-		$this->organization = stripslashes($data->organization);
-		$this->contactFirstName = stripslashes($data->contact_first_name);
-		$this->contactLastName = stripslashes($data->contact_last_name);
-		$this->department = stripslashes($data->department);
-		$this->groupName = stripslashes($data->group_name);
+		$this->firstName = $data->first_name;
+		$this->middleName = $data->middle_name;
+		$this->lastName = $data->last_name;
+		$this->title = $data->title;
+		$this->organization = $data->organization;
+		$this->contactFirstName = $data->contact_first_name;
+		$this->contactLastName = $data->contact_last_name;
+		$this->department = $data->department;
+		$this->groupName = $data->group_name;
 		$this->addresses = unserialize($data->addresses);
 		$this->phoneNumbers = unserialize($data->phone_numbers);
 		$this->emailAddresses = unserialize($data->email);
@@ -157,8 +160,8 @@ class cnEntry
 		$this->websites = unserialize($data->websites);
 		$this->birthday = $data->birthday;
 		$this->anniversary = $data->anniversary;
-		$this->bio = stripslashes($data->bio);
-		$this->notes = stripslashes($data->notes);
+		$this->bio = $data->bio;
+		$this->notes = $data->notes;
 		$this->visibility = $data->visibility;
 		
 		$this->options = unserialize($data->options);
@@ -173,6 +176,9 @@ class cnEntry
 		
 		$this->addedBy = $data->added_by;
 		$this->editedBy = $data->edited_by;
+		
+		// Load the formatting class for sanitizing the get methods.
+		$this->format = new cnFormatting();
 	}
 
     /**
@@ -255,7 +261,7 @@ class cnEntry
      */
     public function getFirstName()
     {
-        return $this->firstName;
+		return $this->format->sanitizeString($this->firstName);
     }
     
     /**
@@ -270,7 +276,7 @@ class cnEntry
     
 	public function getMiddleName()
     {
-        return $this->middleName;
+        return $this->format->sanitizeString($this->middleName);
     }
     
     public function setMiddleName($middleName)
@@ -289,7 +295,7 @@ class cnEntry
         switch ($this->getEntryType())
 		{
 			case 'individual':
-				return $this->lastName;
+				return $this->format->sanitizeString($this->lastName);
 			break;
 			
 			case 'connection_group':
@@ -297,7 +303,7 @@ class cnEntry
 			break;
 			
 			default:
-				return $this->lastName;
+				return $this->format->sanitizeString($this->lastName);
 			break;
 		}
     }
@@ -377,7 +383,7 @@ class cnEntry
      */
     public function getOrganization()
     {
-        return $this->organization;
+        return $this->format->sanitizeString($this->organization);
     }
     
     /**
@@ -397,7 +403,7 @@ class cnEntry
      */
     public function getTitle()
     {
-        return $this->title;
+        return $this->format->sanitizeString($this->title);
     }
     
     /**
@@ -417,7 +423,7 @@ class cnEntry
      */
     public function getDepartment()
     {
-        return $this->department;
+        return $this->format->sanitizeString($this->department);
     }
     
     /**
@@ -432,7 +438,7 @@ class cnEntry
 	
 	public function getContactFirstName()
 	{
-		return $this->contactFirstName;
+		return $this->format->sanitizeString($this->contactFirstName);
 	}
 	
 	public function setContactFirstName($contactFirstName)
@@ -442,7 +448,7 @@ class cnEntry
 	
 	public function getContactLastName()
 	{
-		return $this->contactLastName;
+		return $this->format->sanitizeString($this->contactLastName);
 	}
 	
 	public function setContactLastName($contactLastName)
@@ -456,7 +462,7 @@ class cnEntry
      */
     public function getGroupName()
     {
-        return $this->groupName;
+        return $this->format->sanitizeString($this->groupName);
     }
     
     /**
@@ -643,7 +649,7 @@ class cnEntry
      */
     public function getBio()
     {
-        return $this->bio;
+		return $this->format->sanitizeString($this->bio, TRUE);
     }
     
     /**
@@ -662,7 +668,7 @@ class cnEntry
      */
     public function getNotes()
     {
-        return $this->notes;
+        return $this->format->sanitizeString($this->notes, TRUE);
     }
     
     /**
@@ -1065,7 +1071,15 @@ class cnPhoneNumber
 	private $name;
 	private $number;
 	private $visibility;
-
+	
+	private $format;
+	
+	function __construct()
+	{
+		// Load the formatting class for sanitizing the get methods.
+		$this->format = new cnFormatting();
+	}
+	
     /**
      * Returns $name.
      * @see phoneNumber::$name
@@ -1108,7 +1122,7 @@ class cnPhoneNumber
 			break;
 		}
 		
-		return $this->name;
+		return $this->format->sanitizeString($this->name);
     }
     
     /**
@@ -1138,7 +1152,7 @@ class cnPhoneNumber
 			$this->number = $data['number'];
 		}
 		
-		return $this->number;
+		return $this->format->sanitizeString($this->number);
     }
     
     /**
@@ -1193,7 +1207,7 @@ class cnPhoneNumber
 			break;
 		}
 		
-		return $this->type;
+		return $this->format->sanitizeString($this->type);
     }
     
     /**
@@ -1213,7 +1227,7 @@ class cnPhoneNumber
     public function getVisibility($data)
     {
         $this->visibility = $data['visibility'];
-		return $this->visibility;
+		return $this->format->sanitizeString($this->visibility);
     }
     
     /**
@@ -1262,7 +1276,15 @@ class cnEmail
 	 * @var string
 	 */
 	private $visibility;
-
+	
+	private $format;
+	
+	function __construct()
+	{
+		// Load the formatting class for sanitizing the get methods.
+		$this->format = new cnFormatting();
+	}
+	
     /**
      * Returns $address.
      * @see email::$address
@@ -1270,7 +1292,7 @@ class cnEmail
     public function getAddress($data)
     {
         $this->address = $data['address'];
-		return $this->address;
+		return $this->format->sanitizeString($this->address);
     }
     
     /**
@@ -1304,7 +1326,7 @@ class cnEmail
 			break;
 		}
 		
-		return $this->name;
+		return $this->format->sanitizeString($this->name);
     }
     
     /**
@@ -1324,7 +1346,7 @@ class cnEmail
     public function getType($data)
     {
         $this->type = $data['type'];
-		return $this->type;
+		return $this->format->sanitizeString($this->type);
     }
     
     /**
@@ -1344,7 +1366,7 @@ class cnEmail
     public function getVisibility($data)
     {
         $this->visibility = $data['visibility'];
-		return $this->visibility;
+		return $this->format->sanitizeString($this->visibility);
     }
     
     /**
@@ -1394,6 +1416,14 @@ class cnWebsite
 	 */
 	private $visibility;
 	
+	private $format;
+	
+	function __construct()
+	{
+		// Load the formatting class for sanitizing the get methods.
+		$this->format = new cnFormatting();
+	}
+	
     /**
      * Returns $address.
      * @param array $data
@@ -1402,7 +1432,7 @@ class cnWebsite
     public function getAddress($data)
     {
         $this->address = $data['address'];
-		return $this->address;
+		return $this->format->sanitizeString($this->address);
     }
     
     /**
@@ -1422,7 +1452,7 @@ class cnWebsite
      */
     public function getType()
     {
-        return $this->type;
+        return $this->format->sanitizeString($this->type);
     }
     
     /**
@@ -1442,7 +1472,7 @@ class cnWebsite
      */
     public function getName()
     {
-        return $this->name;
+        return $this->format->sanitizeString($this->name);
     }
     
     /**
@@ -1461,7 +1491,7 @@ class cnWebsite
      */
     public function getVisibility()
     {
-        return $this->visibility;
+        return $this->format->sanitizeString($this->visibility);
     }
     
     /**
@@ -1488,7 +1518,15 @@ class cnAddresses
 	private $zipCode;
 	private $country;
 	private $visibility;
-
+	
+	private $format;
+	
+	function __construct()
+	{
+		// Load the formatting class for sanitizing the get methods.
+		$this->format = new cnFormatting();
+	}
+	
     /**
      * Returns $city.
      * @see addresses::$city
@@ -1496,7 +1534,7 @@ class cnAddresses
     public function getCity($data)
     {
         $this->city = $data['city'];
-		return $this->city;
+		return $this->format->sanitizeString($this->city);
     }
     
     /**
@@ -1516,7 +1554,7 @@ class cnAddresses
     public function getCountry($data)
     {
         $this->country = $data['country'];
-		return $this->country;
+		return $this->format->sanitizeString($this->country);
     }
     
     /**
@@ -1536,7 +1574,7 @@ class cnAddresses
     public function getLineOne($data)
     {
         $this->lineOne = $data['address_line1'];
-		return $this->lineOne;
+		return $this->format->sanitizeString($this->lineOne);
     }
     
     /**
@@ -1556,7 +1594,7 @@ class cnAddresses
     public function getLineTwo($data)
     {
         $this->lineTwo = $data['address_line2'];
-		return $this->lineTwo;
+		return $this->format->sanitizeString($this->lineTwo);
     }
     
     /**
@@ -1598,7 +1636,7 @@ class cnAddresses
         	break;
         }	
 		
-		return $this->name;
+		return $this->format->sanitizeString($this->name);
     }
     
     /**
@@ -1618,7 +1656,7 @@ class cnAddresses
     public function getState($data)
     {
         $this->state = $data['state'];
-		return $this->state;
+		return $this->format->sanitizeString($this->state);
     }
     
     /**
@@ -1638,7 +1676,7 @@ class cnAddresses
     public function getType($data)
     {
         $this->type = $data['type'];
-        return $this->type;
+        return $this->format->sanitizeString($this->type);
     }
     
     /**
@@ -1657,7 +1695,7 @@ class cnAddresses
      */
     public function getVisibility()
     {
-        return $this->visibility;
+        return $this->format->sanitizeString($this->visibility);
     }
     
     /**
@@ -1677,7 +1715,7 @@ class cnAddresses
     public function getZipCode($data)
     {
         $this->zipCode = $data['zipcode'];
-		return $this->zipCode;
+		return $this->format->sanitizeString($this->zipCode);
     }
     
     /**
@@ -1726,7 +1764,15 @@ class cnIM
 	 */
 	private $visibility;
     
-    /**
+    private $format;
+	
+	function __construct()
+	{
+		// Load the formatting class for sanitizing the get methods.
+		$this->format = new cnFormatting();
+	}
+	
+	/**
      * Returns $type.
      * @see im::$type
      */
@@ -1755,7 +1801,7 @@ class cnIM
 			
 			default:
 				$this->type = $data['type'];
-				return $this->type;
+				return $this->format->sanitizeString($this->type);
 			break;
 		}
 		
@@ -1802,7 +1848,7 @@ class cnIM
 			
 			default:
 				$this->name = $data['name'];
-				return $this->name;
+				return $this->format->sanitizeString($this->name);
 			break;
 		}
 	   
@@ -1828,7 +1874,7 @@ class cnIM
     public function getId($data)
     {
         $this->id = $data['id'];
-		return $this->id;
+		return $this->format->sanitizeString($this->id);
     }
     
     /**
@@ -1848,7 +1894,7 @@ class cnIM
     public function getVisibility($data)
     {
         $this->visibility = $data['visibility'];
-		return $this->visibility;
+		return $this->format->sanitizeString($this->visibility);
     }
     
     /**
@@ -1891,14 +1937,22 @@ class cnSocialMedia
 	 */
 	private $visibility;
     
-    /**
+    private $format;
+	
+	function __construct()
+	{
+		// Load the formatting class for sanitizing the get methods.
+		$this->format = new cnFormatting();
+	}
+	
+	/**
      * Returns $type.
      * @see im::$type
      */
     public function getType($data)
     {
        $this->type = $data['type'];
-		return $this->type;
+		return $this->format->sanitizeString($this->type);
     }
     
 	public function getName($data)
@@ -1906,7 +1960,7 @@ class cnSocialMedia
 		global $connections;
 		
 		$socialMediaValues = $connections->options->getDefaultSocialMediaValues();
-		return $socialMediaValues[$data['type']];
+		return $this->format->sanitizeString($socialMediaValues[$data['type']]);
 	}
 	
     /**
@@ -1927,7 +1981,8 @@ class cnSocialMedia
     public function getId($data)
     {
         $this->id = $data['id'];
-		return $this->id;
+		return $this->format->sanitizeString($this->id);
+		
     }
     
     /**
@@ -1947,7 +2002,7 @@ class cnSocialMedia
     public function getVisibility($data)
     {
         $this->visibility = $data['visibility'];
-		return $this->visibility;
+		return $this->format->sanitizeString($this->visibility);
     }
     
     /**
