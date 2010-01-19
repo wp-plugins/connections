@@ -9,7 +9,7 @@ Connections is a simple to use addressbook or business directory that is highly 
 
 == Description ==
 
-Connections is a simple to use address book or business directory that is highly customizable with templates and shortcode attributes. The entry list can be embedded in a post/page using a simple shortcode that has many available options. The entry list can embedded multiple times in the same post/page using different options and even different templates. Also included; a second shortcode that can be used to show upcoming anniversaries and birthdays.
+Connections is a simple to use address book system but is also very versatile. You can use it to create church directories, business directories and even profiles using the default templates. If the default layouts don’t suit your needs you can easily create your own custom template. Want to show a list of upcoming birthdays and anniversaries, no problem, you can do that too. Take a look at the screen shots and the samples on this site to see all Connections can do.
 
 = Admin Features =
 * Built-in help page
@@ -100,7 +100,8 @@ Connections is a simple to use address book or business directory that is highly
 * Changed minimum supported WP version to 2.8 [Used 2.8 only function for editable roles]
 * Add check for $_SESSION save path and throw an error if it isn't found.
 * Add category support.
-* Add upgrade routine to support new features.
+* Add upgrade routine to support new features and some planned future features.
+* All strings output from the cnEntry and related classes are now sanitized.
 
 = 0.5.48 9/14/2009 =
 * Fixed a jQuery bug in IE8.
