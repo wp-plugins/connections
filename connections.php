@@ -357,9 +357,9 @@ if (!class_exists('connectionsLoad'))
 			$this->successMessages->add('form_entry_delete_bulk', 'Entry(ies) have been deleted.');
 			$this->successMessages->add('form_entry_visibility_bulk', 'Entry(ies) visibility have been updated.');
 			
-			$this->successMessages->add('category_deleted', 'Catergory(ies) have been deleted.');
-			$this->successMessages->add('category_updated', 'Catergory has been updated.');
-			$this->successMessages->add('category_added', 'Catergory has been added.');
+			$this->successMessages->add('category_deleted', 'Category(ies) have been deleted.');
+			$this->successMessages->add('category_updated', 'Category has been updated.');
+			$this->successMessages->add('category_added', 'Category has been added.');
 		}
 		
 		/**
