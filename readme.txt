@@ -79,7 +79,7 @@ Connections is a simple to use address book system but is also very versatile. Y
 
 == Changelog ==
 
-= 0.6.0 X/X/X =
+= 0.6.1 1/19/2010 =
 * BUG: Fixed a bug when initializing the settings so they are not reset on activation of the plugin.
 * BUG: Fixed how capabilities were created and managed for public entries.
 * BUG: Fixed how the entry edit link was created which was causing a token mismatch.
