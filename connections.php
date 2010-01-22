@@ -526,6 +526,9 @@ if (!class_exists('connectionsLoad'))
 				
 		public function loadAdminMenus()
 		{
+			// If the Connections CSV plugin is activate load the object
+			if (class_exists('connectionsCSVLoad')) global $connectionsCSV;
+			
 			//Adds Connections to the top level menu.
 			add_menu_page('Connections : Administration', 'Connections', 'connections_view_entry_list', CN_BASE_NAME, array (&$this, 'showPage'), WP_PLUGIN_URL . '/connections/images/menu.png');
 			
@@ -533,6 +536,15 @@ if (!class_exists('connectionsLoad'))
 			add_submenu_page(CN_BASE_NAME, 'Connections : Entry List', 'Entry List', 'connections_view_entry_list', CN_BASE_NAME, array (&$this, 'showPage'));
 			add_submenu_page(CN_BASE_NAME, 'Connections : Add Entry','Add Entry', 'connections_add_entry', 'connections_add', array (&$this, 'showPage'));
 			add_submenu_page(CN_BASE_NAME, 'Connections : Categories','Categories', 'connections_edit_categories', 'connections_categories', array (&$this, 'showPage'));
+			
+			// Show the Connections Import CSV menu item
+			if (isset($connectionsCSV))
+			{
+				global $connectionsCSV;
+				
+				add_submenu_page(CN_BASE_NAME, 'Connections : Import CSV','Import CSV', 'connections_add_entry', 'connections_csv', array ($connectionsCSV, 'showPage'));
+			}
+			
 			add_submenu_page(CN_BASE_NAME, 'Connections : Settings','Settings', 'connections_change_settings', 'connections_settings', array (&$this, 'showPage'));
 			add_submenu_page(CN_BASE_NAME, 'Connections : Roles &amp; Capabilites','Roles', 'connections_change_roles', 'connections_roles', array (&$this, 'showPage'));
 			add_submenu_page(CN_BASE_NAME, 'Connections : Help','Help', 'connections_view_help', 'connections_help', array (&$this, 'showPage'));
@@ -551,6 +563,7 @@ if (!class_exists('connectionsLoad'))
 				case 'connections_categories':
 				case 'connections_settings':
 				case 'connections_roles':
+				case 'connections_csv':
 				case 'connections_help':
 					//wp_enqueue_script('jquery');
 					wp_enqueue_script('load_ui_js', WP_PLUGIN_URL . '/connections/js/ui.js');
@@ -596,6 +609,7 @@ if (!class_exists('connectionsLoad'))
 				case 'connections_categories':
 				case 'connections_settings':
 				case 'connections_roles':
+				case 'connections_csv':
 				case 'connections_help':
 					wp_enqueue_style('load_admin_css', WP_PLUGIN_URL . '/connections/css-admin.css');
 				break;
