@@ -37,6 +37,40 @@ class cnFilters
 		return $entries;
 	}
 	
+	public function orderBy($entries, $orderBy)
+	{
+		foreach ($entries as $key => $row)
+		{
+			$entry = new cnEntry($row);
+			
+			if ($entry->getAddresses())
+			{
+				$addresses = $entry->getAddresses();
+				
+				foreach ($addresses as $address)
+				{
+					if (!empty($address[$orderBy])) $toSort[$key] = $address[$orderBy];
+					break;
+				}
+				
+			}
+		}
+		
+		if (is_array($toSort)) natcasesort($toSort);
+		
+		if (is_array($toSort))
+		{
+			foreach ($toSort as $key => $value)
+			{
+				$entriesSorted[] = $entries[$key];
+			}
+		}
+		
+		if (is_array($entriesSorted)) $entries = $entriesSorted;
+		
+		return $entries;
+	}
+	
 	public function permitted($entries, $publicOverride = false, $privateOverride = false)
 	{
 		global $connections;

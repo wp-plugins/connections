@@ -79,6 +79,11 @@ Connections is a simple to use address book system but is also very versatile. Y
 
 == Changelog ==
 
+= 0.6.2 x/x/x =
+* Add support for basic HTML and RTE for the Notes and Bio fields using the jwysiwyg 0.6 jOquery plug-in.
+* Add basic order_by shortcode attribute for custom ordering of entries.
+* Add support for the CSV premium add-on.
+
 = 0.6.1 1/19/2010 =
 * BUG: Fixed a bug when initializing the settings so they are not reset on activation of the plugin.
 * BUG: Fixed how capabilities were created and managed for public entries.

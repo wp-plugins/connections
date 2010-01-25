@@ -837,12 +837,14 @@ class cnEntryForm
 			
 			<div class='form-field connectionsform'>
 					<label for='bio'>Biographical Info:</label>
-					<textarea name='bio' rows='15'>" . $entry->getBio() . "</textarea>
+					<textarea id='bio_wysiwyg' name='bio' rows='15'>" . $entry->getBio() . "</textarea>
+					<p><strong>Permitted HTML tags:</strong> &lt;p&gt; &lt;a&gt; &lt;strong&gt; &lt;em&gt; &lt;br /&gt;</p>
 			</div>
 			
 			<div class='form-field connectionsform'>
 					<label for='notes'>Notes:</label>
-					<textarea name='notes' rows='5'>" . $entry->getNotes() . "</textarea>
+					<textarea id='note_wysiwyg' name='notes' rows='5'>" . $entry->getNotes() . "</textarea>
+					<p><strong>Permitted HTML tags:</strong> &lt;p&gt; &lt;a&gt; &lt;strong&gt; &lt;em&gt; &lt;br /&gt;</p>
 			</div>";
 			
 			//$out .=

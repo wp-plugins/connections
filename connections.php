@@ -566,6 +566,7 @@ if (!class_exists('connectionsLoad'))
 				case 'connections_csv':
 				case 'connections_help':
 					//wp_enqueue_script('jquery');
+					wp_enqueue_script('load_jwysiwyg_js', WP_PLUGIN_URL . '/connections/js/jwysiwyg/jwysiwyg/jquery.wysiwyg.js');
 					wp_enqueue_script('load_ui_js', WP_PLUGIN_URL . '/connections/js/ui.js');
 					//wp_enqueue_script('load_jquery_plugin', WP_PLUGIN_URL . '/connections/js/jquery.template.js');
 				break;
@@ -611,6 +612,7 @@ if (!class_exists('connectionsLoad'))
 				case 'connections_roles':
 				case 'connections_csv':
 				case 'connections_help':
+					wp_enqueue_style('load_jwysiwyg_css', WP_PLUGIN_URL . '/connections/js/jwysiwyg/jwysiwyg/jquery.wysiwyg.css');
 					wp_enqueue_style('load_admin_css', WP_PLUGIN_URL . '/connections/css-admin.css');
 				break;
 			}

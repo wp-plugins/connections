@@ -89,7 +89,7 @@ class cnFormatting
 	 */
 	public function sanitizeString($string, $allowHTML = FALSE, $permittedTags = NULL)
 	{
-		// Ensure all tags are closed.
+		// Ensure all tags are closed. Uses WordPress method balanceTags().
 		$balancedText = balanceTags($string, TRUE);
 		
 		// Strip all tags except the permitted.
@@ -99,7 +99,7 @@ class cnFormatting
 		}
 		else
 		{
-			$strippedText = strip_tags($balancedText, '<p><b><strong><i><em><br>');
+			$strippedText = strip_tags($balancedText, '<p><a><b><strong><i><em><br>');
 		}
 		
 		// Strip all script and style tags.
@@ -134,6 +134,13 @@ class cnFormatting
 			$escapedText = str_replace('&lt;br&gt;', '<br />', $escapedText);
 			$escapedText = str_replace('&lt;br/&gt;', '<br />', $escapedText);
 			$escapedText = str_replace('&lt;br /&gt;', '<br />', $escapedText);
+			
+			// Allow <a>. Uses WordPress method make_clickable().
+			$escapedText = make_clickable($escapedText);
+			$escapedText = preg_replace('/\&lt\;a.*\s[^>]*href\s*=\s*(\&quot\;??)(.*)\\1[^>]*\&gt\;(.*)\&lt\;\/a\&gt\;/siU', '<a href="\2">\3</a>' ,$escapedText);
+			
+			// Reference here for the regexp http://www.the-art-of-web.com/php/parse-links/
+
 		}
 		
 		// Remove line breaks.

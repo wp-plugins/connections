@@ -14,6 +14,7 @@ function _connections_list($atts, $content=null) {
 				'repeat_alphaindex' => 'false',
 				'show_alphahead' => 'false',
 				'list_type' => 'all',
+				'order_by' => null,
 				'last_name' => null,
 				'title' => null,
 				'organization' => null,
@@ -55,6 +56,12 @@ function _connections_list($atts, $content=null) {
 	
 	$results = $connections->retrieve->entries($atts);
 	$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
+	$connections->filter->byEntryType(&$results, $atts['list_type']);
+	
+	if (!empty($atts['order_by']))
+	{
+		$connections->filter->orderBy(&$results, $atts['order_by']);
+	}
 	
 	if ($results != null) {
 		
@@ -103,7 +110,7 @@ function _connections_list($atts, $content=null) {
 			 * NOTE: The '@' operator is used to suppress PHP generated errors. This is done
 			 * because not every entry will have addresses to populate the arrays created above.
 			 */
-			if ($atts['list_type'] != 'all' && $atts['list_type'] != $entry->getEntryType())			$continue = true;
+			//if ($atts['list_type'] != 'all' && $atts['list_type'] != $entry->getEntryType())			$continue = true;
 			if ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != null)				$continue = true;
 			if ($entry->getTitle() != $atts['title'] && $atts['title'] != null)							$continue = true;
 			if ($entry->getOrganization() != $atts['organization'] && $atts['organization'] != null) 	$continue = true;
