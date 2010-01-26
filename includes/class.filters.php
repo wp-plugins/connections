@@ -63,6 +63,7 @@ class cnFilters
 		{
 			//$$field[0] = $field[0];
 			
+			
 			foreach ($entries as $key => $row)
 			{
 				$entry = new cnEntry($row);
@@ -106,8 +107,13 @@ class cnFilters
 		 */
 		
 		print_r($last_name);
-		print_r($sortAttsArray);
-		print_r($sortAttsArray[0]);
+		print_r($organization);
+		print_r($department);
+		print_r($birthday);
+		print_r($anniversary);
+		
+		/*print_r($sortAttsArray);
+		print_r($sortAttsArray[0]);*/
 		
 		/*foreach ($entries as $key => $row)
 		{
@@ -127,12 +133,18 @@ class cnFilters
 		}*/
 		
 		//if (is_array($toSort)) natcasesort($toSort);
-		if (is_array($toSort)) 
-		{
-			$toSort = array_map('strtolower', $toSort);
-			array_multisort($toSort, $entries);
+		//if (is_array($toSort)) 
+		//{
+			//$toSort = array_map('strtolower', $toSort);
+			//$test = array($birthday, $last_name, $organization, $entries);
+			//print_r($test);
+			//array_multisort($test, $entries);
+			//array_multisort($birthday, $entries);
+			$test = array(&$organization, SORT_DESC, &$last_name, &$entries);
+			//array_multisort($organization, SORT_DESC, $last_name, $entries);
+			call_user_func_array('array_multisort', $test);
 			//print_r($toSort);
-		}
+		//}
 		
 		/*if (is_array($toSort))
 		{
