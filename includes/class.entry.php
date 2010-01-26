@@ -298,6 +298,10 @@ class cnEntry
 				return $this->format->sanitizeString($this->lastName);
 			break;
 			
+			case 'organization':
+				return $this->getOrganization();;
+			break;
+			
 			case 'connection_group':
 				return $this->getGroupName();
 			break;
