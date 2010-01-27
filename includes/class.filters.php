@@ -40,35 +40,69 @@ class cnFilters
 	/**
 	 * Sort the entries by the user set attributes.
 	 * 
-	 * $object	-	syntax is field|SORT_ASC(SORT_DESC)|SORT_REGULAR(SORT_NUMERIC)(SORT_STRING)
-	 * 				examples --	'state|SORT_ASC|SORT_STRING, last_name|SORT_DESC|SORT_REGULAR
+	 * $object	--	syntax is field|SORT_ASC(SORT_DESC)|SORT_REGULAR(SORT_NUMERIC)(SORT_STRING)
+	 * 				
+	 * example  --	'state|SORT_ASC|SORT_STRING, last_name|SORT_DESC|SORT_REGULAR
 	 * 
-	 * @param array of obeject $entries
+	 * 
+	 * Available order_by fields:
+	 * 	first_name
+	 * 	last_name
+	 * 	organization
+	 * 	department
+	 * 	city
+	 * 	state
+	 * 	zip_code
+	 * 	country
+	 * 	birthday
+	 * 	anniversary
+	 * 
+	 * Order Flags:
+	 * 	SORT_ACS
+	 * 	SORT_DESC
+	 * 
+	 * Sort Types:
+	 * 	SORT_REGULAR
+	 * 	SORT_NUMERIC
+	 * 	SORT_STRING
+	 * 
+	 * @param array of object $entries
 	 * @param string $orderBy
 	 * @return array of obejects
 	 */
 	public function orderBy($entries, $orderBy)
 	{
-		// Build an array that contains the order by fields and their attributes for array_multisort.
+		// Build an array of each field to sort by and attributes.
 		$sortFields = explode(',', $orderBy);
 		
-		foreach ($sortFields as $sortAttsString)
+		// For each field the sort order can be defined as well as the sort type
+		foreach ($sortFields as $sortField)
 		{
-			$sortAttsArray[] = explode('|', $sortAttsString);
+			$sortAtts[] = explode('|', $sortField);
 		}
-		// @TODO trim all values to elimate whitespace.
 		
-		// Dynamically build the variables that will be used for the array_multisort.
-		foreach ($sortAttsArray as $field)
+		/*
+		 * Dynamically build the variables that will be used for the array_multisort.
+		 * 
+		 * The field type should be the first item in the array if the user
+		 * constructed the shortcode attribute correctly.
+		 */
+		foreach ($sortAtts as $field)
 		{
-			//$$field[0] = $field[0];
+			// Trim any spaces the user might have added to the shortcode attribute.
+			$field[0] = trim($field[0]);
 			
-			
+			// The dynamic variable are being created and populated.
 			foreach ($entries as $key => $row)
 			{
 				$entry = new cnEntry($row);
 				
-				switch ($field[0]) {
+				switch ($field[0])
+				{
+					case 'first_name':
+						${$field[0]}[$key] = $entry->getFirstName();
+					break;
+					
 					case 'last_name':
 						${$field[0]}[$key] = $entry->getLastName();
 					break;
@@ -81,80 +115,57 @@ class cnFilters
 						${$field[0]}[$key] = $entry->getDepartment();
 					break;
 					
+					case ($field[0] === 'city' || $field[0] === 'state' || $field[0] === 'zipcode' || $field[0] === 'country'):
+						if ($entry->getAddresses())
+						{
+							$addresses = $entry->getAddresses();
+							
+							foreach ($addresses as $address)
+							{
+								${$field[0]}[$key] = $address[$field[0]];
+								
+								// Only set the data from the first address.
+								break;
+							}
+							
+						}
+						else
+						{
+							${$field[0]}[$key] = NULL;
+						}
+					break;
+					
 					case 'birthday':
-						${$field[0]}[$key] = $entry->getBirthday();
+						${$field[0]}[$key] = strtotime($entry->getBirthday());
 					break;
 					
 					case 'anniversary':
-						${$field[0]}[$key] = $entry->getAnniversary();
+						${$field[0]}[$key] = strtotime($entry->getAnniversary());
 					break;
 				}
 			}
+			// The sorting order to be determined by a lowercase copy of the original array.
+			$$field[0] = array_map('strtolower', $$field[0]);
+			
+			$test[] = &$$field[0];
+			
 		}
 		
-		/*
-		 * Available order_by options.
-		 * 
-		 * last_name
-		 * organization
-		 * department
-		 * city
-		 * state
-		 * zip_code
-		 * country
-		 * birthday
-		 * anniversary
-		 */
-		
+		/*print_r($test);
+		print_r($first_name);
 		print_r($last_name);
+		print_r($state);
+		print_r($zipcode);
 		print_r($organization);
 		print_r($department);
 		print_r($birthday);
-		print_r($anniversary);
+		print_r($anniversary);*/
 		
-		/*print_r($sortAttsArray);
-		print_r($sortAttsArray[0]);*/
+		$test[] = &$entries;
+		//print_r($test);
+		//$test = array(&$birthday, SORT_DESC, &$zipcode, &$last_name, &$first_name, &$entries);
+		call_user_func_array('array_multisort', $test);
 		
-		/*foreach ($entries as $key => $row)
-		{
-			$entry = new cnEntry($row);
-			
-			if ($entry->getAddresses())
-			{
-				$addresses = $entry->getAddresses();
-				
-				foreach ($addresses as $address)
-				{
-					if (!empty($address[$sortAttsArray[0][0]])) $toSort[$key] = $address[$sortAttsArray[0][0]];
-					break;
-				}
-				
-			}
-		}*/
-		
-		//if (is_array($toSort)) natcasesort($toSort);
-		//if (is_array($toSort)) 
-		//{
-			//$toSort = array_map('strtolower', $toSort);
-			//$test = array($birthday, $last_name, $organization, $entries);
-			//print_r($test);
-			//array_multisort($test, $entries);
-			//array_multisort($birthday, $entries);
-			$test = array(&$organization, SORT_DESC, &$last_name, &$entries);
-			//array_multisort($organization, SORT_DESC, $last_name, $entries);
-			call_user_func_array('array_multisort', $test);
-			//print_r($toSort);
-		//}
-		
-		/*if (is_array($toSort))
-		{
-			foreach ($toSort as $key => $value)
-			{
-				$entriesSorted[] = $entries[$key];
-			}
-		}*/
-		
-		//if (is_array($entriesSorted)) $entries = $entriesSorted;
 		
 		return $entries;
 	}
