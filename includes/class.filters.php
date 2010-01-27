@@ -143,6 +143,7 @@ class cnFilters
 						${$field[0]}[$key] = strtotime($entry->getAnniversary());
 					break;
 				}
+				
 			}
 			// The sorting order to be determined by a lowercase copy of the original array.
 			$$field[0] = array_map('strtolower', $$field[0]);
@@ -151,8 +152,8 @@ class cnFilters
 			
 		}
 		
-		/*print_r($test);
-		print_r($first_name);
+		//print_r($test);
+		/*print_r($first_name);
 		print_r($last_name);
 		print_r($state);
 		print_r($zipcode);
