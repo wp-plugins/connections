@@ -52,7 +52,7 @@ class cnFilters
 	 * 	department
 	 * 	city
 	 * 	state
-	 * 	zip_code
+	 * 	zipcode
 	 * 	country
 	 * 	birthday
 	 * 	anniversary
@@ -72,6 +72,27 @@ class cnFilters
 	 */
 	public function orderBy($entries, $orderBy)
 	{
+		$orderFields = array(
+							'first_name',
+							'last_name',
+							'organization',
+							'department',
+							'city',
+							'state',
+							'zipcode',
+							'country',
+							'birthday',
+							'anniversary'
+							);
+		
+		$sortFlags = array(
+							'SORT_ASC' => SORT_ASC,
+							'SORT_DESC' => SORT_DESC,
+							'SORT_REGULAR' => SORT_REGULAR,
+							'SORT_NUMERIC' => SORT_NUMERIC,
+							'SORT_STRING' => SORT_STRING
+							);
+		
 		// Build an array of each field to sort by and attributes.
 		$sortFields = explode(',', $orderBy);
 		
@@ -90,7 +111,10 @@ class cnFilters
 		foreach ($sortAtts as $field)
 		{
 			// Trim any spaces the user might have added to the shortcode attribute.
-			$field[0] = trim($field[0]);
+			$field[0] = strtolower(trim($field[0]));
+			
+			// If a user included a sort field that is invalid/mis-spelled it is skipped since it can not be used.
+			if(!in_array($field[0], $orderFields)) continue;
 			
 			// The dynamic variable are being created and populated.
 			foreach ($entries as $key => $row)
@@ -148,12 +172,24 @@ class cnFilters
 			// The sorting order to be determined by a lowercase copy of the original array.
 			$$field[0] = array_map('strtolower', $$field[0]);
 			
-			$test[] = &$$field[0];
+			// The arrays to be sorted must be passed by refernce or it won't work.
+			$sortParams[] = &$$field[0];
 			
+			// Add the flag ant sort type to the sort parameters if they were supplied in the shortcode attribute.
+			foreach($field as $key => $flag)
+			{
+				$flag = strtoupper(trim($flag));
+				
+				// If a user included a sort tag that is invalid/mis-spelled it is skipped since it can not be used.
+				if (!array_key_exists($flag, $sortFlags)) continue;
+				
+				$sortParams[] = &$sortFlags[$flag];
+				unset($flag);
+			}
 		}
 		
-		//print_r($test);
-		/*print_r($first_name);
+		/*print_r($sortParams);
+		print_r($first_name);
 		print_r($last_name);
 		print_r($state);
 		print_r($zipcode);
@@ -162,10 +198,9 @@ class cnFilters
 		print_r($birthday);
 		print_r($anniversary);*/
 		
-		$test[] = &$entries;
-		//print_r($test);
-		//$test = array(&$birthday, SORT_DESC, &$zipcode, &$last_name, &$first_name, &$entries);
-		call_user_func_array('array_multisort', $test);
+		$sortParams[] = &$entries;
+		//$sortParams = array(&$state, SORT_ASC, SORT_REGULAR, &$zipcode, SORT_DESC, SORT_STRING, &$entries);
+		call_user_func_array('array_multisort', $sortParams);
 		
 		
 		return $entries;
