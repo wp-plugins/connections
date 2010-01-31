@@ -650,12 +650,12 @@ class cnEntryForm
 								if ($phoneNumberObject->getNumber($phoneNumberRow) != null)
 								{
 								$token = $form->token($entry->getId());
-								$out .= '<div class="form-field connectionsform phone_number">';
-									$out .= '<div class="phone_number_row" id="phone_number_row_'  . $token . '">';
+								$out .= '<div class="form-field connectionsform phone_number" id="phone_number_row_'  . $token . '">';
+									$out .= '<div class="phone_number_row">';
 										$out .= $form->buildSelect('phone_numbers[' . $token . '][type]', $this->defaultPhoneNumberTypes, $phoneNumberObject->getType($phoneNumberRow));
 										$out .= '<input type="text" name="phone_numbers[' . $token . '][number]" value="' . $phoneNumberObject->getNumber($phoneNumberRow) . '" style="width: 30%"/>';
 										$out .= '<input type="hidden" name="phone_numbers[' . $token . '][visibility]" value="' . $phoneNumberObject->getVisibility($phoneNumberRow) . '" />';
-										$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#address_row_'. $token . '\'); return false;">Remove</a>';
+										$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#phone_number_row_'. $token . '\'); return false;">Remove</a>';
 									$out .= '</div>';
 								$out .= '</div>';
 								
@@ -698,8 +698,8 @@ class cnEntryForm
 								if ($emailObject->getAddress($emailRow) != null)
 								{
 								$token = $form->token($entry->getId());
-								$out .= '<div class="form-field connectionsform email">';
-									$out .= '<div class="email_address_row" id="email_address_row_'  . $token . '">';
+								$out .= '<div class="form-field connectionsform email" id="email_address_row_'  . $token . '">';
+									$out .= '<div class="email_address_row">';
 										$out .= $form->buildSelect('email[' . $token . '][type]', $this->defaultEmailTypes, $emailObject->getType($emailRow));
 										$out .= '<input type="text" name="email[' . $token . '][address]" value="' . $emailObject->getAddress($emailRow) . '" style="width: 30%"/>';
 										$out .= '<input type="hidden" name="email[' . $token . '][visibility]" value="' . $emailObject->getVisibility($emailRow) . '" />';
@@ -745,8 +745,8 @@ class cnEntryForm
 								if ($imObject->getId($imRow) != null)
 								{
 								$token = $form->token($entry->getId());
-								$out .= '<div class="form-field connectionsform im">';
-									$out .= '<div class="im_row" id="im_row_'  . $token . '">';
+								$out .= '<div class="form-field connectionsform im" id="im_row_'  . $token . '">';
+									$out .= '<div class="im_row">';
 										$out .= $form->buildSelect('im[' . $token . '][type]', $this->defaultIMTypes, $imObject->getType($imRow));
 										$out .= '<input type="text" name="im[' . $token . '][id]" value="' . $imObject->getId($imRow) . '" style="width: 30%"/>';
 										$out .= '<input type="hidden" name="im[' . $token . '][visibility]" value="' . $imObject->getVisibility($imRow) . '" />';
