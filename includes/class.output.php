@@ -304,6 +304,11 @@ class cnOutput extends cnEntry
 		return '<div class="note">' . $this->getNotes() . '</div>' . "\n";
 	}
 	
+	public function getBioBlock()
+	{
+		return '<div class="bio">' . $this->getBio() . '</div>' . "\n";
+	}
+	
 	public function getRevisionDateBlock()
 	{
 		return '<span class="rev">' . date('Y-m-d', strtotime($this->getUnixTimeStamp())) . 'T' . date('H:i:s', strtotime($this->getUnixTimeStamp())) . 'Z' . '</span>' . "\n";
