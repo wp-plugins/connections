@@ -708,6 +708,9 @@ function connectionsShowHelpPage()
 	
 	<p>'entry-&gt;getNotesBlock()<code>Returns the notes in
 	hCard compatible format wrapped in a</code>`.</p>
+	
+	<p>'entry-&gt;getBioBlock()<code>Returns the notes in
+	hCard compatible format wrapped in a</code>`.</p>
 
 	<pre>
 	<code>entry-&gt;getRevisionDateBlock()</code>
