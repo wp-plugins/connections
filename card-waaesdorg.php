@@ -43,15 +43,35 @@
 				jQuery("a#close_note_link_<?php echo $entry->getId(); ?>").hide();
 				jQuery("#note_block_<?php echo $entry->getId(); ?>").fadeOut();
 				jQuery("a#note_link_<?php echo $entry->getId(); ?>").fadeIn();
-				}); return false' style="display: none;">Hide Academic/Scientific Speciality</a>
+				}); return false' style="display: none;">Hide Academic &#47; Scientific Speciality</a>
 				
 				<a href="#" id="note_link_<?php echo $entry->getId(); ?>" onclick='jQuery("a#note_link_<?php echo $entry->getId(); ?>").live("click", function(e){
 				jQuery("a#note_link_<?php echo $entry->getId(); ?>").hide();
 				jQuery("#note_block_<?php echo $entry->getId(); ?>").fadeIn();
 				jQuery("a#close_note_link_<?php echo $entry->getId(); ?>").fadeIn();
-				}); return false'>Show Academic/Scientific Speciality</a> | 
+				}); return false'>Show Academic &#47; Scientific Speciality</a>
+				
+				<?php
+					} 
+					if ($entry->getBio() != '' && $entry->getNotes() != '') echo ' | ';
+				?>
+				<?php if ($entry->getBio() != '') { ?>
+				
+				<a href="#" id="close_bio_link_<?php echo $entry->getId(); ?>" onclick='jQuery("a#close_bio_link_<?php echo $entry->getId(); ?>").live("click", function(e){
+				jQuery("a#close_bio_link_<?php echo $entry->getId(); ?>").hide();
+				jQuery("#bio_block_<?php echo $entry->getId(); ?>").fadeOut();
+				jQuery("a#bio_link_<?php echo $entry->getId(); ?>").fadeIn();
+				}); return false' style="display: none;">Hide Bio</a>
+				
+				<a href="#" id="bio_link_<?php echo $entry->getId(); ?>" onclick='jQuery("a#bio_link_<?php echo $entry->getId(); ?>").live("click", function(e){
+				jQuery("a#bio_link_<?php echo $entry->getId(); ?>").hide();
+				jQuery("#bio_block_<?php echo $entry->getId(); ?>").fadeIn();
+				jQuery("a#close_bio_link_<?php echo $entry->getId(); ?>").fadeIn();
+				}); return false'>Show Bio</a>
 				
 				<?php } ?>
+				
+				<?php echo $entry->returnToTopAnchor() ?>
 				
 	        </td>
 	    </tr>
@@ -61,7 +81,12 @@
 				<?php 
 					if ($entry->getNotes() != '')
 					{
-						echo '<div id="note_block_' . $entry->getId() . '" style="display: none; margin: 10px 0 0 0;">' . $entry->getNotesBlock() . '</div>';
+						echo '<div id="note_block_' . $entry->getId() . '" style="display: none; margin: 10px 0 0 0;"><strong>Academic&#47;Scientific Speciality</strong><br />' . $entry->getNotesBlock() . '</div>';
+					}
+					
+					if ($entry->getBio() != '')
+					{
+						echo '<div id="bio_block_' . $entry->getId() . '" style="display: none; margin: 10px 0 0 0;"><strong>Biography</strong><br />' . $entry->getBioBlock() . '</div>';
 					}
 				?>
 			</td>
