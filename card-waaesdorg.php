@@ -61,13 +61,13 @@
 				jQuery("a#close_note_link_<?php echo $entry->getId(); ?>").hide();
 				jQuery("#note_block_<?php echo $entry->getId(); ?>").fadeOut();
 				jQuery("a#note_link_<?php echo $entry->getId(); ?>").fadeIn();
-				}); return false' style="display: none;">Hide Academic &#47; Scientific Speciality</a>
+				}); return false' style="display: none;">Hide Specialization</a>
 				
 				<a href="#" id="note_link_<?php echo $entry->getId(); ?>" onclick='jQuery("a#note_link_<?php echo $entry->getId(); ?>").live("click", function(e){
 				jQuery("a#note_link_<?php echo $entry->getId(); ?>").hide();
 				jQuery("#note_block_<?php echo $entry->getId(); ?>").fadeIn();
 				jQuery("a#close_note_link_<?php echo $entry->getId(); ?>").fadeIn();
-				}); return false'>Show Academic &#47; Scientific Speciality</a>
+				}); return false'>Show Specialization</a>
 				
 				<?php
 					} 
