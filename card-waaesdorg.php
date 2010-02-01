@@ -2,28 +2,46 @@
 	<table width="100%" border="0px" bgcolor="#FFFFFF" bordercolor="#E3E3E3" cellspacing="0px" cellpadding="0px" style="width: 100%">
 	    <tr>
 	        <td align="left" width="55%" valign="top">
-	        	<?php echo $entry->getCardImage() ?>
-			
-				<div style="clear:both; margin: 0 5px;">
+	        	<div style="clear:both; margin: 0 5px;">
 					<div style="margin-bottom: 10px;">
 						<span style="font-size:larger;font-variant: small-caps"><strong><?php echo $entry->getFullFirstLastNameBlock() ?></strong></span><br />
 						
 						<?php echo $entry->getTitleBlock() ?>
-						<?php echo $entry->getOrgUnitBlock() ?>
+						<?php
+							if ($entry->getOrganization() || $entry->getDepartment()) echo '<div class="org">' . "\n";
+							if ($entry->getOrganization() && $entry->getEntryType() != 'organization') echo '<span class="organization-name">' . $entry->getOrganization() . '</span><br />' . "\n";
+							if ($entry->getDepartment()) echo '<strong><span class="organization-unit">' . $entry->getDepartment() . '</span></strong><br />' . "\n";
+							if ($entry->getOrganization() || $entry->getDepartment()) echo '</div>' . "\n";
+						?>
 					</div>
 					
 					<?php echo $entry->getAddressBlock() ?>
 				</div>
 	        </td>
 	        <td align="right" valign="top" style="text-align: right;">
-	        	<div style="clear:both; margin: 5px 5px;">
+	        	<?php echo $entry->getCardImage() ?>
+				
+				<div style="clear:both; margin: 5px 5px;">
 		        	<?php echo $entry->getConnectionGroupBlock() ?>
 					
 					<?php echo $entry->getPhoneNumberBlock() ?>
 					<?php echo $entry->getEmailAddressBlock() ?>
 					
 					<?php echo $entry->getImBlock() ?>
-					<?php echo $entry->getWebsiteBlock() ?>
+					
+					<?php
+						if ($entry->getWebsites())
+						{
+							echo '<div style="margin-bottom: 10px;" class="websites">';
+							foreach ($entry->getWebsites() as $website)
+							{
+								if ($website['address'] != null) echo '<a class="url" href="' . $website['address'] . '" target="_blank">Website</a>' . "\n";
+								break; // Only show the first stored web address
+							}
+							echo '</div>';
+						}
+					?>
+					
 					
 					<?php echo $entry->getBirthdayBlock('F j') ?>
 					<?php echo $entry->getAnniversaryBlock() ?>
@@ -33,7 +51,7 @@
 	    
 	    <tr>
 	        <td valign="bottom">
-	        	<?php echo $vCard->download() ?><?php if (!empty($anchorOut)) echo ' | ' . $anchorOut; ?>
+	        	<?php echo $vCard->download() ?>
 	        </td>
 			<td align="right" valign="bottom"  style="text-align: right;">
 				
