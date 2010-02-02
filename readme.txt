@@ -33,11 +33,8 @@ Connections is a simple to use address book system but is also very versatile. Y
 * Download the vCard of an individual entry that can be imported into you email application.
 
 = New features this version: =
-* Category support.
-* Redesigned entry input form.
-* Support for social media ids/links
-* Middle name input for an individual.
-* Capturing more meta data when added/updating entries; date added, added by, last edited by.
+* RTE for the Bio and Notes fields
+* Custom ordering shortcode attribute.
 
 = New features coming in the next version: =
 * Add honorable pre/suffix
