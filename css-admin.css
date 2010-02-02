@@ -1,5 +1,9 @@
-div#toc ol  {
+div#help ol  {
 	list-style-type: decimal !important;
+	padding-left: 40px !important;
+}
+
+div#help ul  {
 	padding-left: 40px !important;
 }
 

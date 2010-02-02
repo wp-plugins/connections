@@ -99,27 +99,29 @@ function connectionsShowHelpPage()
 	<p>This shortcode has several many options:</p>
 	
 	<ol>
-		<li>id</li>
+		<li><a href="#cn_attr_id">id</a></li>
 			
-		<li>category</li>
+		<li><a href="#cn_attr_category">category</a></li>
 	
-		<li>private_override</li>
+		<li><a href="#cn_attr_private_override">private_override</a></li>
 			
-		<li>public_override</li>
+		<li><a href="#cn_attr_public_override">public_override</a></li>
 	
-		<li>show_alphaindex</li>
+		<li><a href="#cn_attr_show_alphaindex">show_alphaindex</a></li>
 			
-		<li>repeat_alphaindex</li>
+		<li><a href="#cn_attr_repeat_alphaindex">repeat_alphaindex</a></li>
 			
-		<li>show_alphahead</li>
+		<li><a href="#cn_attr_show_alphahead">show_alphahead</a></li>
 	
-		<li>list_type</li>
+		<li><a href="#cn_attr_list_type">list_type</a></li>
 	
-		<li>custom_template</li>
+		<li><a href="#cn_attr_custom_template">custom_template</a></li>
 	
-		<li>template_name</li>
+		<li><a href="#cn_attr_template_name">template_name</a></li>
+		
+		<li><a href="#cn_attr_order_by">order_by</a> <strong><em>sort</em></strong></li>
 	
-		<li>last_name <strong><em>filter</em></strong></li>
+		<li><a href="#cn_attr_filters">last_name</a> <strong><em>filter</em></strong></li>
 	
 		<li>title <strong><em>filter</em></strong></li>
 	
@@ -136,10 +138,10 @@ function connectionsShowHelpPage()
 		<li>country <strong><em>filter</em></strong></li>
 	</ol>
 	
-	<p>The <em>id</em> option allows you to show the
-	contact info for a single entry or multiple specific entries.
-	To show multiple specific entries list all entries to be displayed
-	bi id number separated by commas within single quotes. Default is to show all
+	<p><a name="cn_attr_id"></a>The <em>id</em> option allows you to show the
+	entry details for a single entry or multiple specific entries.
+	To show multiple specific entries, list all the entries to be displayed
+	by their <em>id</em> number separated by commas within single quotes. Default is to show all
 	public and/or private entries in the list. The ID can
 	be found in the admin by showing the details for an
 	entry. It will be labeled <strong>Entry ID:</strong></p>
@@ -148,7 +150,11 @@ function connectionsShowHelpPage()
 	<code>[connections_list id=2]</code>
 	</pre>
 	
-	<p>The <em>category</em> option allows you to show entries within a specific category
+	<pre>
+	<code>[connections_list id='2,12,37']</code>
+	</pre>
+	
+	<p><a name="cn_attr_category"></a>The <em>category</em> option allows you to show entries within a specific category
 	and all children categories. The category ID can be found on the Category page in the admin. 
 	the default is to show all available categories.</p>
 	
@@ -156,7 +162,7 @@ function connectionsShowHelpPage()
 	<code>[connections_list category=12]</code>
 	</pre>
 	
-	<p>The <em>private_override</em> option allows you to
+	<p><a name="cn_attr_private_override"></a>The <em>private_override</em> option allows you to
 	show the a contact list including all private entries
 	whether the user is logged into your site or not,
 	but the admin can choose to remove private access and use the role options to choose
@@ -170,7 +176,7 @@ function connectionsShowHelpPage()
 	<code>[connections_list id=2 private_override='true']</code>
 	</pre>
 	
-	<p>The <em>public_override</em> option allows you to
+	<p><a name="cn_attr_public_override"></a>The <em>public_override</em> option allows you to
 	show the a contact list including all public entries
 	whether the user is logged into your site or not. By default all entries
 	set to public would be displayed to site visitors whether they were logged in or not,
@@ -181,7 +187,7 @@ function connectionsShowHelpPage()
 	<code>[connections_list public_override='true']</code>
 	</pre>
 	
-	<p>The <em>show_alphaindex</em> option inserts an A
+	<p><a name="cn_attr_show_alphaindex"></a>The <em>show_alphaindex</em> option inserts an A
 	thru Z anchor list at the head of the entry list. This
 	is useful if you have many entries.</p>
 
@@ -189,7 +195,7 @@ function connectionsShowHelpPage()
 	<code>[connections_list show_alphaindex='true']</code>
 	</pre>
 	
-	<p>The <em>repeat_alphaindex</em> option inserts an A
+	<p><a name="cn_attr_repeat_alphaindex"></a>The <em>repeat_alphaindex</em> option inserts an A
 	thru Z anchor list at the beginning of every character group.
 	NOTE: the alpha index will only repeat if the <em>show_alphaindex</em>
 	shortcode attribute is set to true</p>
@@ -198,63 +204,60 @@ function connectionsShowHelpPage()
 	<code>[connections_list repeat_alphaindex='true']</code>
 	</pre>
 	
-	<p>The <em>show_alphahead</em> option inserts the current character
+	<p><a name="cn_attr_show_alphahead"></a>The <em>show_alphahead</em> option inserts the current character
 	at the beginning of each character group.</p>
 
 	<pre>
 	<code>[connections_list show_alphahead='true']</code>
 	</pre>
 	
-	<p>The <em>list_type</em> option allows you to show all
+	<p><a name="cn_attr_list_type"></a>The <em>list_type</em> option allows you to show all
 	entries or you can choose to show only individuals,
 	organizations and connection groups.</p>
-
+	
+	<p>Use to show all entry types.</p>
 	<pre>
 	<code>[connections_list list_type='all']</code>
 	</pre>
 	
-	<p>Use to show all entry types.</p>
-
+	
+	<p>Use to show only entries set as an individual.</p>
 	<pre>
 	<code>[connections_list list_type='individual']</code>
 	</pre>
 	
-	<p>Use to show only entries set as an individual.</p>
-
+	
+	<p>Use to show only entries set as an organization.</p>
 	<pre>
 	<code>[connections_list list_type='organization']</code>
 	</pre>
 	
-	<p>Use to show only entries set as an organization.</p>
 	
+	<p>Use to show only entries set as a Connection Group.</p>
 	<pre>
 	<code>[connections_list list_type='connection_group']</code>
 	</pre>
 	
-	<p>Use to show only entries set as a Connection Group.</p>
+	
 
-	<p>An alternate list view has been provided -- profile
-	view. This view can be used for a single entry or the
-	list. An alternate card view has also been provided --
-	card-single. This template can be used when you wish to
-	show a single entry. Use the <code>template_name</code>
-	option and set to one of the provide alternate
-	templates. See the examples below.</p>
+	<p>Two alternate template have been provieded. Use the <code>template_name</code>
+	option and set it to one of the alternate templates. See the examples.</p>
 
+	<p>This will ouput the list in the profile view.</p>
 	<pre>
 	<code>[connections_list template_name='profile']</code>
 	</pre>
 	
-	<p>This will ouput the list in the profile view.</p>
-
+	
+	<p>This will ouput entry id 2 using the card-single
+	template.</p>
 	<pre>
 	<code>[connections_list id=2 template_name='card-single']</code>
 	</pre>
 	
-	<p>This will ouput entry id 2 using the card-single
-	template.</p>
+	
 
-	<p>If you create a custom template you need to set two
+	<p><a name="cn_attr_custom_template"></a><a name="cn_attr_template_name"></a>If you create a custom template you need to set two
 	options <code>custom_template</code> and
 	<code>template_name</code> as such. For example, say
 	you create a custom template named my-template.php. The
@@ -269,8 +272,52 @@ function connectionsShowHelpPage()
 	template and the custom template must be saved in the
 	<code>./wp-content/connections_templates</code>
 	directory/folder.</p>
-
-	<p>The filter attributes can be used one at a time per
+	
+	<p><a name="cn_attr_order_by"></a>The <em>order_by</em> attribute can be used to apply a custom sort to the list.
+	Here are the available sort fields and attributes.</p>
+	<p><strong>Sort fields:</strong>
+		<ul>
+			<li>first_name</li>
+			<li>last_name</li>
+			<li>organization</li>
+			<li>department</li>
+			<li>city</li>
+			<li>state</li>
+			<li>zipcode</li>
+			<li>country</li>
+			<li>birthday</li>
+			<li>anniversary</li>
+		</ul>
+	</p>
+	<p><strong>Order Flags:</strong>
+		<ul>
+			<li>SORT_ACS</li>
+			<li>SORT_DESC</li>
+		</ul>
+	</p>
+	<p><strong>Sort Types:</strong>
+		<ul>
+			<li>SORT_REGULAR</li>
+			<li>SORT_NUMERIC</li>
+			<li>SORT_STRING</li>
+		</ul>
+	</p>
+	<p>You can put your fields in order to be sorted separated by commas. You can also add the flag to tell it to be sorted ascending or descending like so:</p>
+	
+	<pre>
+	<code>order_by='state|SORT_ACS,zipcode|SORT_DESC'</code>
+	</pre>
+	
+	<p>Notice that the flag is right after the field separated by a 'pipe' | . This character is usually placed above the backslash key.</p>
+	<p>It will automatically try to figure the type of field that is being sorted. For example, last_name will be sorted as a string and zipcode as numeric. Lets say for some reason you want to force the zipcode to sort as a string:</p>
+	
+	<pre>
+	<code>order_by='state|SORT_ACS|SORT_STRING,zipcode|SORT_DESC'</code>
+	</pre>
+	
+	<p>You would add another pipe and add the sort type. This can be mixed and match for each field you wish to sort by.</p>
+	
+	<p><a name="cn_attr_filters"></a>The filter attributes can be used one at a time per
 	list or in combinations per list and are case
 	sensitive. See the examples below.</p>
 

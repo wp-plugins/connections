@@ -83,7 +83,7 @@ Connections is a simple to use address book system but is also very versatile. Y
 * BUG: Fixed unable to remove phone numbers.
 * BUG: Fixed when removing a field from an entry that the entire field is removed leaving no remnants.
 * Add support for basic HTML and RTE for the Notes and Bio fields using the jwysiwyg 0.6 jOquery plug-in.
-* Add order_by shortcode attribute for custom ordering of entries.
+* Add order_by shortcode attribute for custom ordering of entries and updated the help page.
 * Add support for the CSV premium add-on.
 * Add the missing getBioBlock method to the output class.
 
