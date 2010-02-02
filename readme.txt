@@ -86,6 +86,7 @@ Connections is a simple to use address book system but is also very versatile. Y
 * Add order_by shortcode attribute for custom ordering of entries and updated the help page.
 * Add support for the CSV premium add-on.
 * Add the missing getBioBlock method to the output class.
+* Enhanced the help page.
 
 = 0.6.1 1/19/2010 =
 * BUG: Fixed a bug when initializing the settings so they are not reset on activation of the plugin.
