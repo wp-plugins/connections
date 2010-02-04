@@ -76,7 +76,7 @@ Connections is a simple to use address book system but is also very versatile. Y
 
 == Changelog ==
 
-= 0.6.2 2/2/2010 =
+= 0.6.2.1 2/3/2010 =
 * BUG: Fixed fatal error when using the shortcode attribute repeat_alphaindex.
 
 = 0.6.2 2/2/2010 =
