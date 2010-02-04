@@ -137,7 +137,7 @@ function _connections_list($atts, $content=null) {
 			if ($currentLetter != $previousLetter && $atts['id'] == null) {
 				if ($atts['show_alphaindex']) $setAnchor = '<a name="' . $currentLetter . '"></a>';
 				
-				if ($atts['show_alphaindex'] && $atts['repeat_alphaindex']) $setAnchor .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . _build_alphaindex() . "</div>";
+				if ($atts['show_alphaindex'] && $atts['repeat_alphaindex']) $setAnchor .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex() . "</div>";
 				
 				if ($atts['show_alphahead']) $setAnchor .= '<h4 class="cn-alphahead">' . $currentLetter . '</h4>';
 				$previousLetter = $currentLetter;
