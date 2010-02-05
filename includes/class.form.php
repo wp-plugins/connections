@@ -232,8 +232,8 @@ class cnEntryForm
 	
 	private $defaultEmailTypes  =   array
 									(
-										'personal'=>'Personal',
-										'work'=>'Work'
+										'personal'=>'Personal Email',
+										'work'=>'Work Email'
 									);
 	
 	private $defaultEmailValues = 	array

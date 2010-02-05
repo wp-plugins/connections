@@ -796,7 +796,7 @@ function connectionsShowHelpPage()
 	
 	<h3><a name="tocIdSupport"></a>Support</h3>
 	
-	<p>If support is needed go to <a href="http://www.connection-pro.com">connection-pro.com</a> and submit a help desk ticket.</p>
+	<p>If support is needed go to <a href="http://www.connections-pro.com">connections-pro.com</a> and submit a help desk ticket.</p>
 	
 	
 	<h3><a name="tocIdFAQ"></a>FAQ</h3>
