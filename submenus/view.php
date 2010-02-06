@@ -7,10 +7,6 @@ function connectionsShowViewPage()
 		
 	get_currentuserinfo();
 	
-	/**
-	 * @TODO: Scrub code to use global $options instead of defining a new object.
-	 */
-	//$plugin_options = new cnOptions();
 	
 	$form = new cnFormObjects();
 	$categoryObjects = new cnCategoryObjects();
@@ -25,44 +21,8 @@ function connectionsShowViewPage()
 			 */
 			if (current_user_can('connections_add_entry'))
 			{
-				/*
-				 * Make sure the action token and $_SESSION token are set and equal before
-				 * performing the copy. This should hopefully prevent user from accessing
-				 * entries for which they do not have permission
-				 */
-				/*if (isset($_GET['id']))
-				{
-					$id = $_GET['id'];
-				}
-				else
-				{
-					$error = true;
-					$connections->setErrorMessage('form_no_entry_id');
-				}
-				
-				if (isset($_GET['token']))
-				{
-					$token = $_GET['token'];
-				}
-				else
-				{
-					$error = true;
-					$connections->setErrorMessage('form_no_entry_token');
-				}
-				
-				if (isset($_SESSION['cn_session']['formTokens']['copy_' . $_GET['id']]['token']))
-				{
-					$sessionToken = $_SESSION['cn_session']['formTokens']['copy_' . $_GET['id']]['token'];
-				}
-				else
-				{
-					$error = true;
-					$connections->setErrorMessage('form_no_session_token');
-				}*/
-				
 				$id = attribute_escape($_GET['id']);
 				if ($form->tokenCheck('copy_' . $id, $_GET['token']))
-				//if ($sessionToken === $token && !$error)
 				{
 					$entryForm = new cnEntryForm();
 					$form = new cnFormObjects();
@@ -81,10 +41,7 @@ function connectionsShowViewPage()
 									$out .= '<input type="hidden" name="formId" value="entry_form" />';
 									$out .= '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
 									
-									/*$out .= '<p class="submit">';
-										$out .= '<input  class="button-primary" type="submit" name="save" value="Save" />';
-										$out .= '<a href="admin.php?page=connections" class="button button-warning">Cancel</a>';
-									$out .= '</p>';*/
+									
 								$out .= '</form>';
 							$out .= '</div>';
 						$out .= '</div>';
@@ -94,10 +51,6 @@ function connectionsShowViewPage()
 					$showEntryList = false;
 					
 					echo $out;
-				}
-				else
-				{
-					$connections->setErrorMessage('form_token_mismatch');
 				}
 			}
 			else
@@ -117,7 +70,7 @@ function connectionsShowViewPage()
 				 * performing the copy. This should hopefully prevent user from accessing
 				 * entries for which they do not have permission
 				 */			
-				$id = attribute_escape($_GET['id']);
+				$id = esc_attr($_GET['id']);
 				if ($form->tokenCheck('edit_' . $id, $_GET['token']))
 				{
 					$entryForm = new cnEntryForm();
@@ -169,18 +122,10 @@ function connectionsShowViewPage()
 			 */
 			if (current_user_can('connections_add_entry'))
 			{
-				/*
-				 * Check whether the token for the current entry equal the token stored in the $_SESSION.
-				 */
-				if ($_POST['save'] && $_SESSION['cn_session']['formTokens']['entry_form']['token'] === $_POST['token'])
+				if ($_POST['save'] && $form->tokenCheck('entry_form', $_POST['token']))
 				{
 					$entryForm = new cnEntryForm();
 					echo $entryForm->processEntry();
-					unset($_SESSION['cn_session']['formTokens']);
-				}
-				else
-				{
-					$connections->setErrorMessage('form_token_mismatch');
 				}
 				
 				$showEntryList = true;
@@ -197,18 +142,10 @@ function connectionsShowViewPage()
 			 */
 			if (current_user_can('connections_edit_entry'))
 			{
-				/*
-				 * Check whether the token for the current entry equal the token stored in the $_SESSION.
-				 */
-				if ($_POST['update'] && $_SESSION['cn_session']['formTokens']['entry_form']['token'] === $_POST['token'])
+				if ($_POST['update'] && $form->tokenCheck('entry_form', $_POST['token']))
 				{
 					$entryForm = new cnEntryForm();
 					echo $entryForm->processEntry();
-					unset($_SESSION['cn_session']['formTokens']);
-				}
-				else
-				{
-					$connections->setErrorMessage('form_token_mismatch');
 				}
 				
 				$showEntryList = true;
@@ -234,10 +171,7 @@ function connectionsShowViewPage()
 					 */
 					if (current_user_can('connections_edit_entry'))
 					{
-						/*
-						 * Check whether the token for the current entry equal the token stored in the $_SESSION.
-						 */
-						if ($_SESSION['cn_session']['formTokens']['do_action']['token'] === $_POST['token'])
+						if ($form->tokenCheck('do_action', $_POST['token']))
 						{
 							
 							foreach ($_POST['entry'] as $id)
@@ -251,8 +185,6 @@ function connectionsShowViewPage()
 							}
 							
 							$connections->setSuccessMessage('form_entry_visibility_bulk');
-							
-							unset($_SESSION['cn_session']['formTokens']);
 						}
 					}
 					else

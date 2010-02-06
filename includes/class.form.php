@@ -65,7 +65,7 @@ class cnFormObjects
 		
 		if (isset($_SESSION['cn_session']['formTokens'][$tokenID]['token']))
 		{
-			$sessionToken = attribute_escape($_SESSION['cn_session']['formTokens'][$tokenID]['token']);
+			$sessionToken = esc_attr($_SESSION['cn_session']['formTokens'][$tokenID]['token']);
 		}
 		else
 		{
@@ -87,6 +87,7 @@ class cnFormObjects
 		else
 		{
 			$connections->setErrorMessage('form_token_mismatch');
+			return FALSE;
 		}
 				
 	}

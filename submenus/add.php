@@ -24,7 +24,8 @@ function connectionsShowAddPage()
 		$entryForm = new cnEntryForm();
 		$form = new cnFormObjects();
 		
-		if ($_POST['save'] && $_SESSION['cn_session']['formTokens']['entry_form']['token'] === $_POST['token'])
+		//if ($_POST['save'] && $_SESSION['cn_session']['formTokens']['entry_form']['token'] === $_POST['token'])
+		if ($_POST['save'] && $form->tokenCheck('entry_form', $_POST['token']))
 		{
 			echo $entryForm->processEntry();
 		}
@@ -51,15 +52,8 @@ function connectionsShowAddPage()
 						echo $entryForm->displayForm();
 						echo '<input type="hidden" name="formId" value="entry_form" />';
 						echo '<input type="hidden" name="token" value="' . $form->token("entry_form") . '" />';
+						echo $form->close();
 					?>
-						<!--<div class="stuffbox" id="poststuff">
-							<h3>Submit</h3>
-							<input class="button-primary" type="submit" name="save" value="Add Address" />
-						</div>
-						<p class="submit">
-							<input class="button-primary" type="submit" name="save" value="Add Address" />
-						</p>-->
-					<?php echo $form->close(); ?>
 				</div>
 			</div>
 		</div>
