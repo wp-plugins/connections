@@ -5,11 +5,11 @@ Tags: addresses, address book, addressbook, bio, bios, biographies, business, bu
 Requires at least: 2.8
 Tested up to: 2.9
 Stable tag: 0.6.2.1
-Connections is a simple to use addressbook or business directory that is highly customizable.
+Connections is a simple to use addressbook, business, staff directory that is highly customizable.
 
 == Description ==
 
-Connections is a simple to use address book system but is also very versatile. You can use it to create church directories, business directories and even profiles using the default templates. If the default layouts don’t suit your needs you can easily create your own custom template. Want to show a list of upcoming birthdays and anniversaries, no problem, you can do that too. Take a look at the screen shots and the samples on this site to see all Connections can do.
+Connections is a simple to use address book system but is also very versatile. You can use it to create a church directory, business directory, staff directory and even profiles pages using the default templates. If the default layouts don’t suit your needs you can easily create your own custom template. Want to show a list of upcoming birthdays and anniversaries, no problem, you can do that too. Take a look at the screen shots and the samples on this site to see all Connections can do.
 
 = Admin Features =
 * Built-in help page
