@@ -5,6 +5,8 @@
  */
 class cnFormObjects
 {
+	private $nonceBase = 'connections';
+	
 	/**
 	 * @todo
 	 * Finish adding form tag attributes.
@@ -22,7 +24,7 @@ class cnFormObjects
 		if ($attr['enctype'] != null) $enctype = 'enctype="' . $attr['enctype'] . '" ';
 		if ($attr['method'] != null) $method = 'method="' . $attr['method'] . '" ';
 				
-		return '<form ' . $action . $method . $enctype . '>';
+		echo '<form ' . $action . $method . $enctype . '>';
 	}
 	
 	/**
@@ -30,9 +32,9 @@ class cnFormObjects
 	 */
 	public function close()
 	{
-		return '</form>';
+		echo '</form>';
 	}
-	
+		
 	//Function inspired from:
 	//http://www.melbournechapter.net/wordpress/programming-languages/php/cman/2006/06/16/php-form-input-and-cross-site-attacks/
 	/**

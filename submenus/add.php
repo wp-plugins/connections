@@ -21,14 +21,21 @@ function connectionsShowAddPage()
 	}
 	else
 	{
+		global $connections;
+		
 		$entryForm = new cnEntryForm();
 		$form = new cnFormObjects();
 		
-		//if ($_POST['save'] && $_SESSION['cn_session']['formTokens']['entry_form']['token'] === $_POST['token'])
-		if ($_POST['save'] && $form->tokenCheck('entry_form', $_POST['token']))
+		//if ($_POST['save'] && $form->tokenCheck('entry_form', $_POST['token']))
+		/*if ($_POST['save'])
 		{
+			check_admin_referer($form->getNonce('add_entry'), '_cn_wpnonce');
 			echo $entryForm->processEntry();
-		}
+			print_r($_SERVER['REQUEST_URI']);
+			$_SERVER['REQUEST_URI'] = remove_query_arg(array('action'), $_SERVER['REQUEST_URI']);
+			print_r($_SERVER['REQUEST_URI']);
+			wp_redirect( wp_get_referer() . '?added=true' );
+		}*/
 	
 	?>
 		<div class="wrap">
@@ -48,11 +55,12 @@ function connectionsShowAddPage()
 									 'enctype' => 'multipart/form-data',
 									 );
 						
-						echo $form->open($attr);
+						$form->open($attr);
+						$connections->tokenField('add_entry');
 						echo $entryForm->displayForm();
 						echo '<input type="hidden" name="formId" value="entry_form" />';
 						echo '<input type="hidden" name="token" value="' . $form->token("entry_form") . '" />';
-						echo $form->close();
+						$form->close();
 					?>
 				</div>
 			</div>

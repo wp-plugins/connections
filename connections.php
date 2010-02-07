@@ -91,6 +91,9 @@ if (!class_exists('connectionsLoad'))
 				// Calls the methods to load the admin scripts and CSS.
 				add_action('admin_print_scripts', array(&$this, 'loadAdminScripts') );
 				add_action('admin_print_styles', array(&$this, 'loadAdminStyles') );
+				
+				// Process any action done in the admin.
+				$this->controllers();
 			}
 			else
 			{
@@ -697,6 +700,98 @@ if (!class_exists('connectionsLoad'))
 				break;
 			}
 			
+		}
+		
+		/**
+		 * Veryfy and process requested actions in the admin.
+		 */
+		private function controllers()
+		{
+			switch ($_GET['page'])
+			{
+				/*case 'connections':
+					include_once ( dirname (__FILE__) . '/submenus/view.php' );
+					connectionsShowViewPage();
+				break;*/
+				
+				case 'connections_add':
+					if ($_POST['save'] && $_GET['action'] === 'add')
+					{
+						check_admin_referer($this->getNonce('add_entry'), '_cn_wpnonce');
+						include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+						processEntry();
+						wp_redirect( wp_get_referer() . '&added=true' );
+					}
+				break;
+				
+				/*case 'connections_categories':
+					include_once ( dirname (__FILE__) . '/submenus/categories.php' );
+					connectionsShowCategoriesPage();
+				break;
+				
+				case 'connections_settings':
+					include_once ( dirname (__FILE__) . '/submenus/settings.php' );
+					connectionsShowSettingsPage();
+				break;
+				
+				case 'connections_roles':
+					include_once ( dirname (__FILE__) . '/submenus/roles.php' );
+					connectionsShowRolesPage();
+				break;
+				
+				case 'connections_help':
+					include_once ( dirname (__FILE__) . '/submenus/help.php' );
+					connectionsShowHelpPage();
+				break;*/
+			}
+		}
+		
+		/**
+		 * Retrives or displays the nonce field for forms using wp_nonce_field.
+		 * 
+		 * @param string $action Action name.
+		 * @param string $item [optional] Item name. Use when protecting multiple items on the same page.
+		 * @param string $name [optional] Nonce name.
+		 * @param bool $referer [optional] Whether to set and display the refer field for validation.
+		 * @param bool $echo [optional] Whether to display or return the hidden form field.
+		 * @return string Nonce field.
+		 */
+		public function tokenField($action, $item = FALSE, $name = '_cn_wpnonce', $referer = TRUE, $echo = TRUE)
+		{
+			if ($item == FALSE)
+			{
+				$token = wp_nonce_field($this->nonceBase . '_' . $action, $name, TRUE, FALSE);
+			}
+			else
+			{
+				$token = wp_nonce_field($this->nonceBase . '_' . $action . '_' . $item, $name, TRUE, FALSE);
+			}
+			
+			if ($echo) echo $token;
+			if ($referer) wp_referer_field($echo, 'previous');
+			
+			return $token;
+		}
+		
+		/**
+		 * Generate the complete nonce string, from the nonce base, the action and an item.
+		 * 
+		 * @param string $action Action name.
+		 * @param string $item [optional] Item name. Use when protecting multiple items on the same page.
+		 * @return string Nonce string.
+		 */
+		public function getNonce($action, $item = FALSE)
+		{
+			if ($item == FALSE)
+			{
+				$nonce = $this->nonceBase . '_' . $action;
+			}
+			else
+			{
+				$nonce = $this->nonceBase . '_' . $action . '_' . $item;
+			}
+			
+			return $nonce;
 		}
 	}
 	
