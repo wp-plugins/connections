@@ -93,6 +93,7 @@ function processEntry()
 				$error = '<p><strong>Entry could not be added.</strong></p>';
 			}
 			$success .= "<p><strong>Entry added.</strong></p> \n";
+			$connections->setSuccessMessage('entry_added');
 			//$entry->setID((int) $wpdb->insert_id);
 			$entryID = (int) $wpdb->insert_id;
 		break;
@@ -124,7 +125,7 @@ function processEntry()
 	}
 	else
 	{
-		unset($_SESSION['cn_session']['formTokens']);
+		//unset($_SESSION['cn_session']['formTokens']);
 		unset($entry);
 		
 		$message = '<div id="notice" class="error">';

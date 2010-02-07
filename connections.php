@@ -253,13 +253,14 @@ if (!class_exists('connectionsLoad'))
 		
 		public function displayMessages()
 		{
+			global $connections;
 			$output = null;
 			
-			//if (get_option('connections_messages'))
-			if (isset($_SESSION['cn_session']['messages']))
+			$messages = $connections->currentUser->getMessages();
+			print_r($messages);
+			if (isset($_SESSION['cn_session']['messages']) || !empty($messages))
 			{
-				//$messages = get_option('connections_messages');
-				$messages = $_SESSION['cn_session']['messages'];
+				if (!isset($messages)) $messages = $_SESSION['cn_session']['messages'];
 				
 				foreach ($messages as $message)
 				{
@@ -278,9 +279,9 @@ if (!class_exists('connectionsLoad'))
 					}
 				}
 			}
-			//delete_option('connections_messages');
 			unset($_SESSION['cn_session']['messages']);
-			return $output;
+			if ($_GET['display_messages'] === 'true') $connections->currentUser->resetMessages();
+			echo $output;
 		}
 		
 		/**
@@ -335,25 +336,32 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function setErrorMessage($errorMessage)
 		{
-			$messages = $_SESSION['cn_session']['messages'];
+			global $connections;
+			//$messages = $_SESSION['cn_session']['messages'];
 			
 			// If the error message is slready stored, no need to store it twice.
 			// Error supression is used incase no messages have been stored.
-			if (@!in_array(array('error' => $errorMessage), $messages))
+			/*if (@!in_array(array('error' => $errorMessage), $messages))
 			{
 				$_SESSION['cn_session']['messages'][]  = array('error' => $errorMessage);
+			}*/
+			
+			$messages = $connections->currentUser->getMessages();
+			// If the success message is slready stored, no need to store it twice.
+			if (!in_array(array('success' => $successMessage), $messages))
+			{
+				$connections->currentUser->setMessage(array('success' => $successMessage));
+				//print_r($messages);
 			}
 		}
 		
 		/**
 		 * Initiates the success messages for Connections using the WP_Error class.
+		 * 
 		 * @return null
 		 */
 		private function initSuccessMessages()
 		{
-			/**
-			 * @TODO: Add success codes.
-			 */
 			$this->successMessages = new WP_Error();
 			
 			$this->successMessages->add('form_entry_delete', 'The entry has been deleted.');
@@ -363,6 +371,8 @@ if (!class_exists('connectionsLoad'))
 			$this->successMessages->add('category_deleted', 'Category(ies) have been deleted.');
 			$this->successMessages->add('category_updated', 'Category has been updated.');
 			$this->successMessages->add('category_added', 'Category has been added.');
+			
+			$this->successMessages->add('entry_added', 'Entry has been added.');
 		}
 		
 		/**
@@ -382,13 +392,22 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function setSuccessMessage($successMessage)
 		{
-			$messages = $_SESSION['cn_session']['messages'];
+			global $connections;
+			//$messages = $_SESSION['cn_session']['messages'];
 			
 			// If the success message is slready stored, no need to store it twice.
 			// Error supression is used incase no messages have been stored.
-			if (@!in_array(array('success' => $successMessage), $messages))
+			/*if (@!in_array(array('success' => $successMessage), $messages))
 			{
 				$_SESSION['cn_session']['messages'][]  = array('success' => $successMessage);
+			}*/
+			
+			$messages = $connections->currentUser->getMessages();
+			// If the success message is slready stored, no need to store it twice.
+			if (!in_array(array('success' => $successMessage), $messages))
+			{
+				$connections->currentUser->setMessage(array('success' => $successMessage));
+				//print_r($messages);
 			}
 		}
 						
@@ -720,7 +739,7 @@ if (!class_exists('connectionsLoad'))
 						check_admin_referer($this->getNonce('add_entry'), '_cn_wpnonce');
 						include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
 						processEntry();
-						wp_redirect( wp_get_referer() . '&added=true' );
+						wp_redirect('admin.php?page=connections_add&display_messages=true');
 					}
 				break;
 				

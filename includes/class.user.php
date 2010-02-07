@@ -133,5 +133,33 @@ class cnUser
 		$user_meta['filter']['category'] = $id;
 		update_usermeta($this->ID, 'connections', $user_meta);
     }
+	
+	public function setMessage($message)
+	{
+		$user_meta = get_usermeta($this->ID, 'connections');
+		$user_meta['messages'][] = $message;
+		update_usermeta($this->ID, 'connections', $user_meta);
+	}
+	
+	public function getMessages()
+	{
+		$user_meta = get_usermeta($this->ID, 'connections');
+		
+		if (!empty($user_meta['messages']))
+		{
+			return $user_meta['messages'];
+		}
+		else
+		{
+			return array();
+		}
+	}
+	
+	public function resetMessages()
+	{
+		$user_meta = get_usermeta($this->ID, 'connections');
+		unset($user_meta['messages']);
+		update_usermeta($this->ID, 'connections', $user_meta);
+	}
 }
 ?>

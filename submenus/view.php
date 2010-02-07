@@ -209,7 +209,7 @@ function connectionsShowViewPage()
 	
 	if ($showEntryList === true)
 	{
-		echo $connections->displayMessages();
+		$connections->displayMessages();
 		
 		/*
 		 * Check whether user can view the entry list

@@ -36,7 +36,7 @@ function connectionsShowAddPage()
 			print_r($_SERVER['REQUEST_URI']);
 			wp_redirect( wp_get_referer() . '?added=true' );
 		}*/
-	
+		$connections->displayMessages();
 	?>
 		<div class="wrap">
 			<div id="icon-connections" class="icon32">
