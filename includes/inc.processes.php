@@ -37,12 +37,10 @@ function processEntry()
 	$entry->setVisibility($_POST['visibility']);
 									
 	if ($_FILES['original_image']['error'] != 4) {
+		
 		$image_proccess_results = processImages();
 		
-		$error = $image_proccess_results['error'];
-		$success = $image_proccess_results['success'];
-		
-		if (empty($error))
+		if ($image_proccess_results)
 		{
 			$entry->setImageLinked(true);
 			$entry->setImageDisplay(true);
@@ -88,168 +86,160 @@ function processEntry()
 	switch ($_GET['action'])
 	{
 		case 'add':
-			if ($entry->save() === FALSE)
+			if ($entry->save() == FALSE)
 			{
-				$error = '<p><strong>Entry could not be added.</strong></p>';
+				$connections->setErrorMessage('entry_added');
+				return FALSE;
 			}
-			$success .= "<p><strong>Entry added.</strong></p> \n";
-			$connections->setSuccessMessage('entry_added');
-			//$entry->setID((int) $wpdb->insert_id);
-			$entryID = (int) $wpdb->insert_id;
+			else
+			{
+				$connections->setSuccessMessage('entry_added');
+				$entryID = (int) $wpdb->insert_id;
+			}
 		break;
 		
 		case 'update':
-			if ($entry->update() === FALSE)
+			if ($entry->update() == FALSE)
 			{
-				$error = '<p><strong>Entry could not be updated.</strong></p>';
+				$connections->setErrorMessage('entry_updated');
+				return FALSE;
 			}
-			
-			$success .= "<p><strong>The entry has been updated.</strong></p> \n";
-			$entryID = (int) $entry->getId();
+			else
+			{
+				$connections->setSuccessMessage('entry_updated');
+				$entryID = (int) $entry->getId();
+			}
 		break;
 	}
 						
-	if (!$error)
-	{
-		/*
-		 * If the entry was added sucessfully, now the term realtionships wil be set.
-		 */
-		$connections->term->setTermRelationships($entryID, $_POST['entry_category'], 'category');
+	$connections->term->setTermRelationships($entryID, $_POST['entry_category'], 'category');
 		
-		unset($_SESSION['cn_session']['formTokens']);
-		unset($entry);
-		
-		$message = '<div id="message" class="updated fade">';
-			$message .= $success;
-		$message .= '</div>';
-	}
-	else
-	{
-		//unset($_SESSION['cn_session']['formTokens']);
-		unset($entry);
-		
-		$message = '<div id="notice" class="error">';
-			$message .= $error;
-		$message .= '</div>';
-	}	
+	unset($entry);
+	return TRUE;
 	
-	return $message;
 }
 
 function processImages()
 {
-	//global $current_user;
 	global $connections;
 	
-	//$plugin_options = new cnOptions();
 	// Uses the upload.class.php to handle file uploading and image manipulation.
 	
-		$process_image = new Upload($_FILES['original_image']);
-		$image['source'] = $process_image->file_src_name_body;
-		
-		if ($process_image->uploaded) {
-			// Saves the uploaded image with no changes to the wp_content/connection_images/ dir.
-			// If needed this will create the upload dir and chmod it.
-			$process_image->allowed				= array('image/jpeg','image/gif','image/png');
-			$process_image->auto_create_dir		= true;
-			$process_image->auto_chmod_dir		= true;
-			$process_image->file_safe_name		= true;
-			$process_image->file_auto_rename	= true;
-			$process_image->file_name_body_add= '_original';
-			$process_image->image_convert		= 'jpg';
-			$process_image->jpeg_quality		= 80;
-			$process_image->Process(CN_IMAGE_PATH);
-			if ($process_image->processed) {
-				$success .= "<p><strong>Uploaded image saved.</strong></p> \n";
-				//$image_names['original'] = $process_image->file_dst_name;
-				$image['original'] = $process_image->file_dst_name;
-			} else {
-				$error .= "<p><strong>Uploaded could not be saved to the destination folder.</strong></p> \n
-						   <p><strong>Error: </strong>" . $process_image->error . "</p> \n";
-			}
-			
-			// Creates the profile image and saves it to the wp_content/connection_images/ dir.
-			// If needed this will create the upload dir and chmod it.
-			$process_image->allowed				= array('image/jpeg','image/gif','image/png');
-			$process_image->auto_create_dir		= true;
-			$process_image->auto_chmod_dir		= true;
-			$process_image->file_safe_name		= true;
-			$process_image->file_auto_rename	= true;
-			$process_image->file_name_body_add= '_profile';
-			$process_image->image_convert		= 'jpg';
-			$process_image->jpeg_quality		= $connections->options->getImgProfileQuality();
-			$process_image->image_resize		= true;
-			$process_image->image_ratio_crop	= (bool) $connections->options->getImgProfileRatioCrop();
-			$process_image->image_ratio_fill	= (bool) $connections->options->getImgProfileRatioFill();
-			$process_image->image_y				= $connections->options->getImgProfileY();
-			$process_image->image_x				= $connections->options->getImgProfileX();
-			$process_image->Process(CN_IMAGE_PATH);
-			if ($process_image->processed) {
-				$success .= "<p><strong>Profile image created and saved.</strong></p> \n";
-				//$image_names['profile'] = $process_image->file_dst_name;
-				$image['profile'] = $process_image->file_dst_name;
-			} else {
-				$error .= "<p><strong>Profile image could not be created and/or saved to the destination folder.</strong></p> \n
-						   <p><strong>Error:</strong> " . $process_image->error . "</p> \n";
-			}						
-			
-			// Creates the entry image and saves it to the wp_content/connection_images/ dir.
-			// If needed this will create the upload dir and chmod it.
-			$process_image->allowed				= array('image/jpeg','image/gif','image/png');
-			$process_image->auto_create_dir		= true;
-			$process_image->auto_chmod_dir		= true;
-			$process_image->file_safe_name		= true;
-			$process_image->file_auto_rename	= true;
-			$process_image->file_name_body_add= '_entry';
-			$process_image->image_convert		= 'jpg';
-			$process_image->jpeg_quality		= $connections->options->getImgEntryQuality();
-			$process_image->image_resize		= true;
-			$process_image->image_ratio_crop	= (bool) $connections->options->getImgEntryRatioCrop();
-			$process_image->image_ratio_fill	= (bool) $connections->options->getImgEntryRatioFill();
-			$process_image->image_y				= $connections->options->getImgEntryY();
-			$process_image->image_x				= $connections->options->getImgEntryX();
-			$process_image->Process(CN_IMAGE_PATH);
-			if ($process_image->processed) {
-				$success .= "<p><strong>Entry image created and saved.</strong></p> \n";
-				//$image_names['entry'] = $process_image->file_dst_name;
-				$image['entry'] = $process_image->file_dst_name;
-			} else {
-				$error .= "<p><strong>Entry image could not be created and/or saved to the destination folder.</strong></p> \n
-						   <p><strong>Error:</strong> " . $process_image->error . "</p> \n";
-			}
-			
-			// Creates the thumbnail image and saves it to the wp_content/connection_images/ dir.
-			// If needed this will create the upload dir and chmod it.
-			$process_image->auto_create_dir		= true;
-			$process_image->auto_chmod_dir		= true;
-			$process_image->file_safe_name		= true;
-			$process_image->file_auto_rename	= true;
-			$process_image->file_name_body_add= '_thumbnail';
-			$process_image->image_convert		= 'jpg';
-			$process_image->jpeg_quality		= $connections->options->getImgThumbQuality();
-			$process_image->image_resize		= true;
-			$process_image->image_ratio_crop	= (bool) $connections->options->getImgThumbRatioCrop();
-			$process_image->image_ratio_fill	= (bool) $connections->options->getImgThumbRatioFill();
-			$process_image->image_y				= $connections->options->getImgThumbY();
-			$process_image->image_x				= $connections->options->getImgThumbX();
-			$process_image->Process(CN_IMAGE_PATH);
-			if ($process_image->processed) {
-				$success .= "<p><strong>Thumbnail image created and saved.</strong></p> \n";
-				//$image_names['thumbnail'] = $process_image->file_dst_name;
-				$image['thumbnail'] = $process_image->file_dst_name;
-			} else {
-				$error .= "<p><strong>Thumbnail image could not be created and/or saved to the destination folder.</strong></p> \n
-						   <p><strong>Error:</strong> " . $process_image->error . "</p> \n";
-			}
-			
-			//$serial_image_options = serialize($image_options);
-			$process_image->Clean();
+	$process_image = new Upload($_FILES['original_image']);
+	$image['source'] = $process_image->file_src_name_body;
+	
+	if ($process_image->uploaded) {
+		// Saves the uploaded image with no changes to the wp_content/connection_images/ dir.
+		// If needed this will create the upload dir and chmod it.
+		$process_image->allowed				= array('image/jpeg','image/gif','image/png');
+		$process_image->auto_create_dir		= true;
+		$process_image->auto_chmod_dir		= true;
+		$process_image->file_safe_name		= true;
+		$process_image->file_auto_rename	= true;
+		$process_image->file_name_body_add= '_original';
+		$process_image->image_convert		= 'jpg';
+		$process_image->jpeg_quality		= 80;
+		$process_image->Process(CN_IMAGE_PATH);
+		if ($process_image->processed) {
+			$connections->setSuccessMessage('image_uploaded');
+			$image['original'] = $process_image->file_dst_name;
 		} else {
-			$error = "<p><strong>Image could not be uploaded.</strong></p> \n
-					  <p><strong>Error: </strong>" . $process_image->error . "</p> \n";
+			$connections->setErrorMessage('image_uploaded_failed');
+			//$error .= "<p><strong>Error: </strong>" . $process_image->error . "</p> \n";
+			$error = TRUE;
 		}
-	$results = array('success'=>$success, 'error'=>$error, 'image_names'=>$image);
-	return $results;
+		
+		// Creates the profile image and saves it to the wp_content/connection_images/ dir.
+		// If needed this will create the upload dir and chmod it.
+		$process_image->allowed				= array('image/jpeg','image/gif','image/png');
+		$process_image->auto_create_dir		= true;
+		$process_image->auto_chmod_dir		= true;
+		$process_image->file_safe_name		= true;
+		$process_image->file_auto_rename	= true;
+		$process_image->file_name_body_add= '_profile';
+		$process_image->image_convert		= 'jpg';
+		$process_image->jpeg_quality		= $connections->options->getImgProfileQuality();
+		$process_image->image_resize		= true;
+		$process_image->image_ratio_crop	= (bool) $connections->options->getImgProfileRatioCrop();
+		$process_image->image_ratio_fill	= (bool) $connections->options->getImgProfileRatioFill();
+		$process_image->image_y				= $connections->options->getImgProfileY();
+		$process_image->image_x				= $connections->options->getImgProfileX();
+		$process_image->Process(CN_IMAGE_PATH);
+		if ($process_image->processed) {
+			$connections->setSuccessMessage('image_profile');
+			$image['profile'] = $process_image->file_dst_name;
+		} else {
+			$connections->setErrorMessage('image_profile_failed');
+			//$error .= "<p><strong>Error:</strong> " . $process_image->error . "</p> \n";
+			$error = TRUE;
+		}						
+		
+		// Creates the entry image and saves it to the wp_content/connection_images/ dir.
+		// If needed this will create the upload dir and chmod it.
+		$process_image->allowed				= array('image/jpeg','image/gif','image/png');
+		$process_image->auto_create_dir		= true;
+		$process_image->auto_chmod_dir		= true;
+		$process_image->file_safe_name		= true;
+		$process_image->file_auto_rename	= true;
+		$process_image->file_name_body_add= '_entry';
+		$process_image->image_convert		= 'jpg';
+		$process_image->jpeg_quality		= $connections->options->getImgEntryQuality();
+		$process_image->image_resize		= true;
+		$process_image->image_ratio_crop	= (bool) $connections->options->getImgEntryRatioCrop();
+		$process_image->image_ratio_fill	= (bool) $connections->options->getImgEntryRatioFill();
+		$process_image->image_y				= $connections->options->getImgEntryY();
+		$process_image->image_x				= $connections->options->getImgEntryX();
+		$process_image->Process(CN_IMAGE_PATH);
+		if ($process_image->processed) {
+			$connections->setSuccessMessage('image_entry');
+			$image['entry'] = $process_image->file_dst_name;
+		} else {
+			$connections->setErrorMessage('image_entry_failed');
+			//$error .= "<p><strong>Error:</strong> " . $process_image->error . "</p> \n";
+			$error = TRUE;
+		}
+		
+		// Creates the thumbnail image and saves it to the wp_content/connection_images/ dir.
+		// If needed this will create the upload dir and chmod it.
+		$process_image->allowed				= array('image/jpeg','image/gif','image/png');
+		$process_image->auto_create_dir		= true;
+		$process_image->auto_chmod_dir		= true;
+		$process_image->file_safe_name		= true;
+		$process_image->file_auto_rename	= true;
+		$process_image->file_name_body_add= '_thumbnail';
+		$process_image->image_convert		= 'jpg';
+		$process_image->jpeg_quality		= $connections->options->getImgThumbQuality();
+		$process_image->image_resize		= true;
+		$process_image->image_ratio_crop	= (bool) $connections->options->getImgThumbRatioCrop();
+		$process_image->image_ratio_fill	= (bool) $connections->options->getImgThumbRatioFill();
+		$process_image->image_y				= $connections->options->getImgThumbY();
+		$process_image->image_x				= $connections->options->getImgThumbX();
+		$process_image->Process(CN_IMAGE_PATH);
+		if ($process_image->processed) {
+			$connections->setSuccessMessage('image_thumbnail');
+			$image['thumbnail'] = $process_image->file_dst_name;
+		} else {
+			$connections->setErrorMessage('image_thumbnail_failed');
+			//$error .= "<p><strong>Error:</strong> " . $process_image->error . "</p> \n";
+			$error = TRUE;
+		}
+		
+		$process_image->Clean();
+		
+	} else {
+		$connections->setErrorMessage('image_upload_failed');
+		//$error = "<p><strong>Error: </strong>" . $process_image->error . "</p> \n";
+		$error = TRUE;
+	}
+	
+	if (!$error)
+	{
+		return array('image_names'=>$image);
+	}
+	else
+	{
+		return FALSE;
+	}
 }
 
 ?>

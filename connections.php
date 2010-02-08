@@ -257,7 +257,7 @@ if (!class_exists('connectionsLoad'))
 			$output = null;
 			
 			$messages = $connections->currentUser->getMessages();
-			print_r($messages);
+			
 			if (isset($_SESSION['cn_session']['messages']) || !empty($messages))
 			{
 				if (!isset($messages)) $messages = $_SESSION['cn_session']['messages'];
@@ -317,6 +317,15 @@ if (!class_exists('connectionsLoad'))
 			$this->errorMessages->add('category_add_failed', 'Failed to add category.');
 			$this->errorMessages->add('category_update_failed', 'Failed to update category.');
 			$this->errorMessages->add('category_delete_failed', 'Failed to delete category.');
+			
+			$this->errorMessages->add('entry_added_failed', 'Entry could not be added.');
+			$this->errorMessages->add('entry_updated_failed', 'Entry could not be updated.');
+			
+			$this->errorMessages->add('image_upload_failed', 'Image upload failed.');
+			$this->errorMessages->add('image_uploaded_failed', 'Uploaded image could not be saved to the destination folder.');
+			$this->errorMessages->add('image_profile_failed', 'Profile image could not be created and/or saved to the destination folder.');
+			$this->errorMessages->add('image_entry_failed', 'Entry image could not be created and/or saved to the destination folder.');
+			$this->errorMessages->add('image_thumbnail_failed', 'Thumbnail image could not be created and/or saved to the destination folder.');
 		}
 		
 		/**
@@ -330,28 +339,18 @@ if (!class_exists('connectionsLoad'))
 		}
 		
 		/**
-		 * Stores a predefined error messages in the $_SESSION variable
+		 * Stores a predefined error messages in the user meta.
 		 * @return null
 		 * @param string
 		 */
 		public function setErrorMessage($errorMessage)
 		{
 			global $connections;
-			//$messages = $_SESSION['cn_session']['messages'];
-			
-			// If the error message is slready stored, no need to store it twice.
-			// Error supression is used incase no messages have been stored.
-			/*if (@!in_array(array('error' => $errorMessage), $messages))
-			{
-				$_SESSION['cn_session']['messages'][]  = array('error' => $errorMessage);
-			}*/
-			
 			$messages = $connections->currentUser->getMessages();
 			// If the success message is slready stored, no need to store it twice.
-			if (!in_array(array('success' => $successMessage), $messages))
+			if (!in_array(array('error' => $errorMessage), $messages))
 			{
-				$connections->currentUser->setMessage(array('success' => $successMessage));
-				//print_r($messages);
+				$connections->currentUser->setMessage(array('error' => $errorMessage));
 			}
 		}
 		
@@ -373,6 +372,12 @@ if (!class_exists('connectionsLoad'))
 			$this->successMessages->add('category_added', 'Category has been added.');
 			
 			$this->successMessages->add('entry_added', 'Entry has been added.');
+			$this->successMessages->add('entry_updated', 'Entry has been updated.');
+			
+			$this->successMessages->add('image_uploaded', 'Uploaded image saved.');
+			$this->successMessages->add('image_profile', 'Profile image created and saved.');
+			$this->successMessages->add('image_entry', 'Entry image created and saved.');
+			$this->successMessages->add('image_thumbnail', 'Thumbnail image created and saved.');
 		}
 		
 		/**
@@ -386,28 +391,19 @@ if (!class_exists('connectionsLoad'))
 		}
 		
 		/**
-		 * Stores a predefined success messages in the $_SESSION variable
+		 * Stores a predefined success messages in the user meta.
 		 * @return null
 		 * @param string
 		 */
 		public function setSuccessMessage($successMessage)
 		{
 			global $connections;
-			//$messages = $_SESSION['cn_session']['messages'];
-			
-			// If the success message is slready stored, no need to store it twice.
-			// Error supression is used incase no messages have been stored.
-			/*if (@!in_array(array('success' => $successMessage), $messages))
-			{
-				$_SESSION['cn_session']['messages'][]  = array('success' => $successMessage);
-			}*/
 			
 			$messages = $connections->currentUser->getMessages();
 			// If the success message is slready stored, no need to store it twice.
 			if (!in_array(array('success' => $successMessage), $messages))
 			{
 				$connections->currentUser->setMessage(array('success' => $successMessage));
-				//print_r($messages);
 			}
 		}
 						
