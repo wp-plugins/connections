@@ -47,9 +47,7 @@ function connectionsShowAddPage()
 						
 						$form->open($attr);
 						$connections->tokenField('add_entry');
-						echo $entryForm->displayForm();
-						echo '<input type="hidden" name="formId" value="entry_form" />';
-						echo '<input type="hidden" name="token" value="' . $form->token("entry_form") . '" />';
+						$entryForm->displayForm();
 						$form->close();
 					?>
 				</div>

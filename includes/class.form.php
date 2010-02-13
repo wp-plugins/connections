@@ -856,7 +856,7 @@ class cnEntryForm
 				</div>";
 		
 		$out .= '</div>';
-		return $out;
+		echo $out;
 	}
 	
 	private function getEntrySelect($name,$selected=null)

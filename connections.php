@@ -126,7 +126,7 @@ if (!class_exists('connectionsLoad'))
 				$siteURL = str_replace("http://", "https://", $siteURL);
 			}
 			
-			/*
+			/**
 			 * Defines the URL to the plugin folder setting.
 			 * @author: Ben Klocek
 			 */
@@ -378,6 +378,8 @@ if (!class_exists('connectionsLoad'))
 			$this->successMessages->add('image_profile', 'Profile image created and saved.');
 			$this->successMessages->add('image_entry', 'Entry image created and saved.');
 			$this->successMessages->add('image_thumbnail', 'Thumbnail image created and saved.');
+			
+			$this->successMessages->add('settings_updated', 'Settings have been updated.');
 		}
 		
 		/**
@@ -742,14 +744,19 @@ if (!class_exists('connectionsLoad'))
 				/*case 'connections_categories':
 					include_once ( dirname (__FILE__) . '/submenus/categories.php' );
 					connectionsShowCategoriesPage();
-				break;
+				break;*/
 				
 				case 'connections_settings':
-					include_once ( dirname (__FILE__) . '/submenus/settings.php' );
-					connectionsShowSettingsPage();
+					if ($_POST['save'] && $_GET['action'] === 'update_settings')
+					{
+						check_admin_referer($this->getNonce('update_settings'), '_cn_wpnonce');
+						include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+						updateSettings();
+						wp_redirect('admin.php?page=connections_settings&display_messages=true');
+					}
 				break;
 				
-				case 'connections_roles':
+				/*case 'connections_roles':
 					include_once ( dirname (__FILE__) . '/submenus/roles.php' );
 					connectionsShowRolesPage();
 				break;

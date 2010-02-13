@@ -21,11 +21,7 @@ function connectionsShowSettingsPage()
 	}
 	else
 	{
-		global $connections;
-		
-		//$plugin_options = new cnOptions();
-		
-		if (isset($_POST['submit']))
+		/*if (isset($_POST['submit']))
 		{
 			if (isset($_POST['settings']['allow_public']) && $_POST['settings']['allow_public'] === 'true')
 			{
@@ -75,13 +71,18 @@ function connectionsShowSettingsPage()
 			echo "<div id='message' class='updated fade'>";
 				echo "<p><strong>Settings have been updated.</strong></p>";
 			echo "</div>";
-		}
+		}*/
 		//$connections->options->removeOptions();
 		//$connections->options->setDefaultImageSettings();
 		//$connections->options->saveOptions();
 		//print_r($_POST['settings']['allow_public']);
 		
-		$form =  new cnFormObjects();
+		global $connections;
+		
+		$entryForm = new cnEntryForm();
+		$form = new cnFormObjects();
+		
+		$connections->displayMessages();
 	?>
 		<div class="wrap">
 			<div id="icon-connections" class="icon32">
@@ -90,7 +91,15 @@ function connectionsShowSettingsPage()
 			
 			<h2>Connections : Settings</h2>
 			
-			<form action="admin.php?page=connections_settings" method="post">
+			<?php 
+				$attr = array(
+							 'action' => 'admin.php?page=connections_settings&action=update_settings',
+							 'method' => 'post',
+							 );
+				
+				$form->open($attr);
+				$connections->tokenField('update_settings');
+			?>
 			
 				<div class="form-wrap">
 					<div class="form-field connectionsform">
@@ -284,9 +293,9 @@ function connectionsShowSettingsPage()
 					</div>
 				</div>
 			
-			<p class="submit"><input class="button-primary" type="submit" value="Save Changes" name="submit" /></p>
+			<p class="submit"><input class="button-primary" type="submit" value="Save Changes" name="save" /></p>
 			
-			</form>
+			<?php $form->close(); ?>
 			
 		</div>
 		<div class="clear"></div>

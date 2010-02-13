@@ -29,28 +29,27 @@ function connectionsShowViewPage()
 					$entry = new cnEntry();
 					$entry = $entry->get($_GET['id']);
 					
-					$out = '<div class="wrap">';
-						$out .= '<div class="form-wrap" style="width:880px; margin: 0 auto;">';
-							$out .= '<div id="poststuff" class="metabox-holder has-right-sidebar">';
-								$out .= '<h2><a name="new"></a>Add Entry</h2>';
+					echo '<div class="wrap">';
+						echo '<div class="form-wrap" style="width:880px; margin: 0 auto;">';
+							echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
+								echo '<h2><a name="new"></a>Add Entry</h2>';
 								
-								$out .= '<form action="admin.php?page=connections&action=add&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
+								echo '<form action="admin.php?page=connections&action=add&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
 								 
-									$out .= $entryForm->displayForm($entry);
+									$entryForm->displayForm($entry);
 									
-									$out .= '<input type="hidden" name="formId" value="entry_form" />';
-									$out .= '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
+									echo '<input type="hidden" name="formId" value="entry_form" />';
+									echo '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
 									
 									
-								$out .= '</form>';
-							$out .= '</div>';
-						$out .= '</div>';
-					$out .= '</div>';
+								echo '</form>';
+							echo '</div>';
+						echo '</div>';
+					echo '</div>';
 				
 					unset($entry);
 					$showEntryList = false;
 					
-					echo $out;
 				}
 			}
 			else
@@ -78,27 +77,26 @@ function connectionsShowViewPage()
 					$entry = new cnEntry();
 					$entry = $entry->get($_GET['id']);
 					
-					$out = '<div class="wrap">';
-						$out .= '<div class="form-wrap" style="width:880px; margin: 0 auto;">';
-							$out .= '<div id="poststuff" class="metabox-holder has-right-sidebar">';
-								$out .= '<h2><a name="new"></a>Edit Entry</h2>';
+					echo '<div class="wrap">';
+						echo '<div class="form-wrap" style="width:880px; margin: 0 auto;">';
+							echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
+								echo '<h2><a name="new"></a>Edit Entry</h2>';
 								
-								$out .= '<form action="admin.php?page=connections&action=update&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
+								echo '<form action="admin.php?page=connections&action=update&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
 								 
-									$out .= $entryForm->displayForm($entry);
+									$entryForm->displayForm($entry);
 									
-									$out .= '<input type="hidden" name="formId" value="entry_form" />';
-									$out .= '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
+									echo '<input type="hidden" name="formId" value="entry_form" />';
+									echo '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
 									
-								$out .= '</form>';
-							$out .= '</div>';
-						$out .= '</div>';
-					$out .= '</div>';
+								echo '</form>';
+							echo '</div>';
+						echo '</div>';
+					echo '</div>';
 					
 					unset($entry);
 					$showEntryList = false;
 					
-					echo $out;
 				}
 				else
 				{

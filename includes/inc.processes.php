@@ -88,7 +88,7 @@ function processEntry()
 		case 'add':
 			if ($entry->save() == FALSE)
 			{
-				$connections->setErrorMessage('entry_added');
+				$connections->setErrorMessage('entry_added_failed');
 				return FALSE;
 			}
 			else
@@ -101,7 +101,7 @@ function processEntry()
 		case 'update':
 			if ($entry->update() == FALSE)
 			{
-				$connections->setErrorMessage('entry_updated');
+				$connections->setErrorMessage('entry_updated_failed');
 				return FALSE;
 			}
 			else
@@ -128,7 +128,8 @@ function processImages()
 	$process_image = new Upload($_FILES['original_image']);
 	$image['source'] = $process_image->file_src_name_body;
 	
-	if ($process_image->uploaded) {
+	if ($process_image->uploaded)
+	{
 		// Saves the uploaded image with no changes to the wp_content/connection_images/ dir.
 		// If needed this will create the upload dir and chmod it.
 		$process_image->allowed				= array('image/jpeg','image/gif','image/png');
@@ -140,106 +141,152 @@ function processImages()
 		$process_image->image_convert		= 'jpg';
 		$process_image->jpeg_quality		= 80;
 		$process_image->Process(CN_IMAGE_PATH);
-		if ($process_image->processed) {
+		
+		// If the orignal image uploaded and process ok, then create the derivative images.
+		if ($process_image->processed)
+		{
 			$connections->setSuccessMessage('image_uploaded');
 			$image['original'] = $process_image->file_dst_name;
-		} else {
+			
+			// Creates the profile image and saves it to the wp_content/connection_images/ dir.
+			// If needed this will create the upload dir and chmod it.
+			$process_image->allowed				= array('image/jpeg','image/gif','image/png');
+			$process_image->auto_create_dir		= true;
+			$process_image->auto_chmod_dir		= true;
+			$process_image->file_safe_name		= true;
+			$process_image->file_auto_rename	= true;
+			$process_image->file_name_body_add= '_profile';
+			$process_image->image_convert		= 'jpg';
+			$process_image->jpeg_quality		= $connections->options->getImgProfileQuality();
+			$process_image->image_resize		= true;
+			$process_image->image_ratio_crop	= (bool) $connections->options->getImgProfileRatioCrop();
+			$process_image->image_ratio_fill	= (bool) $connections->options->getImgProfileRatioFill();
+			$process_image->image_y				= $connections->options->getImgProfileY();
+			$process_image->image_x				= $connections->options->getImgProfileX();
+			$process_image->Process(CN_IMAGE_PATH);
+			if ($process_image->processed) {
+				$connections->setSuccessMessage('image_profile');
+				$image['profile'] = $process_image->file_dst_name;
+			} else {
+				$connections->setErrorMessage('image_profile_failed');
+				return FALSE;
+			}						
+			
+			// Creates the entry image and saves it to the wp_content/connection_images/ dir.
+			// If needed this will create the upload dir and chmod it.
+			$process_image->allowed				= array('image/jpeg','image/gif','image/png');
+			$process_image->auto_create_dir		= true;
+			$process_image->auto_chmod_dir		= true;
+			$process_image->file_safe_name		= true;
+			$process_image->file_auto_rename	= true;
+			$process_image->file_name_body_add= '_entry';
+			$process_image->image_convert		= 'jpg';
+			$process_image->jpeg_quality		= $connections->options->getImgEntryQuality();
+			$process_image->image_resize		= true;
+			$process_image->image_ratio_crop	= (bool) $connections->options->getImgEntryRatioCrop();
+			$process_image->image_ratio_fill	= (bool) $connections->options->getImgEntryRatioFill();
+			$process_image->image_y				= $connections->options->getImgEntryY();
+			$process_image->image_x				= $connections->options->getImgEntryX();
+			$process_image->Process(CN_IMAGE_PATH);
+			if ($process_image->processed) {
+				$connections->setSuccessMessage('image_entry');
+				$image['entry'] = $process_image->file_dst_name;
+			} else {
+				$connections->setErrorMessage('image_entry_failed');
+				return FALSE;
+			}
+			
+			// Creates the thumbnail image and saves it to the wp_content/connection_images/ dir.
+			// If needed this will create the upload dir and chmod it.
+			$process_image->allowed				= array('image/jpeg','image/gif','image/png');
+			$process_image->auto_create_dir		= true;
+			$process_image->auto_chmod_dir		= true;
+			$process_image->file_safe_name		= true;
+			$process_image->file_auto_rename	= true;
+			$process_image->file_name_body_add= '_thumbnail';
+			$process_image->image_convert		= 'jpg';
+			$process_image->jpeg_quality		= $connections->options->getImgThumbQuality();
+			$process_image->image_resize		= true;
+			$process_image->image_ratio_crop	= (bool) $connections->options->getImgThumbRatioCrop();
+			$process_image->image_ratio_fill	= (bool) $connections->options->getImgThumbRatioFill();
+			$process_image->image_y				= $connections->options->getImgThumbY();
+			$process_image->image_x				= $connections->options->getImgThumbX();
+			$process_image->Process(CN_IMAGE_PATH);
+			if ($process_image->processed) {
+				$connections->setSuccessMessage('image_thumbnail');
+				$image['thumbnail'] = $process_image->file_dst_name;
+			} else {
+				$connections->setErrorMessage('image_thumbnail_failed');
+				return FALSE;
+			}
+		}
+		else
+		{
 			$connections->setErrorMessage('image_uploaded_failed');
-			//$error .= "<p><strong>Error: </strong>" . $process_image->error . "</p> \n";
-			$error = TRUE;
-		}
-		
-		// Creates the profile image and saves it to the wp_content/connection_images/ dir.
-		// If needed this will create the upload dir and chmod it.
-		$process_image->allowed				= array('image/jpeg','image/gif','image/png');
-		$process_image->auto_create_dir		= true;
-		$process_image->auto_chmod_dir		= true;
-		$process_image->file_safe_name		= true;
-		$process_image->file_auto_rename	= true;
-		$process_image->file_name_body_add= '_profile';
-		$process_image->image_convert		= 'jpg';
-		$process_image->jpeg_quality		= $connections->options->getImgProfileQuality();
-		$process_image->image_resize		= true;
-		$process_image->image_ratio_crop	= (bool) $connections->options->getImgProfileRatioCrop();
-		$process_image->image_ratio_fill	= (bool) $connections->options->getImgProfileRatioFill();
-		$process_image->image_y				= $connections->options->getImgProfileY();
-		$process_image->image_x				= $connections->options->getImgProfileX();
-		$process_image->Process(CN_IMAGE_PATH);
-		if ($process_image->processed) {
-			$connections->setSuccessMessage('image_profile');
-			$image['profile'] = $process_image->file_dst_name;
-		} else {
-			$connections->setErrorMessage('image_profile_failed');
-			//$error .= "<p><strong>Error:</strong> " . $process_image->error . "</p> \n";
-			$error = TRUE;
-		}						
-		
-		// Creates the entry image and saves it to the wp_content/connection_images/ dir.
-		// If needed this will create the upload dir and chmod it.
-		$process_image->allowed				= array('image/jpeg','image/gif','image/png');
-		$process_image->auto_create_dir		= true;
-		$process_image->auto_chmod_dir		= true;
-		$process_image->file_safe_name		= true;
-		$process_image->file_auto_rename	= true;
-		$process_image->file_name_body_add= '_entry';
-		$process_image->image_convert		= 'jpg';
-		$process_image->jpeg_quality		= $connections->options->getImgEntryQuality();
-		$process_image->image_resize		= true;
-		$process_image->image_ratio_crop	= (bool) $connections->options->getImgEntryRatioCrop();
-		$process_image->image_ratio_fill	= (bool) $connections->options->getImgEntryRatioFill();
-		$process_image->image_y				= $connections->options->getImgEntryY();
-		$process_image->image_x				= $connections->options->getImgEntryX();
-		$process_image->Process(CN_IMAGE_PATH);
-		if ($process_image->processed) {
-			$connections->setSuccessMessage('image_entry');
-			$image['entry'] = $process_image->file_dst_name;
-		} else {
-			$connections->setErrorMessage('image_entry_failed');
-			//$error .= "<p><strong>Error:</strong> " . $process_image->error . "</p> \n";
-			$error = TRUE;
-		}
-		
-		// Creates the thumbnail image and saves it to the wp_content/connection_images/ dir.
-		// If needed this will create the upload dir and chmod it.
-		$process_image->allowed				= array('image/jpeg','image/gif','image/png');
-		$process_image->auto_create_dir		= true;
-		$process_image->auto_chmod_dir		= true;
-		$process_image->file_safe_name		= true;
-		$process_image->file_auto_rename	= true;
-		$process_image->file_name_body_add= '_thumbnail';
-		$process_image->image_convert		= 'jpg';
-		$process_image->jpeg_quality		= $connections->options->getImgThumbQuality();
-		$process_image->image_resize		= true;
-		$process_image->image_ratio_crop	= (bool) $connections->options->getImgThumbRatioCrop();
-		$process_image->image_ratio_fill	= (bool) $connections->options->getImgThumbRatioFill();
-		$process_image->image_y				= $connections->options->getImgThumbY();
-		$process_image->image_x				= $connections->options->getImgThumbX();
-		$process_image->Process(CN_IMAGE_PATH);
-		if ($process_image->processed) {
-			$connections->setSuccessMessage('image_thumbnail');
-			$image['thumbnail'] = $process_image->file_dst_name;
-		} else {
-			$connections->setErrorMessage('image_thumbnail_failed');
-			//$error .= "<p><strong>Error:</strong> " . $process_image->error . "</p> \n";
-			$error = TRUE;
+			return FALSE;
 		}
 		
 		$process_image->Clean();
 		
-	} else {
-		$connections->setErrorMessage('image_upload_failed');
-		//$error = "<p><strong>Error: </strong>" . $process_image->error . "</p> \n";
-		$error = TRUE;
-	}
-	
-	if (!$error)
-	{
-		return array('image_names'=>$image);
 	}
 	else
 	{
+		$connections->setErrorMessage('image_upload_failed');
 		return FALSE;
 	}
+	
+	return array('image_names'=>$image);
+}
+
+function updateSettings()
+{
+	global $connections;
+	
+	if (isset($_POST['settings']['allow_public']) && $_POST['settings']['allow_public'] === 'true')
+	{
+		$connections->options->setAllowPublic(TRUE);
+	}
+	else
+	{
+		$connections->options->setAllowPublic(FALSE);
+	}
+	
+	
+	if ($_POST['settings']['allow_public_override'] === 'true' && !$connections->options->getAllowPublic())
+	{
+		$connections->options->setAllowPublicOverride(TRUE);
+	}
+	else
+	{
+		$connections->options->setAllowPublicOverride(FALSE);
+	}
+	
+	if ($_POST['settings']['allow_private_override'] === 'true')
+	{
+		$connections->options->setAllowPrivateOverride(TRUE);
+	}
+	else
+	{
+		$connections->options->setAllowPrivateOverride(FALSE);
+	}
+	
+	$connections->options->setImgThumbQuality($_POST['settings']['image']['thumbnail']['quality']);
+	$connections->options->setImgThumbX($_POST['settings']['image']['thumbnail']['x']);
+	$connections->options->setImgThumbY($_POST['settings']['image']['thumbnail']['y']);
+	$connections->options->setImgThumbCrop($_POST['settings']['image']['thumbnail']['crop']);
+	
+	$connections->options->setImgEntryQuality($_POST['settings']['image']['entry']['quality']);
+	$connections->options->setImgEntryX($_POST['settings']['image']['entry']['x']);
+	$connections->options->setImgEntryY($_POST['settings']['image']['entry']['y']);
+	$connections->options->setImgEntryCrop($_POST['settings']['image']['entry']['crop']);
+	
+	$connections->options->setImgProfileQuality($_POST['settings']['image']['profile']['quality']);
+	$connections->options->setImgProfileX($_POST['settings']['image']['profile']['x']);
+	$connections->options->setImgProfileY($_POST['settings']['image']['profile']['y']);
+	$connections->options->setImgProfileCrop($_POST['settings']['image']['profile']['crop']);
+	
+	$connections->options->saveOptions();
+	$connections->setSuccessMessage('settings_updated');
 }
 
 ?>
