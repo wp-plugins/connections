@@ -21,65 +21,8 @@ function connectionsShowSettingsPage()
 	}
 	else
 	{
-		/*if (isset($_POST['submit']))
-		{
-			if (isset($_POST['settings']['allow_public']) && $_POST['settings']['allow_public'] === 'true')
-			{
-				$connections->options->setAllowPublic(TRUE);
-			}
-			else
-			{
-				$connections->options->setAllowPublic(FALSE);
-			}
-			
-			
-			if ($_POST['settings']['allow_public_override'] === 'true' && !$connections->options->getAllowPublic())
-			{
-				$connections->options->setAllowPublicOverride(TRUE);
-			}
-			else
-			{
-				$connections->options->setAllowPublicOverride(FALSE);
-			}
-			
-			if ($_POST['settings']['allow_private_override'] === 'true')
-			{
-				$connections->options->setAllowPrivateOverride(TRUE);
-			}
-			else
-			{
-				$connections->options->setAllowPrivateOverride(FALSE);
-			}
-			
-			$connections->options->setImgThumbQuality($_POST['settings']['image']['thumbnail']['quality']);
-			$connections->options->setImgThumbX($_POST['settings']['image']['thumbnail']['x']);
-			$connections->options->setImgThumbY($_POST['settings']['image']['thumbnail']['y']);
-			$connections->options->setImgThumbCrop($_POST['settings']['image']['thumbnail']['crop']);
-			
-			$connections->options->setImgEntryQuality($_POST['settings']['image']['entry']['quality']);
-			$connections->options->setImgEntryX($_POST['settings']['image']['entry']['x']);
-			$connections->options->setImgEntryY($_POST['settings']['image']['entry']['y']);
-			$connections->options->setImgEntryCrop($_POST['settings']['image']['entry']['crop']);
-			
-			$connections->options->setImgProfileQuality($_POST['settings']['image']['profile']['quality']);
-			$connections->options->setImgProfileX($_POST['settings']['image']['profile']['x']);
-			$connections->options->setImgProfileY($_POST['settings']['image']['profile']['y']);
-			$connections->options->setImgProfileCrop($_POST['settings']['image']['profile']['crop']);
-			
-			$connections->options->saveOptions();
-			
-			echo "<div id='message' class='updated fade'>";
-				echo "<p><strong>Settings have been updated.</strong></p>";
-			echo "</div>";
-		}*/
-		//$connections->options->removeOptions();
-		//$connections->options->setDefaultImageSettings();
-		//$connections->options->saveOptions();
-		//print_r($_POST['settings']['allow_public']);
-		
 		global $connections;
 		
-		$entryForm = new cnEntryForm();
 		$form = new cnFormObjects();
 		
 		$connections->displayMessages();

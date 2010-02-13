@@ -241,6 +241,7 @@ function processImages()
 function updateSettings()
 {
 	global $connections;
+	$format = new cnFormatting();
 	
 	if (isset($_POST['settings']['allow_public']) && $_POST['settings']['allow_public'] === 'true')
 	{
@@ -270,20 +271,20 @@ function updateSettings()
 		$connections->options->setAllowPrivateOverride(FALSE);
 	}
 	
-	$connections->options->setImgThumbQuality($_POST['settings']['image']['thumbnail']['quality']);
-	$connections->options->setImgThumbX($_POST['settings']['image']['thumbnail']['x']);
-	$connections->options->setImgThumbY($_POST['settings']['image']['thumbnail']['y']);
-	$connections->options->setImgThumbCrop($_POST['settings']['image']['thumbnail']['crop']);
+	$connections->options->setImgThumbQuality($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['quality']));
+	$connections->options->setImgThumbX($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['x']));
+	$connections->options->setImgThumbY($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['y']));
+	$connections->options->setImgThumbCrop($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['crop']));
 	
-	$connections->options->setImgEntryQuality($_POST['settings']['image']['entry']['quality']);
-	$connections->options->setImgEntryX($_POST['settings']['image']['entry']['x']);
-	$connections->options->setImgEntryY($_POST['settings']['image']['entry']['y']);
-	$connections->options->setImgEntryCrop($_POST['settings']['image']['entry']['crop']);
+	$connections->options->setImgEntryQuality($format->stripNonNumeric($_POST['settings']['image']['entry']['quality']));
+	$connections->options->setImgEntryX($format->stripNonNumeric($_POST['settings']['image']['entry']['x']));
+	$connections->options->setImgEntryY($format->stripNonNumeric($_POST['settings']['image']['entry']['y']));
+	$connections->options->setImgEntryCrop($format->stripNonNumeric($_POST['settings']['image']['entry']['crop']));
 	
-	$connections->options->setImgProfileQuality($_POST['settings']['image']['profile']['quality']);
-	$connections->options->setImgProfileX($_POST['settings']['image']['profile']['x']);
-	$connections->options->setImgProfileY($_POST['settings']['image']['profile']['y']);
-	$connections->options->setImgProfileCrop($_POST['settings']['image']['profile']['crop']);
+	$connections->options->setImgProfileQuality($format->stripNonNumeric($_POST['settings']['image']['profile']['quality']));
+	$connections->options->setImgProfileX($format->stripNonNumeric($_POST['settings']['image']['profile']['x']));
+	$connections->options->setImgProfileY($format->stripNonNumeric($_POST['settings']['image']['profile']['y']));
+	$connections->options->setImgProfileCrop($format->stripNonNumeric($_POST['settings']['image']['profile']['crop']));
 	
 	$connections->options->saveOptions();
 	$connections->setSuccessMessage('settings_updated');
