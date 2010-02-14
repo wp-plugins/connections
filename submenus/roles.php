@@ -22,8 +22,12 @@ function connectionsShowRolesPage()
 	else
 	{
 		global $connections, $wp_roles;
+		
+		$form = new cnFormObjects();
+		
+		$connections->displayMessages();
 							
-		if (isset($_POST['submit']))
+		/*if (isset($_POST['submit']))
 		{
 			if (isset($_POST['roles']))
 			{
@@ -57,7 +61,7 @@ function connectionsShowRolesPage()
 				echo "<p><strong>Role capabilities have been updated.</strong></p>";
 			echo "</div>";
 			
-		}
+		}*/
 	
 	?>
 		<div class="wrap">
@@ -67,7 +71,15 @@ function connectionsShowRolesPage()
 			
 			<h2>Connections : Roles &amp; Capabilities</h2>
 			
-			<form method="post">
+			<?php 
+				$attr = array(
+							 'action' => 'admin.php?page=connections_roles&action=update_role_settings',
+							 'method' => 'post',
+							 );
+				
+				$form->open($attr);
+				$connections->tokenField('update_role_settings');
+			?>
 						
 				<div class="form-wrap">
 					
@@ -141,9 +153,9 @@ function connectionsShowRolesPage()
 					</div>
 				</div>
 				
-			<p class="submit"><input class="button-primary" type="submit" value="Save Changes" name="submit" /></p>
+			<p class="submit"><input class="button-primary" type="submit" value="Save Changes" name="save" /></p>
 			
-			</form>
+			<?php $form->close(); ?>
 		</div>
 		<div class="clear"></div>
 		

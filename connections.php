@@ -380,6 +380,7 @@ if (!class_exists('connectionsLoad'))
 			$this->successMessages->add('image_thumbnail', 'Thumbnail image created and saved.');
 			
 			$this->successMessages->add('settings_updated', 'Settings have been updated.');
+			$this->successMessages->add('role_settings_updated', 'Role capabilities have been updated.');
 		}
 		
 		/**
@@ -756,12 +757,17 @@ if (!class_exists('connectionsLoad'))
 					}
 				break;
 				
-				/*case 'connections_roles':
-					include_once ( dirname (__FILE__) . '/submenus/roles.php' );
-					connectionsShowRolesPage();
+				case 'connections_roles':
+					if ($_POST['save'] && $_GET['action'] === 'update_role_settings')
+					{
+						check_admin_referer($this->getNonce('update_role_settings'), '_cn_wpnonce');
+						include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+						updateRoleSettings();
+						wp_redirect('admin.php?page=connections_roles&display_messages=true');
+					}
 				break;
 				
-				case 'connections_help':
+				/*case 'connections_help':
 					include_once ( dirname (__FILE__) . '/submenus/help.php' );
 					connectionsShowHelpPage();
 				break;*/
