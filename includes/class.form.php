@@ -1170,7 +1170,8 @@ class cnCategoryObjects
 	
 	private function buildTableRowHTML($term, $level)
 	{
-		$form = new cnFormObjects();
+		global $connections;
+		//$form = new cnFormObjects();
 		$category = new cnCategory($term);
 		$pad = str_repeat('&#8212; ', max(0, $level));
 		$this->rowClass = 'alternate' == $this->rowClass ? '' : 'alternate';
@@ -1178,17 +1179,17 @@ class cnCategoryObjects
 		/*
 		 * Genreate the edit & delete tokens.
 		 */
-		$editToken = $form->token('category_edit_' . $category->getId());
-		$deleteToken = $form->token('category_delete_' . $category->getId());
+		$editToken = $connections->tokenURL('admin.php?page=connections_categories&action=edit&id=' . $category->getId(), 'category_edit_' . $category->getId());
+		$deleteToken = $connections->tokenURL('admin.php?page=connections_categories&action=delete&id=' . $category->getId(), 'category_delete_' . $category->getId());
 		
 		$out = '<tr id="cat-' . $category->getId() . '" class="' . $this->rowClass . '">';
 			$out .= '<th class="check-column">';
 				$out .= '<input type="checkbox" name="category[]" value="' . $category->getId() . '"/>';
 			$out .= '</th>';
-			$out .= '<td class="name column-name"><a class="row-title" href="admin.php?page=connections_categories&action=edit&id=' . $category->getId() . '&token=' . $editToken . '">' . $pad . $category->getName() . '</a><br />';
+			$out .= '<td class="name column-name"><a class="row-title" href="' . $editToken . '">' . $pad . $category->getName() . '</a><br />';
 				$out .= '<div class="row-actions">';
-					$out .= '<span class="edit"><a href="admin.php?page=connections_categories&action=edit&id=' . $category->getId() . '&token=' . $editToken . '">Edit</a> | </span>';
-					$out .= '<span class="delete"><a href="admin.php?page=connections_categories&action=delete&id=' . $category->getId() . '&token=' . $deleteToken . '">Delete</a></span>';
+					$out .= '<span class="edit"><a href="' . $editToken . '">Edit</a> | </span>';
+					$out .= '<span class="delete"><a href="' . $deleteToken . '">Delete</a></span>';
 				$out .= '</div>';
 			$out .= '</td>';
 			$out .= '<td class="description column-description">' . $category->getDescription() . '</td>';
@@ -1262,9 +1263,6 @@ class cnCategoryObjects
 			$out .= '<label for="category_description">Description</label>';
 			$out .= '<textarea cols="40" rows="5" id="category_description" name="category_description">' . $category->getDescription() . '</textarea>';
 		$out .= '</div>';
-		
-		$out .= '<input type="hidden" name="form_id" value="category_form" />';
-		$out .= '<input type="hidden" name="token" value="' . $form->token("category_form") . '" />';
 		
 		echo $out;
 	}

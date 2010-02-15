@@ -742,10 +742,39 @@ if (!class_exists('connectionsLoad'))
 					}
 				break;
 				
-				/*case 'connections_categories':
-					include_once ( dirname (__FILE__) . '/submenus/categories.php' );
-					connectionsShowCategoriesPage();
-				break;*/
+				case 'connections_categories':
+					if ($_GET['action'])
+					{
+						switch ($_GET['action']) {
+							case 'add':
+								check_admin_referer($this->getNonce('add_category'), '_cn_wpnonce');
+								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+								processAddCategory();
+								wp_redirect('admin.php?page=connections_categories&display_messages=true');
+							break;
+							
+							case 'update':
+								check_admin_referer($this->getNonce('update_category'), '_cn_wpnonce');
+								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+								processUpdateCategory();
+								wp_redirect('admin.php?page=connections_categories&display_messages=true');
+							break;
+							
+							case 'delete':
+								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+								processDeleteCategory('delete');
+								wp_redirect('admin.php?page=connections_categories&display_messages=true');
+							break;
+							
+							case 'bulk_delete':
+								check_admin_referer($this->getNonce('bulk_delete_category'), '_cn_wpnonce');
+								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+								processDeleteCategory('bulk_delete');
+								wp_redirect('admin.php?page=connections_categories&display_messages=true');
+							break;
+						}
+					}
+				break;
 				
 				case 'connections_settings':
 					if ($_POST['save'] && $_GET['action'] === 'update_settings')
@@ -775,7 +804,7 @@ if (!class_exists('connectionsLoad'))
 		}
 		
 		/**
-		 * Retrives or displays the nonce field for forms using wp_nonce_field.
+		 * Retrieves or displays the nonce field for forms using wp_nonce_field.
 		 * 
 		 * @param string $action Action name.
 		 * @param string $item [optional] Item name. Use when protecting multiple items on the same page.
@@ -786,6 +815,8 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function tokenField($action, $item = FALSE, $name = '_cn_wpnonce', $referer = TRUE, $echo = TRUE)
 		{
+			$name = esc_attr($name);
+			
 			if ($item == FALSE)
 			{
 				$token = wp_nonce_field($this->nonceBase . '_' . $action, $name, TRUE, FALSE);
@@ -799,6 +830,18 @@ if (!class_exists('connectionsLoad'))
 			if ($referer) wp_referer_field($echo, 'previous');
 			
 			return $token;
+		}
+		
+		/**
+		 * Retrieves URL with nonce added to the query string.
+		 * 
+		 * @param string $actionURL URL to add the nonce to.
+		 * @param string $item Nonce action name.
+		 * @return string URL string with nonce added to the query string.
+		 */
+		public function tokenURL($actionURL, $item)
+		{
+			return wp_nonce_url($actionURL, $item);
 		}
 		
 		/**

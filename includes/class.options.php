@@ -469,7 +469,7 @@ class cnOptions
      */
     public function setImgEntryQuality($imgEntryQuality)
     {
-        $this->imgEntryQuality = $imgEntryQuality;
+        $this->imgEntryQuality = (integer) $imgEntryQuality;
     }
     
     /**
@@ -488,7 +488,7 @@ class cnOptions
      */
     public function setImgEntryX($imgEntryX)
     {
-        $this->imgEntryX = $imgEntryX;
+        $this->imgEntryX = (integer) $imgEntryX;
     }
     
     /**
@@ -507,7 +507,7 @@ class cnOptions
      */
     public function setImgEntryY($imgEntryY)
     {
-        $this->imgEntryY = $imgEntryY;
+        $this->imgEntryY = (integer) $imgEntryY;
     }
 
     /**
@@ -589,7 +589,7 @@ class cnOptions
      */
     public function setImgProfileQuality($imgProfileQuality)
     {
-        $this->imgProfileQuality = $imgProfileQuality;
+        $this->imgProfileQuality = (integer) $imgProfileQuality;
     }
     
     /**
@@ -608,7 +608,7 @@ class cnOptions
      */
     public function setImgProfileX($imgProfileX)
     {
-        $this->imgProfileX = $imgProfileX;
+        $this->imgProfileX = (integer) $imgProfileX;
     }
     
     /**
@@ -627,7 +627,7 @@ class cnOptions
      */
     public function setImgProfileY($imgProfileY)
     {
-        $this->imgProfileY = $imgProfileY;
+        $this->imgProfileY = (integer) $imgProfileY;
     }
 
     /**
@@ -708,7 +708,7 @@ class cnOptions
      */
     public function setImgThumbQuality($imgThumbQuality)
     {
-        $this->imgThumbQuality = $imgThumbQuality;
+        $this->imgThumbQuality = (integer) $imgThumbQuality;
     }
     
     /**
@@ -727,7 +727,7 @@ class cnOptions
      */
     public function setImgThumbX($imgThumbX)
     {
-        $this->imgThumbX = $imgThumbX;
+        $this->imgThumbX = (integer) $imgThumbX;
     }
     
     /**
@@ -746,7 +746,7 @@ class cnOptions
      */
     public function setImgThumbY($imgThumbY)
     {
-        $this->imgThumbY = $imgThumbY;
+        $this->imgThumbY = (integer) $imgThumbY;
     }
 	
 	/**

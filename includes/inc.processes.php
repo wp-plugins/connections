@@ -274,20 +274,76 @@ function updateSettings()
 	$connections->options->setImgThumbQuality($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['quality']));
 	$connections->options->setImgThumbX($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['x']));
 	$connections->options->setImgThumbY($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['y']));
-	$connections->options->setImgThumbCrop($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['crop']));
+	$connections->options->setImgThumbCrop($_POST['settings']['image']['thumbnail']['crop']);
 	
 	$connections->options->setImgEntryQuality($format->stripNonNumeric($_POST['settings']['image']['entry']['quality']));
 	$connections->options->setImgEntryX($format->stripNonNumeric($_POST['settings']['image']['entry']['x']));
 	$connections->options->setImgEntryY($format->stripNonNumeric($_POST['settings']['image']['entry']['y']));
-	$connections->options->setImgEntryCrop($format->stripNonNumeric($_POST['settings']['image']['entry']['crop']));
+	$connections->options->setImgEntryCrop($_POST['settings']['image']['entry']['crop']);
 	
 	$connections->options->setImgProfileQuality($format->stripNonNumeric($_POST['settings']['image']['profile']['quality']));
 	$connections->options->setImgProfileX($format->stripNonNumeric($_POST['settings']['image']['profile']['x']));
 	$connections->options->setImgProfileY($format->stripNonNumeric($_POST['settings']['image']['profile']['y']));
-	$connections->options->setImgProfileCrop($format->stripNonNumeric($_POST['settings']['image']['profile']['crop']));
+	$connections->options->setImgProfileCrop($_POST['settings']['image']['profile']['crop']);
 	
 	$connections->options->saveOptions();
 	$connections->setSuccessMessage('settings_updated');
+}
+
+function processAddCategory()
+{
+	$category = new cnCategory();
+	$format = new cnFormatting();
+				
+	$category->setName($format->sanitizeString($_POST['category_name']));
+	$category->setSlug($format->sanitizeString($_POST['category_slug']));
+	$category->setParent($format->sanitizeString($_POST['category_parent']));
+	$category->setDescription($format->sanitizeString($_POST['category_description']));
+	
+	$category->save();
+}
+
+function processUpdateCategory()
+{
+	$category = new cnCategory();
+	$format = new cnFormatting();
+				
+	$category->setID($format->sanitizeString($_POST['category_id']));
+	$category->setName($format->sanitizeString($_POST['category_name']));
+	$category->setParent($format->sanitizeString($_POST['category_parent']));
+	$category->setSlug($format->sanitizeString($_POST['category_slug']));
+	$category->setDescription($format->sanitizeString($_POST['category_description']));
+	
+	$category->update();
+}
+
+
+function processDeleteCategory($type)
+{
+	global $connections;
+	
+	switch ($type)
+	{
+		case 'delete':
+			$id = esc_attr($_GET['id']);
+			check_admin_referer('category_delete_' . $id);
+			
+			$result = $connections->retrieve->category($id);
+			$category = new cnCategory($result);
+			$category->delete();
+		break;
+		
+		case 'bulk_delete':
+			foreach ( (array) $_POST['category'] as $cat_ID )
+			{
+				$cat_ID = esc_attr($cat_ID);
+				
+				$result = $connections->retrieve->category(attribute_escape($cat_ID));
+				$category = new cnCategory($result);
+				$category->delete();
+			}
+		break;
+	}
 }
 
 function updateRoleSettings()
