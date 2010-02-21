@@ -1,4 +1,4 @@
-<div id="entry_id_<?php echo $entry->getId(); ?>" class="cn-entry" style="-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative;">
+<div id="entry_id_<?php echo $entry->getId(); ?>" class="cn-entry" style="-moz-border-radius:4px; background-color:#DBE8EB; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative;">
 	<table width="100%" border="0px" bgcolor="#FFFFFF" bordercolor="#E3E3E3" cellspacing="0px" cellpadding="0px" style="width: 100%">
 	    <tr>
 	        <td align="left" width="55%" valign="top">
@@ -13,7 +13,7 @@
 	        <td align="right" valign="top" style="text-align: right;">
 	        	<div style="clear:both; margin: 5px 5px;">
 					
-					<?php echo $entry->getTitleBlock() ?>
+					<strong><?php echo $entry->getTitleBlock() ?></strong><br />
 					<?php echo $entry->getOrgUnitBlock() ?>
 						
 		        	<?php
