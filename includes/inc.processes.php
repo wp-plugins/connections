@@ -1,16 +1,15 @@
 <?php
 
-function processEntry()
+function processAddEntry()
 {
 	global $wpdb, $connections;
 	$entry = new cnEntry();
-	//$category = new cnCategory();
 	
 	// If copying/editing an entry, the entry data is loaded into the class 
 	// properties and then properties are overwritten by the POST data as needed.
 	if (isset($_GET['id']))
 	{
-		$entry->set($_GET['id']);
+		$entry->set(esc_attr($_GET['id']));
 	}
 						
 	$entry->setEntryType($_POST['entry_type']);

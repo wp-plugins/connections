@@ -303,14 +303,9 @@ class cnEntryForm
 	 */
 	function displayForm($data = null)
 	{
-		//global $wpdb, $current_user;
 		global $wpdb, $connections;
 		
-		//get_currentuserinfo();
-		//$plugin_options = new cnOptions();
-		
 		$form = new cnFormObjects();
-		//$category = new cnCategory();
 		$categoryObjects = new cnCategoryObjects();
 		$entry = new cnEntry($data);
 		$addressObject = new cnAddresses();
@@ -323,7 +318,7 @@ class cnEntryForm
 		$date = new cnDate();
 		$ticker = new cnCounter();
 		
-		$action = attribute_escape($_GET['action']);
+		$action = esc_attr($_GET['action']);
 		
 		/**
 		 * @TODO: Do something better with these statements.
@@ -419,7 +414,6 @@ class cnEntryForm
 						
 						if ($entry->getConnectionGroup())
 						{
-							//$connections = $entry->getConnectionGroup();
 							foreach ($entry->getConnectionGroup() as $key => $value)
 							{
 								$relation = new cnEntry();
@@ -861,16 +855,8 @@ class cnEntryForm
 	
 	private function getEntrySelect($name,$selected=null)
 	{
-		global $wpdb;
-		//$results = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "connections ORDER BY last_name, first_name");
-		
-		$sql = "(SELECT *, organization AS order_by FROM ".$wpdb->prefix."connections WHERE last_name = '' AND group_name = '')
-				UNION
-				(SELECT *, group_name AS order_by FROM ".$wpdb->prefix."connections WHERE group_name != '')
-				UNION
-				(SELECT *, last_name AS order_by FROM ".$wpdb->prefix."connections WHERE last_name != '')
-				ORDER BY order_by, last_name, first_name";
-		$results = $wpdb->get_results($sql);
+		global $wpdb, $connections;
+		$results = $connections->retrieve->entries();
 		
 	    $out = '<select name="' . $name . '">';
 			$out .= '<option value="">Select Entry</option>';

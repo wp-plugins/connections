@@ -69,6 +69,12 @@ class cnRetrieve
 		
 	}
 	
+	public function entry($id)
+	{
+		global $wpdb;
+		return $wpdb->get_row('SELECT * FROM ' . $wpdb->prefix . 'connections WHERE id="' . $wpdb->escape($id) . '"');
+	}
+	
 	/**
 	 * Returns all the category terms.
 	 * 

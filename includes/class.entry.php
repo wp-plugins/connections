@@ -138,33 +138,33 @@ class cnEntry
 	
 	private $format;
 	
-	function __construct($data = null)
+	function __construct($entry = NULL)
 	{
-		$this->id = $data->id;
-		$this->timeStamp = $data->ts;
-		$this->dateAdded = (integer) $data->date_added;
-		$this->firstName = $data->first_name;
-		$this->middleName = $data->middle_name;
-		$this->lastName = $data->last_name;
-		$this->title = $data->title;
-		$this->organization = $data->organization;
-		$this->contactFirstName = $data->contact_first_name;
-		$this->contactLastName = $data->contact_last_name;
-		$this->department = $data->department;
-		$this->groupName = $data->group_name;
-		$this->addresses = unserialize($data->addresses);
-		$this->phoneNumbers = unserialize($data->phone_numbers);
-		$this->emailAddresses = unserialize($data->email);
-		$this->im = unserialize($data->im);
-		$this->socialMedia = unserialize($data->social);
-		$this->websites = unserialize($data->websites);
-		$this->birthday = $data->birthday;
-		$this->anniversary = $data->anniversary;
-		$this->bio = $data->bio;
-		$this->notes = $data->notes;
-		$this->visibility = $data->visibility;
+		$this->id = $entry->id;
+		$this->timeStamp = $entry->ts;
+		$this->dateAdded = (integer) $entry->date_added;
+		$this->firstName = $entry->first_name;
+		$this->middleName = $entry->middle_name;
+		$this->lastName = $entry->last_name;
+		$this->title = $entry->title;
+		$this->organization = $entry->organization;
+		$this->contactFirstName = $entry->contact_first_name;
+		$this->contactLastName = $entry->contact_last_name;
+		$this->department = $entry->department;
+		$this->groupName = $entry->group_name;
+		$this->addresses = unserialize($entry->addresses);
+		$this->phoneNumbers = unserialize($entry->phone_numbers);
+		$this->emailAddresses = unserialize($entry->email);
+		$this->im = unserialize($entry->im);
+		$this->socialMedia = unserialize($entry->social);
+		$this->websites = unserialize($entry->websites);
+		$this->birthday = $entry->birthday;
+		$this->anniversary = $entry->anniversary;
+		$this->bio = $entry->bio;
+		$this->notes = $entry->notes;
+		$this->visibility = $entry->visibility;
 		
-		$this->options = unserialize($data->options);
+		$this->options = unserialize($entry->options);
 		$this->imageLinked = $this->options['image']['linked'];
 		$this->imageDisplay = $this->options['image']['display'];
 		$this->imageNameThumbnail =$this->options['image']['name']['thumbnail'];
@@ -174,8 +174,8 @@ class cnEntry
 		$this->entryType = $this->options['entry']['type'];
 		$this->connectionGroup = $this->options['connection_group'];
 		
-		$this->addedBy = $data->added_by;
-		$this->editedBy = $data->edited_by;
+		$this->addedBy = $entry->added_by;
+		$this->editedBy = $entry->edited_by;
 		
 		// Load the formatting class for sanitizing the get methods.
 		$this->format = new cnFormatting();
@@ -946,17 +946,17 @@ class cnEntry
         $this->options = serialize($this->options);
     }
 	
-	public function get($id)
+	/*public function get($id)
 	{
 		global $wpdb;
 		return $wpdb->get_row('SELECT * FROM ' . $wpdb->prefix . 'connections WHERE id="' . $wpdb->escape($id) . '"');
-	}
+	}*/
 	
 	public function set($id)
 	{
-		global $wpdb;
-		$data = $wpdb->get_row('SELECT * FROM ' . $wpdb->prefix . 'connections WHERE id="' . $wpdb->escape($id) . '"');
-		$this->__construct($data);
+		global $connections;
+		$result = $connections->retrieve->entry($id);
+		$this->__construct($result);
 	}
 	
 	public function update()

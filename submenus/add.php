@@ -23,6 +23,16 @@ function connectionsShowAddPage()
 	{
 		global $connections;
 		
+		/*
+		 * If an entry is being copied, load it so it can be used in the form. 
+		 */
+		if (isset($_GET['id']))
+		{
+			$id = esc_attr($_GET['id']);
+			$atts['id'] = $id;
+			$entry = $connections->retrieve->entry($id);
+		}
+		
 		$entryForm = new cnEntryForm();
 		$form = new cnFormObjects();
 		
@@ -44,10 +54,14 @@ function connectionsShowAddPage()
 									 'method' => 'post',
 									 'enctype' => 'multipart/form-data',
 									 );
+						/*
+						 * If an entry is being copied add it to the query string.
+						 */
+						if (isset($id)) $attr['action'] .= '&id=' . $id;
 						
 						$form->open($attr);
 						$connections->tokenField('add_entry');
-						$entryForm->displayForm();
+						$entryForm->displayForm($entry);
 						$form->close();
 					?>
 				</div>

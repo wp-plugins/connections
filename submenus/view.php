@@ -15,34 +15,40 @@ function connectionsShowViewPage()
 	
 	switch ($_GET['action'])
 	{
-		case 'copy':
+		//case 'copy':
 			/*
 			 * Check whether current user can add an entry.
 			 */
-			if (current_user_can('connections_add_entry'))
+			/*if (current_user_can('connections_add_entry'))
 			{
-				$id = attribute_escape($_GET['id']);
+				if (isset($_GET['id'])) $id = esc_attr($_GET['id']);
 				if ($form->tokenCheck('copy_' . $id, $_GET['token']))
 				{
 					$entryForm = new cnEntryForm();
 					$form = new cnFormObjects();
 					$entry = new cnEntry();
-					$entry = $entry->get($_GET['id']);
+					$entry = $entry->get($id);
 					
 					echo '<div class="wrap">';
 						echo '<div class="form-wrap" style="width:880px; margin: 0 auto;">';
 							echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
 								echo '<h2><a name="new"></a>Add Entry</h2>';
 								
-								echo '<form action="admin.php?page=connections&action=add&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
+								//echo '<form action="admin.php?page=connections_add&action=add&id=' . $id . '" method="post" enctype="multipart/form-data">';
 								 
+									$attr = array(
+												 'action' => 'admin.php?page=connections_add&action=add',
+												 'method' => 'post',
+												 'enctype' => 'multipart/form-data',
+												 );
+									
+									if (isset($id)) $attr['action'] .= '&id=' . $id;
+									
+									$form->open($attr);
+									$connections->tokenField('add_entry');
+									
 									$entryForm->displayForm($entry);
-									
-									echo '<input type="hidden" name="formId" value="entry_form" />';
-									echo '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
-									
-									
-								echo '</form>';
+									$form->close();
 							echo '</div>';
 						echo '</div>';
 					echo '</div>';
@@ -56,7 +62,7 @@ function connectionsShowViewPage()
 			{
 				$connections->setErrorMessage('capability_add');
 			}
-		break;
+		break;*/
 		
 		case 'edit':
 			/*
@@ -74,8 +80,7 @@ function connectionsShowViewPage()
 				{
 					$entryForm = new cnEntryForm();
 					$form = new cnFormObjects();
-					$entry = new cnEntry();
-					$entry = $entry->get($_GET['id']);
+					$entry = $connections->retrieve->entry($id);
 					
 					echo '<div class="wrap">';
 						echo '<div class="form-wrap" style="width:880px; margin: 0 auto;">';
@@ -388,7 +393,7 @@ function connectionsShowViewPage()
 											echo '<div class="row-actions">';
 												echo '<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a> | ';
 												if (current_user_can('connections_edit_entry')) echo '<a class="editbutton" href="admin.php?page=connections&action=edit&id=' . $entry->getId() . '&token=' . $editToken . '" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | ';
-												if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="admin.php?page=connections&action=copy&id=' . $entry->getId() . '&token=' . $form->token('copy_' . $entry->getId()) . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
+												if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="admin.php?page=connections_add&action=copy&id=' . $entry->getId() . '&token=' . $form->token('copy_' . $entry->getId()) . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
 												if (current_user_can('connections_delete_entry')) echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections&action=delete&id=' . $entry->getId() . '&token=' . $form->token('delete_' . $entry->getId()) . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
 											echo '</div>';
 									echo "</td> \n";

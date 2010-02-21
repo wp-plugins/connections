@@ -727,17 +727,64 @@ if (!class_exists('connectionsLoad'))
 		{
 			switch ($_GET['page'])
 			{
-				/*case 'connections':
-					include_once ( dirname (__FILE__) . '/submenus/view.php' );
-					connectionsShowViewPage();
-				break;*/
+				case 'connections_view':
+					if ($_GET['action'])
+					{
+						switch ($_GET['action']) {
+							//case 'add':
+								/*
+								 * Check whether the current user can add an entry.
+								 */
+								/*if (current_user_can('connections_add_entry'))
+								{
+									check_admin_referer($this->getNonce('copy_entry'), '_cn_wpnonce');
+									include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+									processCopyEntry();
+									wp_redirect('admin.php?page=connections_view&display_messages=true');
+									
+									
+									if ($_POST['save'] && $form->tokenCheck('entry_form', $_POST['token']))
+									{
+										$entryForm = new cnEntryForm();
+										echo $entryForm->processEntry();
+									}
+								}
+								else
+								{
+									$connections->setErrorMessage('capability_add');
+								}
+							break;*/
+							
+							case 'update':
+								check_admin_referer($this->getNonce('update_entry'), '_cn_wpnonce');
+								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+								;
+								wp_redirect('admin.php?page=connections_view&display_messages=true');
+							break;
+							
+							case 'delete':
+								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+								
+								wp_redirect('admin.php?page=connections_view&display_messages=true');
+							break;
+							
+							case 'do':
+								check_admin_referer($this->getNonce('bulk_action'), '_cn_wpnonce');
+								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+								
+								wp_redirect('admin.php?page=connections_view&display_messages=true');
+							break;
+						}
+					}
+					
+				break;
 				
 				case 'connections_add':
 					if ($_POST['save'] && $_GET['action'] === 'add')
 					{
 						check_admin_referer($this->getNonce('add_entry'), '_cn_wpnonce');
 						include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
-						processEntry();
+						processAddEntry();	
 						wp_redirect('admin.php?page=connections_add&display_messages=true');
 					}
 				break;
