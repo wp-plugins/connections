@@ -2,24 +2,9 @@
 	<div style="width:170px; float:left">
 		<?php echo $entry->getCardImage() ?>
 		<div style="clear:both;"></div>
-		
-		<div class="cn-meta" align="left">
-			<span><?php echo $vCard->download() ?></span>
-		</div>
-		
-	</div>
-		
-	<div align="left" style="width:220px; float:left">
-		
-		<div class="phone_numbers" style="margin-bottom: 5px;">
-			<span style="font-size:larger;font-variant: small-caps;"><strong><?php echo $entry->getFullFirstLastNameBlock() ?></strong></span><br />
-		</div>
-		
-		<?php echo '<div style="margin-bottom: 5px;">' . $entry->getTitleBlock() . ', ' . $entry->getOrganizationBlock() . '</div>' ?>
-		
-		
+	
 		<?php echo $entry->getAddressBlock() ?>
-		
+			
 		<?php
 		if ($entry->getPhoneNumbers())
 		{
@@ -31,26 +16,8 @@
 				{
 					switch ($phoneNumberRow['type'])
 					{
-						case 'home':
-							$phoneNumberName = 'Phone';
-							break;
-						case 'homephone':
-							$phoneNumberName = 'Phone';
-							break;
 						case 'homefax':
 							$phoneNumberName = 'Fax';
-							break;
-						case 'cell':
-							$phoneNumberName = 'Phone';
-							break;
-						case 'cellphone':
-							$phoneNumberName = 'Phone';
-							break;
-						case 'work':
-							$phoneNumberName = 'Phone';
-							break;
-						case 'workphone':
-							$phoneNumberName = 'Phone';
 							break;
 						case 'workfax':
 							$phoneNumberName = 'Fax';
@@ -58,10 +25,15 @@
 						case 'fax':
 							$phoneNumberName = 'Fax';
 							break;
+						default:
+							$phoneNumberName = '';
+							break;
 					}
 					
+					if (!empty($phoneNumberName)) echo '<strong>' . $phoneNumberName . '</strong>: ';
+					
 					//Type for hCard compatibility. Hidden.
-					echo  '<strong>' . $phoneNumberName . '</strong>: <span class="tel">' . $entry->gethCardTelType($phoneNumberRow) . '<span class="value">' .  $phoneNumberObject->getNumber($phoneNumberRow) . '</span></span><br />' . "\n";
+					echo  '<span class="tel">' . $entry->gethCardTelType($phoneNumberRow) . '<span class="value">' .  $phoneNumberObject->getNumber($phoneNumberRow) . '</span></span><br />' . "\n";
 				}
 			}
 			echo '</div>' . "\n";
@@ -74,21 +46,8 @@
 			echo '<div class="email-addresses" style="margin-bottom: 10px;">' . "\n";
 			foreach ($entry->getEmailAddresses() as $emailRow)
 			{
-				switch ($data['type'])
-				{
-					case 'personal':
-						$emailName = "Email";
-						break;
-					case 'work':
-						$emailName = "Email";
-						break;
-					default:
-						$emailName = 'Email';
-					break;
-				}
-				
 				//Type for hCard compatibility. Hidden.
-				if ($emailAddressObject->getAddress($emailRow) != null) echo '<strong>' . $emailName . ': </strong><span class="email"><span class="type" style="display: none;">INTERNET</span><a class="value" href="mailto:' . $emailAddressObject->getAddress($emailRow) . '">' . $emailAddressObject->getAddress($emailRow) . '</a></span><br />' . "\n";
+				if ($emailAddressObject->getAddress($emailRow) != null) echo '<span class="email"><span class="type" style="display: none;">INTERNET</span><a class="value" href="mailto:' . $emailAddressObject->getAddress($emailRow) . '">' . $emailAddressObject->getAddress($emailRow) . '</a></span><br />' . "\n";
 			}
 			echo '</div>' . "\n";
 		}
@@ -103,7 +62,7 @@
 				
 				foreach ($entry->getWebsites() as $websiteRow)
 				{
-					if ($websiteObject->getAddress($websiteRow) != null) $anchorOut .= '<a class="url" href="' . $websiteObject->getAddress($websiteRow) . '" target="_blank">' . $websiteObject->getAddress($websiteRow) . '</a>' . "\n";
+					if ($websiteObject->getAddress($websiteRow) != null) $anchorOut .= '<a class="url" href="' . $websiteObject->getAddress($websiteRow) . '" target="_blank">' . str_replace('http://', '', $websiteObject->getAddress($websiteRow)) . '</a>' . "\n";
 					break; // Only show the first stored web address
 				}
 			}
@@ -117,19 +76,33 @@
 			}
 		?>
 		
-		<?php echo $entry->getBirthdayBlock('F j') ?>
-		<?php echo $entry->getAnniversaryBlock() ?>
+		<div style="margin-bottom: 10px;">
+			<?php echo $entry->getBirthdayBlock('F j') ?>
+			<?php echo $entry->getAnniversaryBlock() ?>
+		</div>
+		
+		<div class="cn-meta" align="left">
+			<span><?php echo $vCard->download() ?></span>
+		</div>
 		
 	</div>
-	
-	<div style="width:200px; float:left; text-align:left;">
+		
+	<div align="left">
+		
+		<div style="margin-bottom: 5px;">
+			<span style="font-size:larger;font-variant: small-caps;"><strong><?php echo $entry->getFullFirstLastNameBlock() ?></strong></span><br />
+		</div>
+		
+		<div style="margin-bottom: 5px;">
+			<?php 
+				echo '<span class="title">' . $entry->getTitle() . '</span>';
+				if ($entry->getOrganization()) echo '<span>, </span>' . '<span class="org">' . $entry->getOrganization() . '</span>';
+			?>
+		</div>
 		<?php 
 			if ($entry->getBio()) echo '<strong>Biography:</strong> ';
 			echo $entry->getBio();
 		?>
 	</div>
-	
 	<div style="clear:both"></div>
-	
-	
 </div>
