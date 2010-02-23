@@ -727,53 +727,57 @@ if (!class_exists('connectionsLoad'))
 		{
 			switch ($_GET['page'])
 			{
-				case 'connections_view':
+				case 'connections':
 					if ($_GET['action'])
 					{
 						switch ($_GET['action']) {
-							//case 'add':
+							case 'add':
 								/*
 								 * Check whether the current user can add an entry.
 								 */
-								/*if (current_user_can('connections_add_entry'))
+								if (current_user_can('connections_add_entry'))
 								{
-									check_admin_referer($this->getNonce('copy_entry'), '_cn_wpnonce');
+									check_admin_referer($this->getNonce('add_entry'), '_cn_wpnonce');
 									include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
-									processCopyEntry();
-									wp_redirect('admin.php?page=connections_view&display_messages=true');
-									
-									
-									if ($_POST['save'] && $form->tokenCheck('entry_form', $_POST['token']))
-									{
-										$entryForm = new cnEntryForm();
-										echo $entryForm->processEntry();
-									}
+									processAddEntry();
+									wp_redirect('admin.php?page=connections&display_messages=true');
 								}
 								else
 								{
 									$connections->setErrorMessage('capability_add');
 								}
-							break;*/
+							break;
 							
 							case 'update':
-								check_admin_referer($this->getNonce('update_entry'), '_cn_wpnonce');
-								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
-								;
-								wp_redirect('admin.php?page=connections_view&display_messages=true');
+								/*
+								 * Check whether the current user can edit an entry.
+								 */
+								if (current_user_can('connections_edit_entry'))
+								{
+									check_admin_referer($this->getNonce('update_entry'), '_cn_wpnonce');
+									include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+									processAddEntry();;
+									wp_redirect('admin.php?page=connections&display_messages=true');
+								}
+								else
+								{
+									$connections->setErrorMessage('capability_edit');
+								}
+								
 							break;
 							
 							case 'delete':
 								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
-								
-								wp_redirect('admin.php?page=connections_view&display_messages=true');
+								processDeleteEntry();
+								wp_redirect('admin.php?page=connections&display_messages=true');
 							break;
 							
-							case 'do':
+							/*case 'do':
 								check_admin_referer($this->getNonce('bulk_action'), '_cn_wpnonce');
 								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
 								
 								wp_redirect('admin.php?page=connections_view&display_messages=true');
-							break;
+							break;*/
 						}
 					}
 					
@@ -842,11 +846,6 @@ if (!class_exists('connectionsLoad'))
 						wp_redirect('admin.php?page=connections_roles&display_messages=true');
 					}
 				break;
-				
-				/*case 'connections_help':
-					include_once ( dirname (__FILE__) . '/submenus/help.php' );
-					connectionsShowHelpPage();
-				break;*/
 			}
 		}
 		

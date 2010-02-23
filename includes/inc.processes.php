@@ -237,6 +237,50 @@ function processImages()
 	return array('image_names'=>$image);
 }
 
+function processDeleteEntry()
+{
+	global $connections;
+	
+	if (current_user_can('connections_delete_entry'))
+	{
+		$id = esc_attr($_GET['id']);
+		check_admin_referer('entry_delete_' . $id);
+		
+		$entry = new cnEntry();
+		$entry->delete($id);
+		$connections->setSuccessMessage('form_entry_delete');
+		unset($entry);
+	}
+	else
+	{
+		$connections->setErrorMessage('capability_delete');
+	}
+}
+
+function processDeleteEntries()
+{
+	global $connections;
+	
+	if (current_user_can('connections_delete_entry'))
+	{
+		$ids = $_POST['entry'];
+		
+		foreach ($ids as $id)
+		{
+			$entry = new cnEntry();
+			$id = esc_attr($id);
+			$entry->delete($id);
+			unset($entry);
+		}
+		
+		$connections->setSuccessMessage('form_entry_delete_bulk');
+	}
+	else
+	{
+		$connections->setErrorMessage('capability_delete');
+	}
+}
+
 function updateSettings()
 {
 	global $connections;

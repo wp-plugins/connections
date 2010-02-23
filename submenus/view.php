@@ -7,62 +7,54 @@ function connectionsShowViewPage()
 		
 	get_currentuserinfo();
 	
-	
-	$form = new cnFormObjects();
-	$categoryObjects = new cnCategoryObjects();
-	
 	$showEntryList = true;
 	
 	switch ($_GET['action'])
 	{
-		//case 'copy':
+		case 'copy':
 			/*
 			 * Check whether current user can add an entry.
 			 */
-			/*if (current_user_can('connections_add_entry'))
+			if (current_user_can('connections_add_entry'))
 			{
-				if (isset($_GET['id'])) $id = esc_attr($_GET['id']);
-				if ($form->tokenCheck('copy_' . $id, $_GET['token']))
-				{
-					$entryForm = new cnEntryForm();
-					$form = new cnFormObjects();
-					$entry = new cnEntry();
-					$entry = $entry->get($id);
-					
-					echo '<div class="wrap">';
-						echo '<div class="form-wrap" style="width:880px; margin: 0 auto;">';
-							echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
-								echo '<h2><a name="new"></a>Add Entry</h2>';
+				global $connections;
+				$id = esc_attr($_GET['id']);
+				check_admin_referer('entry_copy_' . $id);
+				
+				$entryForm = new cnEntryForm();
+				$form = new cnFormObjects();
+				$entry = $connections->retrieve->entry($id);
+				
+				echo '<div class="wrap">';
+					echo '<div class="form-wrap" style="width:880px; margin: 0 auto;">';
+						echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
+							echo '<h2><a name="new"></a>Add Entry</h2>';
+							
+								$attr = array(
+											 'action' => 'admin.php?page=connections&action=add&id=' . $id,
+											 'method' => 'post',
+											 'enctype' => 'multipart/form-data',
+											 );
 								
-								//echo '<form action="admin.php?page=connections_add&action=add&id=' . $id . '" method="post" enctype="multipart/form-data">';
-								 
-									$attr = array(
-												 'action' => 'admin.php?page=connections_add&action=add',
-												 'method' => 'post',
-												 'enctype' => 'multipart/form-data',
-												 );
-									
-									if (isset($id)) $attr['action'] .= '&id=' . $id;
-									
-									$form->open($attr);
-									$connections->tokenField('add_entry');
-									
-									$entryForm->displayForm($entry);
-									$form->close();
-							echo '</div>';
+								$form->open($attr);
+								$connections->tokenField('add_entry');
+								
+								$entryForm->displayForm($entry);
+								$form->close();
+								
 						echo '</div>';
 					echo '</div>';
-				
-					unset($entry);
-					$showEntryList = false;
+				echo '</div>';
+			
+				unset($entry);
+				$showEntryList = false;
 					
-				}
 			}
 			else
 			{
 				$connections->setErrorMessage('capability_add');
 			}
-		break;*/
+		break;
 		
 		case 'edit':
 			/*
@@ -70,43 +62,36 @@ function connectionsShowViewPage()
 			 */
 			if (current_user_can('connections_edit_entry'))
 			{
-				/*
-				 * Make sure the action token and $_SESSION token are set and equal before
-				 * performing the copy. This should hopefully prevent user from accessing
-				 * entries for which they do not have permission
-				 */			
+				$form = new cnFormObjects();
 				$id = esc_attr($_GET['id']);
-				if ($form->tokenCheck('edit_' . $id, $_GET['token']))
-				{
-					$entryForm = new cnEntryForm();
-					$form = new cnFormObjects();
-					$entry = $connections->retrieve->entry($id);
-					
-					echo '<div class="wrap">';
-						echo '<div class="form-wrap" style="width:880px; margin: 0 auto;">';
-							echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
-								echo '<h2><a name="new"></a>Edit Entry</h2>';
+				check_admin_referer('entry_edit_' . $id);
+				
+				$entryForm = new cnEntryForm();
+				$entry = $connections->retrieve->entry($id);
+				
+				echo '<div class="wrap">';
+					echo '<div class="form-wrap" style="width:880px; margin: 0 auto;">';
+						echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
+							echo '<h2><a name="new"></a>Edit Entry</h2>';
+							
+								$attr = array(
+											 'action' => 'admin.php?page=connections&action=update&id=' . $id,
+											 'method' => 'post',
+											 'enctype' => 'multipart/form-data',
+											 );
 								
-								echo '<form action="admin.php?page=connections&action=update&id=' . $_GET['id'] . '" method="post" enctype="multipart/form-data">';
-								 
-									$entryForm->displayForm($entry);
-									
-									echo '<input type="hidden" name="formId" value="entry_form" />';
-									echo '<input type="hidden" name="token" value="' . $form->token('entry_form') . '" />';
-									
-								echo '</form>';
-							echo '</div>';
+								$form->open($attr);
+								$connections->tokenField('update_entry');
+								
+								$entryForm->displayForm($entry);
+								$form->close();
+								
 						echo '</div>';
 					echo '</div>';
-					
-					unset($entry);
-					$showEntryList = false;
-					
-				}
-				else
-				{
-					$connections->setErrorMessage('form_token_mismatch');
-				}
+				echo '</div>';
+				
+				unset($entry);
+				$showEntryList = false;
 			}
 			else
 			{
@@ -114,49 +99,9 @@ function connectionsShowViewPage()
 			}
 		break;
 		
-		case 'delete':
+		case 'delete-DEP':
 			delete($_GET['id']);
 			$showEntryList = true;
-		break;
-		
-		case 'add':
-			/*
-			 * Check whether the current user can add an entry.
-			 */
-			if (current_user_can('connections_add_entry'))
-			{
-				if ($_POST['save'] && $form->tokenCheck('entry_form', $_POST['token']))
-				{
-					$entryForm = new cnEntryForm();
-					echo $entryForm->processEntry();
-				}
-				
-				$showEntryList = true;
-			}
-			else
-			{
-				$connections->setErrorMessage('capability_add');
-			}
-		break;
-		
-		case 'update':
-			/*
-			 * Check whether the current user can edit an entry.
-			 */
-			if (current_user_can('connections_edit_entry'))
-			{
-				if ($_POST['update'] && $form->tokenCheck('entry_form', $_POST['token']))
-				{
-					$entryForm = new cnEntryForm();
-					echo $entryForm->processEntry();
-				}
-				
-				$showEntryList = true;
-			}
-			else
-			{
-				$connections->setErrorMessage('capability_edit');
-			}
 		break;
 
 		case 'do':
@@ -212,6 +157,9 @@ function connectionsShowViewPage()
 	
 	if ($showEntryList === true)
 	{
+		$form = new cnFormObjects();
+		$categoryObjects = new cnCategoryObjects();
+		
 		$connections->displayMessages();
 		
 		/*
@@ -370,9 +318,12 @@ function connectionsShowViewPage()
 								}
 								
 								/*
-								 * Genreate the edit token for the entry because it has two links.
+								 * Genreate the edit, copy and delete URLs with nonce tokens.
 								 */
-								$editToken = $form->token('edit_' . $entry->getId());
+								$editTokenURL = $connections->tokenURL('admin.php?page=connections&action=edit&id=' . $entry->getId(), 'entry_edit_' . $entry->getId());
+								$copyTokenURL = $connections->tokenURL('admin.php?page=connections&action=copy&id=' . $entry->getId(), 'entry_copy_' . $entry->getId());
+								$deleteTokenURL = $connections->tokenURL('admin.php?page=connections&action=delete&id=' . $entry->getId(), 'entry_delete_' . $entry->getId());
+								
 								
 								echo "<tr id='row-" . $entry->getId() . "' class='parent-row'>";
 									echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
@@ -383,7 +334,7 @@ function connectionsShowViewPage()
 											
 											if (current_user_can('connections_edit_entry'))
 											{
-												echo '<a class="row-title" title="Edit ' . $entry->getFullFirstLastName() . '" href="admin.php?page=connections&action=edit&id=' . $entry->getId() . '&token=' . $editToken . '"> ' . $entry->getFullLastFirstName() . '</a><br />';
+												echo '<a class="row-title" title="Edit ' . $entry->getFullFirstLastName() . '" href="' . $editTokenURL . '"> ' . $entry->getFullLastFirstName() . '</a><br />';
 											}
 											else
 											{
@@ -392,9 +343,9 @@ function connectionsShowViewPage()
 											
 											echo '<div class="row-actions">';
 												echo '<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a> | ';
-												if (current_user_can('connections_edit_entry')) echo '<a class="editbutton" href="admin.php?page=connections&action=edit&id=' . $entry->getId() . '&token=' . $editToken . '" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | ';
-												if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="admin.php?page=connections_add&action=copy&id=' . $entry->getId() . '&token=' . $form->token('copy_' . $entry->getId()) . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
-												if (current_user_can('connections_delete_entry')) echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="admin.php?page=connections&action=delete&id=' . $entry->getId() . '&token=' . $form->token('delete_' . $entry->getId()) . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
+												if (current_user_can('connections_edit_entry')) echo '<a class="editbutton" href="' . $editTokenURL . '" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | ';
+												if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="' . $copyTokenURL . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
+												if (current_user_can('connections_delete_entry')) echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="' . $deleteTokenURL . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
 											echo '</div>';
 									echo "</td> \n";
 									echo "<td ><strong>" . $entry->displayVisibiltyType() . "</strong></td> \n";												
@@ -561,8 +512,7 @@ function connectionsShowViewPage()
 				
 			</div>
 			
-			<!-- <script type="text/javascript">
-				This is now part of WP core.
+			<script type="text/javascript">
 				/* <![CDATA[ */
 				(function($){
 					$(document).ready(function(){
@@ -575,7 +525,7 @@ function connectionsShowViewPage()
 					});
 				})(jQuery);
 				/* ]]> */
-			</script> -->
+			</script>
 		<?php
 		}
 		else
