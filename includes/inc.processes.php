@@ -239,10 +239,13 @@ function processImages()
 
 function processDeleteEntry()
 {
-	global $connections;
-	
+	/*
+	 * Check whether the current user delete an entry.
+	 */
 	if (current_user_can('connections_delete_entry'))
 	{
+		global $connections;
+		
 		$id = esc_attr($_GET['id']);
 		check_admin_referer('entry_delete_' . $id);
 		
@@ -259,21 +262,33 @@ function processDeleteEntry()
 
 function processDeleteEntries()
 {
-	global $connections;
-	
+	/*
+	 * Check whether the current user delete an entry.
+	 */
 	if (current_user_can('connections_delete_entry'))
 	{
-		$ids = $_POST['entry'];
+		global $connections;
 		
-		foreach ($ids as $id)
+		if (empty($_POST['entry'])) return FALSE;
+		
+		if (current_user_can('connections_delete_entry'))
 		{
-			$entry = new cnEntry();
-			$id = esc_attr($id);
-			$entry->delete($id);
-			unset($entry);
+			$ids = $_POST['entry'];
+			
+			foreach ($ids as $id)
+			{
+				$entry = new cnEntry();
+				$id = esc_attr($id);
+				$entry->delete($id);
+				unset($entry);
+			}
+			
+			$connections->setSuccessMessage('form_entry_delete_bulk');
 		}
-		
-		$connections->setSuccessMessage('form_entry_delete_bulk');
+		else
+		{
+			$connections->setErrorMessage('capability_delete');
+		}
 	}
 	else
 	{

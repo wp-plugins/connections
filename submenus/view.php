@@ -99,18 +99,9 @@ function connectionsShowViewPage()
 			}
 		break;
 		
-		case 'delete-DEP':
-			delete($_GET['id']);
-			$showEntryList = true;
-		break;
-
 		case 'do':
 			switch ($_POST['action'])
 			{
-				case 'delete':
-					delete($_POST['entry']);
-				break;
-				
 				case 'public':
 				case 'private':
 				case 'unlisted':
@@ -181,6 +172,8 @@ function connectionsShowViewPage()
 				?>
 					
 					<form action="admin.php?page=connections&action=do" method="post">
+					
+					<?php $connections->tokenField('bulk_action'); ?>
 					
 					<div class="tablenav">
 						
@@ -532,84 +525,6 @@ function connectionsShowViewPage()
 		{
 			$connections->setErrorMessage('capability_view_entry_list');
 		}
-	}
-}
-
-function delete($ids)
-{
-	global $connections;
-	
-	if (current_user_can('connections_delete_entry'))
-	{
-		$error = false;
-		
-		if (!is_array($ids))
-		{
-			if (isset($_GET['id']))
-			{
-				$id = $_GET['id'];
-			}
-			else
-			{
-				$error = true;
-				$connections->setErrorMessage('form_no_entry_id');
-			}
-			
-			if (isset($_GET['token']))
-			{
-				$token = $_GET['token'];
-			}
-			else
-			{
-				$error = true;
-				$connections->setErrorMessage('form_no_entry_token');
-			}
-			
-			if (isset($_SESSION['cn_session']['formTokens']['delete_' . $id]['token']))
-			{
-				$sessionToken = $_SESSION['cn_session']['formTokens']['delete_' . $id]['token'];
-			}
-			else
-			{
-				$error = true;
-				$connections->setErrorMessage('form_no_session_token');
-			}
-			
-			if ($sessionToken === $token && !$error)
-			{
-		        $entry = new cnEntry();
-				$entry->delete($_GET['id']);
-				$connections->setSuccessMessage('form_entry_delete');
-				unset($entry);
-		    }
-			else
-			{
-				$connections->setErrorMessage('form_token_mismatch');
-			}
-		}
-		else
-		{
-			if ($_SESSION['cn_session']['formTokens']['do_action']['token'] === $_POST['token'])
-			{
-				foreach ($ids as $id)
-				{
-					$entry = new cnEntry();
-					$entry->delete($id);
-					unset($entry);
-				}
-				$connections->setSuccessMessage('form_entry_delete_bulk');
-			}
-			else
-			{
-				$connections->setErrorMessage('form_token_mismatch');
-			}
-		}
-	
-		unset($_SESSION['cn_session']['formTokens']);
-	}
-	else
-	{
-		$connections->setErrorMessage('capability_delete');
 	}
 }
 ?>

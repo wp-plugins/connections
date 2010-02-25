@@ -725,6 +725,8 @@ if (!class_exists('connectionsLoad'))
 		 */
 		private function controllers()
 		{
+			include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+			
 			switch ($_GET['page'])
 			{
 				case 'connections':
@@ -738,7 +740,6 @@ if (!class_exists('connectionsLoad'))
 								if (current_user_can('connections_add_entry'))
 								{
 									check_admin_referer($this->getNonce('add_entry'), '_cn_wpnonce');
-									include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
 									processAddEntry();
 									wp_redirect('admin.php?page=connections&display_messages=true');
 								}
@@ -755,7 +756,6 @@ if (!class_exists('connectionsLoad'))
 								if (current_user_can('connections_edit_entry'))
 								{
 									check_admin_referer($this->getNonce('update_entry'), '_cn_wpnonce');
-									include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
 									processAddEntry();;
 									wp_redirect('admin.php?page=connections&display_messages=true');
 								}
@@ -763,21 +763,44 @@ if (!class_exists('connectionsLoad'))
 								{
 									$connections->setErrorMessage('capability_edit');
 								}
-								
 							break;
 							
 							case 'delete':
-								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
-								processDeleteEntry();
-								wp_redirect('admin.php?page=connections&display_messages=true');
+								/*
+								 * Check whether the current user delete an entry.
+								 */
+								if (current_user_can('connections_delete_entry'))
+								{
+									processDeleteEntry();
+									wp_redirect('admin.php?page=connections&display_messages=true');
+								}
+								else
+								{
+									$connections->setErrorMessage('capability_delete');
+								}
 							break;
 							
-							/*case 'do':
-								check_admin_referer($this->getNonce('bulk_action'), '_cn_wpnonce');
-								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+							case 'do':
+								switch ($_POST['action'])
+								{
+									case 'delete':
+										/*
+										 * Check whether the current user delete an entry.
+										 */
+										if (current_user_can('connections_delete_entry'))
+										{
+											check_admin_referer($this->getNonce('bulk_action'), '_cn_wpnonce');
+											processDeleteEntries();
+										}
+										else
+										{
+											$connections->setErrorMessage('capability_delete');
+										}
+									break;
+								}
 								
-								wp_redirect('admin.php?page=connections_view&display_messages=true');
-							break;*/
+								wp_redirect('admin.php?page=connections&display_messages=true');
+							break;
 						}
 					}
 					
@@ -787,7 +810,6 @@ if (!class_exists('connectionsLoad'))
 					if ($_POST['save'] && $_GET['action'] === 'add')
 					{
 						check_admin_referer($this->getNonce('add_entry'), '_cn_wpnonce');
-						include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
 						processAddEntry();	
 						wp_redirect('admin.php?page=connections_add&display_messages=true');
 					}
@@ -799,27 +821,23 @@ if (!class_exists('connectionsLoad'))
 						switch ($_GET['action']) {
 							case 'add':
 								check_admin_referer($this->getNonce('add_category'), '_cn_wpnonce');
-								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
 								processAddCategory();
 								wp_redirect('admin.php?page=connections_categories&display_messages=true');
 							break;
 							
 							case 'update':
 								check_admin_referer($this->getNonce('update_category'), '_cn_wpnonce');
-								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
 								processUpdateCategory();
 								wp_redirect('admin.php?page=connections_categories&display_messages=true');
 							break;
 							
 							case 'delete':
-								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
 								processDeleteCategory('delete');
 								wp_redirect('admin.php?page=connections_categories&display_messages=true');
 							break;
 							
 							case 'bulk_delete':
 								check_admin_referer($this->getNonce('bulk_delete_category'), '_cn_wpnonce');
-								include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
 								processDeleteCategory('bulk_delete');
 								wp_redirect('admin.php?page=connections_categories&display_messages=true');
 							break;
@@ -831,7 +849,6 @@ if (!class_exists('connectionsLoad'))
 					if ($_POST['save'] && $_GET['action'] === 'update_settings')
 					{
 						check_admin_referer($this->getNonce('update_settings'), '_cn_wpnonce');
-						include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
 						updateSettings();
 						wp_redirect('admin.php?page=connections_settings&display_messages=true');
 					}
@@ -841,7 +858,6 @@ if (!class_exists('connectionsLoad'))
 					if ($_POST['save'] && $_GET['action'] === 'update_role_settings')
 					{
 						check_admin_referer($this->getNonce('update_role_settings'), '_cn_wpnonce');
-						include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
 						updateRoleSettings();
 						wp_redirect('admin.php?page=connections_roles&display_messages=true');
 					}
