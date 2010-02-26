@@ -237,6 +237,51 @@ function processImages()
 	return array('image_names'=>$image);
 }
 
+function processSetEntryVisibility()
+{
+	$permitted = array('public', 'private', 'unlisted');
+	if (!in_array($_POST['action'], $permitted)) return FALSE;
+	
+	/*
+	 * Check whether the current user can edit entries.
+	 */
+	if (current_user_can('connections_edit_entry'))
+	{
+		global $connections;
+		
+		foreach ($_POST['entry'] as $id)
+		{
+			$entry = new cnEntry();
+			
+			$id = esc_attr($id);
+			$entry->set($id);
+			
+			$entry->setVisibility($_POST['action']);
+			$entry->update();
+			unset($entry);
+		}
+		
+		$connections->setSuccessMessage('form_entry_visibility_bulk');
+	}
+	else
+	{
+		$connections->setErrorMessage('capability_edit');
+	}
+}
+
+function processSetUserFilter()
+{
+	global $connections;
+	
+	$permittedEntryTypes = array('individual', 'organization', 'connection_group');
+	$permittedVisibility = array('public', 'private', 'unlisted');
+	
+	if (in_array($_POST['entry_type'], $permittedEntryTypes)) $connections->currentUser->setFilterEntryType(esc_attr($_POST['entry_type']));
+	if (in_array($_POST['visibility_type'], $permittedVisibility)) $connections->currentUser->setFilterVisibility(esc_attr($_POST['visibility_type']));
+	
+	$connections->currentUser->setFilterCategory(esc_attr($_POST['category']));
+}
+
 function processDeleteEntry()
 {
 	/*

@@ -309,6 +309,9 @@ if (!class_exists('connectionsLoad'))
 			$this->errorMessages->add('capability_add', 'You are not authorized to add entries. Please contact the admin if you received this message in error.');
 			$this->errorMessages->add('capability_delete', 'You are not authorized to delete entries. Please contact the admin if you received this message in error.');
 			$this->errorMessages->add('capability_edit', 'You are not authorized to edit entries. Please contact the admin if you received this message in error.');
+			$this->errorMessages->add('capability_categories', 'You are not authorized to edit the categories. Please contact the admin if you received this message in error.');
+			$this->errorMessages->add('capability_settings', 'You are not authorized to edit the settings. Please contact the admin if you received this message in error.');
+			$this->errorMessages->add('capability_roles', 'You are not authorized to edit role capabilities. Please contact the admin if you received this message in error.');
 			
 			$this->errorMessages->add('category_self_parent', 'Category can not be a parent of itself.');
 			$this->errorMessages->add('category_delete_uncategorized', 'The Uncategorized category can not be deleted.');
@@ -797,6 +800,29 @@ if (!class_exists('connectionsLoad'))
 											$connections->setErrorMessage('capability_delete');
 										}
 									break;
+									
+									case 'public':
+									case 'private':
+									case 'unlisted':
+										/*
+										 * Check whether the current user can edit entries.
+										 */
+										if (current_user_can('connections_edit_entry'))
+										{
+											check_admin_referer($this->getNonce('bulk_action'), '_cn_wpnonce');
+											processSetEntryVisibility();
+										}
+										else
+										{
+											$connections->setErrorMessage('capability_edit');
+										}
+									break;
+								}
+								
+								if ($_POST['filter'])
+								{
+									check_admin_referer($this->getNonce('bulk_action'), '_cn_wpnonce');
+									processSetUserFilter();
 								}
 								
 								wp_redirect('admin.php?page=connections&display_messages=true');
@@ -807,59 +833,99 @@ if (!class_exists('connectionsLoad'))
 				break;
 				
 				case 'connections_add':
-					if ($_POST['save'] && $_GET['action'] === 'add')
+					/*
+					 * Check whether user can add entries
+					 */
+					if (current_user_can('connections_add_entry'))
 					{
-						check_admin_referer($this->getNonce('add_entry'), '_cn_wpnonce');
-						processAddEntry();	
-						wp_redirect('admin.php?page=connections_add&display_messages=true');
+						if ($_POST['save'] && $_GET['action'] === 'add')
+						{
+							check_admin_referer($this->getNonce('add_entry'), '_cn_wpnonce');
+							processAddEntry();	
+							wp_redirect('admin.php?page=connections_add&display_messages=true');
+						}
+					}
+					else
+					{
+						$connections->setErrorMessage('capability_add');
 					}
 				break;
 				
 				case 'connections_categories':
-					if ($_GET['action'])
+					/*
+					 * Check whether user can edit Settings
+					 */
+					if (current_user_can('connections_edit_categories'))
 					{
-						switch ($_GET['action']) {
-							case 'add':
-								check_admin_referer($this->getNonce('add_category'), '_cn_wpnonce');
-								processAddCategory();
-								wp_redirect('admin.php?page=connections_categories&display_messages=true');
-							break;
-							
-							case 'update':
-								check_admin_referer($this->getNonce('update_category'), '_cn_wpnonce');
-								processUpdateCategory();
-								wp_redirect('admin.php?page=connections_categories&display_messages=true');
-							break;
-							
-							case 'delete':
-								processDeleteCategory('delete');
-								wp_redirect('admin.php?page=connections_categories&display_messages=true');
-							break;
-							
-							case 'bulk_delete':
-								check_admin_referer($this->getNonce('bulk_delete_category'), '_cn_wpnonce');
-								processDeleteCategory('bulk_delete');
-								wp_redirect('admin.php?page=connections_categories&display_messages=true');
-							break;
+						if ($_GET['action'])
+						{
+							switch ($_GET['action']) {
+								case 'add':
+									check_admin_referer($this->getNonce('add_category'), '_cn_wpnonce');
+									processAddCategory();
+									wp_redirect('admin.php?page=connections_categories&display_messages=true');
+								break;
+								
+								case 'update':
+									check_admin_referer($this->getNonce('update_category'), '_cn_wpnonce');
+									processUpdateCategory();
+									wp_redirect('admin.php?page=connections_categories&display_messages=true');
+								break;
+								
+								case 'delete':
+									processDeleteCategory('delete');
+									wp_redirect('admin.php?page=connections_categories&display_messages=true');
+								break;
+								
+								case 'bulk_delete':
+									check_admin_referer($this->getNonce('bulk_delete_category'), '_cn_wpnonce');
+									processDeleteCategory('bulk_delete');
+									wp_redirect('admin.php?page=connections_categories&display_messages=true');
+								break;
+							}
 						}
+					}
+					else
+					{
+						$connections->setErrorMessage('capability_categories');
 					}
 				break;
 				
 				case 'connections_settings':
-					if ($_POST['save'] && $_GET['action'] === 'update_settings')
+					/*
+					 * Check whether user can edit Settings
+					 */
+					if (current_user_can('connections_change_settings'))
 					{
-						check_admin_referer($this->getNonce('update_settings'), '_cn_wpnonce');
-						updateSettings();
-						wp_redirect('admin.php?page=connections_settings&display_messages=true');
+						if ($_POST['save'] && $_GET['action'] === 'update_settings')
+						{
+							check_admin_referer($this->getNonce('update_settings'), '_cn_wpnonce');
+							updateSettings();
+							wp_redirect('admin.php?page=connections_settings&display_messages=true');
+						}
+					}
+					else
+					{
+						$connections->setErrorMessage('capability_settings');
 					}
 				break;
 				
 				case 'connections_roles':
-					if ($_POST['save'] && $_GET['action'] === 'update_role_settings')
+					/*
+					 * Check whether user can edit roles
+					 */
+					if (current_user_can('connections_change_roles'))
 					{
-						check_admin_referer($this->getNonce('update_role_settings'), '_cn_wpnonce');
-						updateRoleSettings();
-						wp_redirect('admin.php?page=connections_roles&display_messages=true');
+						if ($_POST['save'] && $_GET['action'] === 'update_role_settings')
+						{
+							check_admin_referer($this->getNonce('update_role_settings'), '_cn_wpnonce');
+							updateRoleSettings();
+							wp_redirect('admin.php?page=connections_roles&display_messages=true');
+						}
+					}
+					else
+					{
+						$connections->setErrorMessage('capability_roles');
 					}
 				break;
 			}

@@ -2,7 +2,7 @@
 function connectionsShowCategoriesPage()
 {
 	/*
-	 * Check whether user can edit Settings
+	 * Check whether user can edit catgories.
 	 */
 	if (!current_user_can('connections_edit_categories'))
 	{
