@@ -889,6 +889,7 @@ class cnEntry
     
     /**
      * Sets $imageNameOriginal.
+     * 
      * @param object $imageNameOriginal
      * @see entry::$imageNameOriginal
      */
@@ -897,6 +898,18 @@ class cnEntry
         $this->options['image']['name']['original'] = $imageNameOriginal;
     }
     
+	/**
+	 * Displays the category list in a HTML list or custom format
+	 * 
+	 * @param string $separator [optional] Default is an empty string. Separator for between the categories.
+	 * @param string $parents [optional] How to display the parent categories.
+	 * @return string
+	 */
+	public function getCategoryList($separator = '', $parents = '')
+	{
+		
+	}
+	
 	public function getAddedBy()
 	{
 		$addedBy = get_userdata($this->addedBy);

@@ -418,20 +418,19 @@ class cnvCard extends cnEntry
 		}
 	}
 	
+	public function getvCard()
+	{
+		$this->setvCardData();
+		return $this->card;
+	}
+	
 	public function download()
 	{
-		@session_start();
-		$this->setvCardData();
+		$token = wp_create_nonce('download_vcard_' . $this->getId());
 		
-		$filename = trim($this->data['display_name']); 
-		$filename = str_replace(" ", "_", $filename);
+		$filenameEncoded = rawurlencode($filename);
 		
-		$token = md5(uniqid(rand(), true));
-		
-		$_SESSION['vcard'][$token]['filename'] = $filename;
-		$_SESSION['vcard'][$token]['data'] = $this->card;
-		
-		return '<a href="' . WP_CONTENT_URL . '/plugins/connections/includes/download.vCard.php?uid=' . $token . '">Add to Address Book</a>';
+		echo '<a href="' . get_option('home') . '/download.vCard.php?token=' . $token . '&entry=' . $this->getId() . '">Add to Address Book</a>';
 	}
 }
 ?>
