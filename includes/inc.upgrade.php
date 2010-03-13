@@ -130,6 +130,7 @@ function cnRunDBUpgrade()
 				$connections->term->setTermRelationships($entryID, $termID, 'category');
 			}
 			
+			$connections->options->setDBVersion(CN_DB_VERSION);
 		}
 		
 		if (version_compare($dbVersion, '0.1.1', '<'))
@@ -144,12 +145,14 @@ function cnRunDBUpgrade()
 				$entry = new cnEntry($result);
 				$entry->update();
 			}
+			
+			$connections->options->setDBVersion(CN_DB_VERSION);
 		}
 		
 		echo '<h4>Upgrade completed.' . "</h4>\n";
 		echo '<h4><a href="' . $urlPath . '">Continue</a></h4>';
 		$wpdb->hide_errors();
-		$connections->options->setDBVersion(CN_DB_VERSION);
+		
 	}
 }
 

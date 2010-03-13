@@ -78,7 +78,7 @@ function connectionsShowRolesPage()
 							 );
 				
 				$form->open($attr);
-				$connections->tokenField('update_role_settings');
+				$form->tokenField('update_role_settings');
 			?>
 						
 				<div class="form-wrap">

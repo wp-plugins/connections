@@ -14,7 +14,7 @@
 		
 		$filename = sanitize_file_name($vCard->getFullFirstLastName());
 		
-		header("Content-type: text/directory");
+		header("Content-type: text/x-vcard");
 		header("Content-Disposition: attachment; filename=" . $filename . ".vcf");
 		header("Pragma: public");
 	

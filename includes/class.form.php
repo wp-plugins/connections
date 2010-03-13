@@ -95,6 +95,68 @@ class cnFormObjects
 	}
 	
 	/**
+		 * Retrieves or displays the nonce field for forms using wp_nonce_field.
+		 * 
+		 * @param string $action Action name.
+		 * @param string $item [optional] Item name. Use when protecting multiple items on the same page.
+		 * @param string $name [optional] Nonce name.
+		 * @param bool $referer [optional] Whether to set and display the refer field for validation.
+		 * @param bool $echo [optional] Whether to display or return the hidden form field.
+		 * @return string Nonce field.
+		 */
+		public function tokenField($action, $item = FALSE, $name = '_cn_wpnonce', $referer = TRUE, $echo = TRUE)
+		{
+			$name = esc_attr($name);
+			
+			if ($item == FALSE)
+			{
+				$token = wp_nonce_field($this->nonceBase . '_' . $action, $name, TRUE, FALSE);
+			}
+			else
+			{
+				$token = wp_nonce_field($this->nonceBase . '_' . $action . '_' . $item, $name, TRUE, FALSE);
+			}
+			
+			if ($echo) echo $token;
+			if ($referer) wp_referer_field($echo, 'previous');
+			
+			return $token;
+		}
+		
+		/**
+		 * Retrieves URL with nonce added to the query string.
+		 * 
+		 * @param string $actionURL URL to add the nonce to.
+		 * @param string $item Nonce action name.
+		 * @return string URL string with nonce added to the query string.
+		 */
+		public function tokenURL($actionURL, $item)
+		{
+			return wp_nonce_url($actionURL, $item);
+		}
+		
+		/**
+		 * Generate the complete nonce string, from the nonce base, the action and an item.
+		 * 
+		 * @param string $action Action name.
+		 * @param string $item [optional] Item name. Use when protecting multiple items on the same page.
+		 * @return string Nonce string.
+		 */
+		public function getNonce($action, $item = FALSE)
+		{
+			if ($item == FALSE)
+			{
+				$nonce = $this->nonceBase . '_' . $action;
+			}
+			else
+			{
+				$nonce = $this->nonceBase . '_' . $action . '_' . $item;
+			}
+			
+			return $nonce;
+		}
+	
+	/**
 	 * Builds an alpha index.
 	 * @return string
 	 */
@@ -1157,7 +1219,7 @@ class cnCategoryObjects
 	private function buildTableRowHTML($term, $level)
 	{
 		global $connections;
-		//$form = new cnFormObjects();
+		$form = new cnFormObjects();
 		$category = new cnCategory($term);
 		$pad = str_repeat('&#8212; ', max(0, $level));
 		$this->rowClass = 'alternate' == $this->rowClass ? '' : 'alternate';
@@ -1165,8 +1227,8 @@ class cnCategoryObjects
 		/*
 		 * Genreate the edit & delete tokens.
 		 */
-		$editToken = $connections->tokenURL('admin.php?page=connections_categories&action=edit&id=' . $category->getId(), 'category_edit_' . $category->getId());
-		$deleteToken = $connections->tokenURL('admin.php?page=connections_categories&action=delete&id=' . $category->getId(), 'category_delete_' . $category->getId());
+		$editToken = $form->tokenURL('admin.php?page=connections_categories&action=edit&id=' . $category->getId(), 'category_edit_' . $category->getId());
+		$deleteToken = $form->tokenURL('admin.php?page=connections_categories&action=delete&id=' . $category->getId(), 'category_delete_' . $category->getId());
 		
 		$out = '<tr id="cat-' . $category->getId() . '" class="' . $this->rowClass . '">';
 			$out .= '<th class="check-column">';

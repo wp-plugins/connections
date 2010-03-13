@@ -60,7 +60,7 @@ function connectionsShowAddPage()
 						if (isset($id)) $attr['action'] .= '&id=' . $id;
 						
 						$form->open($attr);
-						$connections->tokenField('add_entry');
+						$form->tokenField('add_entry');
 						$entryForm->displayForm($entry);
 						$form->close();
 					?>

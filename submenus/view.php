@@ -36,7 +36,7 @@ function connectionsShowViewPage()
 											 );
 								
 								$form->open($attr);
-								$connections->tokenField('add_entry');
+								$form->tokenField('add_entry');
 								
 								$entryForm->displayForm($entry);
 								$form->close();
@@ -78,7 +78,7 @@ function connectionsShowViewPage()
 											 );
 								
 								$form->open($attr);
-								$connections->tokenField('update_entry');
+								$form->tokenField('update_entry');
 								
 								$entryForm->displayForm($entry);
 								$form->close();
@@ -121,7 +121,7 @@ function connectionsShowViewPage()
 						
 						<form action="admin.php?page=connections&action=do" method="post">
 						
-						<?php $connections->tokenField('bulk_action'); ?>
+						<?php $form->tokenField('bulk_action'); ?>
 						
 						<div class="tablenav">
 							
@@ -261,9 +261,9 @@ function connectionsShowViewPage()
 									/*
 									 * Genreate the edit, copy and delete URLs with nonce tokens.
 									 */
-									$editTokenURL = $connections->tokenURL('admin.php?page=connections&action=edit&id=' . $entry->getId(), 'entry_edit_' . $entry->getId());
-									$copyTokenURL = $connections->tokenURL('admin.php?page=connections&action=copy&id=' . $entry->getId(), 'entry_copy_' . $entry->getId());
-									$deleteTokenURL = $connections->tokenURL('admin.php?page=connections&action=delete&id=' . $entry->getId(), 'entry_delete_' . $entry->getId());
+									$editTokenURL = $form->tokenURL('admin.php?page=connections&action=edit&id=' . $entry->getId(), 'entry_edit_' . $entry->getId());
+									$copyTokenURL = $form->tokenURL('admin.php?page=connections&action=copy&id=' . $entry->getId(), 'entry_copy_' . $entry->getId());
+									$deleteTokenURL = $form->tokenURL('admin.php?page=connections&action=delete&id=' . $entry->getId(), 'entry_delete_' . $entry->getId());
 									
 									
 									echo "<tr id='row-" . $entry->getId() . "' class='parent-row'>";

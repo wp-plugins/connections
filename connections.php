@@ -39,9 +39,6 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
  * @TODO: Add plug-in version to the Javascript and CSS hooks.
  */
 
-// Start the $_SESSION
-if (!session_id()) @session_start();
-
 if (!class_exists('connectionsLoad'))
 {
 	class connectionsLoad
@@ -516,6 +513,11 @@ if (!class_exists('connectionsLoad'))
 			 * @TODO: Verify that the table did create.
 			 */
 			
+			/**
+			 * @TODO: Shouldn't setVersion here. Do it in the showPage method
+			 * as part of the upgade check.
+			 */
+			
 			$this->options->setDefaultCapabilities();
 			$this->options->setVersion(CN_CURRENT_VERSION);
 			
@@ -529,6 +531,11 @@ if (!class_exists('connectionsLoad'))
 				$attributes['description'] = 'Entries not assigned to a category will automatically be assigned to this category and deleting a category which has been assigned to an entry will reassign that entry to this category. This category can not be edited or deleted.';
 				
 				$connections->term->addTerm('Uncategorized', 'category', $attributes);
+			}
+			
+			if (!file_exists(ABSPATH . 'download.vCard.php'))
+			{
+				copy(WP_PLUGIN_DIR . '/connections/includes/download.vCard.php', ABSPATH . 'download.vCard.php');
 			}
 			
 			update_option('connections_installed', 'The Connections plug-in version ' . $this->options->getVersion() . ' has been installed or upgraded.');
@@ -662,10 +669,6 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function showPage()
 		{
-			/**
-			 * @TODO: Upgrade page to go here.
-			 */
-			
 			if ($this->options->getVersion() != CN_CURRENT_VERSION)
 			{
 				echo '<div id="message" class="error"><p><strong>ERROR: </strong>The version of Connections installed is newer than the version last activated. Please deactive and then reactivate Connections.</p></div>';
@@ -686,7 +689,6 @@ if (!class_exists('connectionsLoad'))
 				delete_option('connections_installed');
 			}
 			
-			$this->sessionCheck();
 			
 			switch ($_GET['page'])
 			{
@@ -729,6 +731,7 @@ if (!class_exists('connectionsLoad'))
 		private function controllers()
 		{
 			include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+			$form = new cnFormObjects();
 			
 			switch ($_GET['page'])
 			{
@@ -742,7 +745,7 @@ if (!class_exists('connectionsLoad'))
 								 */
 								if (current_user_can('connections_add_entry'))
 								{
-									check_admin_referer($this->getNonce('add_entry'), '_cn_wpnonce');
+									check_admin_referer($form->getNonce('add_entry'), '_cn_wpnonce');
 									processAddEntry();
 									wp_redirect('admin.php?page=connections&display_messages=true');
 								}
@@ -758,7 +761,7 @@ if (!class_exists('connectionsLoad'))
 								 */
 								if (current_user_can('connections_edit_entry'))
 								{
-									check_admin_referer($this->getNonce('update_entry'), '_cn_wpnonce');
+									check_admin_referer($form->getNonce('update_entry'), '_cn_wpnonce');
 									processAddEntry();;
 									wp_redirect('admin.php?page=connections&display_messages=true');
 								}
@@ -792,7 +795,7 @@ if (!class_exists('connectionsLoad'))
 										 */
 										if (current_user_can('connections_delete_entry'))
 										{
-											check_admin_referer($this->getNonce('bulk_action'), '_cn_wpnonce');
+											check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
 											processDeleteEntries();
 										}
 										else
@@ -809,7 +812,7 @@ if (!class_exists('connectionsLoad'))
 										 */
 										if (current_user_can('connections_edit_entry'))
 										{
-											check_admin_referer($this->getNonce('bulk_action'), '_cn_wpnonce');
+											check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
 											processSetEntryVisibility();
 										}
 										else
@@ -821,7 +824,7 @@ if (!class_exists('connectionsLoad'))
 								
 								if ($_POST['filter'])
 								{
-									check_admin_referer($this->getNonce('bulk_action'), '_cn_wpnonce');
+									check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
 									processSetUserFilter();
 								}
 								
@@ -840,7 +843,7 @@ if (!class_exists('connectionsLoad'))
 					{
 						if ($_POST['save'] && $_GET['action'] === 'add')
 						{
-							check_admin_referer($this->getNonce('add_entry'), '_cn_wpnonce');
+							check_admin_referer($form->getNonce('add_entry'), '_cn_wpnonce');
 							processAddEntry();	
 							wp_redirect('admin.php?page=connections_add&display_messages=true');
 						}
@@ -861,13 +864,13 @@ if (!class_exists('connectionsLoad'))
 						{
 							switch ($_GET['action']) {
 								case 'add':
-									check_admin_referer($this->getNonce('add_category'), '_cn_wpnonce');
+									check_admin_referer($form->getNonce('add_category'), '_cn_wpnonce');
 									processAddCategory();
 									wp_redirect('admin.php?page=connections_categories&display_messages=true');
 								break;
 								
 								case 'update':
-									check_admin_referer($this->getNonce('update_category'), '_cn_wpnonce');
+									check_admin_referer($form->getNonce('update_category'), '_cn_wpnonce');
 									processUpdateCategory();
 									wp_redirect('admin.php?page=connections_categories&display_messages=true');
 								break;
@@ -878,7 +881,7 @@ if (!class_exists('connectionsLoad'))
 								break;
 								
 								case 'bulk_delete':
-									check_admin_referer($this->getNonce('bulk_delete_category'), '_cn_wpnonce');
+									check_admin_referer($form->getNonce('bulk_delete_category'), '_cn_wpnonce');
 									processDeleteCategory('bulk_delete');
 									wp_redirect('admin.php?page=connections_categories&display_messages=true');
 								break;
@@ -899,7 +902,7 @@ if (!class_exists('connectionsLoad'))
 					{
 						if ($_POST['save'] && $_GET['action'] === 'update_settings')
 						{
-							check_admin_referer($this->getNonce('update_settings'), '_cn_wpnonce');
+							check_admin_referer($form->getNonce('update_settings'), '_cn_wpnonce');
 							updateSettings();
 							wp_redirect('admin.php?page=connections_settings&display_messages=true');
 						}
@@ -918,7 +921,7 @@ if (!class_exists('connectionsLoad'))
 					{
 						if ($_POST['save'] && $_GET['action'] === 'update_role_settings')
 						{
-							check_admin_referer($this->getNonce('update_role_settings'), '_cn_wpnonce');
+							check_admin_referer($form->getNonce('update_role_settings'), '_cn_wpnonce');
 							updateRoleSettings();
 							wp_redirect('admin.php?page=connections_roles&display_messages=true');
 						}
@@ -931,67 +934,6 @@ if (!class_exists('connectionsLoad'))
 			}
 		}
 		
-		/**
-		 * Retrieves or displays the nonce field for forms using wp_nonce_field.
-		 * 
-		 * @param string $action Action name.
-		 * @param string $item [optional] Item name. Use when protecting multiple items on the same page.
-		 * @param string $name [optional] Nonce name.
-		 * @param bool $referer [optional] Whether to set and display the refer field for validation.
-		 * @param bool $echo [optional] Whether to display or return the hidden form field.
-		 * @return string Nonce field.
-		 */
-		public function tokenField($action, $item = FALSE, $name = '_cn_wpnonce', $referer = TRUE, $echo = TRUE)
-		{
-			$name = esc_attr($name);
-			
-			if ($item == FALSE)
-			{
-				$token = wp_nonce_field($this->nonceBase . '_' . $action, $name, TRUE, FALSE);
-			}
-			else
-			{
-				$token = wp_nonce_field($this->nonceBase . '_' . $action . '_' . $item, $name, TRUE, FALSE);
-			}
-			
-			if ($echo) echo $token;
-			if ($referer) wp_referer_field($echo, 'previous');
-			
-			return $token;
-		}
-		
-		/**
-		 * Retrieves URL with nonce added to the query string.
-		 * 
-		 * @param string $actionURL URL to add the nonce to.
-		 * @param string $item Nonce action name.
-		 * @return string URL string with nonce added to the query string.
-		 */
-		public function tokenURL($actionURL, $item)
-		{
-			return wp_nonce_url($actionURL, $item);
-		}
-		
-		/**
-		 * Generate the complete nonce string, from the nonce base, the action and an item.
-		 * 
-		 * @param string $action Action name.
-		 * @param string $item [optional] Item name. Use when protecting multiple items on the same page.
-		 * @return string Nonce string.
-		 */
-		public function getNonce($action, $item = FALSE)
-		{
-			if ($item == FALSE)
-			{
-				$nonce = $this->nonceBase . '_' . $action;
-			}
-			else
-			{
-				$nonce = $this->nonceBase . '_' . $action . '_' . $item;
-			}
-			
-			return $nonce;
-		}
 	}
 	
 	/*

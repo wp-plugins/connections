@@ -41,7 +41,7 @@ function connectionsShowSettingsPage()
 							 );
 				
 				$form->open($attr);
-				$connections->tokenField('update_settings');
+				$form->tokenField('update_settings');
 			?>
 			
 				<div class="form-wrap">

@@ -43,7 +43,7 @@ function connectionsShowCategoriesPage()
 									 );
 						
 						$form->open($attr);
-						$connections->tokenField('update_category');
+						$form->tokenField('update_category');
 						
 						$categoryObjects->showForm($connections->retrieve->category($id));
 					?>
@@ -74,7 +74,7 @@ function connectionsShowCategoriesPage()
 												 );
 									
 									$form->open($attr);
-									$connections->tokenField('bulk_delete_category');
+									$form->tokenField('bulk_delete_category');
 								?>
 								
 									<div class="tablenav">
@@ -140,7 +140,7 @@ function connectionsShowCategoriesPage()
 														 );
 											
 											$form->open($attr);
-											$connections->tokenField('add_category');
+											$form->tokenField('add_category');
 											
 											$categoryObjects->showForm();
 										?>

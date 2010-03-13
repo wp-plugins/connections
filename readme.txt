@@ -76,6 +76,10 @@ Connections is a simple to use address book system but is also very versatile. Y
 
 == Changelog ==
 
+= 0.7.X.X X/X/2010 =
+* BUG: Set the db version after each db upgrade cycle.
+* Removed the use of $_SESSION thorught the plug-in.
+
 = 0.6.2.1 2/3/2010 =
 * BUG: Fixed fatal error when using the shortcode attribute repeat_alphaindex.
 
