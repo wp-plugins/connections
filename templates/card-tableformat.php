@@ -23,6 +23,7 @@
 				<?php echo $entry->getEmailAddressBlock() ?>
 				
 				<?php echo $entry->getImBlock() ?>
+				<?php echo $entry->getSocialMediaBlock() ?>
 				<?php echo $entry->getWebsiteBlock() ?>
 				
 				<?php echo $entry->getBirthdayBlock('F j') ?>

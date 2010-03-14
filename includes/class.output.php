@@ -255,7 +255,7 @@ class cnOutput extends cnEntry
 		if ($this->getIm())
 		{
 			$imObject = new cnIM();
-			$out .= '<div class="im" style="margin-bottom: 10px;">' . "\n";
+			$out = '<div class="im" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getIm() as $imRow)
 			{
 				if ($imObject->getId($imRow) != null) $out .= '<strong>' . $imObject->getName($imRow) . ':</strong> ' . $imObject->getId($imRow). '<br />' . "\n";
@@ -265,12 +265,27 @@ class cnOutput extends cnEntry
 		return $out;
 	}
 	
+	public function getSocialMediaBlock()
+	{
+		if ($this->getSocialMedia())
+		{
+			$socialMediaObject = new cnSocialMedia();
+			$out = '<div class="social_media" style="margin-bottom: 10px;">' . "\n";
+			foreach ($this->getSocialMedia() as $socialMediaRow)
+			{
+				if ($socialMediaObject->getId($socialMediaRow) != null) $out .= '<strong>' . $socialMediaObject->getName($socialMediaRow) . ':</strong> ' . $socialMediaObject->getId($socialMediaRow) . '<br />' . "\n";
+			}
+			$out .= '</div>' . "\n";
+		}
+		echo $out;
+	}
+	
 	public function getWebsiteBlock()
 	{
 		$websiteObject = new cnWebsite;
 		if ($this->getWebsites())
 		{
-			$out .= '<div class="websites" style="margin-bottom: 10px;">' . "\n";
+			$out = '<div class="websites" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getWebsites() as $websiteRow)
 			{
 				if ($websiteObject->getAddress($websiteRow) != null) $out .= '<strong>Website:</strong> <a class="url" href="' . $websiteObject->getAddress($websiteRow) . '">' . $websiteObject->getAddress($websiteRow) . '</a>' . "\n";

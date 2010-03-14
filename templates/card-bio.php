@@ -18,6 +18,7 @@
 		<?php echo $entry->getConnectionGroupBlock() ?>
 		<?php echo $entry->getPhoneNumberBlock() ?>
 		<?php echo $entry->getEmailAddressBlock() ?>
+		<?php echo $entry->getSocialMediaBlock() ?>
 		<?php echo $entry->getImBlock() ?>
 		<?php echo $entry->getWebsiteBlock() ?>
 		
