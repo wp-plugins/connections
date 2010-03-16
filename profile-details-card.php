@@ -33,7 +33,9 @@
 		<?php echo $entry->getBirthdayBlock('F j') ?>
 		<?php echo $entry->getAnniversaryBlock() ?>
 		
-	</div>	
+	</div>
+	
+	<?php echo $entry->getNotesBlock(); ?>
 	
 	<div style="clear:both"></div>
 	<div class="cn-meta" align="left" style="margin-top: 6px">

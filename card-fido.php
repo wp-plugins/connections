@@ -1,7 +1,7 @@
 <div id="entry_id_<?php echo $entry->getId(); ?>" class="cn-entry" style="-moz-border-radius:4px; background-color:#E5ECF9; border:1px solid #666666; color: #666666; margin:8px 0px; padding:6px; position: relative; width: 590px;">
-	<table width="100%" border="0px" bgcolor="#E5ECF9" bordercolor="#666666" cellspacing="0px" cellpadding="0px" style="width: 100%">
+	<table width="100%" border="0px" bgcolor="#E5ECF9" bordercolor="#666666" cellspacing="0px" cellpadding="0px" style="width: 100%; margin-bottom: 0px; vertical-align:top;">
 	    <tr>
-	        <td align="left" width="55%" valign="top">
+	        <td align="left" width="55%" valign="top" style="padding: 0px">
 	        	<div style="clear:both; margin: 0 5px;">
 					<div style="margin-bottom: 10px;">
 						<span style=" color: #333333;font-size:larger;font-variant: small-caps; margin-bottom: 10px;"><strong><?php echo $entry->getFullFirstLastNameBlock() ?></strong></span><br />
@@ -22,7 +22,7 @@
 								$map_link = "http://maps.google.com/?q=";
 								
 								//if ($entry->getOrganization() != NULL) $map_link .= $entry->getOrganization() . '+';
-								//if ($addressObject->getLineOne($addressRow) != null) $map_link .= $addressObject->getLineOne($addressRow) . '+';
+								if ($addressObject->getLineOne($addressRow) != null) $map_link .= $addressObject->getLineOne($addressRow) . '+';
 								if ($addressObject->getLineTwo($addressRow) != null) $map_link .= $addressObject->getLineTwo($addressRow) . '+';
 								if ($addressObject->getCity($addressRow) != null) $map_link .= $addressObject->getCity($addressRow) . '+';
 								if ($addressObject->getState($addressRow) != null) $map_link .= $addressObject->getState($addressRow) . '+';
@@ -59,7 +59,7 @@
 					?>
 				</div>
 	        </td>
-	        <td align="right" valign="top" style="text-align: right;">
+	        <td align="right" valign="top" style="text-align: right; padding: 0px">
 	        	<div style="clear:both; margin: 5px 5px;">
 		        	<?php
 						if ($entry->getPhoneNumbers())
@@ -144,10 +144,10 @@
 	    </tr>
 	    
 	    <tr>
-	        <td valign="bottom">
+	        <td valign="bottom" style="padding: 0px">
 	        	<?php echo $vCard->download() ?><?php if (!empty($anchorOut)) echo ' | ' . $anchorOut; ?>
 	        </td>
-			<td align="right" valign="bottom"  style="text-align: right;">
+			<td align="right" valign="bottom"  style="text-align: right; padding: 0px;">
 				
 				<?php if ($entry->getNotes() != '') { ?>
 				
@@ -188,7 +188,7 @@
 	    </tr>
 		
 		<tr>
-			<td colspan="2">
+			<td colspan="2" style="padding: 0px">
 				<?php 
 					if ($entry->getNotes() != '')
 					{
