@@ -167,6 +167,8 @@ class cnvCard extends cnEntry
 		if ($this->data['home_fax']) { $this->card .= "TEL;TYPE=home,fax:".$this->data['home_fax']."\r\n"; }
 		if ($this->data['pager_tel']) { $this->card .= "TEL;TYPE=work,pager:".$this->data['pager_tel']."\r\n"; }
 		if ($this->data['url']) { $this->card .= "URL:".$this->data['url']."\r\n"; }
+		
+		// http://tools.ietf.org/html/rfc4770
 		if ($this->data['aim']) { $this->card .= "IMPP;TYPE=personal:aim:".$this->data['aim']."\r\n"; }
 		if ($this->data['aim']) { $this->card .= "X-AIM:".$this->data['aim']."\r\n"; }
 		if ($this->data['messenger']) { $this->card .= "IMPP;TYPE=personal:msn:".$this->data['messenger']."\r\n"; }
@@ -175,6 +177,10 @@ class cnvCard extends cnEntry
 		if ($this->data['yim']) { $this->card .= "X-YAHOO:".$this->data['yim']."\r\n"; }
 		if ($this->data['jabber']) { $this->card .= "IMPP;TYPE=personal:xmpp:".$this->data['jabber']."\r\n"; }
 		if ($this->data['jabber']) { $this->card .= "X-JABBER:".$this->data['jabber']."\r\n"; }
+		
+		// @TODO: Add social media IDs here.
+		// http://tools.ietf.org/html/draft-george-vcarddav-vcard-extension-01
+		
 		if ($this->data['birthday']) { $this->card .= "BDAY:".$this->data['birthday']."\r\n"; }
 		if ($this->data['anniversary']) { $this->card .= "X-ANNIVERSARY:".$this->data['anniversary']."\r\n"; }
 		if ($this->data['spouse']) { $this->card .= "X-SPOUSE:".$this->data['spouse']."\r\n"; }
