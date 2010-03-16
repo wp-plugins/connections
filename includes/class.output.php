@@ -149,7 +149,7 @@ class cnOutput extends cnEntry
 		if ($this->getPhoneNumbers())
 		{
 			$phoneNumberObject = new cnPhoneNumber();
-			$out .= '<div class="phone_numbers" style="margin-bottom: 10px;">' . "\n";
+			$out .= '<div class="phone-number-block" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getPhoneNumbers() as $phoneNumberRow) 
 			{
 				//Type for hCard compatibility. Hidden.
@@ -239,7 +239,7 @@ class cnOutput extends cnEntry
 		if ($this->getEmailAddresses())
 		{
 			$emailAddressObject = new cnEmail();
-			$out .= '<div class="email-addresses">' . "\n";
+			$out .= '<div class="email-address-block">' . "\n";
 			foreach ($this->getEmailAddresses() as $emailRow)
 			{
 				//Type for hCard compatibility. Hidden.
@@ -254,11 +254,14 @@ class cnOutput extends cnEntry
 	{
 		if ($this->getIm())
 		{
+			/**
+			 * @TODO: Out as clickable links using hCard spec.
+			 */
 			$imObject = new cnIM();
-			$out = '<div class="im" style="margin-bottom: 10px;">' . "\n";
+			$out = '<div class="im-block" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getIm() as $imRow)
 			{
-				if ($imObject->getId($imRow) != null) $out .= '<strong>' . $imObject->getName($imRow) . ':</strong> ' . $imObject->getId($imRow). '<br />' . "\n";
+				if ($imObject->getId($imRow) != null) $out .= '<span class="im-item"><strong>' . $imObject->getName($imRow) . ':</strong> ' . $imObject->getId($imRow). '</span><br />' . "\n";
 			}
 			$out .= '</div>' . "\n";
 		}
@@ -270,10 +273,10 @@ class cnOutput extends cnEntry
 		if ($this->getSocialMedia())
 		{
 			$socialMediaObject = new cnSocialMedia();
-			$out = '<div class="social_media" style="margin-bottom: 10px;">' . "\n";
+			$out = '<div class="social-media-block" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getSocialMedia() as $socialMediaRow)
 			{
-				if ($socialMediaObject->getId($socialMediaRow) != null) $out .= '<strong>' . $socialMediaObject->getName($socialMediaRow) . ':</strong> ' . $socialMediaObject->getId($socialMediaRow) . '<br />' . "\n";
+				if ($socialMediaObject->getId($socialMediaRow) != null) $out .= '<span class="social-media-item"><a class="url uid ' . $socialMediaObject->getType($socialMediaRow) . '" href="' . $socialMediaObject->getId($socialMediaRow) . '" target="_blank">' . $socialMediaObject->getName($socialMediaRow) . '</a></span><br />' . "\n";
 			}
 			$out .= '</div>' . "\n";
 		}
@@ -285,7 +288,7 @@ class cnOutput extends cnEntry
 		$websiteObject = new cnWebsite;
 		if ($this->getWebsites())
 		{
-			$out = '<div class="websites" style="margin-bottom: 10px;">' . "\n";
+			$out = '<div class="website-block" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getWebsites() as $websiteRow)
 			{
 				if ($websiteObject->getAddress($websiteRow) != null) $out .= '<strong>Website:</strong> <a class="url" href="' . $websiteObject->getAddress($websiteRow) . '">' . $websiteObject->getAddress($websiteRow) . '</a>' . "\n";

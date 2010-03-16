@@ -455,20 +455,20 @@ function connectionsShowHelpPage()
 	compatibility.</p>
 
 	<pre>
-	<code>&lt;?php echo entry-&gt;getId(); ?&gt;</code>
+	<code>&lt;?php echo $entry-&gt;getId(); ?&gt;</code>
 	</pre>
 	
 	<p>Example of a template tag that return the entry's
 	ID.</p>
 
 	<pre>
-	<code>entry-&gt;getId()</code>
+	<code>$entry-&gt;getId()</code>
 	</pre>
 	
 	<p>Returns the ID.</p>
 
 	<pre>
-	<code>entry-&gt;getFormattedTimeStamp('FORMAT')</code>
+	<code>$entry-&gt;getFormattedTimeStamp('FORMAT')</code>
 	</pre>
 	
 	<p>Returns the last updated time. The format is
@@ -477,33 +477,33 @@ function connectionsShowHelpPage()
 	the format characters.</p>
 
 	<pre>
-	<code>entry-&gt;getUnixTimeStamp()</code>
+	<code>$entry-&gt;getUnixTimeStamp()</code>
 	</pre>
 	
 	<p>Returns the last updated time in raw unix time
 	format.</p>
 
 	<pre>
-	<code>entry-&gt;getHumanTimeDiff()</code>
+	<code>$entry-&gt;getHumanTimeDiff()</code>
 	</pre>
 	
 	<p>Returns the last updated time using human time
 	difference.</p>
 
 	<pre>
-	<code>entry-&gt;getFirstName()</code>
+	<code>$entry-&gt;getFirstName()</code>
 	</pre>
 	
 	<p>Returns the first name.</p>
 
 	<pre>
-	<code>entry-&gt;getLastName()</code>
+	<code>$entry-&gt;getLastName()</code>
 	</pre>
 	
 	<p>Returns the last name.</p>
 	<pre>
 
-	<code>entry-&gt;getFullFirstLastName()</code>
+	<code>$entry-&gt;getFullFirstLastName()</code>
 	</pre>
 	
 	<p>Retuns the full name with the first name first.
@@ -511,7 +511,7 @@ function connectionsShowHelpPage()
 	this will return the Organization/Connection Group name instead.</p>
 
 	<pre>
-	<code>entry-&gt;getFullLastFirstName()</code>
+	<code>$entry-&gt;getFullLastFirstName()</code>
 	</pre>
 	
 	<p>Retuns the full name with the last name first. NOTE:
@@ -519,70 +519,70 @@ function connectionsShowHelpPage()
 	this will return the Organization/Connection Group name instead.</p>
 	
 	<pre>
-	<code>entry-&gt;getGroupName()</code>
+	<code>$entry-&gt;getGroupName()</code>
 	</pre>
 	
 	<p>Returns the Connection Group name.</p>
 	
 	<pre>
-	<code>entry-&gt;getConnectionGroup()</code>
+	<code>$entry-&gt;getConnectionGroup()</code>
 	</pre>
 	
 	<p>Returns an associative array containing the relation's entry id 
 	as the key and the relation</p>
 	
 	<pre>
-	<code>entry-&gt;getOrganization()</code>
+	<code>$entry-&gt;getOrganization()</code>
 	</pre>
 	
 	<p>Returns the organization.</p>
 
 	<pre>
-	<code>entry-&gt;getTitle()</code>
+	<code>$entry-&gt;getTitle()</code>
 	</pre>
 	
 	<p>Returns the title.</p>
 
 	<pre>
-	<code>entry-&gt;getDepartment()</code>
+	<code>$entry-&gt;getDepartment()</code>
 	</pre>
 	
 	<p>Returns the department.</p>
 
 	<pre>
-	<code>entry-&gt;getAddresses()</code>
+	<code>$entry-&gt;getAddresses()</code>
 	</pre>
 	
 	<p>Returns an associative array containing all the addresses.</p>
 
 	<pre>
-	<code>entry-&gt;getPhoneNumbers()</code>
+	<code>$entry-&gt;getPhoneNumbers()</code>
 	</pre>
 	
 	<p>Returns an associative array containing all the
 	phone numbers.</p>
 
 	<pre>
-	<code>entry-&gt;getEmailAddresses()</code>
+	<code>$entry-&gt;getEmailAddresses()</code>
 	</pre>
 	
 	<p>Returns an associative array containing all the
 	email addresses.</p>
 
 	<pre>
-	<code>entry-&gt;getIm()</code>
+	<code>$entry-&gt;getIm()</code>
 	</pre>
 	
 	<p>Returns an associative array containing all the IM ID's.</p>
 
 	<pre>
-	<code>entry-&gt;getWebsites()</code>
+	<code>$entry-&gt;getWebsites()</code>
 	</pre>
 	
 	<p>Returns an associative array containing all the websites.</p>
 
 	<pre>
-	<code>entry-&gt;getAnniversary('FORMAT')</code>
+	<code>$entry-&gt;getAnniversary('FORMAT')</code>
 	</pre>
 	
 	<p>Returns the anniversary date for the entry. The
@@ -591,7 +591,7 @@ function connectionsShowHelpPage()
 	Manual</a> for the format characters.</p>
 
 	<pre>
-	<code>entry-&gt;getBirthday('FORMAT')</code>
+	<code>$entry-&gt;getBirthday('FORMAT')</code>
 	</pre>
 	
 	<p>Returns the birthday date for the entry. The format
@@ -600,13 +600,13 @@ function connectionsShowHelpPage()
 	for the format characters.</p>
 
 	<pre>
-	<code>entry-&gt;getBio()</code>
+	<code>$entry-&gt;getBio()</code>
 	</pre>
 	
 	<p>Returns the biography.</p>
 
 	<pre>
-	<code>entry-&gt;getNotes()</code>
+	<code>$entry-&gt;getNotes()</code>
 	</pre>
 	
 	<p>Returns the notes.</p>
@@ -616,25 +616,25 @@ function connectionsShowHelpPage()
 	hCard compatibility.</h4>
 
 	<pre>
-	<code>entry-&gt;getThumbnailImage()</code>
+	<code>$entry-&gt;getThumbnailImage()</code>
 	</pre>
 	
 	<p>Returns the thumbnail image.</p>
 
 	<pre>
-	<code>entry-&gt;getCardImage()</code>
+	<code>$entry-&gt;getCardImage()</code>
 	</pre>
 	
 	<p>Returns the card image.</p>
 
 	<pre>
-	<code>entry-&gt;getProfileImage()</code>
+	<code>$entry-&gt;getProfileImage()</code>
 	</pre>
 	
 	<p>Returns the profile image.</p>
 
 	<pre>
-	<code>entry-&gt;getFullFirstLastNameBlock()</code>
+	<code>$entry-&gt;getFullFirstLastNameBlock()</code>
 	</pre>
 	
 	<p>Returns the full name with the first name first.
@@ -642,7 +642,7 @@ function connectionsShowHelpPage()
 	this will return the Organization/Connection Group name instead.</p>
 
 	<pre>
-	<code>entry-&gt;getFullLastFirstNameBlock()</code>
+	<code>$entry-&gt;getFullLastFirstNameBlock()</code>
 	</pre>
 	
 	<p>Returns the full name with the last name first. NOTE:
@@ -650,19 +650,19 @@ function connectionsShowHelpPage()
 	this will return the Organization/Connection Group name instead.</p>
 	
 	<pre>
-	<code>entry-&gt;getConnectionGroupBlock()</code>
+	<code>$entry-&gt;getConnectionGroupBlock()</code>
 	</pre>
 	
 	<p>Returns the Connection Group items in a <code>&lt;span&gt;</code> tag followed by a <code>&lt;br&gt;</code>.</p>
 	
 	<pre>
-	<code>entry-&gt;getTitleBlock()</code>
+	<code>$entry-&gt;getTitleBlock()</code>
 	</pre>
 	
 	<p>Returns the title in a <code>&lt;span&gt;</code>tag.</p>
 
 	<pre>
-	<code>entry-&gt;getOrgUnitBlock()</code>
+	<code>$entry-&gt;getOrgUnitBlock()</code>
 	</pre>
 	
 	<p>Returns the organization ** AND ** the department in
@@ -674,7 +674,7 @@ function connectionsShowHelpPage()
 	tags.</p>
 
 	<pre>
-	<code>entry-&gt;getOrganizationBlock()</code>
+	<code>$entry-&gt;getOrganizationBlock()</code>
 	</pre>
 	
 	<p>Returns the organization in a
@@ -684,13 +684,13 @@ function connectionsShowHelpPage()
 	organization name.</p>
 
 	<pre>
-	<code>entry-&gt;getDepartmentBlock()</code>
+	<code>$entry-&gt;getDepartmentBlock()</code>
 	</pre>
 	
 	<p>Returns the department in a <code>&lt;span&gt;</code>.</p>
 
 	<pre>
-	<code>entry-&gt;getAddressBlock()</code>
+	<code>$entry-&gt;getAddressBlock()</code>
 	</pre>
 	
 	<p>Returns all the addresses in a
@@ -702,7 +702,7 @@ function connectionsShowHelpPage()
 	work.</p>
 
 	<pre>
-	<code>entry-&gt;getPhoneNumberBlock()</code>
+	<code>$entry-&gt;getPhoneNumberBlock()</code>
 	</pre>
 	
 	<p>Returns all the phone numbers in a
@@ -710,7 +710,7 @@ function connectionsShowHelpPage()
 	a <code>&lt;span&gt;</code>.</p>
 
 	<pre>
-	<code>entry-&gt;getEmailAddressBlock()</code>
+	<code>$entry-&gt;getEmailAddressBlock()</code>
 	</pre>
 	
 	<p>Returns all the email addresses in a
@@ -718,7 +718,7 @@ function connectionsShowHelpPage()
 	a <code>&lt;span&gt;</code>.</p>
 
 	<pre>
-	<code>entry-&gt;getImBlock()</code>
+	<code>$entry-&gt;getImBlock()</code>
 	</pre>
 	
 	<p>Returns all the IM ID's in a
@@ -726,7 +726,7 @@ function connectionsShowHelpPage()
 	<code>&lt;span&gt;</code>.</p>
 
 	<pre>
-	<code>entry-&gt;getWebsiteBlock()</code>
+	<code>$entry-&gt;getWebsiteBlock()</code>
 	</pre>
 	
 	<p>Returns all the wesites in a
@@ -734,7 +734,7 @@ function connectionsShowHelpPage()
 	<code>&lt;span&gt;</code>.</p>
 
 	<pre>
-	<code>entry-&gt;getBirthdayBlock('FORMAT')</code>
+	<code>$entry-&gt;getBirthdayBlock('FORMAT')</code>
 	</pre>
 	
 	<p>Returns the birthday date in a
@@ -744,7 +744,7 @@ function connectionsShowHelpPage()
 	characters.</p>
 
 	<pre>
-	<code>entry-&gt;getAnniversaryBlock('FORMAT')</code>
+	<code>$entry-&gt;getAnniversaryBlock('FORMAT')</code>
 	</pre>
 	
 	<p>Returns the anniversary date in a
@@ -753,21 +753,27 @@ function connectionsShowHelpPage()
 	"http://us2.php.net/date">PHP Manual</a> for the format
 	characters.</p>
 	
-	<p>'entry-&gt;getNotesBlock()<code>Returns the notes in
-	hCard compatible format wrapped in a</code>`.</p>
+	<pre>
+	<code>$entry-&gt;getNotesBlock()</code>
+	</pre>
 	
-	<p>'entry-&gt;getBioBlock()<code>Returns the notes in
-	hCard compatible format wrapped in a</code>`.</p>
+	<p>Returns the notes in hCard compatible format wrapped in a <code>&lt;div&gt;</code>.</p>
+	
+	<pre>
+	<code>$entry-&gt;getBioBlock()</code>
+	</pre>
+	
+	<p>Returns the notes in	hCard compatible format wrapped in a <code>&lt;div&gt;</code>.</p>
 
 	<pre>
-	<code>entry-&gt;getRevisionDateBlock()</code>
+	<code>$entry-&gt;getRevisionDateBlock()</code>
 	</pre>
 	
 	<p>Returns the last revision date in hCard compatible
 	format wrapped in a <code>&lt;span&gt;</code>.</p>
 
 	<pre>
-	<code>entry-&gt;getLastUpdatedStyle()</code>
+	<code>$entry-&gt;getLastUpdatedStyle()</code>
 	</pre>
 	
 	<p>Returns <code>color: VARIES BY AGE;</code> that can

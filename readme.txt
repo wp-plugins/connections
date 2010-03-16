@@ -79,6 +79,7 @@ Connections is a simple to use address book system but is also very versatile. Y
 = 0.7.X.X X/X/2010 =
 * BUG: Set the db version after each db upgrade cycle.
 * BUG: Add the missing social media block to the output class, default templates and help page.
+* BUG: Fix typos in the help page.
 * Removed the use of $_SESSION throughtout the plug-in.
 
 = 0.6.2.1 2/3/2010 =

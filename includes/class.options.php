@@ -72,7 +72,15 @@ class cnOptions
 											'wife' =>"Wife"
 											);
 	
-	private $defaultSocialMediaValues = array('facebook' => 'Facebook', 'linked-in' => 'Linked-in', 'mysapce' => 'MySpace', 'twitter' => 'Twitter');
+	private $defaultSocialMediaValues = array(
+											 'delicious' => 'delicious',
+											 'facebook' => 'Facebook',
+											 'flickr' => 'Flickr',
+											 'linked-in' => 'Linked-in',
+											 'mysapce' => 'MySpace',
+											 'technorati' => 'Technorati',
+											 'twitter' => 'Twitter'
+											 );
 	
 	private $allowPublic;
 	private $allowPublicOverride;
