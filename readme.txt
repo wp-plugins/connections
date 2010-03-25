@@ -80,7 +80,10 @@ Connections is a simple to use address book system but is also very versatile. Y
 * BUG: Set the db version after each db upgrade cycle.
 * BUG: Add the missing social media block to the output class, default templates and help page.
 * BUG: Fix typos in the help page.
+* BUG: Fixed improper use of the prepare method when saving and updating entries.
+* BUG: Fix issue causing the adding/editing of entries to fail when the '%' character was used.
 * Removed the use of $_SESSION throughtout the plug-in.
+* Enhance plug-in security through the use of nonce.
 
 = 0.6.2.1 2/3/2010 =
 * BUG: Fixed fatal error when using the shortcode attribute repeat_alphaindex.

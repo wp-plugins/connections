@@ -433,13 +433,13 @@ function connectionsShowHelpPage()
 	
 	<h3><a name="tocIdTemplateTags"></a>Template Tags</h3>
 
-	<p>In the version 0.3 series of Connections the ability
-	to use custom output templates with many tags was added
-	that can be used for customizing the template. The
+	<p>Connections has the ability to use custom 
+	templates and many tags can be utilized
+	for customizing the template. The
 	template tags are used in nearly the same fashion as
 	the template tags when developing WordPress themes. So
 	if you know a little about HTML and have dabbled in
-	WordPress them developement, creating custom templates
+	WordPress theme developement, creating custom templates
 	for Connections should be very easy. Every tag must be
 	wrapped in a PHP statment and echoed <code>&lt;?php
 	?&gt;</code>. See the example below. Custom templates
@@ -810,7 +810,7 @@ function connectionsShowHelpPage()
 	<h4><a name="tocIdFAQ001"></a>Upgrading</h4>
 	
 	<p>Use the automatic plug-in upgrade feature built into WordPress. Optionally, the plugin can be downloaded
-	from the WordPress plug-in repository and maully uploaded via FTP. After the plug-in has been uploaded
+	from the WordPress plug-in repository and manually uploaded via FTP. After the plug-in has been uploaded
 	make sure to activate and deactive the plug-in.</p>
 	
 	<h4><a name="tocIdFAQ002"></a>Why don't any entries

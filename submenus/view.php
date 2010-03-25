@@ -318,12 +318,13 @@ function connectionsShowViewPage()
 												{
 													$relation = new cnEntry();
 													$relation->set($key);
+													$editRelationTokenURL = $form->tokenURL('admin.php?page=connections&action=edit&id=' . $relation->getId(), 'entry_edit_' . $relation->getId());
 													
 													if ($relation->getId())
 													{
 														if (current_user_can('connections_edit_entry'))
 														{
-															echo '<strong>' . $connections->options->getConnectionRelation($value) . ':</strong> ' . '<a href="admin.php?page=connections&action=edit&id=' . $relation->getId() . '&token=' . $form->token('edit_' . $relation->getId()) . '"" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a><br />' . "\n";
+															echo '<strong>' . $connections->options->getConnectionRelation($value) . ':</strong> ' . '<a href="' . $editRelationTokenURL . '" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a><br />' . "\n";
 														}
 														else
 														{
