@@ -273,11 +273,8 @@ function processSetUserFilter()
 {
 	global $connections;
 	
-	$permittedEntryTypes = array('individual', 'organization', 'connection_group');
-	$permittedVisibility = array('public', 'private', 'unlisted');
-	
-	if (in_array($_POST['entry_type'], $permittedEntryTypes)) $connections->currentUser->setFilterEntryType(esc_attr($_POST['entry_type']));
-	if (in_array($_POST['visibility_type'], $permittedVisibility)) $connections->currentUser->setFilterVisibility(esc_attr($_POST['visibility_type']));
+	$connections->currentUser->setFilterEntryType($_POST['entry_type']);
+	$connections->currentUser->setFilterVisibility($_POST['visibility_type']);
 	
 	$connections->currentUser->setFilterCategory(esc_attr($_POST['category']));
 }

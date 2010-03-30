@@ -8,7 +8,7 @@ class cnFilters
 			$entry = new cnEntry($value);
 			$continue = false;
 			
-			if ($entryType != null)
+			if ($entryType !== 'all')
 			{
 				if ($entry->getEntryType() != $entryType) $continue = true;
 			}
@@ -26,7 +26,7 @@ class cnFilters
 			$entry = new cnEntry($value);
 			$continue = false;
 			
-			if ($entryVisibility != null)
+			if ($entryVisibility !== 'all')
 			{
 				if ($entry->getVisibility() != $entryVisibility) $continue = true;
 			}

@@ -140,7 +140,7 @@ function connectionsShowViewPage()
 										echo $categoryObjects->buildCategoryRow('option', $connections->retrieve->categories(), $level, $connections->currentUser->getFilterCategory());
 									echo '</select>';
 									
-									echo $form->buildSelect('entry_type', array(''=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $connections->currentUser->getFilterEntryType());
+									echo $form->buildSelect('entry_type', array('all'=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $connections->currentUser->getFilterEntryType());
 									
 								?>
 								
@@ -157,7 +157,7 @@ function connectionsShowViewPage()
 										/*
 										 * Add the 'Show All' option and echo the list.
 										 */
-										$showAll[''] = 'Show All';
+										$showAll['all'] = 'Show All';
 										$visibilitySelect = $showAll + $visibilitySelect;
 										echo $form->buildSelect('visibility_type', $visibilitySelect, $connections->currentUser->getFilterVisibility());
 									}

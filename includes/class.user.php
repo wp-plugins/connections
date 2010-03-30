@@ -39,13 +39,18 @@ class cnUser
 		}
 		else
 		{
-			return '';
+			return 'all';
 		}
     }
     
     public function setFilterEntryType($entryType)
     {
-        $user_meta = get_usermeta($this->ID, 'connections');
+		$permittedEntryTypes = array('all', 'individual', 'organization', 'connection_group');
+		$entryType = esc_attr($entryType);
+		
+		if (!in_array($entryType, $permittedEntryTypes)) return FALSE;
+		
+		$user_meta = get_usermeta($this->ID, 'connections');
 		$user_meta['filter']['entry_type'] = $entryType;
 		update_usermeta($this->ID, 'connections', $user_meta);
     }
@@ -65,7 +70,7 @@ class cnUser
 				case 'public':
 					if (!current_user_can('connections_view_public'))
 					{
-						return '';
+						return 'all';
 					}
 					else
 					{
@@ -76,7 +81,7 @@ class cnUser
 				case 'private':
 					if (!current_user_can('connections_view_private'))
 					{
-						return '';
+						return 'all';
 					}
 					else
 					{
@@ -87,7 +92,7 @@ class cnUser
 				case 'unlisted':
 					if (!current_user_can('connections_view_unlisted'))
 					{
-						return '';
+						return 'all';
 					}
 					else
 					{
@@ -96,7 +101,7 @@ class cnUser
 				break;
 				
 				default:
-					return '';
+					return 'all';
 				break;
 			}
 		}
@@ -108,7 +113,12 @@ class cnUser
     
     public function setFilterVisibility($visibility)
     {
-        $user_meta = get_usermeta($this->ID, 'connections');
+		$permittedVisibility = array('all', 'public', 'private', 'unlisted');
+		$visibility = esc_attr($visibility);
+		
+		if (!in_array($visibility, $permittedVisibility)) return FALSE;
+		
+		$user_meta = get_usermeta($this->ID, 'connections');
 		$user_meta['filter']['visibility'] = $visibility;
 		update_usermeta($this->ID, 'connections', $user_meta);
     }
