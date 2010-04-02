@@ -1049,14 +1049,18 @@ class cnEntry
 		$this->websites = serialize($this->websites);
 		$this->setOptions();
 		
+		$wpdb->show_errors = true;
+		
 		return $wpdb->query($wpdb->prepare('INSERT INTO ' . CN_ENTRY_TABLE . ' SET
 											date_added   		= "%d",
 											entry_type  		= "%s",
 											visibility  		= "%s",
 											group_name			= "%s",
+											honorable_prefix	= "%s",
 											first_name			= "%s",
 											middle_name 		= "%s",
 											last_name   		= "%s",
+											honorable_suffix	= "%s",
 											title    			= "%s",
 											organization  		= "%s",
 											department    		= "%s",
@@ -1075,14 +1079,17 @@ class cnEntry
 											options       		= "%s",
 											added_by      		= "%d",
 											edited_by     		= "%d",
+											owner				= "%d",
 											status	      		= "%s"',
 											time(),
 											$this->entryType,
 											$this->visibility,
 											$this->groupName,
+											'',
 											$this->firstName,
 											$this->middleName,
 											$this->lastName,
+											'',
 											$this->title,
 											$this->organization,
 											$this->department,
@@ -1100,8 +1107,10 @@ class cnEntry
 											$this->notes,
 											$this->options,
 											$connections->currentUser->getID(),
+											'',
 											$connections->currentUser->getID(),
 											'approved'));
+		$wpdb->show_errors = FALSE;
 	}
 	
 	public function delete($id)

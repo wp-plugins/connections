@@ -27,9 +27,6 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 */
 
 /**
- * @TODO: The settings and roles form need the nonce setup.
- */
-/**
  * @TODO: Add support for SSL using the CN_PLUGIN_URL constant throughout.
  */
 /**
@@ -287,9 +284,6 @@ if (!class_exists('connectionsLoad'))
 		 */
 		private function initErrorMessages()
 		{
-			/**
-			 * @TODO: Add error codes.
-			 */
 			$this->errorMessages = new WP_Error();
 			
 			$this->errorMessages->add('session_path_does_not_exist', 'The $_SESSION save path does not exist.');
@@ -730,6 +724,8 @@ if (!class_exists('connectionsLoad'))
 		 */
 		private function controllers()
 		{
+			global $connections;
+			
 			include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
 			$form = new cnFormObjects();
 			

@@ -168,7 +168,7 @@ class cnTerms
 	}
 	
 	/**
-	 * Returns all the children term IDs of the parent term ID
+	 * Returns all the children term IDs of the parent term ID recursively.
 	 * 
 	 * @param integer $id
 	 * @return array
