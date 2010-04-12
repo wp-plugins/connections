@@ -610,7 +610,9 @@ if (!class_exists('connectionsLoad'))
 			 */
 			
 			wp_enqueue_script('jquery');
-			wp_enqueue_script('thickbox');
+			
+			// Commented out fo now because it's not needed.
+			//wp_enqueue_script('thickbox');
 			
 			/**
 			 * @TODO: Move this javascript to the templates directory.
