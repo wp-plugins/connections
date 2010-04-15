@@ -45,8 +45,7 @@ function connectionsShowHelpPage()
 					<li><a href="#tocIdFAQ006">Error upon activation?</a></li>
 			
 					<li><a href="#tocIdFAQ007">Why do dotted underlines show under the dates?</a></li>
-						
-					<li><a href="#tocIdFAQ008">WP Super Cache and the "Add to addressbook" link.</a></li>
+					
 				</ol>
 			</li>
 				
@@ -873,14 +872,7 @@ function connectionsShowHelpPage()
 	event compatibility. To remove this from the styling,
 	add <code>.vevent abbr{border:0}</code> to your theme's
 	CSS.</p>
-	
-	<h4><a name="tocIdFAQ008"></a>WP Super Cache
-	and the "Add to addressbook" link.</h4>
-	
-	<p>The "Add to addressbook" link will not function
-	correctly with WP Super Cache installed unless you exclude
-	the page/post that you embed the list on.</p>
-	
+		
 	<h3><a name="tocIdDisclaimers"></a>Disclaimers</h3>
 	
 	<ul>
