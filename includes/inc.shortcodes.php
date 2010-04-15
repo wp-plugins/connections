@@ -3,7 +3,7 @@ add_shortcode('connections_list', '_connections_list');
 function _connections_list($atts, $content=null) {
 	global $wpdb, $connections, $current_user;
 	
-	$convert = new cnConvert();
+	$convert = new cnFormatting();
 	
 	$atts = shortcode_atts( array(
 				'id' => null,
@@ -58,7 +58,7 @@ function _connections_list($atts, $content=null) {
 	$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
 	//$connections->filter->byEntryType(&$results, $atts['list_type']);
 	
-	if (!empty($atts['order_by']))
+	if (!empty($atts['order_by']) && !empty($results))
 	{
 		$connections->filter->orderBy(&$results, $atts['order_by']);
 	}

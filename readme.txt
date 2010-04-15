@@ -58,8 +58,7 @@ Connections is a simple to use address book system but is also very versatile. Y
 
 = Known Issues: =
 
-* Currently when an image link is removed the files are not deleted from the server
-* The vCard feature is not compatible with [WP Super Cache](http://wordpress.org/extend/plugins/wp-super-cache/). Make sure the page/post excluded in WP Super Cache.
+* None
 
 == Screenshots ==
 [Samples and screenshots can be found here](http://connections-pro.com/?page_id=52)
@@ -76,14 +75,16 @@ Connections is a simple to use address book system but is also very versatile. Y
 
 == Changelog ==
 
-= 0.7.X.X X/X/2010 =
+= 0.7.0.0 X/X/2010 =
 * BUG: Set the db version after each db upgrade cycle.
 * BUG: Add the missing social media block to the output class, default templates and help page.
 * BUG: Fix typos in the help page.
 * BUG: Fixed improper use of the prepare method when saving and updating entries.
 * BUG: Fix issue causing the adding/editing of entries to fail when the '%' character was used.
-* Removed the use of $_SESSION throughtout the plug-in.
-* Enhance plug-in security through the use of nonce.
+* BUG: Fix error caused by empty $results array in the shortcode.
+* OTHER: Removed the use of $_SESSION throughtout the plug-in.
+* OTHER: Enhance plug-in security through the use of nonce.
+* OTHER: Move the methods from cnConvert class to the cnFormatting class.
 
 = 0.6.2.1 2/3/2010 =
 * BUG: Fixed fatal error when using the shortcode attribute repeat_alphaindex.

@@ -86,6 +86,12 @@ if (!class_exists('connectionsLoad'))
 				add_action('admin_print_scripts', array(&$this, 'loadAdminScripts') );
 				add_action('admin_print_styles', array(&$this, 'loadAdminStyles') );
 				
+				// Add Settings link to the plugin actions
+				add_action('plugin_action_links_' . plugin_basename(__FILE__), array(&$this, 'addActionLinks'));
+				
+				// Add FAQ, Support and Donate links
+				add_filter('plugin_row_meta', array(&$this, 'addMetaLinks'), 10, 2);
+				
 				// Process any action done in the admin.
 				$this->controllers();
 			}
@@ -133,38 +139,33 @@ if (!class_exists('connectionsLoad'))
 			 * @TODO: Load dependencies as needed. For example load only classes
 			 * needed in the admin and frontend
 			 */
-			
-			//GPL PHP upload class from http://www.verot.net/php_class_upload.htm
-			require_once(WP_PLUGIN_DIR . '/connections/includes/php_class_upload/class.upload.php');
-			
 			//Current User objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.user.php');
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.user.php'); // Required for activation
 			//Terms Objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.terms.php');
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.terms.php'); // Required for activation
 			//Category Objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.category.php');
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.category.php'); // Required for activation, entry list
 			//Retrieve objects from the db.
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.retrieve.php');
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.retrieve.php'); // Required for activation
 			//Filter objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.filters.php');
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.filters.php'); // Required for activation
 			//HTML FORM objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.form.php');
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.form.php'); // Required for activation
 			//date objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.date.php');
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.date.php'); // Required for activation, entry list, add entry
 			//entry objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.entry.php');
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.entry.php'); // Required for activation, entry list
 			//plugin option objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.options.php');
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.options.php'); // Required for activation
 			//plugin utility objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.utility.php');
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.utility.php'); // Required for activation, entry list
 			//plugin template objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.output.php');
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.output.php'); // Required for activation, entry list
 			//builds vCard
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.vcard.php');
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.vcard.php'); // Required for front end
 			
 			//shortcodes
-			require_once(WP_PLUGIN_DIR . '/connections/includes/inc.shortcodes.php');
-			
+			require_once(WP_PLUGIN_DIR . '/connections/includes/inc.shortcodes.php'); // Required for front end
 			
 		}
 		
@@ -643,6 +644,28 @@ if (!class_exists('connectionsLoad'))
 					wp_enqueue_style('load_admin_css', WP_PLUGIN_URL . '/connections/css-admin.css');
 				break;
 			}
+		}
+		
+		// Add settings option
+		public function addActionLinks($links) {
+			$new_links = array();
+			
+			$new_links[] = '<a href="admin.php?page=connections_settings">Settings</a>';
+			
+			return array_merge($new_links, $links);
+		}
+		
+		// Add FAQ and support information
+		public function addMetaLinks($links, $file)
+		{
+			if ( $file == plugin_basename(__FILE__) )
+			{
+				$links[] = '<a href="admin.php?page=connections_help" target="_blank">Help</a>';
+				$links[] = '<a href="http://connections-pro.com/help-desk" target="_blank">Support</a>';
+				$links[] = '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5070255" target="_blank">Donate</a>';
+			}
+			
+			return $links;
 		}
 		
 		/**

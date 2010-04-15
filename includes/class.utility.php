@@ -28,52 +28,6 @@ class cnCounter
      }
 }
 
-class cnConvert
-{
-	/**
-	 * Converts the following strings: yes/no; true/false and 0/1 to boolean values.
-	 * If the supplied string does not match one of those values the method will return NULL.
-	 * 
-	 * @param string $value
-	 * @return boolean
-	 */
-	public function toBoolean($value)
-	{
-		switch ($value) 
-		{
-			case 'yes':
-				$value = TRUE;
-			break;
-			
-			case 'no':
-				$value = FALSE;
-			break;
-			
-			case 'true':
-				$value = TRUE;
-			break;
-			
-			case 'false':
-				$value = FALSE;
-			break;
-			
-			case '1':
-				$value = TRUE;
-			break;
-			
-			case '0':
-				$value = FALSE;
-			break;
-			
-			default:
-				$value = NULL;
-			break;
-		}
-		
-		return $value;
-	}
-}
-
 class cnFormatting
 {
 	/**
@@ -149,9 +103,58 @@ class cnFormatting
 		return trim($escapedText);
 	}
 	
+	/**
+	 * Strips all numeric characters from the supplied string and returns the string.
+	 * 
+	 * @param string $string
+	 * @return string
+	 */
 	public function stripNonNumeric($string)
 	{
 		return preg_replace('/[^0-9]/', '', $string);
+	}
+	
+	/**
+	 * Converts the following strings: yes/no; true/false and 0/1 to boolean values.
+	 * If the supplied string does not match one of those values the method will return NULL.
+	 * 
+	 * @param string $value
+	 * @return boolean
+	 */
+	public function toBoolean($value)
+	{
+		switch ($value) 
+		{
+			case 'yes':
+				$value = TRUE;
+			break;
+			
+			case 'no':
+				$value = FALSE;
+			break;
+			
+			case 'true':
+				$value = TRUE;
+			break;
+			
+			case 'false':
+				$value = FALSE;
+			break;
+			
+			case '1':
+				$value = TRUE;
+			break;
+			
+			case '0':
+				$value = FALSE;
+			break;
+			
+			default:
+				$value = NULL;
+			break;
+		}
+		
+		return $value;
 	}
 }
 ?>
