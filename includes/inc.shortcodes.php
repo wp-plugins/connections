@@ -4,6 +4,7 @@ function _connections_list($atts, $content=null) {
 	global $wpdb, $connections, $current_user;
 	
 	$convert = new cnFormatting();
+	$format =& $convert;
 	
 	$atts = shortcode_atts( array(
 				'id' => null,
@@ -30,27 +31,12 @@ function _connections_list($atts, $content=null) {
 	/*
 	 * Convert some of the $atts values in the array to boolean.
 	 */
-	//$atts['allow_public_override'] = $convert->toBoolean($atts['allow_public_override']);
 	$convert->toBoolean(&$atts['allow_public_override']);
-	//$atts['private_override'] = $convert->toBoolean($atts['private_override']);
 	$convert->toBoolean(&$atts['private_override']);
-	//$atts['show_alphaindex'] = $convert->toBoolean($atts['show_alphaindex']);
 	$convert->toBoolean(&$atts['show_alphaindex']);
-	//$atts['repeat_alphaindex'] = $convert->toBoolean($atts['repeat_alphaindex']);
 	$convert->toBoolean(&$atts['repeat_alphaindex']);
-	//$atts['show_alphahead'] = $convert->toBoolean($atts['show_alphahead']);
 	$convert->toBoolean(&$atts['show_alphahead']);
-	//$atts['custom_template'] = $convert->toBoolean($atts['custom_template']);
 	$convert->toBoolean(&$atts['custom_template']);
-	
-	/*
-	echo gettype($atts['allow_public_override']) . "\n";
-	echo gettype($atts['private_override']) . "\n";
-	echo gettype($atts['show_alphaindex']) . "\n";
-	echo gettype($atts['repeat_alphaindex']) . "\n";
-	echo gettype($atts['show_alphahead']) . "\n";
-	echo gettype($atts['custom_template']) . "\n";
-	*/
 	
 	$form = new cnFormObjects();
 	
@@ -88,8 +74,8 @@ function _connections_list($atts, $content=null) {
 			if (isset($setAnchor)) unset($setAnchor);
 			
 			/*
-			 * First check to make sure there is data stored in the address array.
-			 * Then cycle thru each address, building separate arrays for city, state, zip and country.
+			 * Check to make sure there is data stored in the address array.
+			 * Cycle thru each address, building separate arrays for city, state, zip and country.
 			 */
 			if ($entry->getAddresses())
 			{
@@ -104,12 +90,21 @@ function _connections_list($atts, $content=null) {
 			}
 			
 			/*
-			 * Here we filter out the entries that are wanted based on the
+			 * Filter out the entries that are wanted based on the
 			 * filter attributes that may have been used in the shortcode.
 			 * 
 			 * NOTE: The '@' operator is used to suppress PHP generated errors. This is done
 			 * because not every entry will have addresses to populate the arrays created above.
+			 * 
+			 * NOTE: Since the entry class returns all fields escaped, the shortcode filter
+			 * attribute needs to be escaped as well so the comparason bewteen the two functions
+			 * as expected.
 			 */
+			$atts['last_name'] = esc_attr($atts['last_name']);
+			$atts['title'] = esc_attr($atts['title']);
+			$atts['organization'] = esc_attr($atts['organization']);
+			$atts['department'] = esc_attr($atts['department']);
+						
 			if ($atts['list_type'] != 'all' && $atts['list_type'] != $entry->getEntryType())			$continue = true;
 			if ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != null)				$continue = true;
 			if ($entry->getTitle() != $atts['title'] && $atts['title'] != null)							$continue = true;

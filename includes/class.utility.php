@@ -104,6 +104,21 @@ class cnFormatting
 	}
 	
 	/**
+	 * Uses WordPress function to sanitize the input string.
+	 * 
+	 * Limits the output to alphanumeric characters, underscore (_) and dash (-).
+	 * Whitespace becomes a dash.
+	 * 
+	 * @param string $string
+	 * @return string
+	 */
+	public function sanitizeStringStrong($string)
+	{
+		$string = sanitize_title_with_dashes($string);
+		return $string;
+	}
+	
+	/**
 	 * Strips all numeric characters from the supplied string and returns the string.
 	 * 
 	 * @param string $string

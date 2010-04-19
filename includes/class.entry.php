@@ -984,6 +984,40 @@ class cnEntry
 		$this->websites = serialize($this->websites);
 		$this->setOptions();
 		
+		// Ensure fields that should be empty depending on the entry type.
+		switch ($this->getEntryType())
+		{
+			case 'individual':
+				$this->groupName = NULL;
+				$this->connectionGroup = NULL;
+			break;
+			
+			case 'organization':
+				$this->groupName = NULL;
+				$this->firstName = NULL;
+				$this->middleName = NULL;
+				$this->lastName = NULL;
+				$this->title = NULL;
+				$this->connectionGroup = NULL;
+				$this->birthday = NULL;
+				$this->anniversary = NULL;
+			break;
+			
+			case 'connection_group':
+				$this->firstName = NULL;
+				$this->middleName = NULL;
+				$this->lastName = NULL;
+				$this->title = NULL;
+				$this->birthday = NULL;
+				$this->anniversary = NULL;
+			break;
+			
+			default:
+				$this->entryType = 'individual';
+				$this->groupName = NULL;
+			break;
+		}
+		
 		return $wpdb->query($wpdb->prepare('UPDATE ' . CN_ENTRY_TABLE . ' SET
 											entry_type			= "%s",
 											first_name			= "%s",
@@ -1048,6 +1082,40 @@ class cnEntry
 		$this->socialMedia = serialize($this->socialMedia);
 		$this->websites = serialize($this->websites);
 		$this->setOptions();
+		
+		// Ensure fields that should be empty depending on the entry type.
+		switch ($this->getEntryType())
+		{
+			case 'individual':
+				$this->groupName = NULL;
+				$this->connectionGroup = NULL;
+			break;
+			
+			case 'organization':
+				$this->groupName = NULL;
+				$this->firstName = NULL;
+				$this->middleName = NULL;
+				$this->lastName = NULL;
+				$this->title = NULL;
+				$this->connectionGroup = NULL;
+				$this->birthday = NULL;
+				$this->anniversary = NULL;
+			break;
+			
+			case 'connection_group':
+				$this->firstName = NULL;
+				$this->middleName = NULL;
+				$this->lastName = NULL;
+				$this->title = NULL;
+				$this->birthday = NULL;
+				$this->anniversary = NULL;
+			break;
+			
+			default:
+				$this->entryType = 'individual';
+				$this->groupName = NULL;
+			break;
+		}
 		
 		$wpdb->show_errors = true;
 		
