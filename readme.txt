@@ -82,6 +82,8 @@ Connections is a simple to use address book system but is also very versatile. Y
 * BUG: Fixed improper use of the prepare method when saving and updating entries.
 * BUG: Fix issue causing the adding/editing of entries to fail when the '%' character was used.
 * BUG: Fix error caused by empty $results array in the shortcode.
+* BUG: Editing a Connection Group cuase it to show up twice in the list and only one was editable while the other gave an error.
+* BUG: The shorcode filter attributes were not escaped. So strings with extended characters would fail to return a match.
 * OTHER: Removed the use of $_SESSION throughtout the plug-in.
 * OTHER: Enhance plug-in security through the use of nonce.
 * OTHER: Move the methods from cnConvert class to the cnFormatting class.
