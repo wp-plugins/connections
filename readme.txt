@@ -89,6 +89,7 @@ Connections is a simple to use address book system but is also very versatile. Y
 * OTHER: Move the methods from cnConvert class to the cnFormatting class.
 * OTHER: Move the class.upload.php to the image processing method to remove 1.3MB of plug-in overhead.
 * FEATURE: Add links on the plug-in manaagement admin page for Settings, Help, Support and Donate.
+* FEATURE: Added group_name shotcode attribute filter.
 
 = 0.6.2.1 2/3/2010 =
 * BUG: Fixed fatal error when using the shortcode attribute repeat_alphaindex.

@@ -122,6 +122,8 @@ function connectionsShowHelpPage()
 	
 		<li><a href="#cn_attr_filters">last_name</a> <strong><em>filter</em></strong></li>
 	
+		<li>group_name <strong><em>filter</em></strong></li>
+		
 		<li>title <strong><em>filter</em></strong></li>
 	
 		<li>organization <strong><em>filter</em></strong></li>
@@ -335,9 +337,14 @@ function connectionsShowHelpPage()
 	is "ACME" AND where the department is "Accounting".
 	Remember, filters are case sensitive.</p>
 				
-	<p>The rest of the filters function identically. NOTE: If you
+	<p>The rest of the filters function identically.</p>
+	
+	<p><strong>NOTE:</strong> If you
 	have multiple addresses assigned to an entry, the address filters will
 	search all addresses and will disply the entry if a match is found.</p>
+	
+	<p><strong>NOTE:</strong> If you
+	want to filter names with with apostrophes quote the filter using the double quote.</p>
 	
 	<p><a name="tocIdCelebrateList"></a>There is a second shortcode that can be use for
 	displaying a list of upcoming birthdays and/or
