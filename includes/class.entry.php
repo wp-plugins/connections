@@ -745,6 +745,7 @@ class cnEntry
     public function setEntryType($entryType)
     {
         $this->options['entry']['type'] = $entryType;
+		$this->entryType = $entryType;
     }
 
     /**
