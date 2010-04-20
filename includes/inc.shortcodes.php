@@ -16,6 +16,7 @@ function _connections_list($atts, $content=null) {
 				'show_alphahead' => 'false',
 				'list_type' => 'all',
 				'order_by' => null,
+				'group_name' => null,
 				'last_name' => null,
 				'title' => null,
 				'organization' => null,
@@ -100,12 +101,14 @@ function _connections_list($atts, $content=null) {
 			 * attribute needs to be escaped as well so the comparason bewteen the two functions
 			 * as expected.
 			 */
+			$atts['group_name'] = esc_attr($atts['group_name']);
 			$atts['last_name'] = esc_attr($atts['last_name']);
 			$atts['title'] = esc_attr($atts['title']);
 			$atts['organization'] = esc_attr($atts['organization']);
 			$atts['department'] = esc_attr($atts['department']);
-						
+			
 			if ($atts['list_type'] != 'all' && $atts['list_type'] != $entry->getEntryType())			$continue = true;
+			if ($entry->getGroupName() != $atts['group_name'] && $atts['group_name'] != null)			$continue = true;
 			if ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != null)				$continue = true;
 			if ($entry->getTitle() != $atts['title'] && $atts['title'] != null)							$continue = true;
 			if ($entry->getOrganization() != $atts['organization'] && $atts['organization'] != null) 	$continue = true;

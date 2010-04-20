@@ -988,33 +988,33 @@ class cnEntry
 		switch ($this->getEntryType())
 		{
 			case 'individual':
-				$this->groupName = NULL;
-				$this->connectionGroup = NULL;
+				$this->groupName = '';
+				$this->connectionGroup = '';
 			break;
 			
 			case 'organization':
-				$this->groupName = NULL;
-				$this->firstName = NULL;
-				$this->middleName = NULL;
-				$this->lastName = NULL;
-				$this->title = NULL;
-				$this->connectionGroup = NULL;
-				$this->birthday = NULL;
-				$this->anniversary = NULL;
+				$this->groupName = '';
+				$this->firstName = '';
+				$this->middleName = '';
+				$this->lastName = '';
+				$this->title = '';
+				$this->connectionGroup = '';
+				$this->birthday = '';
+				$this->anniversary = '';
 			break;
 			
 			case 'connection_group':
-				$this->firstName = NULL;
-				$this->middleName = NULL;
-				$this->lastName = NULL;
-				$this->title = NULL;
-				$this->birthday = NULL;
-				$this->anniversary = NULL;
+				$this->firstName = '';
+				$this->middleName = '';
+				$this->lastName = '';
+				$this->title = '';
+				$this->birthday = '';
+				$this->anniversary = '';
 			break;
 			
 			default:
 				$this->entryType = 'individual';
-				$this->groupName = NULL;
+				$this->groupName = '';
 			break;
 		}
 		
@@ -1087,33 +1087,33 @@ class cnEntry
 		switch ($this->getEntryType())
 		{
 			case 'individual':
-				$this->groupName = NULL;
-				$this->connectionGroup = NULL;
+				$this->groupName = '';
+				$this->connectionGroup = '';
 			break;
 			
 			case 'organization':
-				$this->groupName = NULL;
-				$this->firstName = NULL;
-				$this->middleName = NULL;
-				$this->lastName = NULL;
-				$this->title = NULL;
-				$this->connectionGroup = NULL;
-				$this->birthday = NULL;
-				$this->anniversary = NULL;
+				$this->groupName = '';
+				$this->firstName = '';
+				$this->middleName = '';
+				$this->lastName = '';
+				$this->title = '';
+				$this->connectionGroup = '';
+				$this->birthday = '';
+				$this->anniversary = '';
 			break;
 			
 			case 'connection_group':
-				$this->firstName = NULL;
-				$this->middleName = NULL;
-				$this->lastName = NULL;
-				$this->title = NULL;
-				$this->birthday = NULL;
-				$this->anniversary = NULL;
+				$this->firstName = '';
+				$this->middleName = '';
+				$this->lastName = '';
+				$this->title = '';
+				$this->birthday = '';
+				$this->anniversary = '';
 			break;
 			
 			default:
 				$this->entryType = 'individual';
-				$this->groupName = NULL;
+				$this->groupName = '';
 			break;
 		}
 		
