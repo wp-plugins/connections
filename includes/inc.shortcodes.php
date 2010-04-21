@@ -1,4 +1,19 @@
 <?php
+/**
+ * Template tag to call the entry list. All options can be passed as an
+ * associative array. The options are identical to those available to the
+ * shortcode.
+ * 
+ * EXAMPLE:   connectionsEntryList(array('id' => 325));
+ * 
+ * @param array $atts
+ * @return string
+ */
+function connectionsEntryList($atts)
+{
+	echo _connections_list($atts);
+}
+
 add_shortcode('connections_list', '_connections_list');
 function _connections_list($atts, $content=null) {
 	global $wpdb, $connections, $current_user;
