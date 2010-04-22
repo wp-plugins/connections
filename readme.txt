@@ -90,7 +90,10 @@ Connections is a simple to use address book system but is also very versatile. Y
 * OTHER: Move the methods from cnConvert class to the cnFormatting class.
 * OTHER: Move the class.upload.php to the image processing method to remove 1.3MB of plug-in overhead.
 * FEATURE: Add links on the plug-in manaagement admin page for Settings, Help, Support and Donate.
-* FEATURE: Added group_name shotcode attribute filter.
+* FEATURE: Added group_name shortcode attribute filter.
+* FEATURE: Theme Template tag for theme developement to display the entry list. All shortcode attributes are supported.
+* FEATURE: The category shortcode attribute has been expanded to allow multiple categories to be called via a comma separated list. If the category has children entries, they will has display (recursively).
+* FEATURE: Added shortcode attribute, wp_current_category. When this is set to true and the shortcode is used in a post, all entries that have the same category name will be displayed.
 
 = 0.6.2.1 2/3/2010 =
 * BUG: Fixed fatal error when using the shortcode attribute repeat_alphaindex.

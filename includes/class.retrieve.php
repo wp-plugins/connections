@@ -21,13 +21,30 @@ class cnRetrieve
 		
 		if (!empty($atts['category']))
 		{
-			// Retieve the children category IDs
-			$categoryIDs = $this->categoryChildrenIDs($atts['category']);
-			// Add the parent category ID to the array.
-			$categoryIDs[] = $atts['category'];
+			// Trim the space characters if present.
+			$atts['category'] = str_replace(' ', '', $atts['category']);
+			// Convert to array.
+			$atts['category'] = explode(',', $atts['category']);
 			
+			foreach ($atts['category'] as $categoryID)
+			{
+				// Retieve the children category IDs
+				$results = $this->categoryChildrenIDs($categoryID);
+				
+				// Add the parent category ID to the array.
+				$categoryIDs[] = $categoryID;
+				if (!empty($results))
+				{
+					//foreach ($results as $result)
+					//{
+						$categoryIDs = array_merge($results, $categoryIDs);
+					//}
+					
+				}
+			}
+			//print_r($categoryIDs);
 			$catString = implode("', '", $categoryIDs);
-			
+			//print_r($catString);
 			$entryIDs = $wpdb->get_col( "SELECT DISTINCT entry_id FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE term_taxonomy_id IN ('" . $catString . "')" );
 			
 			if (!empty($entryIDs))

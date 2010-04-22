@@ -173,26 +173,28 @@ class cnTerms
 	 * @param integer $id
 	 * @return array
 	 */
-	public function getTermChildrenIDs($id)
+	public function getTermChildrenIDs($id, $taxonomy, $_CNpreviousIDs = NULL)
 	{
-		global $wpdb;
+		global $wpdb, $_CNpreviousIDs;
 		
 		$query = $wpdb->prepare( "SELECT DISTINCT tt.term_id from " . CN_TERMS_TABLE . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE . " AS tt ON t.term_id = tt.term_id WHERE parent = %d ", $id);
 		
 		$childrenIDs = $wpdb->get_col($query);
 		
-		
+		//print_r($childrenIDs);
 		if (!empty($childrenIDs))
 		{
 			foreach ($childrenIDs as $ttID)
 			{
-				$this->termChildrenIDs[] = $ttID;
-				
-				$this->getTermChildrenIDs($ttID);
+				//$this->termChildrenIDs[] = $ttID;
+				$_CNpreviousIDs[] = $ttID;
+
+				$this->getTermChildrenIDs($ttID, $taxonomy, $_CNpreviousIDs);
 			}
 		}
 		
-		return $this->termChildrenIDs;
+		return $_CNpreviousIDs;
+		//return $this->termChildrenIDs;
 	}
 	
 	/**

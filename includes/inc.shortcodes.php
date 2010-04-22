@@ -18,12 +18,14 @@ add_shortcode('connections_list', '_connections_list');
 function _connections_list($atts, $content=null) {
 	global $wpdb, $connections, $current_user;
 	
+	$form = new cnFormObjects();
 	$convert = new cnFormatting();
 	$format =& $convert;
 	
 	$atts = shortcode_atts( array(
 				'id' => null,
 				'category' => null,
+				'wp_current_category' => 'false',
 				'allow_public_override' => 'false',
 				'private_override' => 'false',
 				'show_alphaindex' => 'false',
@@ -53,8 +55,44 @@ function _connections_list($atts, $content=null) {
 	$convert->toBoolean(&$atts['repeat_alphaindex']);
 	$convert->toBoolean(&$atts['show_alphahead']);
 	$convert->toBoolean(&$atts['custom_template']);
+	$convert->toBoolean(&$atts['wp_current_category']);
 	
-	$form = new cnFormObjects();
+	if ($atts['wp_current_category'])
+	{
+		// Get the current post categories.
+		$wpCategories = get_the_category();
+		
+		// Retrieve the Connections category IDs
+		foreach ($wpCategories as $wpCategory)
+		{
+			$result = $connections->term->getTermBy('name', $wpCategory->cat_name, 'category');
+			if (!empty($result)) $cnCategories[] = $result->term_taxonomy_id;
+		}
+		
+		if ( !empty($atts['category']) || !empty($cnCategories) )
+		{
+			if ( !empty($atts['category']) )
+			{
+				// Trim the space characters if present.
+				$atts['category'] = str_replace(' ', '', $atts['category']);
+				
+				// Convert category shortcode to array.
+				$atts['category'] = explode(',', $atts['category']);
+			}
+			else
+			{
+				$atts['category'] = array();
+			}
+			
+			if ( !empty($cnCategories) )
+			{
+				// Merge the category shortcode array with the wp_current_category shortcode array
+				$atts['category'] = array_merge($atts['category'], $cnCategories);
+			}
+			
+			$atts['category'] = implode(", ", $atts['category']);
+		}
+	}
 	
 	$results = $connections->retrieve->entries($atts);
 	$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
