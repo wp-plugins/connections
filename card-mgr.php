@@ -4,10 +4,12 @@
 	        <td align="left" width="55%" valign="top" style="vertical-align: top;">
 	        	<div style="clear:both; margin: 0 5px;">
 					<div style="margin-bottom: 10px;">
-						<span style="font-size:larger;font-variant: small-caps; margin-bottom: 10px;"><strong><?php echo $entry->getFullFirstLastNameBlock() ?></strong></span><br />
+						<span style="font-size:larger;font-variant: small-caps; margin-bottom: 5px;"><strong><?php echo $entry->getOrgUnitBlock() ?></strong></span>
 						
-						<?php echo $entry->getTitleBlock() ?>
-						<?php echo $entry->getOrgUnitBlock() ?>
+						<div style="clear:both; margin: 0px 0px 5px;">
+							<?php echo $entry->getFullFirstLastNameBlock() ?>
+							<?php echo $entry->getTitleBlock() ?>
+						</div>
 						
 						<?php if ($entry->getImageLinked() && $entry->getImageDisplay()) echo '<img class="photo" alt="Photo of ' . $entry->getFirstName() . ' ' . $entry->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin: 10px 0 10px 0; padding:5px;" src="' . CN_IMAGE_BASE_URL . $entry->getImageNameCard() . '" />' . "\n"; ?>
 					</div>
@@ -77,7 +79,7 @@
 							$addressObject = new cnAddresses;
 							foreach ($entry->getAddresses() as $addressRow)
 							{
-								$map_link = "http://maps.google.com/?q=";
+								$map_link = "http://maps.google.co.uk/maps?q=";
 								
 								//if ($entry->getOrganization() != NULL) $map_link .= $entry->getOrganization() . '+';
 								if ($addressObject->getLineOne($addressRow) != null) $map_link .= $addressObject->getLineOne($addressRow) . ',+';
