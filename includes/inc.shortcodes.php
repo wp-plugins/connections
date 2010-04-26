@@ -243,6 +243,21 @@ function _connections_list($atts, $content=null) {
 	
 }
 
+/**
+ * Template tag to call the upcoming list. All options can be passed as an
+ * associative array. The options are identical to those available to the
+ * shortcode.
+ * 
+ * EXAMPLE:   connectionsUpcomingList(array('days' => 30));
+ * 
+ * @param array $atts
+ * @return string
+ */
+function connectionsUpcomingList($atts)
+{
+	echo _upcoming_list($atts);
+}
+
 add_shortcode('upcoming_list', '_upcoming_list');
 function _upcoming_list($atts, $content=null) {
     global $wpdb;

@@ -224,6 +224,26 @@ jQuery(document).ready(function(){
 	
 	jQuery(function() {
 		var intCount = 0;
+		//var jRelations = (jQuery('#website_address_row_base').html());
+		
+		jQuery('#add_website_address')
+			.click(function() {
+				var jRelations = (jQuery('#website_address_row_base').text());
+				
+				jRelations = jRelations.replace(
+					new RegExp('::FIELD::', 'gi'),
+					intCount
+					);
+				
+				//jQuery('#website_addresses').append( '<div id="website_address_row_' + intCount + '" class="website_address_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#website_address_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				jQuery('#website_addresses').append( '<div id="website_address_row_' + intCount + '" class="website_address_row">' + jRelations + '</div>' );
+				
+				intCount++;
+			});
+	});
+	
+	jQuery(function() {
+		var intCount = 0;
 		//var jRelations = (jQuery('#im_row_base').html());
 		
 		jQuery('#add_im_id')

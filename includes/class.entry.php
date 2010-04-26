@@ -710,22 +710,49 @@ class cnEntry
 	}
 
     /**
-     * Returns $websites.
-     * @see entry::$websites
+     * Returns array of cnWebsite objects.
+     * 
+     * @return array
      */
-    public function getWebsites()
+	public function getWebsites()
     {
-        return $this->websites;
+        if ( !empty($this->websites) )
+		{
+			foreach ($this->websites as $key => $website)
+			{
+				$websiteRow[] = new cnWebsite($website);
+			}
+		}
+		
+		if ( !empty($websiteRow) ) return $websiteRow;
     }
     
     /**
-     * Sets $websites.
-     * @param object $websites
+     * Sets $websites as an associative array.
+     * If the website URL [address] is http:// it is emptied
+     * since there is no need to store it.
+     * 
+     * @param array $websites
      * @see entry::$websites
      */
     public function setWebsites($websites)
     {
-        $this->websites = $websites;
+		if ( !empty($websites) )
+		{
+			foreach ($websites as $key => $website)
+			{
+				$websiteRow = new cnWebsite($website);
+				
+				if ($websiteRow->getAddress() == 'http://')
+				{
+					$websiteRow->setAddress('');
+				}
+				
+				$websites[$key] = $websiteRow->returnArray() ;
+			}
+		}
+		
+		$this->websites = $websites;
     }
 
     /**
@@ -1560,10 +1587,29 @@ class cnWebsite
 	
 	private $format;
 	
-	function __construct()
+	public function __construct($data = NULL)
 	{
+		
+		$this->name = $data['name'];
+		$this->type = $data['type'];
+		$this->address = $data['address'];
+		$this->visibility = $data['visibility'];
+		
 		// Load the formatting class for sanitizing the get methods.
 		$this->format = new cnFormatting();
+	}
+	
+	/**
+	 * Returns an array contain the raw data of the object.
+	 */
+	public function returnArray()
+	{
+		$output['name'] = $this->name;
+		$output['type'] = $this->type;
+		$output['address'] = $this->address;
+		$output['visibility'] = $this->visibility;
+		
+		return $output;
 	}
 	
     /**
@@ -1571,9 +1617,8 @@ class cnWebsite
      * @param array $data
      * @see website::$address
      */
-    public function getAddress($data)
+    public function getAddress()
     {
-        $this->address = $data['address'];
 		return $this->format->sanitizeString($this->address);
     }
     

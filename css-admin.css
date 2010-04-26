@@ -68,6 +68,7 @@ form div.form-field  img {-moz-border-radius:4px; background-color: #FFFFFF; bor
 form div.form-field  div#relations {text-align: center}
 form div.form-field  div.relation_row {margin: 6px 0px}
 /*form div.form-field  div.relation_row .button {margin: 1px !important; position: relative; top: 3px}*/
+form div.websites label {display: inline;}
 form p.submit a.button  {font-style:normal !important;}
 form p.add  {font-style:normal; padding:12px 0 0; text-align: right;}
 table.form-table td input {width:auto;}

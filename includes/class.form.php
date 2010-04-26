@@ -375,7 +375,7 @@ class cnEntryForm
 		$emailObject = new cnEmail();
 		$imObject = new cnIM();
 		$socialMediaObject = new cnSocialMedia();
-		$websiteObject = new cnWebsite();
+		//$websiteObject = new cnWebsite();
 		$options = unserialize($data->options);
 		$date = new cnDate();
 		$ticker = new cnCounter();
@@ -444,6 +444,7 @@ class cnEntryForm
 					$out .= '<p><a id="add_email_address" class="button">Add Email Address</a></p>';
 					$out .= '<p><a id="add_im_id" class="button">Add Messenger ID</a></p>';
 					$out .= '<p><a id="add_social_media" class="button">Add Social Media ID</a></p>';
+					$out .= '<p><a id="add_website_address" class="button">Add Website Address</a></p>';
 				$out .= '</div>';
 			$out .= '</div>';
 			
@@ -825,66 +826,94 @@ class cnEntryForm
 			//$out .= '</div>';
 			
 			
-			//$out .= '<div class="form-field connectionsform socialmedia">';
-				$out .= '<div id="social_media">';
-					
-					// --> Start template for Social Media IDs <-- \\
-					$out .= '<textarea id="social_media_row_base" style="display: none">';
-						$out .= '<div class="form-field connectionsform socialmedia">';
-						$out .= $form->buildSelect('social_media[::FIELD::][type]', $connections->options->getDefaultSocialMediaValues());
-						$out .= '<input type="text" name="social_media[::FIELD::][id]" value="" style="width: 30%"/>';
-						$out .= '<input type="hidden" name="social_media[::FIELD::][visibility]" value="personal"/>';
-						$out .= '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#social_media_row_::FIELD::\'); return false;">Remove</a>';
-						$out .= '</div>';
-					$out .= '</textarea>';
-					// --> End template for Social Media IDs <-- \\
-					
-					if ($data->social != null)
-					{
-						$socialMediaValues = $entry->getSocialMedia();
-						$ticker->reset();
-						
-						if ($socialMediaValues != null)
-						{
-							foreach ($socialMediaValues as $socialMediaRow)
-							{
-								if ($socialMediaObject->getId($socialMediaRow) != null)
-								{
-								$token = $form->token($entry->getId());
-								$out .= '<div class="form-field connectionsform socialmedia">';
-									$out .= '<div class="social_media_row" id="social_media_row_'  . $token . '">';
-										$out .= $form->buildSelect('social_media[' . $token . '][type]', $connections->options->getDefaultSocialMediaValues(), $socialMediaObject->getType($socialMediaRow));
-										$out .= '<input type="text" name="social_media[' . $token . '][id]" value="' . $socialMediaObject->getId($socialMediaRow) . '" style="width: 30%"/>';
-										$out .= '<input type="hidden" name="social_media[' . $token . '][visibility]" value="' . $socialMediaObject->getVisibility($socialMediaRow) . '" />';
-										$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#social_media_row_'. $token . '\'); return false;">Remove</a>';
-									$out .= '</div>';
-								$out .= '</div>';
-								
-								$ticker->step();
-								}
-							}
-							$ticker->reset();
-						}
-					}
+			$out .= '<div id="social_media">';
 				
-				$out .= '</div>';
-				//$out .= '<p class="add"><a id="add_social_media" class="button">Add Social Media ID</a></p>';
-			//$out .= '</div>';
+				// --> Start template for Social Media IDs <-- \\
+				$out .= '<textarea id="social_media_row_base" style="display: none">';
+					$out .= '<div class="form-field connectionsform socialmedia">';
+					$out .= $form->buildSelect('social_media[::FIELD::][type]', $connections->options->getDefaultSocialMediaValues());
+					$out .= '<input type="text" name="social_media[::FIELD::][id]" value="" style="width: 30%"/>';
+					$out .= '<input type="hidden" name="social_media[::FIELD::][visibility]" value="public"/>';
+					$out .= '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#social_media_row_::FIELD::\'); return false;">Remove</a>';
+					$out .= '</div>';
+				$out .= '</textarea>';
+				// --> End template for Social Media IDs <-- \\
+				
+				if ($data->social != null)
+				{
+					$socialMediaValues = $entry->getSocialMedia();
+					$ticker->reset();
+					
+					if ($socialMediaValues != null)
+					{
+						foreach ($socialMediaValues as $socialMediaRow)
+						{
+							if ($socialMediaObject->getId($socialMediaRow) != null)
+							{
+							$token = $form->token($entry->getId());
+							$out .= '<div class="form-field connectionsform socialmedia" id="social_media_row_'  . $token . '">';
+								$out .= '<div class="social_media_row">';
+									$out .= $form->buildSelect('social_media[' . $token . '][type]', $connections->options->getDefaultSocialMediaValues(), $socialMediaObject->getType($socialMediaRow));
+									$out .= '<input type="text" name="social_media[' . $token . '][id]" value="' . $socialMediaObject->getId($socialMediaRow) . '" style="width: 30%"/>';
+									$out .= '<input type="hidden" name="social_media[' . $token . '][visibility]" value="' . $socialMediaObject->getVisibility($socialMediaRow) . '" />';
+									$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#social_media_row_'. $token . '\'); return false;">Remove</a>';
+								$out .= '</div>';
+							$out .= '</div>';
+							
+							$ticker->step();
+							}
+						}
+						$ticker->reset();
+					}
+				}
 			
-			if ($data->websites != null) $websiteValues = $entry->getWebsites(); else $websiteValues = array(array()); //Empty array as a place holder
-			$out .= "<div class='form-field connectionsform'>";
-			$ticker->reset();
-			foreach ($websiteValues as $websiteRow)
-			{
-				$out .= "<label for='websites'>Website:</label>";
-				$out .= "<input type='hidden' name='websites[" . $ticker->getcount() . "][type]' value'personal' />";
-				$out .= "<input type='hidden' name='websites[" . $ticker->getcount() . "][name]' value'Personal' />";
-				$out .= "<input type='text' name='websites[" . $ticker->getcount() . "][address]' value='" . $websiteObject->getAddress($websiteRow) . "' />";
-				$out .= "<input type='hidden' name='websites[" . $ticker->getcount() . "][visibility]' value'public' />";
-				$ticker->step();
-			}
-			$ticker->reset();
-			$out .= "</div>";
+			$out .= '</div>';
+			
+			
+			$out .= '<div id="website_addresses">';
+				
+				// --> Start template for Website Addresses <-- \\
+				$out .= '<textarea id="website_address_row_base" style="display: none">';
+					$out .= '<div class="form-field connectionsform websites">';
+					$out .= '<label for="websites">Website: <input type="text" name="websites[::FIELD::][address]" style="width: 50%" value="http://" /></label>';
+					$out .= '<input type="hidden" name="website[::FIELD::][type]" value="personal" />';
+					$out .= '<input type="hidden" name="website[::FIELD::][name]" value="Personal" />';
+					$out .= '<input type="hidden" name="website[::FIELD::][visibility]" value="public"/>';
+					$out .= '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#website_address_row_::FIELD::\'); return false;">Remove</a>';
+					$out .= '</div>';
+				$out .= '</textarea>';
+				// --> End template for Website Addresses <-- \\
+				
+				//if ($data->websites != null) $websiteValues = $entry->getWebsites(); else $websiteValues = new cnWebsite(); //Empty array as a place holder
+				$websites = $entry->getWebsites();
+				
+				//$ticker->reset();
+				if ( !empty ($websites) )
+				{
+					foreach ($websites as $website)
+					{
+						if ($website->getAddress() == NULL) continue;
+						
+						$token = $form->token($entry->getId());
+						
+						$out .= '<div class="form-field connectionsform websites" id="website_address_row_'  . $token . '">';
+							$out .= '<div class="website_address_row">';
+								$out .= '<label for="websites">Website: <input type="text" name="websites[' . $token . '][address]" style="width: 50%" value="' . $website->getAddress() . '" /></label>';
+								//$out .= '<input type="text" name="websites[' . $token . '][address]" style="width: 50%" value="' . $website->getAddress() . '" />';
+								$out .= '<input type="hidden" name="websites[' . $token . '][type]" value="personal" />';
+								$out .= '<input type="hidden" name="websites[' . $token . '][name]" value="Personal" />';
+								$out .= '<input type="hidden" name="websites[' . $token . '][visibility]" value="public" />';
+								$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#website_address_row_'. $token . '\'); return false;">Remove</a>';
+								//$ticker->step();
+							$out .= '</div>';
+						$out .= '</div>';
+					}
+					//$ticker->reset();
+				}
+				
+			$out .= '</div>';
+			
+			
 			
 			$out .= "<div class='form-field connectionsform celebrate'>
 					<span class='selectbox'>Birthday: " . $form->buildSelect('birthday_month',$date->months,$date->getMonth($entry->getBirthday())) . "</span>

@@ -285,13 +285,12 @@ class cnOutput extends cnEntry
 	
 	public function getWebsiteBlock()
 	{
-		$websiteObject = new cnWebsite;
 		if ($this->getWebsites())
 		{
 			$out = '<div class="website-block" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getWebsites() as $websiteRow)
 			{
-				if ($websiteObject->getAddress($websiteRow) != null) $out .= '<strong>Website:</strong> <a class="url" href="' . $websiteObject->getAddress($websiteRow) . '">' . $websiteObject->getAddress($websiteRow) . '</a>' . "\n";
+				if ($websiteRow->getAddress() != null) $out .= '<span class="website-address" style="display: block"><strong>Website:</strong> <a class="url" href="' . $websiteRow->getAddress() . '">' . $websiteRow->getAddress() . '</a></span>' . "\n";
 			}
 			$out .= "</div>" . "\n";
 		}
