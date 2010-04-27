@@ -111,6 +111,11 @@ function connectionsShowSettingsPage()
 									<td>
 										<input type="text" class="small-text" value="<?php echo $connections->options->getImgThumbQuality() ?>" id="image_thumbnail_quality" name="settings[image][thumbnail][quality]"/>%
 									</td>
+									<td rowspan="4" width="50%">
+										<p>These options control the thumbnail image settings.</p>
+										<p><strong>NOTE: </strong>Although these options are available they are not recommended to be changed.</p>
+										<p><strong>NOTE: </strong>Any changes will only be applied to images uploaded after the change was saved. This will not change images previously uploaded.</p>
+									</td>
 								</tr>
 								
 								<tr valign="top">

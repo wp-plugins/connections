@@ -76,6 +76,14 @@ Connections is a simple to use address book system but is also very versatile. Y
 == Changelog ==
 
 = 0.7.0.0 X/X/2010 =
+* FEATURE: Add links on the plug-in management admin page for Settings, Help, Support and Donate.
+* FEATURE: Added group_name shortcode attribute filter.
+* FEATURE: Theme Template tag for theme developement to display the entry list. All shortcode attributes are supported.
+* FEATURE: Theme Template tag for theme developement to display the upcoming list. All shortcode attributes are supported.
+* FEATURE: The category shortcode attribute has been expanded to allow multiple categories to be called via a comma separated list. If the category has children entries, they will has display (recursively).
+* FEATURE: Added shortcode attribute, wp_current_category. When this is set to true and the shortcode is used in a post, all entries that have the same category name will be displayed.
+* FEATURE: Allow more than one website address to be entered per entry.
+* FEATURE: Automatically add the http:// to the website addresses.
 * BUG: Set the db version after each db upgrade cycle.
 * BUG: Add the missing social media block to the output class, default templates and help page.
 * BUG: Fix typos in the help page.
@@ -89,13 +97,6 @@ Connections is a simple to use address book system but is also very versatile. Y
 * OTHER: Enhance plug-in security through the use of nonce.
 * OTHER: Move the methods from cnConvert class to the cnFormatting class.
 * OTHER: Move the class.upload.php to the image processing method to remove 1.3MB of plug-in overhead.
-* FEATURE: Add links on the plug-in management admin page for Settings, Help, Support and Donate.
-* FEATURE: Added group_name shortcode attribute filter.
-* FEATURE: Theme Template tag for theme developement to display the entry list. All shortcode attributes are supported.
-* FEATURE: Theme Template tag for theme developement to display the upcoming list. All shortcode attributes are supported.
-* FEATURE: The category shortcode attribute has been expanded to allow multiple categories to be called via a comma separated list. If the category has children entries, they will has display (recursively).
-* FEATURE: Added shortcode attribute, wp_current_category. When this is set to true and the shortcode is used in a post, all entries that have the same category name will be displayed.
-* FEATURE: Allow more than one website address to be entered per entry.
 
 = 0.6.2.1 2/3/2010 =
 * BUG: Fixed fatal error when using the shortcode attribute repeat_alphaindex.

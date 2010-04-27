@@ -884,10 +884,8 @@ class cnEntryForm
 				$out .= '</textarea>';
 				// --> End template for Website Addresses <-- \\
 				
-				//if ($data->websites != null) $websiteValues = $entry->getWebsites(); else $websiteValues = new cnWebsite(); //Empty array as a place holder
 				$websites = $entry->getWebsites();
 				
-				//$ticker->reset();
 				if ( !empty ($websites) )
 				{
 					foreach ($websites as $website)
@@ -899,16 +897,13 @@ class cnEntryForm
 						$out .= '<div class="form-field connectionsform websites" id="website_address_row_'  . $token . '">';
 							$out .= '<div class="website_address_row">';
 								$out .= '<label for="websites">Website: <input type="text" name="websites[' . $token . '][address]" style="width: 50%" value="' . $website->getAddress() . '" /></label>';
-								//$out .= '<input type="text" name="websites[' . $token . '][address]" style="width: 50%" value="' . $website->getAddress() . '" />';
 								$out .= '<input type="hidden" name="websites[' . $token . '][type]" value="personal" />';
 								$out .= '<input type="hidden" name="websites[' . $token . '][name]" value="Personal" />';
 								$out .= '<input type="hidden" name="websites[' . $token . '][visibility]" value="public" />';
 								$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#website_address_row_'. $token . '\'); return false;">Remove</a>';
-								//$ticker->step();
 							$out .= '</div>';
 						$out .= '</div>';
 					}
-					//$ticker->reset();
 				}
 				
 			$out .= '</div>';

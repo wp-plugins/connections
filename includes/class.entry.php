@@ -743,15 +743,35 @@ class cnEntry
 			{
 				$websiteRow = new cnWebsite($website);
 				
-				if ($websiteRow->getAddress() == 'http://')
+				/*if ($websiteRow->getAddress() == 'http://')
 				{
 					$websiteRow->setAddress('');
+					$websites[$key] = $websiteRow->returnArray() ;
+				}*/
+				
+				switch ($websiteRow->getAddress())
+				{
+					case '':
+						unset($websites[$key]);
+					break;
+					
+					case 'http://':
+						unset($websites[$key]);
+					break;
+					
+					default:
+						if ( substr($websiteRow->getAddress(), 0, 7) != 'http://' )
+						{
+							$websiteRow->setAddress( 'http://' . $websiteRow->getAddress() );
+							$websites[$key] = $websiteRow->returnArray();
+						}
+					break;
 				}
 				
-				$websites[$key] = $websiteRow->returnArray() ;
 			}
 		}
 		
+		//if ( empty($websites) ) $this->websites = NULL;
 		$this->websites = $websites;
     }
 
@@ -1046,6 +1066,8 @@ class cnEntry
 			break;
 		}
 		
+		$wpdb->show_errors = true;
+		
 		return $wpdb->query($wpdb->prepare('UPDATE ' . CN_ENTRY_TABLE . ' SET
 											entry_type			= "%s",
 											first_name			= "%s",
@@ -1097,6 +1119,7 @@ class cnEntry
 											$connections->currentUser->getID(),
 											'approved',
 											$this->id));
+		$wpdb->show_errors = FALSE;
 	}
 	
 	public function save()
