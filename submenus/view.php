@@ -396,9 +396,9 @@ function connectionsShowViewPage()
 											
 											if ($entry->getWebsites())
 											{
-												foreach ($entry->getWebsites() as $websiteRow)
+												foreach ($entry->getWebsites() as $website)
 												{
-													if ($websiteRow->getAddress() != "") echo "<strong>Website:</strong><br /><a target='_blank' href='" . $websiteRow->getAddress() . "'>" . $websiteRow->getAddress() . "</a><br /><br />";
+													if ($website->url != "") echo "<strong>Website:</strong><br /><a target='_blank' href='" . $website->url . "'>" . $website->url . "</a><br /><br />";
 												}
 											}
 											

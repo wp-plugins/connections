@@ -353,20 +353,20 @@ class cnvCard extends cnEntry
 	{
 		if ($this->getWebsites())
 		{
-			$websiteObject = new cnWebsite;
-			
-			foreach ($this->getWebsites() as $websiteRow)
+			foreach ($this->getWebsites() as $website)
 			{
-				switch ($websiteObject->getType($websiteRow))
+				switch ($website->type)
 				{
 					case 'personal':
-						$this->data['url'] = $websiteObject->getAddress($websiteRow);
+						$this->data['url'] = $website->url;
 					break;
 					
 					default:
-						$this->data['url'] = $websiteObject->getAddress($websiteRow);
+						$this->data['url'] = $website->url;
 					break;
 				}
+				
+				break; // Only return the first website url.
 			}
 			
 		}

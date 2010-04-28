@@ -28,7 +28,7 @@ function processAddEntry()
 	$entry->setEmailAddresses($_POST['email']);
 	$entry->setIm($_POST['im']);
 	$entry->setSocialMedia($_POST['social_media']);
-	$entry->setWebsites($_POST['websites']);
+	$entry->setWebsites($_POST['website']);
 	$entry->setBirthday($_POST['birthday_day'], $_POST['birthday_month']);
 	$entry->setAnniversary($_POST['anniversary_day'], $_POST['anniversary_month']);
 	$entry->setBio($_POST['bio']);

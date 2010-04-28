@@ -288,9 +288,9 @@ class cnOutput extends cnEntry
 		if ($this->getWebsites())
 		{
 			$out = '<div class="website-block" style="margin-bottom: 10px;">' . "\n";
-			foreach ($this->getWebsites() as $websiteRow)
+			foreach ($this->getWebsites() as $website)
 			{
-				if ($websiteRow->getAddress() != null) $out .= '<span class="website-address" style="display: block"><strong>Website:</strong> <a class="url" href="' . $websiteRow->getAddress() . '">' . $websiteRow->getAddress() . '</a></span>' . "\n";
+				if ($website->url != NULL) $out .= '<span class="website-address" style="display: block"><strong>Website:</strong> <a class="url" href="' . $website->url . '">' . $website->url . '</a></span>' . "\n";
 			}
 			$out .= "</div>" . "\n";
 		}

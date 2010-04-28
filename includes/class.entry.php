@@ -710,7 +710,16 @@ class cnEntry
 	}
 
     /**
-     * Returns array of cnWebsite objects.
+     * Returns array of objects.
+     * 
+     * Each object contains:
+     * 						->name
+     * 						->type
+     * 						->address
+     * 						->url
+     * 						->visibility
+     * 
+     * NOTE: The output is sanitized for safe display.
      * 
      * @return array
      */
@@ -720,36 +729,46 @@ class cnEntry
 		{
 			foreach ($this->websites as $key => $website)
 			{
-				$websiteRow[] = new cnWebsite($website);
+				$websiteRow->name = $this->format->sanitizeString($website['name']);
+				$websiteRow->type = $this->format->sanitizeString($website['type']);
+				$websiteRow->address = $this->format->sanitizeString($website['address']);
+				$websiteRow->url = $this->format->sanitizeString($website['address']);
+				$websiteRow->visibility = $this->format->sanitizeString($website['visibility']);
+				
+				$out[] = $websiteRow;
+				unset($websiteRow);
 			}
 		}
 		
-		if ( !empty($websiteRow) ) return $websiteRow;
+		if ( !empty($out) ) return $out;
     }
     
     /**
      * Sets $websites as an associative array.
-     * If the website URL [address] is http:// it is emptied
+     * If the website URL [address] is http:// or empty it is unset.
      * since there is no need to store it.
      * 
+     * $websites is to be an array containing an araay of the data for each website.
+     * 
+     * @TODO: Validate as valid web addresses.
+     * 
      * @param array $websites
-     * @see entry::$websites
      */
     public function setWebsites($websites)
     {
+		$validFields = array('name' => NULL, 'type' => NULL, 'address' => NULL, 'url' => NULL, 'visibility' => NULL);
+		
 		if ( !empty($websites) )
 		{
 			foreach ($websites as $key => $website)
 			{
-				$websiteRow = new cnWebsite($website);
+				// First validate the supplied data.
+				$intersect = array_intersect_key($website, $validFields); // Get data for which is in the valid fields.
+				$difference = array_diff_key($validFields, $website); // Get default data which is not supplied.
+				$websites[$key] = array_merge($intersect, $difference); // Merge the results. Contains only valid fields of all defaults.
 				
-				/*if ($websiteRow->getAddress() == 'http://')
-				{
-					$websiteRow->setAddress('');
-					$websites[$key] = $websiteRow->returnArray() ;
-				}*/
-				
-				switch ($websiteRow->getAddress())
+				// If the address/url is emty, no need to store it and if the http protocol is not part of the address, add it.
+				switch ($website['address'])
 				{
 					case '':
 						unset($websites[$key]);
@@ -760,18 +779,18 @@ class cnEntry
 					break;
 					
 					default:
-						if ( substr($websiteRow->getAddress(), 0, 7) != 'http://' )
+						if ( substr($website['address'], 0, 7) != 'http://' )
 						{
-							$websiteRow->setAddress( 'http://' . $websiteRow->getAddress() );
-							$websites[$key] = $websiteRow->returnArray();
+							$websites[$key]['address'] = 'http://' . $website['address'];
 						}
 					break;
 				}
 				
+				if ( array_key_exists($key, $websites) ) $websites[$key]['url'] = 'http://' . $website['address'];
+				
 			}
 		}
 		
-		//if ( empty($websites) ) $this->websites = NULL;
 		$this->websites = $websites;
     }
 
@@ -1571,150 +1590,6 @@ class cnEmail
         $this->visibility = $visibility;
     }
 
-}
-
-
-/**
- * Extracts a website info and options from an associative array of website addressess
- * 
- * $type
- * $name
- * $address
- * $visibility
- */
-class cnWebsite
-{
-	/**
-	 * String: type -- need to define
-	 * @var string
-	 */
-	private $type;
-	
-	/**
-	 * String: Name
-	 * @var string
-	 */
-	private $name;
-	
-	/**
-	 * String: URL
-	 * @var string
-	 */
-	private $address;
-	
-	/**
-	 * String: public, private, unlisted
-	 * @var string
-	 */
-	private $visibility;
-	
-	private $format;
-	
-	public function __construct($data = NULL)
-	{
-		
-		$this->name = $data['name'];
-		$this->type = $data['type'];
-		$this->address = $data['address'];
-		$this->visibility = $data['visibility'];
-		
-		// Load the formatting class for sanitizing the get methods.
-		$this->format = new cnFormatting();
-	}
-	
-	/**
-	 * Returns an array contain the raw data of the object.
-	 */
-	public function returnArray()
-	{
-		$output['name'] = $this->name;
-		$output['type'] = $this->type;
-		$output['address'] = $this->address;
-		$output['visibility'] = $this->visibility;
-		
-		return $output;
-	}
-	
-    /**
-     * Returns $address.
-     * @param array $data
-     * @see website::$address
-     */
-    public function getAddress()
-    {
-		return $this->format->sanitizeString($this->address);
-    }
-    
-    /**
-     * Sets the website address
-     * Sets $address.
-     * @param array $address
-     * @see website::$address
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
-    }
-    
-    /**
-     * Returns $type.
-     * @see website::$type
-     */
-    public function getType()
-    {
-        return $this->format->sanitizeString($this->type);
-    }
-    
-    /**
-     * Sets the website type
-     * Sets $type.
-     * @param string $type
-     * @see website::$type
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-    }
-    
-	    /**
-     * Returns $name.
-     * @see website::$name
-     */
-    public function getName()
-    {
-        return $this->format->sanitizeString($this->name);
-    }
-    
-    /**
-     * Sets $name.
-     * @param string $name
-     * @see website::$name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-	
-    /**
-     * Returns $visibility.
-     * @see website::$visibility
-     */
-    public function getVisibility()
-    {
-        return $this->format->sanitizeString($this->visibility);
-    }
-    
-    /**
-     * Set website visibility
-     * Sets $visibility.
-     * @param string $visibility public, private, unlisted
-     * @see website::$visibility
-     */
-    public function setVisibility($visibility)
-    {
-        $this->visibility = $visibility;
-    }
-	
 }
 
 class cnAddresses
