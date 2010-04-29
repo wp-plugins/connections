@@ -172,4 +172,24 @@ class cnFormatting
 		return $value;
 	}
 }
+
+class cnValidate
+{
+	public function attributesArray($defaults, $untrusted)
+	{
+		$intersect = array_intersect_key($untrusted, $defaults); // Get data for which is in the valid fields.
+		$difference = array_diff_key($defaults, $untrusted); // Get default data which is not supplied.
+		return array_merge($intersect, $difference); // Merge the results. Contains only valid fields of all defaults.
+	}
+	
+	public function url()
+	{
+		
+	}
+	
+	public function email()
+	{
+		
+	}
+}
 ?>

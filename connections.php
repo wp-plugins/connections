@@ -612,7 +612,7 @@ if (!class_exists('connectionsLoad'))
 			
 			wp_enqueue_script('jquery');
 			
-			// Commented out fo now because it's not needed.
+			// Commented out for now because it's not needed.
 			//wp_enqueue_script('thickbox');
 			
 			/**

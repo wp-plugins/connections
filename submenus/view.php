@@ -386,11 +386,9 @@ function connectionsShowViewPage()
 											
 											if ($entry->getSocialMedia())
 											{
-												$socialMediaObject = new cnSocialMedia();
-												
-												foreach ($entry->getSocialMedia() as $socialMediaRow)
+												foreach ($entry->getSocialMedia() as $socialNetwork)
 												{
-													if ($socialMediaObject->getId($socialMediaRow) != "") echo "<strong>" . $socialMediaObject->getName($socialMediaRow) . ":</strong><br />" . $socialMediaObject->getId($socialMediaRow) . "<br /><br />";
+													if ($socialNetwork->id != "") echo "<strong>" . $socialNetwork->name . ":</strong><br />" . $socialNetwork->id . "<br /><br />";
 												}
 											}
 											

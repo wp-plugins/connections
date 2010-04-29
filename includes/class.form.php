@@ -374,7 +374,7 @@ class cnEntryForm
 		$phoneNumberObject = new cnPhoneNumber();
 		$emailObject = new cnEmail();
 		$imObject = new cnIM();
-		$socialMediaObject = new cnSocialMedia();
+		//$socialMediaObject = new cnSocialMedia();
 		//$websiteObject = new cnWebsite();
 		$options = unserialize($data->options);
 		$date = new cnDate();
@@ -841,29 +841,25 @@ class cnEntryForm
 				
 				if ($data->social != null)
 				{
-					$socialMediaValues = $entry->getSocialMedia();
-					$ticker->reset();
+					$socialMedia = $entry->getSocialMedia();
 					
-					if ($socialMediaValues != null)
+					if ( !empty($socialMedia) )
 					{
-						foreach ($socialMediaValues as $socialMediaRow)
+						foreach ($socialMedia as $socialNetwork)
 						{
-							if ($socialMediaObject->getId($socialMediaRow) != null)
+							if ($socialNetwork->id != null)
 							{
-							$token = $form->token($entry->getId());
-							$out .= '<div class="form-field connectionsform socialmedia" id="social_media_row_'  . $token . '">';
-								$out .= '<div class="social_media_row">';
-									$out .= $form->buildSelect('social_media[' . $token . '][type]', $connections->options->getDefaultSocialMediaValues(), $socialMediaObject->getType($socialMediaRow));
-									$out .= '<input type="text" name="social_media[' . $token . '][id]" value="' . $socialMediaObject->getId($socialMediaRow) . '" style="width: 30%"/>';
-									$out .= '<input type="hidden" name="social_media[' . $token . '][visibility]" value="' . $socialMediaObject->getVisibility($socialMediaRow) . '" />';
-									$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#social_media_row_'. $token . '\'); return false;">Remove</a>';
+								$token = $form->token($entry->getId());
+								$out .= '<div class="form-field connectionsform socialmedia" id="social_media_row_'  . $token . '">';
+									$out .= '<div class="social_media_row">';
+										$out .= $form->buildSelect('social_media[' . $token . '][type]', $connections->options->getDefaultSocialMediaValues(), $socialNetwork->type);
+										$out .= '<input type="text" name="social_media[' . $token . '][id]" value="' . $socialNetwork->id . '" style="width: 30%"/>';
+										$out .= '<input type="hidden" name="social_media[' . $token . '][visibility]" value="' . $socialNetwork->visibility . '" />';
+										$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#social_media_row_'. $token . '\'); return false;">Remove</a>';
+									$out .= '</div>';
 								$out .= '</div>';
-							$out .= '</div>';
-							
-							$ticker->step();
 							}
 						}
-						$ticker->reset();
 					}
 				}
 			
@@ -886,7 +882,7 @@ class cnEntryForm
 				
 				$websites = $entry->getWebsites();
 				
-				if ( !empty ($websites) )
+				if ( !empty($websites) )
 				{
 					foreach ($websites as $website)
 					{

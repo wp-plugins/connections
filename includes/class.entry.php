@@ -137,6 +137,7 @@ class cnEntry
 	private $editedBy;
 	
 	private $format;
+	private $validate;
 	
 	function __construct($entry = NULL)
 	{
@@ -179,6 +180,9 @@ class cnEntry
 		
 		// Load the formatting class for sanitizing the get methods.
 		$this->format = new cnFormatting();
+		
+		// Load the validation class.
+		$this->validate = new cnValidate();
 	}
 
     /**
@@ -555,14 +559,103 @@ class cnEntry
         $this->im = $im;
     }
 	
+	/**
+     * Returns array of objects.
+     * 
+     * Each object contains:
+     * 						->name
+     * 						->type
+     * 						->id
+     * 						->url
+     * 						->visibility
+     * 
+     * NOTE: The output is sanitized for safe display.
+     * 
+     * @return array
+     */
 	public function getSocialMedia()
     {
-        return $this->socialMedia;
+		if ( !empty($this->socialMedia) )
+		{
+			foreach ($this->socialMedia as $key => $network)
+			{
+				$row->name = $this->format->sanitizeString($network['name']);
+				$row->type = $this->format->sanitizeString($network['type']);
+				$row->id = $this->format->sanitizeString($network['id']);
+				$row->url = $this->format->sanitizeString($network['url']);
+				$row->visibility = $this->format->sanitizeString($network['visibility']);
+				
+				// Start for Compatibility for versions <= 0.6.2.1 \\
+				if ( empty($row->url) ) $row->url = $row->id;
+				
+				if ( empty($row->name) )
+				{
+					global $connections;
+					
+					$socialMediaValues = $connections->options->getDefaultSocialMediaValues();
+					$row->name = $socialMediaValues[$row->type];
+				}
+				// End for Compatibility for versions <= 0.6.2.1 \\
+				
+				$out[] = $row;
+				unset($row);
+			}
+		}
+		
+		if ( !empty($out) ) return $out;
     }
     
+	/**
+     * Sets $socialMedia as an associative array.
+     * If the social network ID [id] is http:// or empty it is unset.
+     * since there is no need to store it.
+     * 
+     * $socialMedia is to be an array containing an array of the data for each social network.
+     * 
+     * 
+     * @param array $socialMedia
+     */
     public function setSocialMedia($socialMedia)
     {
-        $this->socialMedia = $socialMedia;
+    	global $connections;
+		
+		$validFields = array('name' => NULL, 'type' => NULL, 'id' => NULL, 'url' => NULL, 'visibility' => NULL);
+		
+		if ( !empty($socialMedia) )
+		{
+			foreach ($socialMedia as $key => $socialNetwork)
+			{
+				// First validate the supplied data.
+				$socialMedia[$key] = $this->validate->attributesArray($validFields, $socialNetwork);
+				
+				$socialMediaValues = $connections->options->getDefaultSocialMediaValues();
+				$socialMedia[$key]['name'] = $socialMediaValues[$socialNetwork['type']];
+				
+				// If the id is emty, no need to store it and if the http protocol is not part of the address, add it.
+				switch ($socialNetwork['id'])
+				{
+					case '':
+						unset($socialMedia[$key]);
+					break;
+					
+					case 'http://':
+						unset($socialMedia[$key]);
+					break;
+					
+					default:
+						if ( substr($socialNetwork['id'], 0, 7) != 'http://' )
+						{
+							$socialMedia[$key]['id'] = 'http://' . $socialNetwork['id'];
+						}
+					break;
+				}
+				
+				if ( array_key_exists($key, $socialMedia) ) $socialMedia[$key]['url'] = $socialMedia[$key]['id'];
+				
+			}
+		}
+		
+		$this->socialMedia = $socialMedia;
     }
 
     /**
@@ -732,7 +825,7 @@ class cnEntry
 				$websiteRow->name = $this->format->sanitizeString($website['name']);
 				$websiteRow->type = $this->format->sanitizeString($website['type']);
 				$websiteRow->address = $this->format->sanitizeString($website['address']);
-				$websiteRow->url = $this->format->sanitizeString($website['address']);
+				$websiteRow->url = $this->format->sanitizeString($website['url']);
 				$websiteRow->visibility = $this->format->sanitizeString($website['visibility']);
 				
 				$out[] = $websiteRow;
@@ -748,7 +841,7 @@ class cnEntry
      * If the website URL [address] is http:// or empty it is unset.
      * since there is no need to store it.
      * 
-     * $websites is to be an array containing an araay of the data for each website.
+     * $websites is to be an array containing an array of the data for each website.
      * 
      * @TODO: Validate as valid web addresses.
      * 
@@ -763,9 +856,7 @@ class cnEntry
 			foreach ($websites as $key => $website)
 			{
 				// First validate the supplied data.
-				$intersect = array_intersect_key($website, $validFields); // Get data for which is in the valid fields.
-				$difference = array_diff_key($validFields, $website); // Get default data which is not supplied.
-				$websites[$key] = array_merge($intersect, $difference); // Merge the results. Contains only valid fields of all defaults.
+				$websites[$key] = $this->validate->attributesArray($validFields, $website);
 				
 				// If the address/url is emty, no need to store it and if the http protocol is not part of the address, add it.
 				switch ($website['address'])
@@ -786,7 +877,7 @@ class cnEntry
 					break;
 				}
 				
-				if ( array_key_exists($key, $websites) ) $websites[$key]['url'] = 'http://' . $website['address'];
+				if ( array_key_exists($key, $websites) ) $websites[$key]['url'] = $website['address'];
 				
 			}
 		}
@@ -1960,114 +2051,6 @@ class cnIM
     {
         $this->id = $data['id'];
 		return $this->format->sanitizeString($this->id);
-    }
-    
-    /**
-     * Sets $id.
-     * @param string $id
-     * @see im::$id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-    
-    /**
-     * Returns $visibility.
-     * @see im::$visibility
-     */
-    public function getVisibility($data)
-    {
-        $this->visibility = $data['visibility'];
-		return $this->format->sanitizeString($this->visibility);
-    }
-    
-    /**
-     * Sets $visibility.
-     * @param string $visibility public, private, unlisted
-     * @see im::$visibility
-     */
-    public function setVisibility($visibility)
-    {
-        $this->visibility = $visibility;
-    }
-
-}
-
-/**
- * Extracts Social MEdia IDs from an array of IDs
- * 
- * $type
- * $name
- * $id
- * $visibility
- */
-class cnSocialMedia
-{
-	/**
-	 * String: IM protocal
-	 * @var string
-	 */
-	private $type;
-		
-	/**
-	 * IM ID
-	 * @var string
-	 */
-	private $id;
-	
-	/**
-	 * String: public, private, unlisted
-	 * @var string
-	 */
-	private $visibility;
-    
-    private $format;
-	
-	function __construct()
-	{
-		// Load the formatting class for sanitizing the get methods.
-		$this->format = new cnFormatting();
-	}
-	
-	/**
-     * Returns $type.
-     * @see im::$type
-     */
-    public function getType($data)
-    {
-       $this->type = $data['type'];
-		return $this->format->sanitizeString($this->type);
-    }
-    
-	public function getName($data)
-	{
-		global $connections;
-		
-		$socialMediaValues = $connections->options->getDefaultSocialMediaValues();
-		return $this->format->sanitizeString($socialMediaValues[$data['type']]);
-	}
-	
-    /**
-     * Sets $type.
-     * @param string $type
-     * @see im::$type
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-    }
-
-	/**
-     * Returns $id.
-     * @param $data 
-     * @see im::$id
-     */
-    public function getId($data)
-    {
-        $this->id = $data['id'];
-		return $this->format->sanitizeString($this->id);
-		
     }
     
     /**
