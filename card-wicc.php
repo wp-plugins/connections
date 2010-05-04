@@ -98,24 +98,48 @@
 				jQuery("a#close_description_link_<?php echo $entry->getId(); ?>").hide();
 				jQuery("#description_block_<?php echo $entry->getId(); ?>").fadeOut();
 				jQuery("a#description_link_<?php echo $entry->getId(); ?>").fadeIn();
-				}); return false' style="display: none;">Close Committee Member Bio</a>
+				}); return false' style="display: none;">Close Bio</a>
 				
 				<a href="#" id="description_link_<?php echo $entry->getId(); ?>" onclick='jQuery("a#description_link_<?php echo $entry->getId(); ?>").live("click", function(e){
 				jQuery("a#description_link_<?php echo $entry->getId(); ?>").hide();
 				jQuery("#description_block_<?php echo $entry->getId(); ?>").fadeIn();
 				jQuery("a#close_description_link_<?php echo $entry->getId(); ?>").fadeIn();
-				}); return false'>Committee Member Bio</a>
+				}); return false'>Show Bio</a>
 				
 				<?php } ?>
+				
+				<?php if ($entry->getNotes() != '') { ?>
+				
+				<?php echo ' | '; ?>
+				
+				<a href="#" id="close_note_link_<?php echo $entry->getId(); ?>" onclick='jQuery("a#close_note_link_<?php echo $entry->getId(); ?>").live("click", function(e){
+				jQuery("a#close_note_link_<?php echo $entry->getId(); ?>").hide();
+				jQuery("#note_block_<?php echo $entry->getId(); ?>").fadeOut();
+				jQuery("a#note_link_<?php echo $entry->getId(); ?>").fadeIn();
+				}); return false' style="display: none;">Hide Services</a>
+				
+				<a href="#" id="note_link_<?php echo $entry->getId(); ?>" onclick='jQuery("a#note_link_<?php echo $entry->getId(); ?>").live("click", function(e){
+				jQuery("a#note_link_<?php echo $entry->getId(); ?>").hide();
+				jQuery("#note_block_<?php echo $entry->getId(); ?>").fadeIn();
+				jQuery("a#close_note_link_<?php echo $entry->getId(); ?>").fadeIn();
+				}); return false'>Show Services</a>
+				
+				<?php } ?>
+				
 	        </td>
 	    </tr>
 		
 		<tr>
 			<td colspan="2" style="border: medium none transparent;">
 				<?php 
+					if ($entry->getNotes() != '')
+					{
+						echo '<div id="note_block_' . $entry->getId() . '" style="display: none; margin: 10px 0 0 0;"><strong>Services</strong><br />' . $entry->getNotesBlock() . '</div>';
+					}
+					
 					if ($entry->getBio() != '')
 					{
-						echo '<div id="description_block_' . $entry->getId() . '" style="display: none; margin: 10px 0 0 0;">' . $entry->getBioBlock() . '</div>';
+						echo '<div id="description_block_' . $entry->getId() . '" style="display: none; margin: 10px 0 0 0;"><strong>Bio</strong><br />' . $entry->getBioBlock() . '</div>';
 					}
 				?>
 			</td>
