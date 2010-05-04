@@ -376,11 +376,9 @@ function connectionsShowViewPage()
 											
 											if ($entry->getIm())
 											{
-												$imObject = new cnIM();
-												
 												foreach ($entry->getIm() as $imRow)
 												{
-													if ($imObject->getId($imRow) != "") echo "<strong>" . $imObject->getName($imRow) . ":</strong><br />" . $imObject->getId($imRow) . "<br /><br />";
+													if ($imRow->id != "") echo "<strong>" . $imRow->name . ":</strong><br />" . $imRow->id . "<br /><br />";
 												}
 											}
 											

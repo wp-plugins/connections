@@ -376,45 +376,43 @@ class cnvCard extends cnEntry
 	{
 		if ($this->getIm())
 		{
-			$imObject = new cnIM();
-			
 			foreach ($this->getIm() as $imRow)
 			{
-				switch ($imObject->getType($imRow))
+				switch ($imRow->type)
 				{
 					case 'aim':
-						$this->data['aim'] = $imObject->getId($imRow);
+						$this->data['aim'] = $imRow->id;
 					break;
 					
 					case 'yahoo':
-						$this->data['yim'] = $imObject->getId($imRow);
+						$this->data['yim'] = $imRow->id;
 					break;
 					
 					case 'messenger':
-						$this->data['messenger'] = $imObject->getId($imRow);
+						$this->data['messenger'] = $imRow->id;
 					break;
 					
 					case 'jabber':
-						$this->data['jabber'] = $imObject->getId($imRow);
+						$this->data['jabber'] = $imRow->id;
 					break;
 					
 					default:
-						switch ($imObject->getName($imRow))
+						switch ($imRow->name)
 						{
 							case 'AIM':
-								$this->data['aim'] = $imObject->getId($imRow);
+								$this->data['aim'] = $imRow->id;
 							break;
 							
 							case 'Yahoo IM':
-								$this->data['yim'] = $imObject->getId($imRow);
+								$this->data['yim'] = $imRow->id;
 							break;
 							
 							case 'Messenger':
-								$this->data['messenger'] = $imObject->getId($imRow);
+								$this->data['messenger'] = $imRow->id;
 							break;
 							
 							case 'Jabber / Google Talk':
-								$this->data['jabber'] = $imObject->getId($imRow);
+								$this->data['jabber'] = $imRow->id;
 							break;
 						}
 					break;

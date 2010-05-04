@@ -257,11 +257,10 @@ class cnOutput extends cnEntry
 			/**
 			 * @TODO: Out as clickable links using hCard spec.
 			 */
-			$imObject = new cnIM();
 			$out = '<div class="im-block" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getIm() as $imRow)
 			{
-				if ($imObject->getId($imRow) != null) $out .= '<span class="im-item"><strong>' . $imObject->getName($imRow) . ':</strong> ' . $imObject->getId($imRow). '</span><br />' . "\n";
+				if ($imRow->id != NULL) $out .= '<span class="im-item"><strong>' . $imRow->name . ':</strong> ' . $imRow->id . '</span><br />' . "\n";
 			}
 			$out .= '</div>' . "\n";
 		}

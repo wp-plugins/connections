@@ -94,6 +94,10 @@ if (!class_exists('connectionsLoad'))
 				
 				// Process any action done in the admin.
 				$this->controllers();
+				
+				// Add Changelog table row in the Manage Plugins admin page.
+				//add_action('after_plugin_row_' . plugin_basename(__FILE__), array(&$this, 'displayChangelog'), 50, 2);
+				
 			}
 			else
 			{
@@ -281,7 +285,6 @@ if (!class_exists('connectionsLoad'))
 		
 		/**
 		 * Initiate the error messages for Connections using the WP_Error class.
-		 * @return null
 		 */
 		private function initErrorMessages()
 		{
@@ -335,7 +338,6 @@ if (!class_exists('connectionsLoad'))
 		
 		/**
 		 * Stores a predefined error messages in the user meta.
-		 * @return null
 		 * @param string
 		 */
 		public function setErrorMessage($errorMessage)
@@ -351,8 +353,6 @@ if (!class_exists('connectionsLoad'))
 		
 		/**
 		 * Initiates the success messages for Connections using the WP_Error class.
-		 * 
-		 * @return null
 		 */
 		private function initSuccessMessages()
 		{
@@ -390,7 +390,6 @@ if (!class_exists('connectionsLoad'))
 		
 		/**
 		 * Stores a predefined success messages in the user meta.
-		 * @return null
 		 * @param string
 		 */
 		public function setSuccessMessage($successMessage)
@@ -407,7 +406,6 @@ if (!class_exists('connectionsLoad'))
 						
 		/**
 		 * Called when activating Connections via the activation hook.
-		 * @return null
 		 */
 		public function activate()
 		{
@@ -538,7 +536,6 @@ if (!class_exists('connectionsLoad'))
 		
 		/**
 		 * Called when deactivating Connections via the deactivation hook.
-		 * @return null
 		 */
 		public function deactivate()
 		{
@@ -578,7 +575,6 @@ if (!class_exists('connectionsLoad'))
 		
 		/**
 		 * Loads the Connections javascripts only on required admin pages.
-		 * @return null
 		 */
 		public function loadAdminScripts()
 		{
@@ -601,7 +597,6 @@ if (!class_exists('connectionsLoad'))
 		
 		/**
 		 * Loads the Connections javascripts on the WordPress frontend.
-		 * @return null
 		 */
 		public function loadScripts()
 		{
@@ -624,7 +619,6 @@ if (!class_exists('connectionsLoad'))
 		
 		/**
 		 * Loads the Connections CSS only on required admin pages.
-		 * @return null
 		 */
 		public function loadAdminStyles()
 		{
@@ -670,7 +664,6 @@ if (!class_exists('connectionsLoad'))
 		
 		/**
 		 * Loads the Connections CSS on the WordPress frontend.
-		 * @return null
 		 */
 		public function loadStyles()
 		{
@@ -681,10 +674,27 @@ if (!class_exists('connectionsLoad'))
 			wp_enqueue_style( 'member_template_styles' );
 		}
 		
+		
+		/**
+		 * Add the changelog as a table row on the Manage Plugin admin screen.
+		 * Code based on Changelogger.
+		 * 
+		 * @return 
+		 */
+		public function displayChangelog()
+		{
+			include_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
+			
+			$api = plugins_api('plugin_information', array('slug' => 'connections', 'fields' => array('tested' => true, 'requires' => false, 'rating' => false, 'downloaded' => false, 'downloadlink' => false, 'last_updated' => false, 'homepage' => false, 'tags' => false, 'sections' => true) ));
+			print_r($api);
+			
+			//$t = get_plugins('/connections');
+			//print_r($t);
+		}
+		
 		/**
 		 * This is the registered function calls for the Connections admin pages as registered
 		 * using the add_menu_page() and add_submenu_page() WordPress functions.
-		 * @return null
 		 */
 		public function showPage()
 		{

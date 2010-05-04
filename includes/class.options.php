@@ -82,6 +82,14 @@ class cnOptions
 											 'twitter' => 'Twitter'
 											 );
 	
+	private $defaultIMValues  =   array
+									(
+										'aim'=>'AIM',
+										'yahoo'=>'Yahoo IM',
+										'jabber'=>'Jabber / Google Talk',
+										'messenger'=>'Messenger'
+									);
+	
 	private $allowPublic;
 	private $allowPublicOverride;
 	
@@ -833,6 +841,16 @@ class cnOptions
     {
         return $this->defaultSocialMediaValues;
     }
+    
+    /**
+     * Returns $defaultIMValues.
+     *
+     * @see cnOptions::$defaultIMValues
+     */
+    public function getDefaultIMValues() {
+        return $this->defaultIMValues;
+    }
+    
 	
     public function getConnectionRelation($value)
     {

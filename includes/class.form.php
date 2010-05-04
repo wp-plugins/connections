@@ -318,7 +318,7 @@ class cnEntryForm
 											 )
 										);
 	
-	private $defaultIMValues =	array
+	/*private $defaultIMValues =	array
 									(
 										array
 										(
@@ -348,15 +348,15 @@ class cnEntryForm
 											'id'=>null,
 											'visibility'=>'public'
 										),
-									);
+									);*/
 	
-	private $defaultIMTypes  =   array
+	/*private $defaultIMTypes  =   array
 									(
 										'aim'=>'AIM',
 										'yahoo'=>'Yahoo IM',
 										'jabber'=>'Jabber / Google Talk',
 										'messenger'=>'Messenger'
-									);
+									);*/
 	
 	/**
 	 * Builds the input/edit entry form.
@@ -373,7 +373,7 @@ class cnEntryForm
 		$addressObject = new cnAddresses();
 		$phoneNumberObject = new cnPhoneNumber();
 		$emailObject = new cnEmail();
-		$imObject = new cnIM();
+		//$imObject = new cnIM();
 		//$socialMediaObject = new cnSocialMedia();
 		//$websiteObject = new cnWebsite();
 		$options = unserialize($data->options);
@@ -779,51 +779,45 @@ class cnEntryForm
 			//$out .= '</div>';
 			
 						
-			//$out .= '<div class="form-field connectionsform im">';
-				$out .= '<div id="im_ids">';
+			
+			$out .= '<div id="im_ids">';
+				
+				// --> Start template for IM IDs <-- \\
+				$out .= '<textarea id="im_row_base" style="display: none">';
+					$out .= '<div class="form-field connectionsform im">';
+					$out .= $form->buildSelect('im[::FIELD::][type]', $connections->options->getDefaultIMValues());
+					$out .= '<input type="text" name="im[::FIELD::][id]" value="" style="width: 30%"/>';
+					$out .= '<input type="hidden" name="im[::FIELD::][visibility]" value="public" />';
+					$out .= '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#im_row_::FIELD::\'); return false;">Remove</a>';
+					$out .= '</div>';
+				$out .= '</textarea>';
+				// --> End template for IM IDs <-- \\
+				
+				if ($data->im != null)
+				{
+					$imValues = $entry->getIm();
 					
-					// --> Start template for IM IDs <-- \\
-					$out .= '<textarea id="im_row_base" style="display: none">';
-						$out .= '<div class="form-field connectionsform im">';
-						$out .= $form->buildSelect('im[::FIELD::][type]', $this->defaultIMTypes);
-						$out .= '<input type="text" name="im[::FIELD::][id]" value="" style="width: 30%"/>';
-						$out .= '<input type="hidden" name="im[::FIELD::][visibility]" value="public" />';
-						$out .= '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#im_row_::FIELD::\'); return false;">Remove</a>';
-						$out .= '</div>';
-					$out .= '</textarea>';
-					// --> End template for IM IDs <-- \\
-					
-					if ($data->im != null)
+					if ( !empty($imValues) )
 					{
-						$imValues = $entry->getIm();
-						$ticker->reset();
-						
-						if ($imValues != null)
+						foreach ($imValues as $imRow)
 						{
-							foreach ($imValues as $imRow)
+							if ($imRow->id != null)
 							{
-								if ($imObject->getId($imRow) != null)
-								{
 								$token = $form->token($entry->getId());
 								$out .= '<div class="form-field connectionsform im" id="im_row_'  . $token . '">';
 									$out .= '<div class="im_row">';
-										$out .= $form->buildSelect('im[' . $token . '][type]', $this->defaultIMTypes, $imObject->getType($imRow));
-										$out .= '<input type="text" name="im[' . $token . '][id]" value="' . $imObject->getId($imRow) . '" style="width: 30%"/>';
-										$out .= '<input type="hidden" name="im[' . $token . '][visibility]" value="' . $imObject->getVisibility($imRow) . '" />';
+										$out .= $form->buildSelect('im[' . $token . '][type]', $connections->options->getDefaultIMValues(), $imRow->type);
+										$out .= '<input type="text" name="im[' . $token . '][id]" value="' . $imRow->id . '" style="width: 30%"/>';
+										$out .= '<input type="hidden" name="im[' . $token . '][visibility]" value="' . $imRow->visibility . '" />';
 										$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#im_row_'. $token . '\'); return false;">Remove</a>';
 									$out .= '</div>';
 								$out .= '</div>';
-								
-								$ticker->step();
-								}
 							}
-							$ticker->reset();
 						}
 					}
-					
-				$out .= '</div>';
-				//$out .= '<p class="add"><a id="add_im_id" class="button">Add Messenger ID</a></p>';
-			//$out .= '</div>';
+				}
+				
+			$out .= '</div>';
 			
 			
 			$out .= '<div id="social_media">';

@@ -546,7 +546,73 @@ class cnEntry
      */
     public function getIm()
     {
-        return $this->im;
+        //return $this->im;
+		
+		if ( !empty($this->im) )
+		{
+			foreach ($this->im as $key => $network)
+			{
+				$row->name = $this->format->sanitizeString($network['name']);
+				$row->type = $this->format->sanitizeString($network['type']);
+				$row->id = $this->format->sanitizeString($network['id']);
+				$row->visibility = $this->format->sanitizeString($network['visibility']);
+				
+				// Start compatibility with versions 0.5.48 and older. \\
+				switch ($row->type)
+				{
+					case 'AIM':
+						$row->type = 'aim';
+					break;
+					
+					case 'Yahoo IM':
+						$row->type = 'yahoo';
+					break;
+					
+					case 'Jabber / Google Talk':
+						$row->type = 'jabber';
+					break;
+					
+					case 'Messenger':
+						$row->type = 'messenger';
+					break;
+					
+					default:
+						$row->type = $this->format->sanitizeString($row->type);
+					break;
+				}
+				// End compatibility with versions 0.5.48 and older. \\
+				
+				// Start compatibility with versions 0.5.48 and older. \\
+				switch ($row->type)
+				{
+					case 'aim':
+						$row->name = 'AIM';
+					break;
+					
+					case 'yahoo':
+						$row->name = 'Yahoo IM';
+					break;
+					
+					case 'jabber':
+						$row->name = 'Jabber / Google Talk';
+					break;
+					
+					case 'messenger':
+						$row->name = 'Messenger';
+					break;
+					
+					default:
+						$row->name = $this->format->sanitizeString($row->name);
+					break;
+				}
+				// End compatibility with versions 0.5.48 and older. \\
+				
+				$out[] = $row;
+				unset($row);
+			}
+		}
+		
+		if ( !empty($out) ) return $out;
     }
     
     /**
@@ -556,7 +622,26 @@ class cnEntry
      */
     public function setIm($im)
     {
-        $this->im = $im;
+		global $connections;
+		
+		$validFields = array('name' => NULL, 'type' => NULL, 'id' => NULL, 'visibility' => NULL);
+		
+		if ( !empty($im) )
+		{
+			foreach ($im as $key => $imNetwork)
+			{
+				// First validate the supplied data.
+				$im[$key] = $this->validate->attributesArray($validFields, $imNetwork);
+				
+				$imValues = $connections->options->getDefaultIMValues();
+				$im[$key]['name'] = $imValues[$imNetwork['type']];
+				
+				// If the id is emty, no need to store it.
+				if ( empty($imNetwork['id']) ) unset($im[$key]);
+			}
+		}
+		
+		$this->im = $im;
     }
 	
 	/**
@@ -612,6 +697,7 @@ class cnEntry
      * 
      * $socialMedia is to be an array containing an array of the data for each social network.
      * 
+     * @TODO: Validate as valid url.
      * 
      * @param array $socialMedia
      */
@@ -1906,182 +1992,4 @@ class cnAddresses
 
 }
 
-/**
- * Extracts IM IDs from an array of instant messanger IDs
- * 
- * $type
- * $name
- * $id
- * $visibility
- */
-class cnIM
-{
-	/**
-	 * String: IM protocal
-	 * @var string
-	 */
-	private $type;
-	
-	/**
-	 * String: Name
-	 * @var string
-	 */
-	private $name;
-	
-	/**
-	 * IM ID
-	 * @var string
-	 */
-	private $id;
-	
-	/**
-	 * String: public, private, unlisted
-	 * @var string
-	 */
-	private $visibility;
-    
-    private $format;
-	
-	function __construct()
-	{
-		// Load the formatting class for sanitizing the get methods.
-		$this->format = new cnFormatting();
-	}
-	
-	/**
-     * Returns $type.
-     * @see im::$type
-     */
-    public function getType($data)
-    {
-       $this->type = $data['name'];
-	   
-	   // Switch is to maintain compatibility with versions 0.5.48 and older
-	   switch ($this->type)
-		{
-			case 'AIM':
-				return 'aim';
-			break;
-			
-			case 'Yahoo IM':
-				return 'yahoo';
-			break;
-			
-			case 'Jabber / Google Talk':
-				return 'jabber';
-			break;
-			
-			case 'Messenger':
-				return 'messenger';
-			break;
-			
-			default:
-				$this->type = $data['type'];
-				return $this->format->sanitizeString($this->type);
-			break;
-		}
-		
-		//$this->type = $data['type'];
-		//return $this->type;
-    }
-    
-    /**
-     * Sets $type.
-     * @param string $type
-     * @see im::$type
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-    }
-
-    /**
-     * Returns $name.
-     * @see im::$name
-     */
-    public function getName($data)
-    {
-       $this->type = $data['type'];
-	   
-	   // Switch is to maintain compatibility with versions 0.5.48 and older
-	   switch ($this->type)
-		{
-			case 'aim':
-				return 'AIM';
-			break;
-			
-			case 'yahoo':
-				return 'Yahoo IM';
-			break;
-			
-			case 'jabber':
-				return 'Jabber / Google Talk';
-			break;
-			
-			case 'messenger':
-				return 'Messenger';
-			break;
-			
-			default:
-				$this->name = $data['name'];
-				return $this->format->sanitizeString($this->name);
-			break;
-		}
-	   
-	    //$this->name = $data['name'];
-		//return $this->name;
-    }
-    
-    /**
-     * Sets $name.
-     * @param string $name
-     * @see im::$name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-	
-	/**
-     * Returns $id.
-     * @param $data 
-     * @see im::$id
-     */
-    public function getId($data)
-    {
-        $this->id = $data['id'];
-		return $this->format->sanitizeString($this->id);
-    }
-    
-    /**
-     * Sets $id.
-     * @param string $id
-     * @see im::$id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-    
-    /**
-     * Returns $visibility.
-     * @see im::$visibility
-     */
-    public function getVisibility($data)
-    {
-        $this->visibility = $data['visibility'];
-		return $this->format->sanitizeString($this->visibility);
-    }
-    
-    /**
-     * Sets $visibility.
-     * @param string $visibility public, private, unlisted
-     * @see im::$visibility
-     */
-    public function setVisibility($visibility)
-    {
-        $this->visibility = $visibility;
-    }
-
-}
 ?>
