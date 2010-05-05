@@ -243,10 +243,10 @@ function connectionsShowViewPage()
 								
 								foreach ($results as $row) {
 									$entry = new cnEntry($row);
+									$vCard = new cnvCard($row);
 									
 									/**
 									 * @TODO: Use the Output class to show entry details.
-									 * @TODO: Add the vCard.
 									 */								
 									$object = new cnOutput($row);
 									
@@ -284,6 +284,7 @@ function connectionsShowViewPage()
 												
 												echo '<div class="row-actions">';
 													echo '<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a> | ';
+													echo $vCard->download( array('anchorText' => 'vCard') ) . ' | ';
 													if (current_user_can('connections_edit_entry')) echo '<a class="editbutton" href="' . $editTokenURL . '" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | ';
 													if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="' . $copyTokenURL . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
 													if (current_user_can('connections_delete_entry')) echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="' . $deleteTokenURL . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
@@ -366,11 +367,9 @@ function connectionsShowViewPage()
 										echo "<td>";
 											if ($entry->getEmailAddresses())
 											{
-												$emailAddressObject = new cnEmail();
-												
 												foreach ($entry->getEmailAddresses() as $emailRow)
 												{
-													if ($emailAddressObject->getAddress($emailRow) != null) echo "<strong>" . $emailAddressObject->getName($emailRow) . ":</strong><br /><a href='mailto:" . $emailAddressObject->getAddress($emailRow) . "'>" . $emailAddressObject->getAddress($emailRow) . "</a><br /><br />";
+													if ($emailRow->address != null) echo "<strong>" . $emailRow->name . ":</strong><br /><a href='mailto:" . $emailRow->address . "'>" . $emailRow->address . "</a><br /><br />";
 												}
 											}
 											
@@ -386,7 +385,7 @@ function connectionsShowViewPage()
 											{
 												foreach ($entry->getSocialMedia() as $socialNetwork)
 												{
-													if ($socialNetwork->id != "") echo "<strong>" . $socialNetwork->name . ":</strong><br />" . $socialNetwork->id . "<br /><br />";
+													if ($socialNetwork->id != "") echo "<strong>" . $socialNetwork->name . ":</strong><br /><a target='_blank' href='" . $socialNetwork->url . "'>" . $socialNetwork->url . "</a><br /><br />";
 												}
 											}
 											

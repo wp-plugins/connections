@@ -90,6 +90,12 @@ class cnOptions
 										'messenger'=>'Messenger'
 									);
 	
+	private $defaultEmailValues  =   array
+									(
+										'personal'=>'Personal Email',
+										'work'=>'Work Email'
+									);
+	
 	private $allowPublic;
 	private $allowPublicOverride;
 	
@@ -850,6 +856,16 @@ class cnOptions
     public function getDefaultIMValues() {
         return $this->defaultIMValues;
     }
+    
+    /**
+     * Returns $defaultEmailValues.
+     *
+     * @see cnOptions::$defaultEmailValues
+     */
+    public function getDefaultEmailValues() {
+        return $this->defaultEmailValues;
+    }
+    
     
 	
     public function getConnectionRelation($value)

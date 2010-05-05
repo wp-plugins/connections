@@ -295,88 +295,29 @@ class cnEntryForm
 													),
 												);
 	
-	private $defaultEmailTypes  =   array
-									(
-										'personal'=>'Personal Email',
-										'work'=>'Work Email'
-									);
-	
-	private $defaultEmailValues = 	array
-										(
-											array
-											(
-												'type'=>'personal',
-												'name'=>'Personal Email',
-												'address'=>null,
-												'visibility'=>'public'
-											),
-											array(
-												'type'=>'work',
-												'name'=>'Work Email',
-												'address'=>null,
-												'visibility'=>'public'
-											 )
-										);
-	
-	/*private $defaultIMValues =	array
-									(
-										array
-										(
-											'type'=>'aim',
-											'name'=>'AIM',
-											'id'=>null,
-											'visibility'=>'public'
-										),
-										array
-										(
-											'type'=>'yahoo',
-											'name'=>'Yahoo IM',
-											'id'=>null,
-											'visibility'=>'public'
-										),
-										array
-										(
-											'type'=>'jabber',
-											'name'=>'Jabber / Google Talk',
-											'id'=>null,
-											'visibility'=>'public'
-										),
-										array
-										(
-											'type'=>'messenger',
-											'name'=>'Messenger',
-											'id'=>null,
-											'visibility'=>'public'
-										),
-									);*/
-	
-	/*private $defaultIMTypes  =   array
-									(
-										'aim'=>'AIM',
-										'yahoo'=>'Yahoo IM',
-										'jabber'=>'Jabber / Google Talk',
-										'messenger'=>'Messenger'
-									);*/
 	
 	/**
 	 * Builds the input/edit entry form.
 	 * @return HTML form
 	 * @param object $data[optional]
 	 */
-	function displayForm($data = null)
+	function displayForm($data = NULL)
 	{
 		global $wpdb, $connections;
 		
+		if ( !empty($data) )
+		{
+			$entry = new cnEntry($data);
+			$options = unserialize($data->options);
+		}
+		
+		
 		$form = new cnFormObjects();
 		$categoryObjects = new cnCategoryObjects();
-		$entry = new cnEntry($data);
+		
 		$addressObject = new cnAddresses();
 		$phoneNumberObject = new cnPhoneNumber();
-		$emailObject = new cnEmail();
-		//$imObject = new cnIM();
-		//$socialMediaObject = new cnSocialMedia();
-		//$websiteObject = new cnWebsite();
-		$options = unserialize($data->options);
+		
 		$date = new cnDate();
 		$ticker = new cnCounter();
 		
@@ -387,20 +328,9 @@ class cnEntryForm
 		 */
 		if (!$data->visibility) $defaultVisibility = 'unlisted'; else $defaultVisibility = $entry->getVisibility();
 		if (!isset($options['entry']['type'])) $defaultEntryType = "individual"; else $defaultEntryType = $entry->getEntryType();
-				
-		//$out =
-		'<div class="form-field connectionsform">	
-				<span class="radio_group">' . $form->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Connection Group"=>"connection_group"),$defaultEntryType) . '</span>
-		</div>';
+		
 		
 		$out = '<div id="side-info-column" class="inner-sidebar">';
-			
-			//$out .= '<div class="postbox">';
-				//$out .= '<h3>Entry Type</h3>';
-				//$out .= '<div class="inside">';
-					//$out .= $form->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Connection Group"=>"connection_group"),$defaultEntryType);
-				//$out .= '</div>';
-			//$out .= '</div>';
 			
 			$out .= '<div class="postbox" id="submitdiv">';
 				$out .= '<h3>Publish</h3>';
@@ -732,52 +662,44 @@ class cnEntryForm
 			//$out .= '</div>';
 			
 						
-			//$out .= '<div class="form-field connectionsform email">';
-				$out .= '<div id="email_addresses">';
+			$out .= '<div id="email_addresses">';
+				
+				// --> Start template for Email Addresses <-- \\
+				$out .= '<textarea id="email_address_row_base" style="display: none">';
+				$out .= '<div class="form-field connectionsform email">';
+					$out .= $form->buildSelect('email[::FIELD::][type]', $connections->options->getDefaultEmailValues());
+					$out .= '<input type="text" name="email[::FIELD::][address]" value="" style="width: 30%"/>';
+					$out .= '<input type="hidden" name="email[::FIELD::][visibility]" value="public" />';
+					$out .= '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#email_address_row_::FIELD::\'); return false;">Remove</a>';
+					$out .= '</div>';
+				$out .= '</textarea>';
+				// --> End template for Email Addresses <-- \\
+				
+				if ($data->email != NULL)
+				{
+					$emailValues = $entry->getEmailAddresses();
 					
-					// --> Start template for Email Addresses <-- \\
-					$out .= '<textarea id="email_address_row_base" style="display: none">';
-					$out .= '<div class="form-field connectionsform email">';
-						$out .= $form->buildSelect('email[::FIELD::][type]', $this->defaultEmailTypes);
-						$out .= '<input type="text" name="email[::FIELD::][address]" value="" style="width: 30%"/>';
-						$out .= '<input type="hidden" name="email[::FIELD::][visibility]" value="public" />';
-						$out .= '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#email_address_row_::FIELD::\'); return false;">Remove</a>';
-						$out .= '</div>';
-					$out .= '</textarea>';
-					// --> End template for Email Addresses <-- \\
-					
-					if ($data->email != null)
+					if ( !empty($emailValues) )
 					{
-						$emailValues = $entry->getEmailAddresses();
-						$ticker->reset();
-						
-						if ($emailValues != null)
+						foreach ($emailValues as $emailRow)
 						{
-							foreach ($emailValues as $emailRow)
+							if ($emailRow->address != NULL)
 							{
-								if ($emailObject->getAddress($emailRow) != null)
-								{
 								$token = $form->token($entry->getId());
 								$out .= '<div class="form-field connectionsform email" id="email_address_row_'  . $token . '">';
 									$out .= '<div class="email_address_row">';
-										$out .= $form->buildSelect('email[' . $token . '][type]', $this->defaultEmailTypes, $emailObject->getType($emailRow));
-										$out .= '<input type="text" name="email[' . $token . '][address]" value="' . $emailObject->getAddress($emailRow) . '" style="width: 30%"/>';
-										$out .= '<input type="hidden" name="email[' . $token . '][visibility]" value="' . $emailObject->getVisibility($emailRow) . '" />';
+										$out .= $form->buildSelect('email[' . $token . '][type]', $connections->options->getDefaultEmailValues(), $emailRow->type);
+										$out .= '<input type="text" name="email[' . $token . '][address]" value="' . $emailRow->address . '" style="width: 30%"/>';
+										$out .= '<input type="hidden" name="email[' . $token . '][visibility]" value="' . $emailRow->visibility . '" />';
 										$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#email_address_row_'. $token . '\'); return false;">Remove</a>';
 									$out .= '</div>';
 								$out .= '</div>';
-								
-								$ticker->step();
-								}
 							}
-							$ticker->reset();
 						}
 					}
-					
-				$out .= '</div>';
-				//$out .= '<p class="add"><a id="add_email_address" class="button">Add Email Address</a></p>';
-			//$out .= '</div>';
-			
+				}
+				
+			$out .= '</div>';
 						
 			
 			$out .= '<div id="im_ids">';
@@ -826,7 +748,7 @@ class cnEntryForm
 				$out .= '<textarea id="social_media_row_base" style="display: none">';
 					$out .= '<div class="form-field connectionsform socialmedia">';
 					$out .= $form->buildSelect('social_media[::FIELD::][type]', $connections->options->getDefaultSocialMediaValues());
-					$out .= '<input type="text" name="social_media[::FIELD::][id]" value="" style="width: 30%"/>';
+					$out .= '<input type="text" name="social_media[::FIELD::][id]" style="width: 30%" value="http://" />';
 					$out .= '<input type="hidden" name="social_media[::FIELD::][visibility]" value="public"/>';
 					$out .= '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#social_media_row_::FIELD::\'); return false;">Remove</a>';
 					$out .= '</div>';
@@ -920,12 +842,9 @@ class cnEntryForm
 					<p><strong>Permitted HTML tags:</strong> &lt;p&gt; &lt;a&gt; &lt;strong&gt; &lt;em&gt; &lt;br /&gt;</p>
 			</div>";
 			
-			//$out .=
-				"<div class='form-field connectionsform'>	
-						<span class='radio_group'>" . $form->buildRadio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$defaultVisibility) . "</span>
-				</div>";
 		
 		$out .= '</div>';
+		
 		echo $out;
 	}
 	

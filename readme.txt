@@ -84,6 +84,9 @@ Connections is a simple to use address book system but is also very versatile. Y
 * FEATURE: Added shortcode attribute, wp_current_category. When this is set to true and the shortcode is used in a post, all entries that have the same category name will be displayed.
 * FEATURE: Allow more than one website address to be entered per entry.
 * FEATURE: Automatically add the http:// to the website addresses.
+* FEATURE: Automatically add the http:// to the social network urls.
+* FEATURE: Add vCard download link to entry actions.
+* FEATURE: Add Upgrade Notice text to the readme.txt.
 * BUG: Set the db version after each db upgrade cycle.
 * BUG: Add the missing social media block to the output class, default templates and help page.
 * BUG: Fix typos in the help page.
@@ -97,6 +100,13 @@ Connections is a simple to use address book system but is also very versatile. Y
 * OTHER: Enhance plug-in security through the use of nonce.
 * OTHER: Move the methods from cnConvert class to the cnFormatting class.
 * OTHER: Move the class.upload.php to the image processing method to remove 1.3MB of plug-in overhead.
+* OTHER: Reduce memory overhead.
+
+== Upgrade Notice ==
+
+= 0.7.0.0 =
+Upgrading to this version might break custom templates.
+
 
 = 0.6.2.1 2/3/2010 =
 * BUG: Fixed fatal error when using the shortcode attribute repeat_alphaindex.

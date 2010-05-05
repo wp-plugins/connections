@@ -326,22 +326,20 @@ class cnvCard extends cnEntry
 	{
 		if ($this->getEmailAddresses())
 		{
-			$emailAddressObject = new cnEmail();
-			
 			foreach ($this->getEmailAddresses() as $emailRow)
 			{
-				switch ($emailAddressObject->getType($emailRow))
+				switch ($emailRow->type)
 				{
 					case 'personal':
-						$this->data['email1'] = $emailAddressObject->getAddress($emailRow);
+						$this->data['email1'] = $emailRow->address;
 					break;
 					
 					case 'work':
-						$this->data['email2'] = $emailAddressObject->getAddress($emailRow);
+						$this->data['email2'] = $emailRow->address;
 					break;
 					
 					default:
-						$this->data['email1'] = $emailAddressObject->getAddress($emailRow);
+						$this->data['email1'] = $emailRow->address;
 					break;
 				}
 			}
@@ -428,13 +426,13 @@ class cnvCard extends cnEntry
 		return $this->card;
 	}
 	
-	public function download()
+	public function download( $atts = array('anchorText' => 'Add to Address Book') )
 	{
 		$token = wp_create_nonce('download_vcard_' . $this->getId());
 		
 		$filenameEncoded = rawurlencode($filename);
 		
-		echo '<a href="' . get_option('siteurl') . '/download.vCard.php?token=' . $token . '&entry=' . $this->getId() . '">Add to Address Book</a>';
+		echo '<a href="' . get_option('siteurl') . '/download.vCard.php?token=' . $token . '&entry=' . $this->getId() . '">' . $atts['anchorText'] . '</a>';
 	}
 }
 ?>

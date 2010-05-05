@@ -238,12 +238,11 @@ class cnOutput extends cnEntry
 	{
 		if ($this->getEmailAddresses())
 		{
-			$emailAddressObject = new cnEmail();
 			$out .= '<div class="email-address-block">' . "\n";
 			foreach ($this->getEmailAddresses() as $emailRow)
 			{
 				//Type for hCard compatibility. Hidden.
-				if ($emailAddressObject->getAddress($emailRow) != null) $out .= '<strong>' . $emailAddressObject->getName($emailRow) . ':</strong><br /><span class="email"><span class="type" style="display: none;">INTERNET</span><a class="value" href="mailto:' . $emailAddressObject->getAddress($emailRow) . '">' . $emailAddressObject->getAddress($emailRow) . '</a></span><br /><br />' . "\n";
+				if ($emailRow->address != NULL) $out .= '<strong>' . $emailRow->name . ':</strong><br /><span class="email"><span class="type" style="display: none;">INTERNET</span><a class="value" href="mailto:' . $emailRow->address . '">' . $emailRow->address . '</a></span><br /><br />' . "\n";
 			}
 			$out .= '</div>' . "\n";
 		}

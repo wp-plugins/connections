@@ -522,33 +522,105 @@ class cnEntry
     }
 
     /**
-     * Returns $emailAddresses.
-     * @see entry::$emailAddresses
+     * Returns array of objects.
+     * 
+     * Each object contains:
+     * 						->name
+     * 						->type
+     * 						->address
+     * 						->visibility
+     * 
+     * NOTE: The output is sanitized for safe display.
+     * 
+     * @return array
      */
     public function getEmailAddresses()
     {
-        return $this->emailAddresses;
+        if ( !empty($this->emailAddresses) )
+		{
+			foreach ($this->emailAddresses as $key => $email)
+			{
+				$row->name = $this->format->sanitizeString($email['name']);
+				$row->type = $this->format->sanitizeString($email['type']);
+				$row->address = $this->format->sanitizeString($email['address']);
+				$row->visibility = $this->format->sanitizeString($email['visibility']);
+				
+				// Start compatibility for versions 0.2.24 and older. \\
+				switch ($row->type)
+				{
+					case 'personal':
+						$row->name = "Personal Email";
+						break;
+					case 'work':
+						$row->name = "Work Email";
+						break;
+					
+					default:
+						$row->name = $this->format->sanitizeString($email['name']);
+					break;
+				}
+				// End compatibility for versions 0.2.24 and older. \\
+				
+				$out[] = $row;
+				unset($row);
+			}
+			
+			if ( !empty($out) ) return $out;
+			
+		}
+		
+		return NULL;
     }
     
     /**
-     * Sets $emailAddresses.
-     * @param object $emailAddresses
-     * @see entry::$emailAddresses
+     * Sets $emailAddresses as an associative array.
+     * 
+     * $emailAddresses is to be an array containing an array of the data for each email address.
+     * 
+     * @TODO: Validate as valid email address.
+     * 
+     * @param array $socialMedia
      */
     public function setEmailAddresses($emailAddresses)
     {
         $this->emailAddresses = $emailAddresses;
+		
+		global $connections;
+		
+		$validFields = array('name' => NULL, 'type' => NULL, 'address' => NULL, 'visibility' => NULL);
+		
+		if ( !empty($emailAddresses) )
+		{
+			foreach ($emailAddresses as $key => $email)
+			{
+				// First validate the supplied data.
+				$email[$key] = $this->validate->attributesArray($validFields, $email);
+				
+				$emailValues = $connections->options->getDefaultEmailValues();
+				$email[$key]['name'] = $emailValues[$email['type']];
+				
+				// If the id is emty, no need to store it.
+				if ( empty($email['adsress']) ) unset($email[$key]);
+			}
+		}
     }
 
     /**
-     * Returns $im.
-     * @see entry::$im
+     * Returns array of objects.
+     * 
+     * Each object contains:
+     * 						->name
+     * 						->type
+     * 						->id
+     * 						->visibility
+     * 
+     * NOTE: The output is sanitized for safe display.
+     * 
+     * @return array
      */
     public function getIm()
     {
-        //return $this->im;
-		
-		if ( !empty($this->im) )
+        if ( !empty($this->im) )
 		{
 			foreach ($this->im as $key => $network)
 			{
@@ -610,15 +682,23 @@ class cnEntry
 				$out[] = $row;
 				unset($row);
 			}
+			
+			if ( !empty($out) ) return $out;
 		}
 		
-		if ( !empty($out) ) return $out;
+		return NULL;
     }
     
     /**
-     * Sets $im.
-     * @param object $im
-     * @see entry::$im
+     * Sets $im as an associative array.
+     * If the im network ID [id] is http:// or empty it is unset.
+     * since there is no need to store it.
+     * 
+     * $im is to be an array containing an array of the data for each social network.
+     * 
+     * @TODO: Validate as valid url.
+     * 
+     * @param array $im
      */
     public function setIm($im)
     {
@@ -685,9 +765,11 @@ class cnEntry
 				$out[] = $row;
 				unset($row);
 			}
+			
+			if ( !empty($out) ) return $out;
 		}
 		
-		if ( !empty($out) ) return $out;
+		return NULL;
     }
     
 	/**
@@ -917,9 +999,11 @@ class cnEntry
 				$out[] = $websiteRow;
 				unset($websiteRow);
 			}
+			
+			if ( !empty($out) ) return $out;
 		}
 		
-		if ( !empty($out) ) return $out;
+		return NULL;
     }
     
     /**
@@ -1622,145 +1706,6 @@ class cnPhoneNumber
      * Sets $visibility.
      * @param object $visibility
      * @see phoneNumber::$visibility
-     */
-    public function setVisibility($visibility)
-    {
-        $this->visibility = $visibility;
-    }
-
-}
-
-/**
- * Extracts a email address and options from an associative array of email addressess
- * 
- * $type
- * $name
- * $address
- * $visibility
- */
-class cnEmail
-{
-
-	/**
-	 * String: -- need to define
-	 * @var string
-	 */
-	private $type;
-	
-	/**
-	 * String: The email address name
-	 * @var string
-	 */
-	private $name;
-	
-	/**
-	 * String: The email address
-	 * @var string
-	 */
-	private $address;
-	
-	/**
-	 * String: public, private, unlisted
-	 * @var string
-	 */
-	private $visibility;
-	
-	private $format;
-	
-	function __construct()
-	{
-		// Load the formatting class for sanitizing the get methods.
-		$this->format = new cnFormatting();
-	}
-	
-    /**
-     * Returns $address.
-     * @see email::$address
-     */
-    public function getAddress($data)
-    {
-        $this->address = $data['address'];
-		return $this->format->sanitizeString($this->address);
-    }
-    
-    /**
-     * Sets $address.
-     * @param object $address
-     * @see email::$address
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
-    }
-    
-    /**
-     * Returns $name.
-     * @see email::$name
-     */
-    public function getName($data)
-    {
-        //This is here for compatibility for versions 0.2.24 and earlier;
-		switch ($data['type'])
-		{
-			case 'personal':
-				$this->name = "Personal Email";
-				break;
-			case 'work':
-				$this->name = "Work Email";
-				break;
-			
-			default:
-				$this->name = $data['name'];
-			break;
-		}
-		
-		return $this->format->sanitizeString($this->name);
-    }
-    
-    /**
-     * Sets $name.
-     * @param object $name
-     * @see email::$name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-    
-    /**
-     * Returns $type.
-     * @see email::$type
-     */
-    public function getType($data)
-    {
-        $this->type = $data['type'];
-		return $this->format->sanitizeString($this->type);
-    }
-    
-    /**
-     * Sets $type.
-     * @param object $type
-     * @see email::$type
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-    }
-    
-    /**
-     * Returns $visibility.
-     * @see email::$visibility
-     */
-    public function getVisibility($data)
-    {
-        $this->visibility = $data['visibility'];
-		return $this->format->sanitizeString($this->visibility);
-    }
-    
-    /**
-     * Sets $visibility.
-     * @param object $visibility
-     * @see email::$visibility
      */
     public function setVisibility($visibility)
     {
