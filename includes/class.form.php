@@ -305,12 +305,9 @@ class cnEntryForm
 	{
 		global $wpdb, $connections;
 		
-		if ( !empty($data) )
-		{
-			$entry = new cnEntry($data);
-			$options = unserialize($data->options);
-		}
+		if ( !empty($data) ) $options = unserialize($data->options);
 		
+		$entry = new cnEntry($data);
 		
 		$form = new cnFormObjects();
 		$categoryObjects = new cnCategoryObjects();
