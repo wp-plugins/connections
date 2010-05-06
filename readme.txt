@@ -200,3 +200,6 @@ Connections is a simple to use address book system but is also very versatile. Y
 
 = 0.2.3 =
 * First version in the repository
+
+== Upgrade Notice ==
+BUG: Fixed fatal error when using the shortcode attribute repeat_alphaindex.
