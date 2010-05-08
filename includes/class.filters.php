@@ -1,7 +1,7 @@
 <?php
 class cnFilters
 {
-	public function byEntryType($entries, $entryType)
+	/*public function byEntryType($entries, $entryType)
 	{
 		foreach ($entries as $key => $value)
 		{
@@ -17,9 +17,9 @@ class cnFilters
 		}
 		
 		return $entries;
-	}
+	}*/
 	
-	public function byEntryVisibility($entries, $entryVisibility)
+	/*public function byEntryVisibility($entries, $entryVisibility)
 	{
 		foreach ($entries as $key => $value)
 		{
@@ -35,7 +35,7 @@ class cnFilters
 		}
 		
 		return $entries;
-	}
+	}*/
 	
 	/**
 	 * Sort the entries by the user set attributes.

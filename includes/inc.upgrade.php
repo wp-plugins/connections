@@ -149,6 +149,22 @@ function cnRunDBUpgrade()
 			$connections->options->setDBVersion(CN_DB_VERSION);
 		}
 		
+		if (version_compare($dbVersion, '0.1.2', '<'))
+		{
+			echo '<h4>Upgrade from database version ' . $connections->options->getDBVersion() . ' to database version ' . CN_DB_VERSION . ".</h4>\n";
+			echo '<h4>Setting all current entries `entry_type` column.' . "</h4>\n";
+			
+			$results = $connections->retrieve->entries();
+			
+			foreach ($results as $result)
+			{
+				$entry = new cnEntry($result);
+				$entry->update();
+			}
+			
+			$connections->options->setDBVersion(CN_DB_VERSION);
+		}
+		
 		echo '<h4>Upgrade completed.' . "</h4>\n";
 		echo '<h4><a href="' . $urlPath . '">Continue</a></h4>';
 		$wpdb->hide_errors();

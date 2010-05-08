@@ -57,46 +57,10 @@ function _connections_list($atts, $content=null) {
 	$convert->toBoolean(&$atts['custom_template']);
 	$convert->toBoolean(&$atts['wp_current_category']);
 	
-	if ($atts['wp_current_category'])
-	{
-		// Get the current post categories.
-		$wpCategories = get_the_category();
-		
-		// Retrieve the Connections category IDs
-		foreach ($wpCategories as $wpCategory)
-		{
-			$result = $connections->term->getTermBy('name', $wpCategory->cat_name, 'category');
-			if (!empty($result)) $cnCategories[] = $result->term_taxonomy_id;
-		}
-		
-		if ( !empty($atts['category']) || !empty($cnCategories) )
-		{
-			if ( !empty($atts['category']) )
-			{
-				// Trim the space characters if present.
-				$atts['category'] = str_replace(' ', '', $atts['category']);
-				
-				// Convert category shortcode to array.
-				$atts['category'] = explode(',', $atts['category']);
-			}
-			else
-			{
-				$atts['category'] = array();
-			}
-			
-			if ( !empty($cnCategories) )
-			{
-				// Merge the category shortcode array with the wp_current_category shortcode array
-				$atts['category'] = array_merge($atts['category'], $cnCategories);
-			}
-			
-			$atts['category'] = implode(", ", $atts['category']);
-		}
-	}
-	
 	$results = $connections->retrieve->entries($atts);
 	$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
-	//$connections->filter->byEntryType(&$results, $atts['list_type']);
+	
+	//print_r($connections->lastQuery);
 	
 	if (!empty($atts['order_by']) && !empty($results))
 	{
@@ -160,7 +124,7 @@ function _connections_list($atts, $content=null) {
 			$atts['organization'] = esc_attr($atts['organization']);
 			$atts['department'] = esc_attr($atts['department']);
 			
-			if ($atts['list_type'] != 'all' && $atts['list_type'] != $entry->getEntryType())			$continue = true;
+			//if ($atts['list_type'] != 'all' && $atts['list_type'] != $entry->getEntryType())			$continue = true;
 			if ($entry->getGroupName() != $atts['group_name'] && $atts['group_name'] != null)			$continue = true;
 			if ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != null)				$continue = true;
 			if ($entry->getTitle() != $atts['title'] && $atts['title'] != null)							$continue = true;

@@ -101,6 +101,8 @@ Connections is a simple to use address book system but is also very versatile. Y
 * OTHER: Move the methods from cnConvert class to the cnFormatting class.
 * OTHER: Move the class.upload.php to the image processing method to remove 1.3MB of plug-in overhead.
 * OTHER: Reduce memory overhead.
+* OTHER: Reduce database queries.
+* OTHER: More efficient query to return entires.
 
 == Upgrade Notice ==
 

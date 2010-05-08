@@ -115,8 +115,9 @@ function connectionsShowViewPage()
 					<?php
 						$results = $connections->retrieve->entries();
 						$connections->filter->permitted(&$results);
-						$connections->filter->byEntryType(&$results, $connections->currentUser->getFilterEntryType());
-						$connections->filter->byEntryVisibility(&$results, $connections->currentUser->getFilterVisibility());
+						
+						//print_r($connections->lastQuery);
+						
 					?>
 						
 						<form action="admin.php?page=connections&action=do" method="post">

@@ -115,7 +115,7 @@ if (!class_exists('connectionsLoad'))
 			global $wpdb;
 			
 			define('CN_CURRENT_VERSION', '0.6.2.1');
-			define('CN_DB_VERSION', '0.1.1');
+			define('CN_DB_VERSION', '0.1.2');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
 			define('CN_ENTRY_TABLE', $wpdb->prefix . 'connections');
@@ -686,10 +686,15 @@ if (!class_exists('connectionsLoad'))
 			include_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
 			
 			$api = plugins_api('plugin_information', array('slug' => 'connections', 'fields' => array('tested' => true, 'requires' => false, 'rating' => false, 'downloaded' => false, 'downloadlink' => false, 'last_updated' => false, 'homepage' => false, 'tags' => false, 'sections' => true) ));
-			print_r($api);
+			//print_r($api);
 			
-			//$t = get_plugins('/connections');
-			//print_r($t);
+			$current = get_transient( 'update_plugins' );
+			$r = $current->response[ plugin_basename(__FILE__) ]; // response should contain the slug and upgrade_notice within an array.
+			//print_r($current);
+			//print_r($r);
+			//print_r( get_plugins() );
+			//print_r( get_plugins('/connections') );
+			//print_r( get_plugin_updates() );
 		}
 		
 		/**

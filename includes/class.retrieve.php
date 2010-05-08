@@ -10,21 +10,58 @@ class cnRetrieve
 	{
 		global $wpdb, $connections;
 		
-		/*
-		 * Set the default attributes array if not supplied.
-		 */
-		if (!isset($atts['id'])) $atts['id'] = NULL;
-		// If user is in the admin the stored category filter ID is used for the default value.
-		if (!isset($atts['category']) && is_admin()) $atts['category'] = $connections->currentUser->getFilterCategory();
-		// If user is in the front end the default value is NULL.
-		if (!isset($atts['category']) && !is_admin()) $atts['category'] = NULL;
+		$permittedEntryTypes = array('individual', 'organization', 'connection_group');
+		$permittedVisibilities = array('unlisted', 'private', 'public');
 		
-		if (!empty($atts['category']))
+		/*
+		 * // START -- Set the default attributes array if not supplied. \\
+		 */
+			if ( !isset($atts['id']) ) $atts['id'] = NULL;
+			if ( !isset($atts['wp_current_category']) ) $atts['wp_current_category'] = FALSE;
+			
+			// If user in in the admin the stored visibility filter is used as the default value.
+			if ( !isset($atts['visibility']) && is_admin() ) $atts['visibility'] = $connections->currentUser->getFilterVisibility();
+			
+			// If user in in the admin the stored entry type filter is used as the default value.
+			if ( !isset($atts['list_type']) && is_admin() ) $atts['list_type'] = $connections->currentUser->getFilterEntryType();
+			
+			// If user in in the front end the defaul is set to 'all'.
+			if ( !isset($atts['list_type']) && !is_admin() ) $atts['list_type'] = 'all';
+			
+			// If user is in the admin the stored category filter ID is used for the default value.
+			if ( !isset($atts['category']) && is_admin() ) $atts['category'] = $connections->currentUser->getFilterCategory();
+			
+			// If user is in the front end the default value is NULL.
+			if ( !isset($atts['category']) && !is_admin() ) $atts['category'] = NULL;
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		if ( $atts['wp_current_category'] && !is_page() )
+		{
+			// Get the current post categories.
+			$wpCategories = get_the_category();
+			
+			// Retrieve the Connections category IDs
+			foreach ($wpCategories as $wpCategory)
+			{
+				$result = $connections->term->getTermBy('name', $wpCategory->cat_name, 'category');
+				if ( !empty($result) ) $cnCategories[] = $result->term_taxonomy_id;
+			}
+		}
+		
+		if ( !empty($atts['category']) )
 		{
 			// Trim the space characters if present.
 			$atts['category'] = str_replace(' ', '', $atts['category']);
 			// Convert to array.
 			$atts['category'] = explode(',', $atts['category']);
+		}
+		
+		if ( !empty($atts['category']) || !empty($cnCategories) )
+		{
+			// Merge the category shortcode array with the array of the posts categories.
+			if ( !empty($cnCategories) ) $atts['category'] = array_merge( (array) $atts['category'], (array) $cnCategories);
 			
 			foreach ($atts['category'] as $categoryID)
 			{
@@ -35,29 +72,24 @@ class cnRetrieve
 				$categoryIDs[] = $categoryID;
 				if (!empty($results))
 				{
-					//foreach ($results as $result)
-					//{
-						$categoryIDs = array_merge($results, $categoryIDs);
-					//}
-					
+					$categoryIDs = array_merge($results, $categoryIDs);
 				}
 			}
-			//print_r($categoryIDs);
-			$catString = implode("', '", $categoryIDs);
-			//print_r($catString);
-			$entryIDs = $wpdb->get_col( "SELECT DISTINCT entry_id FROM " . CN_TERM_RELATIONSHIP_TABLE . " WHERE term_taxonomy_id IN ('" . $catString . "')" );
 			
-			if (!empty($entryIDs))
+			$catString = implode("', '", $categoryIDs);
+			
+			if ( !empty($categoryIDs) )
 			{
-				$entryIDs = implode("', '", $entryIDs);
-			}
-			else
-			{
-				$entryIDs = "'NONE'";
+				// Set the query string to INNER JOIN the term relationship and taxonomy tables.
+				$joinTermRelationships = " INNER JOIN " . CN_TERM_RELATIONSHIP_TABLE . " ON ( " . CN_ENTRY_TABLE . ".id = " . CN_TERM_RELATIONSHIP_TABLE . ".entry_id ) ";
+				$joinTermTaxonomy = " INNER JOIN " . CN_TERM_TAXONOMY_TABLE . " ON ( " . CN_TERM_RELATIONSHIP_TABLE . ".term_taxonomy_id = " . CN_TERM_TAXONOMY_TABLE . ".term_taxonomy_id ) ";
+				
+				// Set the query string to return entries within specific categories.
+				$taxonomy = ' AND ' . CN_TERM_TAXONOMY_TABLE . ".taxonomy = 'category' ";
+				$termIDs = ' AND ' . CN_TERM_TAXONOMY_TABLE . ".term_id IN ('" . $catString . "') ";
 			}
 		}
 		
-		//$atts['id'] = $id; // This can be removed once the shortcode is programmed to pass the $atts array.
 		
 		/*
 		 * Convert the supplied ids value to an array if it is not and then convert it to a
@@ -71,18 +103,40 @@ class cnRetrieve
 			$atts['id'] = explode(',', $atts['id']);
 			// Convert to a comma delimited string for the sql query.
 			$atts['id'] = implode("', '", $atts['id']);
+			
+			// Set query string to return specific entries.
+			$entryIDs = " AND `id` IN ('" . $atts['id'] . "') ";
 		}
 		
-		if (!empty($atts['id']) || !empty($entryIDs)) $idString = " AND `id` IN ('" . $atts['id'] . $entryIDs . "') ";
+				
+		// Set query string for visibility.
+		if ( $atts['visibility'] !== 'all' && in_array($atts['visibility'], $permittedVisibilities, TRUE) ) $visibility = " AND `visibility` = '" . $atts['visibility'] . "' ";
 		
-		$sql = "(SELECT *, `organization` AS `sort_column` FROM " . CN_ENTRY_TABLE . " WHERE `last_name` = '' AND `group_name` = ''" . $idString . ")
-				 UNION
-				(SELECT *, `group_name` AS `sort_column` FROM " . CN_ENTRY_TABLE . " WHERE `group_name` != ''" . $idString . ")
-				 UNION
-				(SELECT *, `last_name` AS `sort_column` FROM " . CN_ENTRY_TABLE . " WHERE `last_name` != ''" . $idString . ")
-				 ORDER BY `sort_column`, `last_name`, `first_name`";
+		// Set query string for entry type.
+		if ( $atts['list_type'] !== 'all' && in_array($atts['list_type'], $permittedEntryTypes, TRUE) ) $entryType = " AND `entry_type` = '" . $atts['list_type'] . "' ";
 		
-		return $wpdb->get_results($sql);
+		$sql = "SELECT DISTINCT " . CN_ENTRY_TABLE . ".*,
+				
+				CASE `entry_type`
+				  WHEN 'individual' THEN `last_name`
+				  WHEN 'organization' THEN `organization`
+				  WHEN 'connection_group' THEN `group_name`
+				END AS `sort_column`
+				 
+				FROM " . CN_ENTRY_TABLE . $joinTermRelationships . $joinTermTaxonomy . "
+				
+				WHERE 1=1 " . $visibility . $entryType . $taxonomy . $termIDs . $entryIDs . "
+				
+				ORDER BY `sort_column`, `last_name`, `first_name`";
+		
+		
+		
+		$results = $wpdb->get_results($sql);
+		
+		$connections->lastQuery = $wpdb->last_query;
+		$connections->lastQueryError = $wpdb->last_error;
+		
+		return $results;
 		
 	}
 	
