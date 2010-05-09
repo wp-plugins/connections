@@ -125,18 +125,17 @@ class cnOutput extends cnEntry
 	{
 		if ($this->getAddresses())
 		{
-			$addressObject = new cnAddresses;
-			foreach ($this->getAddresses() as $addressRow)
+			foreach ($this->getAddresses() as $address)
 			{
 				$out .= '<div class="adr" style="margin-bottom: 10px;">' . "\n";
-					if ($addressObject->getName($addressRow) != null || $addressObject->getType($addressRow)) $out .= '<span class="address_name"><strong>' . $addressObject->getName($addressRow) . '</strong></span><br />' . "\n"; //The OR is for compatiblity for 0.2.24 and under
-					if ($addressObject->getLineOne($addressRow) != null) $out .= '<div class="street-address">' . $addressObject->getLineOne($addressRow) . '</div>' . "\n";
-					if ($addressObject->getLineTwo($addressRow) != null) $out .= '<div class="extended-address">' . $addressObject->getLineTwo($addressRow) . '</div>' . "\n";
-					if ($addressObject->getCity($addressRow) != null) $out .= '<span class="locality">' . $addressObject->getCity($addressRow) . '</span>&nbsp;' . "\n";
-					if ($addressObject->getState($addressRow) != null) $out .= '<span class="region">' . $addressObject->getState($addressRow) . '</span>&nbsp;' . "\n";
-					if ($addressObject->getZipCode($addressRow) != null) $out .= '<span class="postal-code">' . $addressObject->getZipCode($addressRow) . '</span><br />' . "\n";
-					if ($addressObject->getCountry($addressRow) != null) $out .= '<span class="country-name">' . $addressObject->getCountry($addressRow) . '</span>' . "\n";
-					$out .= $this->gethCardAdrType($addressRow);
+					if ($address->name != NULL || $address->type != NULL) $out .= '<span class="address_name"><strong>' . $address->name . '</strong></span><br />' . "\n"; //The OR is for compatiblity for 0.2.24 and under
+					if ($address->line_one != NULL) $out .= '<div class="street-address">' . $address->line_one . '</div>' . "\n";
+					if ($address->line_two != NULL) $out .= '<div class="extended-address">' . $address->line_two . '</div>' . "\n";
+					if ($address->city != NULL) $out .= '<span class="locality">' . $address->city . '</span>&nbsp;' . "\n";
+					if ($address->state != NULL) $out .= '<span class="region">' . $address->state . '</span>&nbsp;' . "\n";
+					if ($address->zipcode != NULL) $out .= '<span class="postal-code">' . $address->zipcode . '</span><br />' . "\n";
+					if ($address->country != NULL) $out .= '<span class="country-name">' . $address->country . '</span>' . "\n";
+					$out .= $this->gethCardAdrType($address->type);
 				$out .= '</div>' . "\n\n";
 															
 			}
@@ -148,12 +147,11 @@ class cnOutput extends cnEntry
 	{
 		if ($this->getPhoneNumbers())
 		{
-			$phoneNumberObject = new cnPhoneNumber();
 			$out .= '<div class="phone-number-block" style="margin-bottom: 10px;">' . "\n";
-			foreach ($this->getPhoneNumbers() as $phoneNumberRow) 
+			foreach ($this->getPhoneNumbers() as $phone) 
 			{
 				//Type for hCard compatibility. Hidden.
-				if ($phoneNumberObject->getNumber($phoneNumberRow) != null) $out .=  '<strong>' . $phoneNumberObject->getName($phoneNumberRow) . '</strong>: <span class="tel">' . $this->gethCardTelType($phoneNumberRow) . '<span class="value">' .  $phoneNumberObject->getNumber($phoneNumberRow) . '</span></span><br />' . "\n";
+				if ($phone->number != null) $out .=  '<strong>' . $phone->name . '</strong>: <span class="tel">' . $this->gethCardTelType($phone->type) . '<span class="value">' .  $phone->number . '</span></span><br />' . "\n";
 			}
 			$out .= '</div>' . "\n";
 		}
@@ -163,7 +161,7 @@ class cnOutput extends cnEntry
 	public function gethCardTelType($data)
     {
         //This is here for compatibility for versions 0.2.24 and earlier;
-		switch ($data['type'])
+		switch ($data)
 		{
 			case 'home':
 				$type = '<span class="type" style="display: none;">home</span>';
@@ -194,7 +192,7 @@ class cnOutput extends cnEntry
 				break;
 			
 			default:
-				$type = $data['type'];
+				$type = $data;
 			break;
 		}
 		
@@ -204,7 +202,7 @@ class cnOutput extends cnEntry
 	public function gethCardAdrType($data)
     {
         //This is here for compatibility for versions 0.2.24 and earlier;
-		switch ($data['type'])
+		switch ($data)
 		{
 			case 'home':
 				$type = '<span class="type" style="display: none;">home</span>';

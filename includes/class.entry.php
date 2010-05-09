@@ -489,7 +489,54 @@ class cnEntry
      */
     public function getAddresses()
     {
-        return $this->addresses;
+        if ( !empty($this->addresses) )
+		{
+			foreach ($this->addresses as $key => $address)
+			{
+				$row->name = $this->format->sanitizeString($address['name']);
+				$row->type = $this->format->sanitizeString($address['type']);
+				$row->line_one = $this->format->sanitizeString($address['address_line1']);
+				$row->line_two = $this->format->sanitizeString($address['address_line2']);
+				$row->city = $this->format->sanitizeString($address['city']);
+				$row->state = $this->format->sanitizeString($address['state']);
+				$row->zipcode = $this->format->sanitizeString($address['zipcode']);
+				$row->country = $this->format->sanitizeString($address['country']);
+				$row->visibility = $this->format->sanitizeString($address['visibility']);
+				
+				// Start compatibility for versions 0.2.24 and older. \\
+				switch ($row->type)
+				{
+		        	case "home":
+		        		$row->name = "Home Address";
+		        	break;
+					
+					case "work":
+		        		$row->name = "Work Address";
+		        	break;
+					
+					case "school":
+		        		$row->name = "School Address";
+		        	break;
+					
+					case "other":
+		        		$row->name = "Other Address";
+		        	break;
+		        	
+		        	default:
+		        		$row->name = $this->format->sanitizeString($address['name']);
+		        	break;
+		        }	
+				// End compatibility for versions 0.2.24 and older. \\
+				
+				$out[] = $row;
+				unset($row);
+			}
+			
+			if ( !empty($out) ) return $out;
+			
+		}
+		
+		return NULL;
     }
     
     /**
@@ -499,26 +546,171 @@ class cnEntry
      */
     public function setAddresses($addresses)
     {
-        $this->addresses = $addresses;
+        global $connections;
+		
+		$validFields = array('name' => NULL, 'type' => NULL, 'address_line1' => NULL, 'address_line2' => NULL, 'city' => NULL, 'state' => NULL, 'zipcode' => NULL, 'country' => NULL, 'visibility' => NULL);
+		
+		if ( !empty($addresses) )
+		{
+			foreach ($addresses as $key => $address)
+			{
+				// First validate the supplied data.
+				$address[$key] = $this->validate->attributesArray($validFields, $address);
+				
+				$addressValues = $connections->options->getDefaultPhoneNumberValues();
+				$addresses[$key]['name'] = $addressValues[$address['type']];
+			}
+		}
+		
+		$this->addresses = $addresses;
     }
 
     /**
-     * Returns $phoneNumbers.
-     * @see entry::$phoneNumbers
+     * Returns array of objects.
+     * 
+     * Each object contains:
+     * 						->name
+     * 						->type
+     * 						->number
+     * 						->visibility
+     * 
+     * NOTE: The output is sanitized for safe display.
+     * 
+     * @return array
      */
     public function getPhoneNumbers()
     {
-        return $this->phoneNumbers;
+        if ( !empty($this->phoneNumbers) )
+		{
+			foreach ($this->phoneNumbers as $key => $number)
+			{
+				$row->name = $this->format->sanitizeString($number['name']);
+				$row->type = $this->format->sanitizeString($number['type']);
+				$row->number = $this->format->sanitizeString($number['number']);
+				$row->visibility = $this->format->sanitizeString($number['visibility']);
+				
+				// Start compatibility for versions 0.2.24 and older. \\
+				switch ($row->type)
+				{
+					case 'home':
+						$row->type = "homephone";
+						break;
+					case 'homephone':
+						$row->type = "homephone";
+						break;
+					case 'homefax':
+						$row->type = "homefax";
+						break;
+					case 'cell':
+						$row->type = "cellphone";
+						break;
+					case 'cellphone':
+						$row->type = "cellphone";
+						break;
+					case 'work':
+						$row->type = "workphone";
+						break;
+					case 'workphone':
+						$row->type = "workphone";
+						break;
+					case 'workfax':
+						$row->type = "workfax";
+						break;
+					case 'fax':
+						$row->type = "workfax";
+						break;
+					
+					default:
+						$row->type = $this->format->sanitizeString($number['type']);
+					break;
+				}
+				
+				switch ($row->type)
+				{
+					case 'home':
+						$row->name = "Home Phone";
+						break;
+					case 'homephone':
+						$row->name = "Home Phone";
+						break;
+					case 'homefax':
+						$row->name = "Home Fax";
+						break;
+					case 'cell':
+						$row->name = "Cell Phone";
+						break;
+					case 'cellphone':
+						$row->name = "Cell Phone";
+						break;
+					case 'work':
+						$row->name = "Work Phone";
+						break;
+					case 'workphone':
+						$row->name = "Work Phone";
+						break;
+					case 'workfax':
+						$row->name = "Work Fax";
+						break;
+					case 'fax':
+						$row->name = "Work Fax";
+						break;
+					
+					default:
+						$row->name = $this->format->sanitizeString($number['name']);
+					break;
+				}
+				
+				if ( isset($number['homephone']) )
+				{
+		        	$row->number = $this->format->sanitizeString($number['homephone']);
+		        }
+				else
+				{
+					$row->number = $this->format->sanitizeString($number['number']);
+				}
+				// End compatibility for versions 0.2.24 and older. \\
+				
+				$out[] = $row;
+				unset($row);
+			}
+			
+			if ( !empty($out) ) return $out;
+			
+		}
+		
+		return NULL;
     }
     
     /**
-     * Sets $phoneNumbers.
-     * @param object $phoneNumbers
-     * @see entry::$phoneNumbers
-     */
+	 * Sets $phoneNumbers as an associative array.
+	 * 
+	 * $phoneNumbers is to be an array containing an array of the data for each phone number.
+	 * 
+	 * 
+	 * @param array $phoneNumbers
+	 */
     public function setPhoneNumbers($phoneNumbers)
     {
-        $this->phoneNumbers = $phoneNumbers;
+        global $connections;
+		
+		$validFields = array('name' => NULL, 'type' => NULL, 'number' => NULL, 'visibility' => NULL);
+		
+		if ( !empty($phoneNumbers) )
+		{
+			foreach ($phoneNumbers as $key => $phoneNumber)
+			{
+				// First validate the supplied data.
+				$phoneNumber[$key] = $this->validate->attributesArray($validFields, $phoneNumber);
+				
+				$phoneNumberValues = $connections->options->getDefaultPhoneNumberValues();
+				$phoneNumbers[$key]['name'] = $phoneNumberValues[$phoneNumber['type']];
+				
+				// If the number is emty, no need to store it.
+				if ( empty($phoneNumber['number']) ) unset($phoneNumbers[$key]);
+			}
+		}
+		
+		$this->phoneNumbers = $phoneNumbers;
     }
 
     /**
@@ -572,20 +764,18 @@ class cnEntry
 		return NULL;
     }
     
-    /**
-     * Sets $emailAddresses as an associative array.
-     * 
-     * $emailAddresses is to be an array containing an array of the data for each email address.
-     * 
-     * @TODO: Validate as valid email address.
-     * 
-     * @param array $socialMedia
-     */
+	/**
+	 * Sets $emailAddresses as an associative array.
+	 * 
+	 * $emailAddresses is to be an array containing an array of the data for each email address.
+	 * 
+	 * @TODO: Validate as valid email address.
+	 * 
+	 * @param array $emailAddresses
+	 */
     public function setEmailAddresses($emailAddresses)
     {
-        $this->emailAddresses = $emailAddresses;
-		
-		global $connections;
+        global $connections;
 		
 		$validFields = array('name' => NULL, 'type' => NULL, 'address' => NULL, 'visibility' => NULL);
 		
@@ -599,10 +789,12 @@ class cnEntry
 				$emailValues = $connections->options->getDefaultEmailValues();
 				$email[$key]['name'] = $emailValues[$email['type']];
 				
-				// If the id is emty, no need to store it.
-				if ( empty($email['adsress']) ) unset($email[$key]);
+				// If the address is emty, no need to store it.
+				if ( empty($email['address']) ) unset($email[$key]);
 			}
 		}
+		
+		$this->emailAddresses = $emailAddresses;
     }
 
     /**
@@ -1527,414 +1719,4 @@ class cnEntry
 	}
 	
 }
-
-/**
- * Extract phone number details from an associative array of phone numbers
- * 
- * $type
- * $name
- * $number
- * $visibility
- */
-class cnPhoneNumber 
-{
-	
-	private $type;
-	private $name;
-	private $number;
-	private $visibility;
-	
-	private $format;
-	
-	function __construct()
-	{
-		// Load the formatting class for sanitizing the get methods.
-		$this->format = new cnFormatting();
-	}
-	
-    /**
-     * Returns $name.
-     * @see phoneNumber::$name
-     */
-    public function getName($data)
-    {
-        //This is here for compatibility for versions 0.2.24 and earlier;
-		switch ($data['type'])
-		{
-			case 'home':
-				$this->name = "Home Phone";
-				break;
-			case 'homephone':
-				$this->name = "Home Phone";
-				break;
-			case 'homefax':
-				$this->name = "Home Fax";
-				break;
-			case 'cell':
-				$this->name = "Cell Phone";
-				break;
-			case 'cellphone':
-				$this->name = "Cell Phone";
-				break;
-			case 'work':
-				$this->name = "Work Phone";
-				break;
-			case 'workphone':
-				$this->name = "Work Phone";
-				break;
-			case 'workfax':
-				$this->name = "Work Fax";
-				break;
-			case 'fax':
-				$this->name = "Work Fax";
-				break;
-			
-			default:
-				$this->name = $data['name'];
-			break;
-		}
-		
-		return $this->format->sanitizeString($this->name);
-    }
-    
-    /**
-     * Sets $name.
-     * @param object $name
-     * @see phoneNumber::$name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-    
-    /**
-     * Returns $number.
-     * @param array
-     * @see phoneNumber::$number
-     */
-    public function getNumber($data)
-    {
-        //This is here for compatibility for versions 0.2.24 and earlier;
-		if (isset($data['homephone']))
-		{
-        	$this->number = $data['homephone'];
-        }
-		else
-		{
-			$this->number = $data['number'];
-		}
-		
-		return $this->format->sanitizeString($this->number);
-    }
-    
-    /**
-     * Sets $number.
-     * @param object $number
-     * @see phoneNumber::$number
-     */
-    public function setNumber($number)
-    {
-        $this->number = $number;
-    }
-    
-    /**
-     * Returns $type.
-     * @see phoneNumber::$type
-     */
-    public function getType($data)
-    {
-        //This is here for compatibility for versions 0.2.24 and earlier;
-		switch ($data['type'])
-		{
-			case 'home':
-				$this->type = "homephone";
-				break;
-			case 'homephone':
-				$this->type = "homephone";
-				break;
-			case 'homefax':
-				$this->type = "homefax";
-				break;
-			case 'cell':
-				$this->type = "cellphone";
-				break;
-			case 'cellphone':
-				$this->type = "cellphone";
-				break;
-			case 'work':
-				$this->type = "workphone";
-				break;
-			case 'workphone':
-				$this->type = "workphone";
-				break;
-			case 'workfax':
-				$this->type = "workfax";
-				break;
-			case 'fax':
-				$this->type = "workfax";
-				break;
-			
-			default:
-				$this->type = $data['type'];
-			break;
-		}
-		
-		return $this->format->sanitizeString($this->type);
-    }
-    
-    /**
-     * Sets $type.
-     * @param object $type
-     * @see phoneNumber::$type
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-    }
-    
-    /**
-     * Returns $visibility.
-     * @see phoneNumber::$visibility
-     */
-    public function getVisibility($data)
-    {
-        $this->visibility = $data['visibility'];
-		return $this->format->sanitizeString($this->visibility);
-    }
-    
-    /**
-     * Sets $visibility.
-     * @param object $visibility
-     * @see phoneNumber::$visibility
-     */
-    public function setVisibility($visibility)
-    {
-        $this->visibility = $visibility;
-    }
-
-}
-
-class cnAddresses
-{
-	private $type;
-	private $name;
-	private $lineOne;
-	private $lineTwo;
-	private $city;
-	private $state;
-	private $zipCode;
-	private $country;
-	private $visibility;
-	
-	private $format;
-	
-	function __construct()
-	{
-		// Load the formatting class for sanitizing the get methods.
-		$this->format = new cnFormatting();
-	}
-	
-    /**
-     * Returns $city.
-     * @see addresses::$city
-     */
-    public function getCity($data)
-    {
-        $this->city = $data['city'];
-		return $this->format->sanitizeString($this->city);
-    }
-    
-    /**
-     * Sets $city.
-     * @param object $city
-     * @see addresses::$city
-     */
-    public function setCity($city)
-    {
-        $this->city = $city;
-    }
-    
-    /**
-     * Returns $country.
-     * @see addresses::$country
-     */
-    public function getCountry($data)
-    {
-        $this->country = $data['country'];
-		return $this->format->sanitizeString($this->country);
-    }
-    
-    /**
-     * Sets $country.
-     * @param object $country
-     * @see addresses::$country
-     */
-    public function setCountry($country)
-    {
-        $this->country = $country;
-    }
-    
-    /**
-     * Returns $lineOne.
-     * @see addresses::$lineOne
-     */
-    public function getLineOne($data)
-    {
-        $this->lineOne = $data['address_line1'];
-		return $this->format->sanitizeString($this->lineOne);
-    }
-    
-    /**
-     * Sets $lineOne.
-     * @param object $lineOne
-     * @see addresses::$lineOne
-     */
-    public function setLineOne($lineOne)
-    {
-        $this->lineOne = $lineOne;
-    }
-    
-    /**
-     * Returns $lineTwo.
-     * @see addresses::$lineTwo
-     */
-    public function getLineTwo($data)
-    {
-        $this->lineTwo = $data['address_line2'];
-		return $this->format->sanitizeString($this->lineTwo);
-    }
-    
-    /**
-     * Sets $lineTwo.
-     * @param object $lineTwo
-     * @see addresses::$lineTwo
-     */
-    public function setLineTwo($lineTwo)
-    {
-        $this->lineTwo = $lineTwo;
-    }
-
-    /**
-     * Returns $name.
-     * @see addresses::$name
-     */
-    public function getName($data)
-    {
-        //This is here for compatibility for versions 0.2.24 and earlier;
-		switch ($data['type']) {
-        	case "home":
-        		$this->name = "Home Address";
-        	break;
-			
-			case "work":
-        		$this->name = "Work Address";
-        	break;
-			
-			case "school":
-        		$this->name = "School Address";
-        	break;
-			
-			case "other":
-        		$this->name = "Other Address";
-        	break;
-        	
-        	default:
-        		$this->name = $data['name'];
-        	break;
-        }	
-		
-		return $this->format->sanitizeString($this->name);
-    }
-    
-    /**
-     * Sets $name.
-     * @param object $name
-     * @see addresses::$name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-    
-    /**
-     * Returns $state.
-     * @see addresses::$state
-     */
-    public function getState($data)
-    {
-        $this->state = $data['state'];
-		return $this->format->sanitizeString($this->state);
-    }
-    
-    /**
-     * Sets $state.
-     * @param object $state
-     * @see addresses::$state
-     */
-    public function setState($state)
-    {
-        $this->state = $state;
-    }
-    
-    /**
-     * Returns $type.
-     * @see addresses::$type
-     */
-    public function getType($data)
-    {
-        $this->type = $data['type'];
-        return $this->format->sanitizeString($this->type);
-    }
-    
-    /**
-     * Sets $type.
-     * @param object $type
-     * @see addresses::$type
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-    }
-    
-    /**
-     * Returns $visibility.
-     * @see addresses::$visibility
-     */
-    public function getVisibility()
-    {
-        return $this->format->sanitizeString($this->visibility);
-    }
-    
-    /**
-     * Sets $visibility.
-     * @param object $visibility
-     * @see addresses::$visibility
-     */
-    public function setVisibility($visibility)
-    {
-        $this->visibility = $visibility;
-    }
-    
-    /**
-     * Returns $zipCode.
-     * @see addresses::$zipCode
-     */
-    public function getZipCode($data)
-    {
-        $this->zipCode = $data['zipcode'];
-		return $this->format->sanitizeString($this->zipCode);
-    }
-    
-    /**
-     * Sets $zipCode.
-     * @param object $zipCode
-     * @see addresses::$zipCode
-     */
-    public function setZipCode($zipCode)
-    {
-        $this->zipCode = $zipCode;
-    }
-
-}
-
 ?>

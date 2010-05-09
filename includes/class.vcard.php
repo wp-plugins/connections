@@ -195,75 +195,74 @@ class cnvCard extends cnEntry
 	{
 		if ($this->getAddresses())
 		{
-			$addressObject = new cnAddresses;
-			foreach ($this->getAddresses() as $addressRow)
+			foreach ($this->getAddresses() as $address)
 			{
-				switch ($addressObject->getType($addressRow))
+				switch ($address->type)
 				{
 					case 'home':
-						$this->data['home_address'] = $addressObject->getLineOne($addressRow);
-						$this->data['home_extended_address'] = $addressObject->getLineTwo($addressRow);
-						$this->data['home_city'] = $addressObject->getCity($addressRow);
-						$this->data['home_state'] = $addressObject->getState($addressRow);
-						$this->data['home_postal_code'] = $addressObject->getZipCode($addressRow);
-						$this->data['home_country'] = $addressObject->getCountry($addressRow);
+						$this->data['home_address'] = $address->line_one;
+						$this->data['home_extended_address'] = $address->line_two;
+						$this->data['home_city'] = $address->city;
+						$this->data['home_state'] = $address->state;
+						$this->data['home_postal_code'] = $address->zipcode;
+						$this->data['home_country'] = $address->country;
 					break;
 					
 					case 'work':
-						$this->data['work_address'] = $addressObject->getLineOne($addressRow);
-						$this->data['work_extended_address'] = $addressObject->getLineTwo($addressRow);
-						$this->data['work_city'] = $addressObject->getCity($addressRow);
-						$this->data['work_state'] = $addressObject->getState($addressRow);
-						$this->data['work_postal_code'] = $addressObject->getZipCode($addressRow);
-						$this->data['work_country'] = $addressObject->getCountry($addressRow);
+						$this->data['work_address'] = $address->line_one;
+						$this->data['work_extended_address'] = $address->line_two;
+						$this->data['work_city'] = $address->city;
+						$this->data['work_state'] = $address->state;
+						$this->data['work_postal_code'] = $address->zipcode;
+						$this->data['work_country'] = $address->country;
 					break;
 					
 					case 'school':
-						$this->data['other_address'] = $addressObject->getLineOne($addressRow);
-						$this->data['other_extended_address'] = $addressObject->getLineTwo($addressRow);
-						$this->data['other_city'] = $addressObject->getCity($addressRow);
-						$this->data['other_state'] = $addressObject->getState($addressRow);
-						$this->data['other_postal_code'] = $addressObject->getZipCode($addressRow);
-						$this->data['other_country'] = $addressObject->getCountry($addressRow);
+						$this->data['other_address'] = $address->line_one;
+						$this->data['other_extended_address'] = $address->line_two;
+						$this->data['other_city'] = $address->city;
+						$this->data['other_state'] = $address->state;
+						$this->data['other_postal_code'] = $address->zipcode;
+						$this->data['other_country'] = $address->country;
 					break;
 					
 					case 'other':
-						$this->data['other_address'] = $addressObject->getLineOne($addressRow);
-						$this->data['other_extended_address'] = $addressObject->getLineTwo($addressRow);
-						$this->data['other_city'] = $addressObject->getCity($addressRow);
-						$this->data['other_state'] = $addressObject->getState($addressRow);
-						$this->data['other_postal_code'] = $addressObject->getZipCode($addressRow);
-						$this->data['other_country'] = $addressObject->getCountry($addressRow);
+						$this->data['other_address'] = $address->line_one;
+						$this->data['other_extended_address'] = $address->line_two;
+						$this->data['other_city'] = $address->city;
+						$this->data['other_state'] = $address->state;
+						$this->data['other_postal_code'] = $address->zipcode;
+						$this->data['other_country'] = $address->country;
 					break;
 					
 					default:
 						switch ($this->getEntryType())
 						{
 							case 'individual':
-								if ($addressObject->getLineOne($addressRow) != null) $this->data['home_address'] = $addressObject->getLineOne($addressRow);
-								if ($addressObject->getLineTwo($addressRow) != null) $this->data['home_extended_address'] = $addressObject->getLineTwo($addressRow);
-								if ($addressObject->getCity($addressRow) != null) $this->data['home_city'] = $addressObject->getCity($addressRow);
-								if ($addressObject->getState($addressRow) != null) $this->data['home_state'] = $addressObject->getState($addressRow);
-								if ($addressObject->getZipCode($addressRow) != null) $this->data['home_postal_code'] = $addressObject->getZipCode($addressRow);
-								if ($addressObject->getCountry($addressRow) != null) $this->data['home_country'] = $addressObject->getCountry($addressRow);
+								if ($address->line_one != NULL) $this->data['home_address'] = $address->line_one;
+								if ($address->line_two != NULL) $this->data['home_extended_address'] = $address->line_two;
+								if ($address->city != NULL) $this->data['home_city'] = $address->city;
+								if ($address->state != NULL) $this->data['home_state'] = $address->state;
+								if ($address->zipcode != NULL) $this->data['home_postal_code'] = $address->zipcode;
+								if ($address->country != NULL) $this->data['home_country'] = $address->country;
 							break;
 						
 							case 'organization':
-								if ($addressObject->getLineOne($addressRow) != null) $this->data['work_address'] = $addressObject->getLineOne($addressRow);
-								if ($addressObject->getLineTwo($addressRow) != null) $this->data['work_extended_address'] = $addressObject->getLineTwo($addressRow);
-								if ($addressObject->getCity($addressRow) != null) $this->data['work_city'] = $addressObject->getCity($addressRow);
-								if ($addressObject->getState($addressRow) != null) $this->data['work_state'] = $addressObject->getState($addressRow);
-								if ($addressObject->getZipCode($addressRow) != null) $this->data['work_postal_code'] = $addressObject->getZipCode($addressRow);
-								if ($addressObject->getCountry($addressRow) != null) $this->data['work_country'] = $addressObject->getCountry($addressRow);
+								if ($address->line_one != NULL) $this->data['work_address'] = $address->line_one;
+								if ($address->line_two != NULL) $this->data['work_extended_address'] = $address->line_two;
+								if ($address->city != NULL) $this->data['work_city'] = $address->city;
+								if ($address->state != NULL) $this->data['work_state'] = $address->state;
+								if ($address->zipcode != NULL) $this->data['work_postal_code'] = $address->zipcode;
+								if ($address->country != NULL) $this->data['work_country'] = $address->country;
 							break;
 							
 							default:
-								if ($addressObject->getLineOne($addressRow) != null) $this->data['home_address'] = $addressObject->getLineOne($addressRow);
-								if ($addressObject->getLineTwo($addressRow) != null) $this->data['home_extended_address'] = $addressObject->getLineTwo($addressRow);
-								if ($addressObject->getCity($addressRow) != null) $this->data['home_city'] = $addressObject->getCity($addressRow);
-								if ($addressObject->getState($addressRow) != null) $this->data['home_state'] = $addressObject->getState($addressRow);
-								if ($addressObject->getZipCode($addressRow) != null) $this->data['home_postal_code'] = $addressObject->getZipCode($addressRow);
-								if ($addressObject->getCountry($addressRow) != null) $this->data['home_country'] = $addressObject->getCountry($addressRow);
+								if ($address->line_one != NULL) $this->data['home_address'] = $address->line_one;
+								if ($address->line_two != NULL) $this->data['home_extended_address'] = $address->line_two;
+								if ($address->city != NULL) $this->data['home_city'] = $address->city;
+								if ($address->state != NULL) $this->data['home_state'] = $address->state;
+								if ($address->zipcode != NULL) $this->data['home_postal_code'] = $address->zipcode;
+								if ($address->country != NULL) $this->data['home_country'] = $address->country;
 							break;
 						}
 					break;
@@ -277,45 +276,44 @@ class cnvCard extends cnEntry
 
 		if ($this->getPhoneNumbers())
 		{
-			$phoneNumberObject = new cnPhoneNumber();
-			foreach ($this->getPhoneNumbers() as $phoneNumberRow) 
+			foreach ($this->getPhoneNumbers() as $phone) 
 			{
-				switch ($phoneNumberObject->getType($phoneNumberRow))
+				switch ($phone->type)
 				{
 					case 'home':
-						$this->data['home_tel'] = $phoneNumberObject->getNumber($phoneNumberRow);
+						$this->data['home_tel'] = $phone->number;
 					break;
 						
 					case 'homephone':
-						$this->data['home_tel'] = $phoneNumberObject->getNumber($phoneNumberRow);
+						$this->data['home_tel'] = $phone->number;
 					break;
 						
 					case 'homefax':
-						$this->data['home_fax'] = $phoneNumberObject->getNumber($phoneNumberRow);
+						$this->data['home_fax'] = $phone->number;
 					break;
 						
 					case 'cell':
-						$this->data['cell_tel'] = $phoneNumberObject->getNumber($phoneNumberRow);
+						$this->data['cell_tel'] = $phone->number;
 					break;
 						
 					case 'cellphone':
-						$this->data['cell_tel'] = $phoneNumberObject->getNumber($phoneNumberRow);
+						$this->data['cell_tel'] = $phone->number;
 					break;
 						
 					case 'work':
-						$this->data['work_tel'] = $phoneNumberObject->getNumber($phoneNumberRow);
+						$this->data['work_tel'] = $phone->number;
 					break;
 						
 					case 'workphone':
-						$this->data['work_tel'] = $phoneNumberObject->getNumber($phoneNumberRow);
+						$this->data['work_tel'] = $phone->number;
 					break;
 						
 					case 'workfax':
-						$this->data['work_fax'] = $phoneNumberObject->getNumber($phoneNumberRow);
+						$this->data['work_fax'] = $phone->number;
 					break;
 						
 					case 'fax':
-						$this->data['work_fax'] = $phoneNumberObject->getNumber($phoneNumberRow);
+						$this->data['work_fax'] = $phone->number;
 					break;
 				}	
 			}

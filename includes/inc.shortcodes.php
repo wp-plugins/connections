@@ -97,13 +97,12 @@ function _connections_list($atts, $content=null) {
 			 */
 			if ($entry->getAddresses())
 			{
-				$addressObject = new cnAddresses;
-				foreach ($entry->getAddresses() as $addressRow)
+				foreach ($entry->getAddresses() as $address)
 				{
-					if ($addressObject->getCity($addressRow) != null) $cities[] = $addressObject->getCity($addressRow);
-					if ($addressObject->getState($addressRow) != null) $states[] = $addressObject->getState($addressRow);
-					if ($addressObject->getZipCode($addressRow) != null) $zipcodes[] = $addressObject->getZipCode($addressRow);
-					if ($addressObject->getCountry($addressRow) != null) $countries[] = $addressObject->getCountry($addressRow);
+					if ($address->city != NULL) $cities[] = $address->city;
+					if ($address->state != NULL) $states[] = $address->state;
+					if ($address->zipcode != NULL) $zipcodes[] = $address->zipcode;
+					if ($address->country != NULL) $countries[] = $address->country;
 				}			
 			}
 			

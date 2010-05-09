@@ -348,18 +348,16 @@ function connectionsShowViewPage()
 											
 											if ($entry->getAddresses())
 											{
-												$addressObject = new cnAddresses();
-									
-												foreach ($entry->getAddresses() as $addressRow)
+												foreach ($entry->getAddresses() as $address)
 												{
 													echo "<div style='margin-bottom: 10px;'>";
-													if ($addressObject->getName($addressRow) != null || $addressObject->getType($addressRow)) echo "<strong>" . $addressObject->getName($addressRow) . "</strong><br />"; //The OR is for compatiblity for 0.2.24 and under
-													if ($addressObject->getLineOne($addressRow) != null) echo $addressObject->getLineOne($addressRow) . "<br />";
-													if ($addressObject->getLineTwo($addressRow) != null) echo $addressObject->getLineTwo($addressRow) . "<br />";
-													if ($addressObject->getCity($addressRow) != null) echo $addressObject->getCity($addressRow) . "&nbsp;";
-													if ($addressObject->getState($addressRow) != null) echo $addressObject->getState($addressRow) . "&nbsp;";
-													if ($addressObject->getZipCode($addressRow) != null) echo $addressObject->getZipCode($addressRow) . "<br />";
-													if ($addressObject->getCountry($addressRow) != null) echo $addressObject->getCountry($addressRow);
+														if ($address->name != NULL || $address->type) echo "<strong>" . $address->name . "</strong><br />"; //The OR is for compatiblity for 0.2.24 and under
+														if ($address->line_one != NULL) echo $address->line_one . "<br />";
+														if ($address->line_two != NULL) echo $address->line_two . "<br />";
+														if ($address->city != NULL) echo $address->city . "&nbsp;";
+														if ($address->state != NULL) echo $address->state . "&nbsp;";
+														if ($address->zipcode != NULL) echo $address->zipcode . "<br />";
+														if ($address->country != NULL) echo $address->country;
 													echo "</div>";														
 												}
 											}
@@ -400,11 +398,9 @@ function connectionsShowViewPage()
 											
 											if ($entry->getPhoneNumbers())
 											{
-												$phoneNumberObject = new cnPhoneNumber();
-																							
-												foreach ($entry->getPhoneNumbers() as $phoneNumberRow) 
+												foreach ($entry->getPhoneNumbers() as $phone) 
 												{
-													if ($phoneNumberObject->getNumber($phoneNumberRow) != "") echo "<strong>" . $phoneNumberObject->getName($phoneNumberRow) . "</strong>: " .  $phoneNumberObject->getNumber($phoneNumberRow) . "<br />";
+													if ($phone->number != "") echo "<strong>" . $phone->name . "</strong>: " .  $phone->number . "<br />";
 												}
 											}
 											

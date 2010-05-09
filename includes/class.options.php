@@ -72,6 +72,24 @@ class cnOptions
 											'wife' =>"Wife"
 											);
 	
+	private $defaultAddressValues	=	array
+											(
+												''=>'Select',
+												'home'=>'Home',
+												'work'=>'Work',
+												'school'=>'School',
+												'other'=>'Other'
+											);
+	
+	private $defaultPhoneNumberValues	=	array
+											(
+												'homephone'=>'Home Phone',
+												'homefax'=>'Home Fax',
+												'cellphone'=>'Cell Phone',
+												'workphone'=>'Work Phone',
+												'workfax'=>'Work Fax'
+											);
+	
 	private $defaultSocialMediaValues = array(
 											 'delicious' => 'delicious',
 											 'facebook' => 'Facebook',
@@ -842,6 +860,26 @@ class cnOptions
     {
         return $this->defaultConnectionGroupValues;
     }
+    
+    /**
+     * Returns $defaultAddressValues.
+     *
+     * @see cnOptions::$defaultAddressValues
+     */
+    public function getDefaultAddressValues() {
+        return $this->defaultAddressValues;
+    }
+    
+    
+    /**
+     * Returns $defaultPhoneNumberValues.
+     *
+     * @see cnOptions::$defaultPhoneNumberValues
+     */
+    public function getDefaultPhoneNumberValues() {
+        return $this->defaultPhoneNumberValues;
+    }
+    
 	
 	public function getDefaultSocialMediaValues()
     {
