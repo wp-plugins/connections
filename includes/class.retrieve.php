@@ -146,6 +146,57 @@ class cnRetrieve
 		return $wpdb->get_row('SELECT * FROM ' . $wpdb->prefix . 'connections WHERE id="' . $wpdb->escape($id) . '"');
 	}
 	
+	public function entryCategories($id)
+	{
+		global $wpdb;
+		
+		// Retrieve the categories.
+		$results =  $wpdb->get_results( $wpdb->prepare( "SELECT t.*, tt.* FROM " . CN_TERMS_TABLE . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE . " AS tt ON t.term_id = tt.term_id INNER JOIN " . CN_TERM_RELATIONSHIP_TABLE . " AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id WHERE tt.taxonomy = 'category' AND tr.entry_id = %d ", $id) );
+		//SELECT t.*, tt.* FROM wp_connections_terms AS t INNER JOIN wp_connections_term_taxonomy AS tt ON t.term_id = tt.term_id INNER JOIN wp_connections_term_relationships AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id WHERE tt.taxonomy = 'category' AND tr.entry_id = 325
+		
+		if ( !empty($results) )
+		{
+			usort($results, array(&$this, 'sortTermsByName') );
+		}
+		
+		return $results;
+	}
+	
+	/**
+	 * Sorts terms by name.
+	 * 
+	 * @param object $a
+	 * @param object $b
+	 * @return integer
+	 */
+	private function sortTermsByName($a, $b)
+	{
+		return strcmp($a->name, $b->name);
+	}
+	
+	/**
+	 * Sorts terms by ID.
+	 * 
+	 * @param object $a
+	 * @param object $b
+	 * @return integer
+	 */
+	private function sorTermsByID($a, $b)
+	{
+		if ( $a->term_id > $b->term_id )
+		{
+			return 1;
+		}
+		elseif ( $a->term_id < $b->term_id )
+		{
+			return -1;
+		} 
+		else
+		{
+			return 0;
+		}
+	}
+	
 	/**
 	 * Returns all the category terms.
 	 * 
