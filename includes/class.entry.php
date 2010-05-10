@@ -1707,7 +1707,27 @@ class cnEntry
 	public function delete($id)
 	{
 		global $wpdb, $connections;
-		$category = new cnCategory();
+		
+		// Delete images assigned to the entry.
+		if ( is_file( CN_IMAGE_PATH . $this->getImageNameOriginal() ) )
+		{
+			unlink( CN_IMAGE_PATH . $this->getImageNameOriginal() );
+		}
+		
+		if ( is_file( CN_IMAGE_PATH . $this->getImageNameThumbnail() ) )
+		{
+			unlink( CN_IMAGE_PATH . $this->getImageNameThumbnail() );
+		}
+		
+		if ( is_file( CN_IMAGE_PATH . $this->getImageNameCard() ) )
+		{
+			unlink( CN_IMAGE_PATH . $this->getImageNameCard() );
+		}
+		
+		if ( is_file( CN_IMAGE_PATH . $this->getImageNameProfile() ) )
+		{
+			unlink( CN_IMAGE_PATH . $this->getImageNameProfile() );
+		}
 		
 		$wpdb->query($wpdb->prepare('DELETE FROM ' . CN_ENTRY_TABLE . ' WHERE id="' . $wpdb->escape($id) . '"'));
 		

@@ -96,6 +96,10 @@ Connections is a simple to use address book system but is also very versatile. Y
 * BUG: Editing a Connection Group caused it to show up twice in the list and only one was editable while the other gave an error.
 * BUG: Fixing saving the entry type.
 * BUG: The shorcode filter attributes were not escaped. So strings with extended characters would fail to return a match.
+* BUG: Fixed elements left behind after removing fields in the entry form.
+* BUG: Remove entry images from the server when they are removed from the entry.
+* BUG: If an image was manually deleted from the server, the image tag will not be output.
+* BUG: Fixed bug that allowed duplicate categories to be created.
 * OTHER: Removed the use of $_SESSION throughtout the plug-in.
 * OTHER: Enhance plug-in security through the use of nonce.
 * OTHER: Move the methods from cnConvert class to the cnFormatting class.
@@ -103,6 +107,7 @@ Connections is a simple to use address book system but is also very versatile. Y
 * OTHER: Reduce memory overhead.
 * OTHER: Reduce database queries.
 * OTHER: More efficient query to return entires.
+* OTHER: Removed the 'custom_template' shortcode attribute. Instead, the custom template folder will be checked for the specified template.
 
 == Upgrade Notice ==
 

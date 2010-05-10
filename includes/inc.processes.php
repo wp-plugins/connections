@@ -65,7 +65,26 @@ function processAddEntry()
 				$entry->setImageDisplay(false);
 				$entry->setImageLinked(false);
 				
-				/** @TODO remove the images from the server **/
+				if ( is_file( CN_IMAGE_PATH . $entry->getImageNameOriginal() ) )
+				{
+					unlink( CN_IMAGE_PATH . $entry->getImageNameOriginal() );
+				}
+				
+				if ( is_file( CN_IMAGE_PATH . $entry->getImageNameThumbnail() ) )
+				{
+					unlink( CN_IMAGE_PATH . $entry->getImageNameThumbnail() );
+				}
+				
+				if ( is_file( CN_IMAGE_PATH . $entry->getImageNameCard() ) )
+				{
+					unlink( CN_IMAGE_PATH . $entry->getImageNameCard() );
+				}
+				
+				if ( is_file( CN_IMAGE_PATH . $entry->getImageNameProfile() ) )
+				{
+					unlink( CN_IMAGE_PATH . $entry->getImageNameProfile() );
+				}
+				
 			break;
 			
 			case 'hidden':
@@ -293,7 +312,7 @@ function processDeleteEntry()
 		$id = esc_attr($_GET['id']);
 		check_admin_referer('entry_delete_' . $id);
 		
-		$entry = new cnEntry();
+		$entry = new cnEntry( $connections->retrieve->entry($id) );
 		$entry->delete($id);
 		$connections->setSuccessMessage('form_entry_delete');
 		unset($entry);
@@ -321,7 +340,7 @@ function processDeleteEntries()
 			
 			foreach ($ids as $id)
 			{
-				$entry = new cnEntry();
+				$entry = new cnEntry( $connections->retrieve->entry($id) );
 				$id = esc_attr($id);
 				$entry->delete($id);
 				unset($entry);

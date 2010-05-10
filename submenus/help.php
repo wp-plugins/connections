@@ -113,9 +113,7 @@ function connectionsShowHelpPage()
 		<li><a href="#cn_attr_show_alphahead">show_alphahead</a></li>
 	
 		<li><a href="#cn_attr_list_type">list_type</a></li>
-	
-		<li><a href="#cn_attr_custom_template">custom_template</a></li>
-	
+		
 		<li><a href="#cn_attr_template_name">template_name</a></li>
 		
 		<li><a href="#cn_attr_order_by">order_by</a> <strong><em>sort</em></strong></li>
@@ -241,7 +239,8 @@ function connectionsShowHelpPage()
 	
 	
 
-	<p>Two alternate template have been provieded. Use the <code>template_name</code>
+	<p><a name="cn_attr_template_name"></a>
+	Two alternate template have been provieded. Use the <code>template_name</code>
 	option and set it to one of the alternate templates. See the examples.</p>
 
 	<p>This will ouput the list in the profile view.</p>
@@ -257,23 +256,19 @@ function connectionsShowHelpPage()
 	</pre>
 	
 	
-
-	<p><a name="cn_attr_custom_template"></a><a name="cn_attr_template_name"></a>If you create a custom template you need to set two
-	options <code>custom_template</code> and
-	<code>template_name</code> as such. For example, say
-	you create a custom template named my-template.php. The
-	template name you would enter in the option would be
-	"my-template", dropping off the ".php".</p>
+	<p>If you create a custom template it must be saved in the
+	<code>./wp-content/connections_templates</code> folder. It can  
+	be call by using the <code>template_name</code> attribute. 
+	The plug-in will automatically check in the custom template folder.
+	For example, say you create a custom template named my-template.php. 
+	The template name you would enter in the option would be
+	"my-template", leaving off the ".php".</p>
 
 	<pre>
-	<code>[connections_list custom_template='true' template_name='the_template_name']</code>
+	<code>[connections_list template_name='my-template']</code>
 	</pre>
 	
-	<p>Both of these must be set in order to use a custom
-	template and the custom template must be saved in the
-	<code>./wp-content/connections_templates</code>
-	directory/folder.</p>
-	
+		
 	<p><a name="cn_attr_order_by"></a>The <em>order_by</em> attribute can be used to apply a custom sort to the list.
 	Here are the available sort fields and attributes.</p>
 	<p><strong>Sort fields:</strong>

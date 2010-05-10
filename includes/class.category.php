@@ -205,6 +205,9 @@ class cnCategory
 	{
 		global $connections;
 		
+		// If the category already exists, do not let it be created.
+		if ( $connections->term->getTermBy('name', $this->name, 'category') ) return $connections->setErrorMessage('category_duplicate_name');
+		
 		$attributes['slug'] = $this->slug;
 		$attributes['description'] = $this->description;
 		$attributes['parent'] = $this->parent;

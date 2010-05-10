@@ -243,13 +243,13 @@ function connectionsShowViewPage()
 								<?php
 								
 								foreach ($results as $row) {
-									$entry = new cnEntry($row);
+									//$entry = new cnEntry($row);
 									$vCard = new cnvCard($row);
 									
 									/**
 									 * @TODO: Use the Output class to show entry details.
 									 */								
-									$object = new cnOutput($row);
+									$entry = new cnOutput($row);
 									
 									$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
 									if ($currentLetter != $previousLetter) {
@@ -269,7 +269,7 @@ function connectionsShowViewPage()
 									
 									echo "<tr id='row-" . $entry->getId() . "' class='parent-row'>";
 										echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
-											echo '<td>' . $object->getThumbnailImage() . '</td>';
+											echo '<td>' , $entry->getThumbnailImage() , '</td>';
 											echo '<td  colspan="2">';
 												if ($setAnchor) echo $setAnchor;
 												echo '<div style="float:right"><a href="#wphead" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" /></a></div>';

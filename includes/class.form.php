@@ -48,10 +48,10 @@ class cnFormObjects
 	public function token($formId)
 	{
 		$token = md5(uniqid(rand(), true));
-		@session_start();
-		$_SESSION['cn_session']['formTokens'][$formId]['token'] = $token;
-		$_SESSION['cn_session']['formTokens'][$formId]['token_timestamp'] = time();
-		@session_write_close();
+		//@session_start();
+		//$_SESSION['cn_session']['formTokens'][$formId]['token'] = $token;
+		//$_SESSION['cn_session']['formTokens'][$formId]['token_timestamp'] = time();
+		//@session_write_close();
 		
 		return $token;
 	}
@@ -500,41 +500,41 @@ class cnEntryForm
 							foreach ($addressValues as $address)
 							{
 								$token = $form->token($entry->getId());
-								$out .= '<div class="form-field connectionsform address">';
-									$out .= '<div class="address_row" id="address_row_'  . $token . '">';
-										$selectName = 'address['  . $token . '][type]';
+								$out .= '<div class="form-field connectionsform address" id="address_row_'  . $token . '">';
 									
-										$out .= '<span class="selectbox alignright">Type: ' . $form->buildSelect($selectName, $connections->options->getDefaultAddressValues(), $address->type) . '</span>';
-										$out .= '<div class="clear"></div>';
-										
-										$out .= '<label for="address">Address Line 1:</label>';
-										$out .= '<input type="text" name="address[' . $token . '][address_line1]" value="' . $address->line_one . '" />';
-							
-										$out .= '<label for="address">Address Line 2:</label>';
-										$out .= '<input type="text" name="address[' . $token . '][address_line2]" value="' . $address->line_two . '" />';
-							
-										$out .= '<div class="input" style="width:60%">';
-											$out .= '<label for="address">City:</label>';
-											$out .= '<input type="text" name="address[' . $token . '][city]" value="' . $address->city . '" />';
-										$out .= '</div>';
-										$out .= '<div class="input" style="width:15%">';
-											$out .= '<label for="address">State:</label>';
-											$out .= '<input type="text" name="address[' . $token . '][state]" value="' . $address->state . '" />';
-										$out .= '</div>';
-										$out .= '<div class="input" style="width:25%">';
-											$out .= '<label for="address">Zipcode:</label>';
-											$out .= '<input type="text" name="address[' . $token . '][zipcode]" value="' . $address->zipcode . '" />';
-										$out .= '</div>';
-										
-										$out .= '<label for="address">Country</label>';
-										$out .= '<input type="text" name="address[' . $token . '][country]" value="' . $address->country . '" />';
-										
-										$out .= '<input type="hidden" name="address[' . $token . '][visibility]" value="' . $address->visibility . '" />';
+									$selectName = 'address['  . $token . '][type]';
+								
+									$out .= '<span class="selectbox alignright">Type: ' . $form->buildSelect($selectName, $connections->options->getDefaultAddressValues(), $address->type) . '</span>';
+									$out .= '<div class="clear"></div>';
 									
-										$out .= '<div class="clear"></div>';
-										$out .= '<br />';
-										$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#address_row_'. $token . '\'); return false;">Remove</a>';
+									$out .= '<label for="address">Address Line 1:</label>';
+									$out .= '<input type="text" name="address[' . $token . '][address_line1]" value="' . $address->line_one . '" />';
+						
+									$out .= '<label for="address">Address Line 2:</label>';
+									$out .= '<input type="text" name="address[' . $token . '][address_line2]" value="' . $address->line_two . '" />';
+						
+									$out .= '<div class="input" style="width:60%">';
+										$out .= '<label for="address">City:</label>';
+										$out .= '<input type="text" name="address[' . $token . '][city]" value="' . $address->city . '" />';
 									$out .= '</div>';
+									$out .= '<div class="input" style="width:15%">';
+										$out .= '<label for="address">State:</label>';
+										$out .= '<input type="text" name="address[' . $token . '][state]" value="' . $address->state . '" />';
+									$out .= '</div>';
+									$out .= '<div class="input" style="width:25%">';
+										$out .= '<label for="address">Zipcode:</label>';
+										$out .= '<input type="text" name="address[' . $token . '][zipcode]" value="' . $address->zipcode . '" />';
+									$out .= '</div>';
+									
+									$out .= '<label for="address">Country</label>';
+									$out .= '<input type="text" name="address[' . $token . '][country]" value="' . $address->country . '" />';
+									
+									$out .= '<input type="hidden" name="address[' . $token . '][visibility]" value="' . $address->visibility . '" />';
+								
+									$out .= '<div class="clear"></div>';
+									$out .= '<br />';
+									$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#address_row_'. $token . '\'); return false;">Remove</a>';
+									
 								$out .= '</div>';
 								
 							}

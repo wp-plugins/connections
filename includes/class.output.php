@@ -4,20 +4,26 @@ class cnOutput extends cnEntry
 {
 	public function getCardImage()
 	{
-		if ($this->getImageLinked() && $this->getImageDisplay()) $out = '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameCard() . '" />' . "\n";
-		return $out;
+		if ( $this->getImageLinked() && $this->getImageDisplay() )
+		{
+			if ( is_file(CN_IMAGE_PATH . $this->getImageNameCard()) ) echo '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameCard() . '" />';
+		}
 	}
 	
 	public function getProfileImage()
 	{
-		if ($this->getImageLinked() && $this->getImageDisplay()) $out = '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameProfile() . '" />' . "\n";
-		return $out;
+		if ( $this->getImageLinked() && $this->getImageDisplay() )
+		{
+			if ( is_file(CN_IMAGE_PATH . $this->getImageNameProfile()) ) echo '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameProfile() . '" />';
+		}
 	}
 	
 	public function getThumbnailImage()
 	{
-		if ($this->getImageLinked() && $this->getImageDisplay()) $out = '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameThumbnail() . '" />' . "\n";
-		return $out;
+		if ( $this->getImageLinked() && $this->getImageDisplay())
+		{
+			if ( is_file(CN_IMAGE_PATH . $this->getImageNameThumbnail()) ) echo '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameThumbnail() . '" />';
+		}
 	}
 	    
     /**

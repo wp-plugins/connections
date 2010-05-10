@@ -308,6 +308,7 @@ if (!class_exists('connectionsLoad'))
 			$this->errorMessages->add('capability_settings', 'You are not authorized to edit the settings. Please contact the admin if you received this message in error.');
 			$this->errorMessages->add('capability_roles', 'You are not authorized to edit role capabilities. Please contact the admin if you received this message in error.');
 			
+			$this->errorMessages->add('category_duplicate_name', 'The category you are trying to create already exists.');
 			$this->errorMessages->add('category_self_parent', 'Category can not be a parent of itself.');
 			$this->errorMessages->add('category_delete_uncategorized', 'The Uncategorized category can not be deleted.');
 			$this->errorMessages->add('category_update_uncategorized', 'The Uncategorized category can not be altered.');

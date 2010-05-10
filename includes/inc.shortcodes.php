@@ -42,8 +42,7 @@ function _connections_list($atts, $content=null) {
 				'state' => null,
 				'zip_code' => null,
 				'country' => null,
-				'template_name' => 'card',
-				'custom_template'=>'false',
+				'template_name' => 'card'
 				), $atts ) ;
 				
 	/*
@@ -54,7 +53,6 @@ function _connections_list($atts, $content=null) {
 	$convert->toBoolean(&$atts['show_alphaindex']);
 	$convert->toBoolean(&$atts['repeat_alphaindex']);
 	$convert->toBoolean(&$atts['show_alphahead']);
-	$convert->toBoolean(&$atts['custom_template']);
 	$convert->toBoolean(&$atts['wp_current_category']);
 	
 	$results = $connections->retrieve->entries($atts);
@@ -164,29 +162,23 @@ function _connections_list($atts, $content=null) {
 			 */
 			if ($atts['show_alphaindex'] || $atts['show_alphahead']) $out .= $setAnchor;
 			
-			if ($atts['custom_template'])
+			// First check to see if the template is in the custom template folder.
+			if (is_dir(WP_CONTENT_DIR . '/connections_templates'))
 			{
-				if (is_dir(WP_CONTENT_DIR . '/connections_templates'))
+				if (file_exists(WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php'))
 				{
-					if (file_exists(WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php'))
-					{
-						// Custom Template Name
-						$template = WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php';
-					}
-					else
-					{
-						$out .= '<p style="color:red; font-weight:bold; text-align:center;">ERROR CUSTOM TEMPLATE DOES NOT EXIST</p>';
-					}
-				}
-				else
-				{
-					$out .= '<p style="color:red; font-weight:bold; text-align:center;">ERROR CUSTOM TEMPLATE DIRECTORY DOES NOT EXSIT</p>';
+					$template = WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php';
 				}
 			}
-			else
+			
+			// If the template isn't a custom template, check for it in the default templates folder.
+			if ( !isset($template) )
 			{
-				// Use the specified default template
-				$template = WP_PLUGIN_DIR . '/connections/templates/' .  $atts['template_name'] . '.php';
+				if (file_exists(WP_PLUGIN_DIR . '/connections/templates/' .  $atts['template_name'] . '.php'))
+				{
+					$template = WP_PLUGIN_DIR . '/connections/templates/' .  $atts['template_name'] . '.php';
+				}
+				
 			}
 			
 			if (isset($template))
@@ -197,6 +189,11 @@ function _connections_list($atts, $content=null) {
 				    $out .= ob_get_contents();
 				    ob_end_clean();
 				$out .= '</div>' . "\n";
+			}
+			else
+			{
+				// If no template is found, return an error message.
+				return '<p style="color:red; font-weight:bold; text-align:center;">ERROR: Template "' . $atts['template_name'] . '" not found.</p>';
 			}
 						
 		}
