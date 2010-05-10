@@ -224,8 +224,8 @@ function connectionsShowViewPage()
 					            <tr>
 					                <th class="manage-column column-cb check-column" id="cb" scope="col"><input type="checkbox"/></th>
 									<th class="col" style="width:10%;"></th>
-									<th scope="col" colspan="2" style="width:50%;">Name</th>
-									<th scope="col" style="width:20%;">Visibility</th>
+									<th scope="col" colspan="2" style="width:40%;">Name</th>
+									<th scope="col" style="width:30%;">Categories</th>
 									<th scope="col" style="width:20%;">Last Modified</th>
 					            </tr>
 							</thead>
@@ -233,8 +233,8 @@ function connectionsShowViewPage()
 					            <tr>
 					                <th class="manage-column column-cb check-column" scope="col"><input type="checkbox"/></th>
 									<th class="col" style="width:10%;"></th>
-									<th scope="col" colspan="2" style="width:50%;">Name</th>
-									<th scope="col" style="width:20%;">Visibility</th>
+									<th scope="col" colspan="2" style="width:40%;">Name</th>
+									<th scope="col" style="width:30%;">Categories</th>
 									<th scope="col" style="width:20%;">Last Modified</th>
 					            </tr>
 							</tfoot>
@@ -291,10 +291,28 @@ function connectionsShowViewPage()
 													if (current_user_can('connections_delete_entry')) echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="' . $deleteTokenURL . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
 												echo '</div>';
 										echo "</td> \n";
-										echo "<td ><strong>" . $entry->displayVisibiltyType() . "</strong></td> \n";												
+										echo "<td > \n";
+											
+											$categories = $entry->getCategory();
+											
+											if ( !empty($categories) )
+											{
+												foreach ($categories as $category)
+												{
+													echo $category->name;
+													
+													$i++;
+													if ( count($categories) > $i ) echo ', ';
+												}
+												
+												unset($i);
+											}
+											
+										echo "</td> \n";											
 										echo '<td >';
 											echo '<strong>On:</strong> ' . $entry->getFormattedTimeStamp() . '<br />';
-											echo '<strong>By:</strong> ' . $entry->getEditedBy();
+											echo '<strong>By:</strong> ' . $entry->getEditedBy(). '<br />';
+											echo '<strong>Visibility:</strong> ' . $entry->displayVisibiltyType();
 										echo "</td> \n";											
 									echo "</tr> \n";
 									
@@ -302,7 +320,6 @@ function connectionsShowViewPage()
 										echo "<td >&nbsp;</td> \n";
 										echo "<td >&nbsp;</td> \n";
 										echo "<td colspan='2'>";
-											
 											
 											/*
 											 * Check if the entry has relations. Count the relations and then cycle thru each relation.

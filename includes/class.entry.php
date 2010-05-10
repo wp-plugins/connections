@@ -123,6 +123,8 @@ class cnEntry
 	 */
 	private $visibility;
 	
+	private $category;
+	
 	private $options;
 	private $imageLinked;
 	private $imageDisplay;
@@ -141,6 +143,8 @@ class cnEntry
 	
 	function __construct($entry = NULL)
 	{
+		global $wpdb;
+		
 		$this->id = $entry->id;
 		$this->timeStamp = $entry->ts;
 		$this->dateAdded = (integer) $entry->date_added;
@@ -178,6 +182,10 @@ class cnEntry
 		$this->addedBy = $entry->added_by;
 		$this->editedBy = $entry->edited_by;
 		
+		// Retrieve the categories.
+		$this->category = $wpdb->get_results( $wpdb->prepare( "SELECT t.*, tt.* FROM " . CN_TERMS_TABLE . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE . " AS tt ON t.term_id = tt.term_id INNER JOIN " . CN_TERM_RELATIONSHIP_TABLE . " AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id WHERE tt.taxonomy = 'category' AND tr.entry_id = %s ", $this->getId()) );
+		//SELECT t.*, tt.* FROM wp_connections_terms AS t INNER JOIN wp_connections_term_taxonomy AS tt ON t.term_id = tt.term_id INNER JOIN wp_connections_term_relationships AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id WHERE tt.taxonomy = 'category' AND tr.entry_id = 325
+		
 		// Load the formatting class for sanitizing the get methods.
 		$this->format = new cnFormatting();
 		
@@ -191,7 +199,7 @@ class cnEntry
      */
     public function getId()
     {
-        return $this->id;
+        return (integer) $this->id;
     }
     
     /**
@@ -1161,7 +1169,18 @@ class cnEntry
 	{
 		return ucfirst($this->getVisibility());
 	}
-
+    
+    /**
+     * Returns $category.
+     *
+     * @see cnEntry::$category
+     */
+    public function getCategory()
+	{
+        return $this->category;
+    }
+    
+	
     /**
      * Returns array of objects.
      * 
@@ -1417,18 +1436,6 @@ class cnEntry
     {
         $this->options['image']['name']['original'] = $imageNameOriginal;
     }
-    
-	/**
-	 * Displays the category list in a HTML list or custom format
-	 * 
-	 * @param string $separator [optional] Default is an empty string. Separator for between the categories.
-	 * @param string $parents [optional] How to display the parent categories.
-	 * @return string
-	 */
-	public function getCategoryList($separator = '', $parents = '')
-	{
-		
-	}
 	
 	public function getAddedBy()
 	{

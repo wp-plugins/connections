@@ -327,6 +327,49 @@ class cnOutput extends cnEntry
 		return '<div class="bio">' . $this->getBio() . '</div>' . "\n";
 	}
 	
+	/**
+	 * Displays the category list in a HTML list or custom format
+	 * 
+	 * @TODO: Implement $parents.
+	 * 
+	 * @param string $separator [optional] Default is an empty string. Separator for between the categories.
+	 * @param string $parents [optional] How to display the parent categories.
+	 * @return string
+	 */
+	public function getCategoryBlock($separator = '', $parents = FALSE)
+	{
+		$categories = $this->getCategory();
+		
+		if ( empty($categories) ) return NULL;
+		
+		if ($separator == '')
+		{
+			$out = '<ul class="entry_categories">';
+			
+			foreach ($categories as $category)
+			{
+				$out .= '<li>' . $category->name . '</li>';
+			}
+			
+			$out .= "</ul>";
+		}
+		else
+		{
+			foreach ($categories as $category)
+			{
+				$out .= $category->name;
+				
+				$i++;
+				if ( count($categories) > $i ) $out .= $separator;
+			}
+			
+			unset($i);
+		}
+		
+		echo $out;
+		
+	}
+	
 	public function getRevisionDateBlock()
 	{
 		return '<span class="rev">' . date('Y-m-d', strtotime($this->getUnixTimeStamp())) . 'T' . date('H:i:s', strtotime($this->getUnixTimeStamp())) . 'Z' . '</span>' . "\n";
