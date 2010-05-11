@@ -87,6 +87,9 @@ Connections is a simple to use address book system but is also very versatile. Y
 * FEATURE: Automatically add the http:// to the social network urls.
 * FEATURE: Add vCard download link to entry actions.
 * FEATURE: Add Upgrade Notice text to the readme.txt.
+* FEATURE: Show the entries assigned categories in the entry list.
+* FEATURE: Categories are add to the vcard div class.
+* FEATURE: Add template tag to show an entries assigned categories.
 * BUG: Set the db version after each db upgrade cycle.
 * BUG: Add the missing social media block to the output class, default templates and help page.
 * BUG: Fix typos in the help page.
@@ -100,6 +103,8 @@ Connections is a simple to use address book system but is also very versatile. Y
 * BUG: Remove entry images from the server when they are removed from the entry.
 * BUG: If an image was manually deleted from the server, the image tag will not be output.
 * BUG: Fixed bug that allowed duplicate categories to be created.
+* OTHER: Add instructional text to the image settings.
+* OTHER: Add rel="nofollow" to the vCard download link.
 * OTHER: Removed the use of $_SESSION throughtout the plug-in.
 * OTHER: Enhance plug-in security through the use of nonce.
 * OTHER: Move the methods from cnConvert class to the cnFormatting class.
@@ -108,6 +113,7 @@ Connections is a simple to use address book system but is also very versatile. Y
 * OTHER: Reduce database queries.
 * OTHER: More efficient query to return entires.
 * OTHER: Removed the 'custom_template' shortcode attribute. Instead, the custom template folder will be checked for the specified template.
+* OTHER: Moved the template file checking out of the entry list loop to reduce server file system IO.
 
 == Upgrade Notice ==
 

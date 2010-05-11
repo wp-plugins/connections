@@ -430,7 +430,7 @@ class cnvCard extends cnEntry
 		
 		$filenameEncoded = rawurlencode($filename);
 		
-		echo '<a href="' . get_option('siteurl') . '/download.vCard.php?token=' . $token . '&entry=' . $this->getId() . '">' . $atts['anchorText'] . '</a>';
+		echo '<a href="' . get_option('siteurl') . '/download.vCard.php?token=' . $token . '&entry=' . $this->getId() . '" rel="nofollow">' . $atts['anchorText'] . '</a>';
 	}
 }
 ?>

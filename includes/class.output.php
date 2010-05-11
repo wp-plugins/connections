@@ -6,7 +6,8 @@ class cnOutput extends cnEntry
 	{
 		if ( $this->getImageLinked() && $this->getImageDisplay() )
 		{
-			if ( is_file(CN_IMAGE_PATH . $this->getImageNameCard()) ) echo '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameCard() . '" />';
+			//if ( is_file(CN_IMAGE_PATH . $this->getImageNameCard()) ) 
+			echo '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameCard() . '" />';
 		}
 	}
 	
@@ -14,7 +15,8 @@ class cnOutput extends cnEntry
 	{
 		if ( $this->getImageLinked() && $this->getImageDisplay() )
 		{
-			if ( is_file(CN_IMAGE_PATH . $this->getImageNameProfile()) ) echo '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameProfile() . '" />';
+			//if ( is_file(CN_IMAGE_PATH . $this->getImageNameProfile()) ) 
+			echo '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameProfile() . '" />';
 		}
 	}
 	
@@ -22,7 +24,8 @@ class cnOutput extends cnEntry
 	{
 		if ( $this->getImageLinked() && $this->getImageDisplay())
 		{
-			if ( is_file(CN_IMAGE_PATH . $this->getImageNameThumbnail()) ) echo '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameThumbnail() . '" />';
+			//if ( is_file(CN_IMAGE_PATH . $this->getImageNameThumbnail()) ) 
+			echo '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameThumbnail() . '" />';
 		}
 	}
 	    
@@ -334,9 +337,10 @@ class cnOutput extends cnEntry
 	 * 
 	 * @param string $separator [optional] Default is an empty string. Separator for between the categories.
 	 * @param string $parents [optional] How to display the parent categories.
+	 * @param bool $return [optional] Return instead of echo.
 	 * @return string
 	 */
-	public function getCategoryBlock($separator = '', $parents = FALSE)
+	public function getCategoryBlock($separator = '', $parents = FALSE, $return = FALSE)
 	{
 		$categories = $this->getCategory();
 		
@@ -365,6 +369,34 @@ class cnOutput extends cnEntry
 			
 			unset($i);
 		}
+		
+		if ($return) return $out;
+		
+		echo $out;
+		
+	}
+	
+	/**
+	 * Displays the category list for use in the class tag.
+	 * 
+	 * @param bool $return [optional] Return instead of echo.
+	 * @return string
+	 */
+	public function getCategoryClass($return = FALSE)
+	{
+		$categories = $this->getCategory();
+		
+		if ( empty($categories) ) return NULL;
+		
+		foreach ($categories as $category)
+		{
+			$out .= $category->slug;
+			
+			$i++;
+			if ( $i < count($categories) ) $out .= ' ';
+		}
+		
+		if ($return) return $out;
 		
 		echo $out;
 		

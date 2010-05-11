@@ -112,9 +112,13 @@ function connectionsShowSettingsPage()
 										<input type="text" class="small-text" value="<?php echo $connections->options->getImgThumbQuality() ?>" id="image_thumbnail_quality" name="settings[image][thumbnail][quality]"/>%
 									</td>
 									<td rowspan="4" width="50%">
-										<p>These options control the thumbnail image settings.</p>
+										<p>Changing the Quality setting will affect the image quality as well the file size. If you require smaller file sizes and can accept lower image quality, reduce the value.</p>
+										<p>The values entered for the width and height will be the final size of the image. If the image is smaller, white space will be added to the image with the image centered. If the image is larger in either dimension it will be scaled down. The crop setting defines how the image will be scaled down.</p>
+										<p>Crop will use the image's smaller dimension and scale it to fit and then crop the excess image from both sides or top and bottom equally of the larger dimension.</p>
+										<p>Shrink will use the image's larger dimension and scale it to fit and then add white space equally to both sides or top and bottom equally to the smaller dimension.</p>
+										<p>None will scale both image dimensions to fit the entered values un-proportionally.</p>
 										<p><strong>NOTE: </strong>Although these options are available they are not recommended to be changed.</p>
-										<p><strong>NOTE: </strong>Any changes will only be applied to images uploaded after the change was saved. This will not change images previously uploaded.</p>
+										<p><strong>NOTE: </strong>Changes will only be applied to images uploaded after the change was saved. This will not affect images uploaded previously.</p>
 									</td>
 								</tr>
 								
@@ -141,7 +145,7 @@ function connectionsShowSettingsPage()
 										Crop
 									</th>
 									<td>
-										<?php echo $form->buildRadio('settings[image][thumbnail][crop]', 'image_thumbnail_crop', array('Enlarge and crop (maintain aspect ratio)' => 'crop', 'Shrink to fit (maintain aspect ratio)' => 'fill', 'None' => 'none'), $connections->options->getImgThumbCrop()); ?>
+										<?php echo $form->buildRadio('settings[image][thumbnail][crop]', 'image_thumbnail_crop', array('Crop (maintain aspect ratio)' => 'crop', 'Shrink (maintain aspect ratio)' => 'fill', 'None' => 'none'), $connections->options->getImgThumbCrop()); ?>
 									</td>
 								</tr>
 								
@@ -161,6 +165,14 @@ function connectionsShowSettingsPage()
 									</th>
 									<td>
 										<input type="text" class="small-text" value="<?php echo $connections->options->getImgEntryQuality() ?>" id="image_entry_quality" name="settings[image][entry][quality]"/>%
+									</td>
+									<td rowspan="4" width="50%">
+										<p>Changing the Quality setting will affect the image quality as well the file size. If you require smaller file sizes and can accept lower image quality, reduce the value.</p>
+										<p>The values entered for the width and height will be the final size of the image. If the image is smaller, white space will be added to the image with the image centered. If the image is larger in either dimension it will be scaled down. The crop setting defines how the image will be scaled down.</p>
+										<p>Crop will use the image's smaller dimension and scale it to fit and then crop the excess image from both sides or top and bottom equally of the larger dimension.</p>
+										<p>Shrink will use the image's larger dimension and scale it to fit and then add white space equally to both sides or top and bottom equally to the smaller dimension.</p>
+										<p>None will scale both image dimensions to fit the entered values un-proportionally.</p>
+										<p><strong>NOTE: </strong>Changes will only be applied to images uploaded after the change was saved. This will not affect images uploaded previously.</p>
 									</td>
 								</tr>
 								
@@ -187,7 +199,7 @@ function connectionsShowSettingsPage()
 										Crop
 									</th>
 									<td>
-										<?php echo $form->buildRadio('settings[image][entry][crop]', 'image_entry_crop', array('Enlarge and crop (maintain aspect ratio)' => 'crop', 'Shrink to fit (maintain aspect ratio)' => 'fill', 'None' => 'none'), $connections->options->getImgEntryCrop()); ?>
+										<?php echo $form->buildRadio('settings[image][entry][crop]', 'image_entry_crop', array('Enlarge (maintain aspect ratio)' => 'crop', 'Shrink (maintain aspect ratio)' => 'fill', 'None' => 'none'), $connections->options->getImgEntryCrop()); ?>
 									</td>
 								</tr>
 								
@@ -206,6 +218,14 @@ function connectionsShowSettingsPage()
 									</th>
 									<td>
 										<input type="text" class="small-text" value="<?php echo $connections->options->getImgProfileQuality() ?>" id="image_profile_quality" name="settings[image][profile][quality]"/>%
+									</td>
+									<td rowspan="4" width="50%">
+										<p>Changing the Quality setting will affect the image quality as well the file size. If you require smaller file sizes and can accept lower image quality, reduce the value.</p>
+										<p>The values entered for the width and height will be the final size of the image. If the image is smaller, white space will be added to the image with the image centered. If the image is larger in either dimension it will be scaled down. The crop setting defines how the image will be scaled down.</p>
+										<p>Crop will use the image's smaller dimension and scale it to fit and then crop the excess image from both sides or top and bottom equally of the larger dimension.</p>
+										<p>Shrink will use the image's larger dimension and scale it to fit and then add white space equally to both sides or top and bottom equally to the smaller dimension.</p>
+										<p>None will scale both image dimensions to fit the entered values un-proportionally.</p>
+										<p><strong>NOTE: </strong>Changes will only be applied to images uploaded after the change was saved. This will not affect images uploaded previously.</p>
 									</td>
 								</tr>
 								
@@ -232,7 +252,7 @@ function connectionsShowSettingsPage()
 										Crop
 									</th>
 									<td>
-										<?php echo $form->buildRadio('settings[image][profile][crop]', 'image_profile_crop', array('Enlarge and crop (maintain aspect ratio)' => 'crop', 'Shrink to fit (maintain aspect ratio)' => 'fill', 'None' => 'none'), $connections->options->getImgProfileCrop()); ?>
+										<?php echo $form->buildRadio('settings[image][profile][crop]', 'image_profile_crop', array('Enlarge (maintain aspect ratio)' => 'crop', 'Shrink (maintain aspect ratio)' => 'fill', 'None' => 'none'), $connections->options->getImgProfileCrop()); ?>
 									</td>
 								</tr>
 							

@@ -133,6 +133,8 @@ class cnEntry
 	private $entryType;
 	private $connectionGroup;
 	
+	private $categories;
+	
 	private $addedBy;
 	private $editedBy;
 	
@@ -141,6 +143,8 @@ class cnEntry
 	
 	function __construct($entry = NULL)
 	{
+		global $connections;
+		
 		$this->id = $entry->id;
 		$this->timeStamp = $entry->ts;
 		$this->dateAdded = (integer) $entry->date_added;
@@ -174,6 +178,8 @@ class cnEntry
 		$this->imageNameOriginal = $this->options['image']['name']['original'];
 		$this->entryType = $this->options['entry']['type'];
 		$this->connectionGroup = $this->options['connection_group'];
+		
+		$this->categories = $connections->retrieve->entryCategories($this->getId());
 		
 		$this->addedBy = $entry->added_by;
 		$this->editedBy = $entry->edited_by;
@@ -1169,9 +1175,7 @@ class cnEntry
      */
     public function getCategory()
 	{
-		global $connections;
-		
-		return $connections->retrieve->entryCategories($this->getId());
+		return $this->categories;
     }
     
 	

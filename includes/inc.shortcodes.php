@@ -55,6 +55,25 @@ function _connections_list($atts, $content=null) {
 	$convert->toBoolean(&$atts['show_alphahead']);
 	$convert->toBoolean(&$atts['wp_current_category']);
 	
+	// First check to see if the template is in the custom template folder.
+	if (is_dir(WP_CONTENT_DIR . '/connections_templates'))
+	{
+		if (file_exists(WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php'))
+		{
+			$template = WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php';
+		}
+	}
+	
+	// If the template isn't a custom template, check for it in the default templates folder.
+	if ( !isset($template) )
+	{
+		if (file_exists(WP_PLUGIN_DIR . '/connections/templates/' .  $atts['template_name'] . '.php'))
+		{
+			$template = WP_PLUGIN_DIR . '/connections/templates/' .  $atts['template_name'] . '.php';
+		}
+		
+	}
+	
 	$results = $connections->retrieve->entries($atts);
 	$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
 	
@@ -162,28 +181,10 @@ function _connections_list($atts, $content=null) {
 			 */
 			if ($atts['show_alphaindex'] || $atts['show_alphahead']) $out .= $setAnchor;
 			
-			// First check to see if the template is in the custom template folder.
-			if (is_dir(WP_CONTENT_DIR . '/connections_templates'))
-			{
-				if (file_exists(WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php'))
-				{
-					$template = WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php';
-				}
-			}
-			
-			// If the template isn't a custom template, check for it in the default templates folder.
-			if ( !isset($template) )
-			{
-				if (file_exists(WP_PLUGIN_DIR . '/connections/templates/' .  $atts['template_name'] . '.php'))
-				{
-					$template = WP_PLUGIN_DIR . '/connections/templates/' .  $atts['template_name'] . '.php';
-				}
-				
-			}
 			
 			if (isset($template))
 			{
-				$out .= '<div class="vcard">' . "\n";
+				$out .= '<div class="vcard ' . $entry->getCategoryClass(TRUE) . '">' . "\n";
 					ob_start();
 				    include($template);
 				    $out .= ob_get_contents();
