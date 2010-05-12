@@ -139,7 +139,7 @@ class cnEntry
 	private $editedBy;
 	
 	private $format;
-	private $validate;
+	public $validate;
 	
 	function __construct($entry = NULL)
 	{

@@ -823,6 +823,11 @@ if (!class_exists('connectionsLoad'))
 								}
 							break;
 							
+							case 'filter':
+								check_admin_referer('filter');
+								processSetUserFilter();
+							break;
+							
 							case 'do':
 								switch ($_POST['action'])
 								{

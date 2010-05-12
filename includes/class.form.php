@@ -850,7 +850,20 @@ class cnCategoryObjects
 			$out .= '<td class="description column-description">' . $category->getDescription() . '</td>';
 			$out .= '<td class="slug column-slug">' . $category->getSlug() . '</td>';
 			$out .= '<td>';
-				$out .= '<strong>Count:</strong> ' . $category->getCount() . '<br />';
+				/*
+				 * Genreate the category link token URL.
+				 */
+				$categoryFilterURL = $form->tokenURL('admin.php?page=connections&action=filter&category_id=' . $category->getId(), 'filter');
+				
+				if ( (integer) $category->getCount() > 0 )
+				{
+					$out .= '<strong>Count:</strong> ' . '<a href="' . $categoryFilterURL . '">' . $category->getCount() . '</a><br />';
+				}
+				else
+				{
+					$out .= '<strong>Count:</strong> ' . $category->getCount() . '<br />';
+				}
+				
 				$out .= '<strong>ID:</strong> ' . $category->getId();
 			$out .= '</td>';
 		$out .= '</tr>';

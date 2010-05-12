@@ -340,22 +340,37 @@ class cnOutput extends cnEntry
 	 * @param bool $return [optional] Return instead of echo.
 	 * @return string
 	 */
-	public function getCategoryBlock($separator = '', $parents = FALSE, $return = FALSE)
+	public function getCategoryBlock($atts = NULL)
 	{
+		$validFields = array('list' => 'unordered',
+							 'separator' => NULL,
+							 'before' => NULL,
+							 'after' => NULL,
+							 'label' => 'Categories: ',
+							 'parents' => FALSE,
+							 'return' => FALSE
+							);
+		
+		$atts = $this->validate->attributesArray($validFields, (array) $atts);
+		
 		$categories = $this->getCategory();
 		
 		if ( empty($categories) ) return NULL;
 		
-		if ($separator == '')
+		if ( !empty($atts['before']) ) $out = $atts['before'];
+		
+		if ( !empty($atts['label']) ) $out .= '<span class="cn_category_label">' . $atts['label'] . '</span>';
+		
+		if ( empty($atts['separator']) )
 		{
-			$out = '<ul class="entry_categories">';
+			$atts['list'] === 'unordered' ? $out .= '<ul class="cn_category_list">' : $out .= '<ol class="cn_category_list">';
 			
 			foreach ($categories as $category)
 			{
-				$out .= '<li>' . $category->name . '</li>';
+				$out .= '<li class="cn_category" id="cn_category_' . $category->term_id . '">' . $category->name . '</li>';
 			}
 			
-			$out .= "</ul>";
+			$atts['list'] === 'unordered' ? $out .= '</ul>' : $out .= '</ol>';
 		}
 		else
 		{
@@ -364,13 +379,15 @@ class cnOutput extends cnEntry
 				$out .= $category->name;
 				
 				$i++;
-				if ( count($categories) > $i ) $out .= $separator;
+				if ( count($categories) > $i ) $out .= $atts['separator'];
 			}
 			
 			unset($i);
 		}
 		
-		if ($return) return $out;
+		if ( !empty($atts['after']) ) $out .= $atts['after'];
+		
+		if ( $atts['return'] ) return $out;
 		
 		echo $out;
 		

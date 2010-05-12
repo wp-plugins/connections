@@ -297,7 +297,8 @@ function processSetUserFilter()
 	$connections->currentUser->setFilterEntryType($_POST['entry_type']);
 	$connections->currentUser->setFilterVisibility($_POST['visibility_type']);
 	
-	$connections->currentUser->setFilterCategory(esc_attr($_POST['category']));
+	if ( !empty($_POST['category']) ) $connections->currentUser->setFilterCategory(esc_attr($_POST['category']));
+	if ( !empty($_GET['category_id']) ) $connections->currentUser->setFilterCategory(esc_attr($_GET['category_id']));
 }
 
 function processDeleteEntry()

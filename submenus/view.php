@@ -299,7 +299,12 @@ function connectionsShowViewPage()
 											{
 												foreach ($categories as $category)
 												{
-													echo $category->name;
+													/*
+													 * Genreate the category link token URL.
+													 */
+													$categoryFilterURL = $form->tokenURL('admin.php?page=connections&action=filter&category_id=' . $category->term_id, 'filter');
+													
+													echo '<a href="' . $categoryFilterURL . '">' . $category->name . '</a>';
 													
 													$i++;
 													if ( count($categories) > $i ) echo ', ';
