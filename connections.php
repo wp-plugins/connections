@@ -710,11 +710,14 @@ if (!class_exists('connectionsLoad'))
 				return;
 			}
 			
-			if ($this->options->getDBVersion() != CN_DB_VERSION)
+			if ($this->options->getDBVersion() != NULL)
 			{
-				include_once ( dirname (__FILE__) . '/includes/inc.upgrade.php' );
-				connectionsShowUpgradePage();
-				return;
+				if ($this->options->getDBVersion() != CN_DB_VERSION)
+				{
+					include_once ( dirname (__FILE__) . '/includes/inc.upgrade.php' );
+					connectionsShowUpgradePage();
+					return;
+				}
 			}
 			
 			if (get_option('connections_installed'))

@@ -103,6 +103,7 @@ Connections is a simple to use address book system but is also very versatile. Y
 * BUG: Remove entry images from the server when they are removed from the entry.
 * BUG: If an image was manually deleted from the server, the image tag will not be output.
 * BUG: Fixed bug that allowed duplicate categories to be created.
+* BUG: Fixed issue where database would go thru the update cycle on a new install.
 * OTHER: Add instructional text to the image settings.
 * OTHER: Add rel="nofollow" to the vCard download link.
 * OTHER: Removed the use of $_SESSION throughtout the plug-in.

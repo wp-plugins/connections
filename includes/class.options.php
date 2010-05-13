@@ -447,7 +447,7 @@ class cnOptions
 		 */
 		if (empty($this->dbVersion))
 		{
-			return '0.0.9';
+			return NULL;
 		}
 		else
 		{

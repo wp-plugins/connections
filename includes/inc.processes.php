@@ -35,8 +35,8 @@ function processAddEntry()
 	$entry->setNotes($_POST['notes']);
 	$entry->setVisibility($_POST['visibility']);
 									
-	if ($_FILES['original_image']['error'] != 4) {
-		
+	if ($_FILES['original_image']['error'] != 4)
+	{
 		$image_proccess_results = processImages();
 		
 		if ($image_proccess_results)
@@ -55,6 +55,17 @@ function processAddEntry()
 		}
 	}
 	
+	// Don't do this if an entry is only being updated.
+	if ( $_GET['action'] !== 'update' )
+	{
+		// If an entry is being copied and there is an image, the image will be duplicated for the new entry.
+		// That way if an entry is deleted, only the entry specific images will be deleted.
+		if ($entry->getImageNameOriginal() != NULL) $entry->setImageNameOriginal( copyImage( $entry->getImageNameOriginal() ) );
+		if ($entry->getImageNameThumbnail() != NULL) $entry->setImageNameThumbnail( copyImage( $entry->getImageNameThumbnail() ) );
+		if ($entry->getImageNameCard() != NULL) $entry->setImageNameCard( copyImage( $entry->getImageNameCard() ) );
+		if ($entry->getImageNameProfile() != NULL) $entry->setImageNameProfile( copyImage( $entry->getImageNameProfile() ) );
+	}
+	
 	// If copying an entry, the image visibility property is set based on the user's choice.
 	// NOTE: This must come after the image processing.
 	if (isset($_POST['imgOptions']))
@@ -65,25 +76,54 @@ function processAddEntry()
 				$entry->setImageDisplay(false);
 				$entry->setImageLinked(false);
 				
+				/*
+				 * Delete images assigned to the entry.
+				 * 
+				 * Versions previous to 0.6.2.1 did not not make a duplicate copy of images when
+				 * copying an entry so it was possible multiple entries could share the same image.
+				 * Only images created after the date that version .0.7.0.0 was released will be deleted,
+				 * plus a couple weeks for good measure.
+				 */
+				
+				$compatiblityDate = mktime(0, 0, 0, 5, 1, 2010);
+				
 				if ( is_file( CN_IMAGE_PATH . $entry->getImageNameOriginal() ) )
 				{
-					unlink( CN_IMAGE_PATH . $entry->getImageNameOriginal() );
+					if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameOriginal() ) )
+					{
+						unlink( CN_IMAGE_PATH . $entry->getImageNameOriginal() );
+					}
 				}
 				
 				if ( is_file( CN_IMAGE_PATH . $entry->getImageNameThumbnail() ) )
 				{
-					unlink( CN_IMAGE_PATH . $entry->getImageNameThumbnail() );
+					if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameThumbnail() ) )
+					{
+						unlink( CN_IMAGE_PATH . $entry->getImageNameThumbnail() );
+						
+					}
 				}
 				
 				if ( is_file( CN_IMAGE_PATH . $entry->getImageNameCard() ) )
 				{
-					unlink( CN_IMAGE_PATH . $entry->getImageNameCard() );
+					if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameCard() ) )
+					{
+						unlink( CN_IMAGE_PATH . $entry->getImageNameCard() );
+					}
 				}
 				
 				if ( is_file( CN_IMAGE_PATH . $entry->getImageNameProfile() ) )
 				{
-					unlink( CN_IMAGE_PATH . $entry->getImageNameProfile() );
+					if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameProfile() ) )
+					{
+						unlink( CN_IMAGE_PATH . $entry->getImageNameProfile() );
+					}
 				}
+				
+				$entry->setImageNameOriginal(NULL);
+				$entry->setImageNameThumbnail(NULL);
+				$entry->setImageNameCard(NULL);
+				$entry->setImageNameProfile(NULL);
 				
 			break;
 			
@@ -135,6 +175,23 @@ function processAddEntry()
 	unset($entry);
 	return TRUE;
 	
+}
+
+function copyImage($image)
+{
+	// Uses the upload.class.php to handle file uploading and image manipulation.
+	// GPL PHP upload class from http://www.verot.net/php_class_upload.htm
+	require_once(WP_PLUGIN_DIR . '/connections/includes/php_class_upload/class.upload.php');
+	
+	$source = CN_IMAGE_PATH . $image;
+	
+	$process_image = new Upload($source);
+	$process_image->Process(CN_IMAGE_PATH);
+	$process_image->file_safe_name		= true;
+	$process_image->file_auto_rename	= true;
+	$image = $process_image->file_dst_name;
+	
+	return $image;
 }
 
 function processImages()

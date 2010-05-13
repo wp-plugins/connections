@@ -1364,7 +1364,8 @@ class cnEntry
      */
     public function getImageNameCard()
     {
-        return $this->imageNameCard;
+        //if ( empty($this->imageNameCard) ) return NULL;
+		return $this->imageNameCard;
     }
     
     /**
@@ -1383,7 +1384,8 @@ class cnEntry
      */
     public function getImageNameProfile()
     {
-        return $this->imageNameProfile;
+        //if ( empty($this->imageNameProfile) ) return NULL;
+		return $this->imageNameProfile;
     }
     
     /**
@@ -1402,7 +1404,8 @@ class cnEntry
      */
     public function getImageNameThumbnail()
     {
-        return $this->imageNameThumbnail;
+        //if ( empty($this->imageNameThumbnail) ) return NULL;
+		return $this->imageNameThumbnail;
     }
     
     /**
@@ -1421,7 +1424,8 @@ class cnEntry
      */
     public function getImageNameOriginal()
     {
-        return $this->imageNameOriginal;
+        //if ( empty($this->imageNameOriginal) ) return NULL;
+		return $this->imageNameOriginal;
     }
     
     /**
@@ -1713,25 +1717,35 @@ class cnEntry
 	{
 		global $wpdb, $connections;
 		
-		// Delete images assigned to the entry.
+		/*
+		 * Delete images assigned to the entry.
+		 * 
+		 * Versions previous to 0.6.2.1 did not not make a duplicate copy of images when
+		 * copying an entry so it was possible multiple entries could share the same image.
+		 * Only images created after the date that version .0.7.0.0 was released will be deleted,
+		 * plus a couple weeks for good measure.
+		 */
+		
+		$compatiblityDate = mktime(0, 0, 0, 5, 1, 2010);
+		
 		if ( is_file( CN_IMAGE_PATH . $this->getImageNameOriginal() ) )
 		{
-			unlink( CN_IMAGE_PATH . $this->getImageNameOriginal() );
+			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $this->getImageNameOriginal() ) ) unlink( CN_IMAGE_PATH . $this->getImageNameOriginal() );
 		}
 		
 		if ( is_file( CN_IMAGE_PATH . $this->getImageNameThumbnail() ) )
 		{
-			unlink( CN_IMAGE_PATH . $this->getImageNameThumbnail() );
+			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $this->getImageNameThumbnail() ) ) unlink( CN_IMAGE_PATH . $this->getImageNameThumbnail() );
 		}
 		
 		if ( is_file( CN_IMAGE_PATH . $this->getImageNameCard() ) )
 		{
-			unlink( CN_IMAGE_PATH . $this->getImageNameCard() );
+			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $this->getImageNameCard() ) ) unlink( CN_IMAGE_PATH . $this->getImageNameCard() );
 		}
 		
 		if ( is_file( CN_IMAGE_PATH . $this->getImageNameProfile() ) )
 		{
-			unlink( CN_IMAGE_PATH . $this->getImageNameProfile() );
+			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $this->getImageNameProfile() ) ) unlink( CN_IMAGE_PATH . $this->getImageNameProfile() );
 		}
 		
 		$wpdb->query($wpdb->prepare('DELETE FROM ' . CN_ENTRY_TABLE . ' WHERE id="' . $wpdb->escape($id) . '"'));
