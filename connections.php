@@ -92,6 +92,9 @@ if (!class_exists('connectionsLoad'))
 				// Add FAQ, Support and Donate links
 				add_filter('plugin_row_meta', array(&$this, 'addMetaLinks'), 10, 2);
 				
+				// Add the Add Entry item to the favorites dropdown.
+				add_filter('favorite_actions', array(&$this, 'addEntryFavorite') );
+				
 				// Process any action done in the admin.
 				$this->controllers();
 				
@@ -588,9 +591,8 @@ if (!class_exists('connectionsLoad'))
 				case 'connections_roles':
 				case 'connections_csv':
 				case 'connections_help':
-					//wp_enqueue_script('jquery');
-					wp_enqueue_script('load_jwysiwyg_js', WP_PLUGIN_URL . '/connections/js/jwysiwyg/jwysiwyg/jquery.wysiwyg.js');
-					wp_enqueue_script('load_ui_js', WP_PLUGIN_URL . '/connections/js/ui.js');
+					wp_enqueue_script('load_jwysiwyg_js', WP_PLUGIN_URL . '/connections/js/jwysiwyg/jwysiwyg/jquery.wysiwyg.js', array('jquery'), '0.6');
+					wp_enqueue_script('load_ui_js', WP_PLUGIN_URL . '/connections/js/ui.js', array('jquery'), CN_CURRENT_VERSION);
 					//wp_enqueue_script('load_jquery_plugin', WP_PLUGIN_URL . '/connections/js/jquery.template.js');
 				break;
 			}
@@ -614,7 +616,7 @@ if (!class_exists('connectionsLoad'))
 			/**
 			 * @TODO: Move this javascript to the templates directory.
 			 */
-			wp_register_script('contactpreview', WP_PLUGIN_URL . '/connections/js/jquery.contactpreview.js');
+			wp_register_script('contactpreview', WP_PLUGIN_URL . '/connections/js/jquery.contactpreview.js', array('jquery'), CN_CURRENT_VERSION);
 			wp_enqueue_script( 'contactpreview' );
 		}
 		
@@ -628,17 +630,59 @@ if (!class_exists('connectionsLoad'))
 			 */
 			switch ($_GET['page'])
 			{
-				case CN_BASE_NAME:
+				case 'connections':
 				case 'connections_add':
 				case 'connections_categories':
 				case 'connections_settings':
 				case 'connections_roles':
 				case 'connections_csv':
 				case 'connections_help':
-					wp_enqueue_style('load_jwysiwyg_css', WP_PLUGIN_URL . '/connections/js/jwysiwyg/jwysiwyg/jquery.wysiwyg.css');
-					wp_enqueue_style('load_admin_css', WP_PLUGIN_URL . '/connections/css-admin.css');
+					wp_enqueue_style('load_jwysiwyg_css', WP_PLUGIN_URL . '/connections/js/jwysiwyg/jwysiwyg/jquery.wysiwyg.css', array(), '0.6');
+					wp_enqueue_style('load_admin_css', WP_PLUGIN_URL . '/connections/css-admin.css', array(), CN_CURRENT_VERSION);
 				break;
 			}
+		}
+		
+		/**
+		 * Loads the Connections CSS on the WordPress frontend.
+		 */
+		public function loadStyles()
+		{
+			/**
+			 * @TODO: Move this CSS to the templates directory.
+			 */
+			wp_register_style('member_template_styles', WP_PLUGIN_URL . '/connections/templates/member_template.css', array(), CN_CURRENT_VERSION);
+			wp_enqueue_style( 'member_template_styles' );
+		}
+		
+		/*
+		 * Add items to the favorites drop down.
+		 */
+		public function addEntryFavorite($actions)
+		{
+			switch ($_GET['page'])
+			{
+				
+				case 'connections_add':
+					$cnActions = array( 'admin.php?page=connections_categories' => array('Add Category', 'connections_edit_categories') );
+				break;
+				
+				case 'connections_categories':
+					$cnActions = array( 'admin.php?page=connections_add' => array('Add Entry', 'connections_add_entry') );
+				break;
+				
+				case 'connections_settings':
+				case 'connections_roles':
+				case 'connections_csv':
+				case 'connections_help':
+				case 'connections':
+					$cnActions = array( 'admin.php?page=connections_add' => array('Add Entry', 'connections_add_entry'),
+										'admin.php?page=connections_categories' => array('Add Category<div class="favorite-action"><hr /></div>', 'connections_edit_categories')
+									   );
+				break;
+			}
+			
+			return array_merge( (array) $cnActions, $actions);
 		}
 		
 		// Add settings option
@@ -662,19 +706,6 @@ if (!class_exists('connectionsLoad'))
 			
 			return $links;
 		}
-		
-		/**
-		 * Loads the Connections CSS on the WordPress frontend.
-		 */
-		public function loadStyles()
-		{
-			/**
-			 * @TODO: Move this CSS to the templates directory.
-			 */
-			wp_register_style('member_template_styles', WP_PLUGIN_URL . '/connections/templates/member_template.css');
-			wp_enqueue_style( 'member_template_styles' );
-		}
-		
 		
 		/**
 		 * Add the changelog as a table row on the Manage Plugin admin screen.

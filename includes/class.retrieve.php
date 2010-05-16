@@ -37,35 +37,32 @@ class cnRetrieve
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
 		
+		
 		if ( $atts['wp_current_category'] && !is_page() )
 		{
 			// Get the current post categories.
 			$wpCategories = get_the_category();
 			
-			// Retrieve the Connections category IDs
+			// Build an array of the post categories.
 			foreach ($wpCategories as $wpCategory)
 			{
-				$result = $connections->term->getTermBy('name', $wpCategory->cat_name, 'category');
-				if ( !empty($result) ) $cnCategories[] = $result->term_taxonomy_id;
+				$wpCategoryNames[] = $wpCategory->cat_name;
 			}
+			
+			$catNameString = implode("', '", $wpCategoryNames);
 		}
-		
+				
 		if ( !empty($atts['category']) )
 		{
 			// Trim the space characters if present.
 			$atts['category'] = str_replace(' ', '', $atts['category']);
+			
 			// Convert to array.
 			$atts['category'] = explode(',', $atts['category']);
-		}
-		
-		if ( !empty($atts['category']) || !empty($cnCategories) )
-		{
-			// Merge the category shortcode array with the array of the posts categories.
-			if ( !empty($cnCategories) ) $atts['category'] = array_merge( (array) $atts['category'], (array) $cnCategories);
 			
 			foreach ($atts['category'] as $categoryID)
 			{
-				// Retieve the children category IDs
+				// Retrieve the children category IDs
 				$results = $this->categoryChildrenIDs($categoryID);
 				
 				// Add the parent category ID to the array.
@@ -76,18 +73,20 @@ class cnRetrieve
 				}
 			}
 			
-			$catString = implode("', '", $categoryIDs);
+			$catIDString = implode("', '", $categoryIDs);
+		}
 			
-			if ( !empty($categoryIDs) )
-			{
-				// Set the query string to INNER JOIN the term relationship and taxonomy tables.
-				$joinTermRelationships = " INNER JOIN " . CN_TERM_RELATIONSHIP_TABLE . " ON ( " . CN_ENTRY_TABLE . ".id = " . CN_TERM_RELATIONSHIP_TABLE . ".entry_id ) ";
-				$joinTermTaxonomy = " INNER JOIN " . CN_TERM_TAXONOMY_TABLE . " ON ( " . CN_TERM_RELATIONSHIP_TABLE . ".term_taxonomy_id = " . CN_TERM_TAXONOMY_TABLE . ".term_taxonomy_id ) ";
-				
-				// Set the query string to return entries within specific categories.
-				$taxonomy = ' AND ' . CN_TERM_TAXONOMY_TABLE . ".taxonomy = 'category' ";
-				$termIDs = ' AND ' . CN_TERM_TAXONOMY_TABLE . ".term_id IN ('" . $catString . "') ";
-			}
+		if ( !empty($catIDString) || !empty($catNameString) )
+		{
+			// Set the query string to INNER JOIN the term relationship and taxonomy tables.
+			$joinTermRelationships = " INNER JOIN " . CN_TERM_RELATIONSHIP_TABLE . " ON ( " . CN_ENTRY_TABLE . ".id = " . CN_TERM_RELATIONSHIP_TABLE . ".entry_id ) ";
+			$joinTermTaxonomy = " INNER JOIN " . CN_TERM_TAXONOMY_TABLE . " ON ( " . CN_TERM_RELATIONSHIP_TABLE . ".term_taxonomy_id = " . CN_TERM_TAXONOMY_TABLE . ".term_taxonomy_id ) ";
+			$joinTerm = " INNER JOIN " . CN_TERMS_TABLE . " ON ( " . CN_TERMS_TABLE . ".term_id = " . CN_TERM_TAXONOMY_TABLE . ".term_id ) ";
+			
+			// Set the query string to return entries within specific categories.
+			$taxonomy = ' AND ' . CN_TERM_TAXONOMY_TABLE . ".taxonomy = 'category' ";
+			if ( !empty($catIDString) ) $termIDs = ' AND ' . CN_TERM_TAXONOMY_TABLE . ".term_id IN ('" . $catIDString . "') ";
+			if ( !empty($catNameString) )$termNames = ' AND ' . CN_TERMS_TABLE . ".name IN ('" . $catNameString . "') ";
 		}
 		
 		
@@ -123,9 +122,9 @@ class cnRetrieve
 				  WHEN 'connection_group' THEN `group_name`
 				END AS `sort_column`
 				 
-				FROM " . CN_ENTRY_TABLE . $joinTermRelationships . $joinTermTaxonomy . "
+				FROM " . CN_ENTRY_TABLE . $joinTermRelationships . $joinTermTaxonomy . $joinTerm . "
 				
-				WHERE 1=1 " . $visibility . $entryType . $taxonomy . $termIDs . $entryIDs . "
+				WHERE 1=1 " . $visibility . $entryType . $taxonomy . $termIDs . $termNames . $entryIDs . "
 				
 				ORDER BY `sort_column`, `last_name`, `first_name`";
 		

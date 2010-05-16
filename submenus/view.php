@@ -115,9 +115,7 @@ function connectionsShowViewPage()
 					<?php
 						$results = $connections->retrieve->entries();
 						$connections->filter->permitted(&$results);
-						
 						//print_r($connections->lastQuery);
-						
 					?>
 						
 						<form action="admin.php?page=connections&action=do" method="post">
@@ -137,7 +135,7 @@ function connectionsShowViewPage()
 							<div class="alignleft actions">
 								<?php
 									echo '<select class="postform" id="category" name="category">';
-										echo '<option value="0">Show All Categories</option>';
+										echo '<option value="-1">Show All Categories</option>';
 										echo $categoryObjects->buildCategoryRow('option', $connections->retrieve->categories(), $level, $connections->currentUser->getFilterCategory());
 									echo '</select>';
 									
@@ -269,7 +267,10 @@ function connectionsShowViewPage()
 									
 									echo "<tr id='row-" . $entry->getId() . "' class='parent-row'>";
 										echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
-											echo '<td>' , $entry->getThumbnailImage() , '</td>';
+											echo '<td>';
+												//$thumbAtts = array( 'place_holder' => TRUE );
+												echo $entry->getThumbnailImage( array( 'place_holder' => TRUE ) );
+											echo '</td>';
 											echo '<td  colspan="2">';
 												if ($setAnchor) echo $setAnchor;
 												echo '<div style="float:right"><a href="#wphead" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" /></a></div>';

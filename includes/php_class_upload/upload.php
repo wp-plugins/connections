@@ -769,10 +769,11 @@ if ((isset($_POST['action']) ? $_POST['action'] : (isset($_GET['action']) ? $_GE
 if (!$cli) {
     echo '<p><a href="index.html">do another test</a></p>';
 
-    echo '<pre>';
-    echo($handle->log);
-    echo '</pre>';
-
+    if (isset($handle)) {
+        echo '<pre>';
+        echo($handle->log);
+        echo '</pre>';
+    }
 ?>
 </body>
 

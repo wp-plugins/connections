@@ -115,6 +115,9 @@ Connections is a simple to use address book system but is also very versatile. Y
 * OTHER: More efficient query to return entires.
 * OTHER: Removed the 'custom_template' shortcode attribute. Instead, the custom template folder will be checked for the specified template.
 * OTHER: Moved the template file checking out of the entry list loop to reduce server file system IO.
+* OTHER: Add place holders in the admin entry list if no image is associated to an entry.
+* OTHER: Add dependecies and versions to all wp_enqueue_script / wp_enqueue_style calls.
+* OTHER: Upgrade the class.php.upload class to .29
 
 == Upgrade Notice ==
 

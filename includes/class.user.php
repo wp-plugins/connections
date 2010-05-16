@@ -139,7 +139,10 @@ class cnUser
     
     public function setFilterCategory($id)
     {
-        $user_meta = get_usermeta($this->ID, 'connections');
+        // If value is -1 from drop down, set to NULL
+		if ($id == -1) $id = NULL;
+		
+		$user_meta = get_usermeta($this->ID, 'connections');
 		$user_meta['filter']['category'] = $id;
 		update_usermeta($this->ID, 'connections', $user_meta);
     }

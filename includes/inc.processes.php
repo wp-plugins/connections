@@ -5,6 +5,9 @@ function processAddEntry()
 	global $wpdb, $connections;
 	$entry = new cnEntry();
 	
+	// The modification file date that image will be deleted. to maintain compatibility with 0.6.2.1 and older.
+	$compatiblityDate = mktime(0, 0, 0, 6, 1, 2010);
+	
 	// If copying/editing an entry, the entry data is loaded into the class 
 	// properties and then properties are overwritten by the POST data as needed.
 	if (isset($_GET['id']))
@@ -37,8 +40,44 @@ function processAddEntry()
 									
 	if ($_FILES['original_image']['error'] != 4)
 	{
+		// If an entry is being updated and a new image is uploaded, the old images need to be deleted.
+		if ($entry->getImageNameOriginal() != NULL)
+		{
+			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameOriginal() ) )
+			{
+				unlink( CN_IMAGE_PATH . $entry->getImageNameOriginal() );
+			}
+		}
+		
+		if ($entry->getImageNameThumbnail() != NULL)
+		{
+			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameThumbnail() ) )
+			{
+				unlink( CN_IMAGE_PATH . $entry->getImageNameThumbnail() );
+				
+			}
+		}
+		
+		if ($entry->getImageNameCard() != NULL)
+		{
+			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameCard() ) )
+			{
+				unlink( CN_IMAGE_PATH . $entry->getImageNameCard() );
+			}
+		}
+		
+		if ($entry->getImageNameProfile() != NULL)
+		{
+			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameProfile() ) )
+			{
+				unlink( CN_IMAGE_PATH . $entry->getImageNameProfile() );
+			}
+		}
+		
+		// Process the newly uploaded image.
 		$image_proccess_results = processImages();
 		
+		// If there were no errors processing the image, set the values.
 		if ($image_proccess_results)
 		{
 			$entry->setImageLinked(true);
@@ -54,17 +93,20 @@ function processAddEntry()
 			$entry->setImageDisplay(false);
 		}
 	}
-	
-	// Don't do this if an entry is only being updated.
-	if ( $_GET['action'] !== 'update' )
+	else
 	{
-		// If an entry is being copied and there is an image, the image will be duplicated for the new entry.
-		// That way if an entry is deleted, only the entry specific images will be deleted.
-		if ($entry->getImageNameOriginal() != NULL) $entry->setImageNameOriginal( copyImage( $entry->getImageNameOriginal() ) );
-		if ($entry->getImageNameThumbnail() != NULL) $entry->setImageNameThumbnail( copyImage( $entry->getImageNameThumbnail() ) );
-		if ($entry->getImageNameCard() != NULL) $entry->setImageNameCard( copyImage( $entry->getImageNameCard() ) );
-		if ($entry->getImageNameProfile() != NULL) $entry->setImageNameProfile( copyImage( $entry->getImageNameProfile() ) );
+		// Don't do this if an entry is being updated.
+		if ( $_GET['action'] !== 'update' )
+		{
+			// If an entry is being copied and there is an image, the image will be duplicated for the new entry.
+			// That way if an entry is deleted, only the entry specific images will be deleted.
+			if ($entry->getImageNameOriginal() != NULL) $entry->setImageNameOriginal( copyImage( $entry->getImageNameOriginal() ) );
+			if ($entry->getImageNameThumbnail() != NULL) $entry->setImageNameThumbnail( copyImage( $entry->getImageNameThumbnail() ) );
+			if ($entry->getImageNameCard() != NULL) $entry->setImageNameCard( copyImage( $entry->getImageNameCard() ) );
+			if ($entry->getImageNameProfile() != NULL) $entry->setImageNameProfile( copyImage( $entry->getImageNameProfile() ) );
+		}
 	}
+	
 	
 	// If copying an entry, the image visibility property is set based on the user's choice.
 	// NOTE: This must come after the image processing.
@@ -85,7 +127,6 @@ function processAddEntry()
 				 * plus a couple weeks for good measure.
 				 */
 				
-				$compatiblityDate = mktime(0, 0, 0, 5, 1, 2010);
 				
 				if ( is_file( CN_IMAGE_PATH . $entry->getImageNameOriginal() ) )
 				{

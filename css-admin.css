@@ -85,6 +85,15 @@ form div.tablenav-pages {height: !important;}
 
 table.connections tr.entrydetails td {border-color:transparent #DFDFDF;}
 table.connections tr.entrynotes td {border-color:transparent #DFDFDF #DFDFDF;}
+table.connections div.cn_thumbnail_place_holder {-moz-border-radius: 4px;
+												 -webkit-border-radius: 4px;
+												 background-color: #F1F1F1;
+												 background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F1F1F1), to(#E3E3E3));
+												 background: -moz-linear-gradient(0% 0% 90deg,#F1F1F1, #E3E3E3);
+												 border: 1px solid #E3E3E3;
+												 margin: 4px 0px;
+												 padding: 5px;
+												}
 
 /* Publish Styles */
 #entry-type {border-color: #DFDFDF; border-style: solid; border-width: 1px; margin: 6px;}

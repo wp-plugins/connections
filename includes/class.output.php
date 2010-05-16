@@ -20,13 +20,26 @@ class cnOutput extends cnEntry
 		}
 	}
 	
-	public function getThumbnailImage()
+	public function getThumbnailImage( $atts = NULL )
 	{
+		global $connections;
+		
+		$defaultAtts = array( 'default' => FALSE, 'place_holder' => FALSE, 'style' => NULL, 'return' => FALSE );
+		
+		$atts = $this->validate->attributesArray($defaultAtts, (array) $atts);
+		
 		if ( $this->getImageLinked() && $this->getImageDisplay())
 		{
 			//if ( is_file(CN_IMAGE_PATH . $this->getImageNameThumbnail()) ) 
-			echo '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameThumbnail() . '" />';
+			$out = '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameThumbnail() . '" />';
 		}
+		elseif ( $atts['place_holder'] )
+		{
+			$out = '<div class="cn_thumbnail_place_holder" style="height: ' . $connections->options->getImgThumbY() . 'px ; width: ' . $connections->options->getImgThumbX() . 'px"></div>';
+		}
+		
+		if ( $atts['return'] ) return $out;
+		echo $out;
 	}
 	    
     /**
@@ -342,7 +355,7 @@ class cnOutput extends cnEntry
 	 */
 	public function getCategoryBlock($atts = NULL)
 	{
-		$validFields = array('list' => 'unordered',
+		$defaultAtts = array('list' => 'unordered',
 							 'separator' => NULL,
 							 'before' => NULL,
 							 'after' => NULL,
@@ -351,7 +364,7 @@ class cnOutput extends cnEntry
 							 'return' => FALSE
 							);
 		
-		$atts = $this->validate->attributesArray($validFields, (array) $atts);
+		$atts = $this->validate->attributesArray($defaultAtts, (array) $atts);
 		
 		$categories = $this->getCategory();
 		

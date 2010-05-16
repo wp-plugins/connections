@@ -12,42 +12,32 @@ function connectionsShowHelpPage()
 	
 	<div id="toc">
 		<ol>
-			<li><a href="#tocIdUsageInstructions">Usage Instructions</a></li>
+			<li><a href="#tocIdUsageInstructions">Usage Instructions</a>
+				<ul>
+					<li><a href="#tocIdConnectionGroups">Connection Groups</a></li>
+				</ul>
+			</li>
+			
+			<li><a href="#tocIdShortCodeInstructions">Shortcode Instructions</a>
 	
-			<ol>
-				<li><a href="#tocIdConnectionGroups">Connection Groups</a></li>
-			</ol>
-				
-			<li><a href="#tocIdShortCodeInstructions">Shortcode Instructions</a></li>
-	
-			<ol>
-				<li><a href="#tocIdEntryList">Entry list and Options</a></li>
-				<li><a href="#tocIdCelebrateList">Celebrate list and Options</a></li>
-				<li><a href="#tocIdTemplateTags">Template Tags</a></li>
-				<li><a href="#tocIdhCard">hCard Compatible Tags</a></li>
-			</ol>
-		
+				<ul>
+					<li><a href="#tocIdEntryList">Entry list and Options</a></li>
+					<li><a href="#tocIdCelebrateList">Celebrate list and Options</a></li>
+				</ul>
+			</li>
+			
+			<li><a href="#tocIdTemplateTags">Template Tags</a>
+			
+				<ul>
+					<li><a href="#tocIdhCard">hCard Compatible Tags</a></li>
+				</ul>
+			</li>
+			
+			<li><a href="#tocIdThemeTags">Theme Template Tags</a></li>
+			
 			<li><a href="#tocIdSupport">Support</a></li>
 				
-			<li><a href="#tocIdFAQ">FAQ</a>
-	
-				<ol>
-					<li><a href="#tocIdFAQ001">Upgrading</a></li>
-			
-					<li><a href="#tocIdFAQ002">Why don't any entries show in my page/post?</a></li>
-			
-					<li><a href="#tocIdFAQ003">Why don't all individuals show using the list_type option in the shortcode?</a></li>
-			
-					<li><a href="#tocIdFAQ004">Where are the images I upload for entries stored?</a></li>
-			
-					<li><a href="#tocIdFAQ005">Where do my custom templates need uploaded to?</a></li>
-			
-					<li><a href="#tocIdFAQ006">Error upon activation?</a></li>
-			
-					<li><a href="#tocIdFAQ007">Why do dotted underlines show under the dates?</a></li>
-					
-				</ol>
-			</li>
+			<li><a href="#tocIdFAQ">FAQ</a></li>
 				
 			<li><a href="#tocIdDisclaimers">Disclaimers</a></li>
 		
@@ -101,6 +91,8 @@ function connectionsShowHelpPage()
 		<li><a href="#cn_attr_id">id</a></li>
 			
 		<li><a href="#cn_attr_category">category</a></li>
+		
+		<li><a href="#cn_attr_wp_current_category">wp_current_category</a></li>
 	
 		<li><a href="#cn_attr_private_override">private_override</a></li>
 			
@@ -160,6 +152,14 @@ function connectionsShowHelpPage()
 	<pre>
 	<code>[connections_list category=12]</code>
 	</pre>
+	
+	<p><a name="cn_attr_wp_current_category"></a>If the shortcode is used on a post and <em>wp_current_category</em>  is set to TRUE, the only 
+	   entries that will be shown are those that have the same exact name as the categories that are assigned to the post.</p>
+ 
+	<pre>
+	<code>[connections_list wp_current_category='true']</code>
+	</pre>
+	
 	
 	<p><a name="cn_attr_private_override"></a>The <em>private_override</em> option allows you to
 	show the a contact list including all private entries
@@ -764,6 +764,38 @@ function connectionsShowHelpPage()
 	<code>$entry-&gt;getBioBlock()</code>
 	</pre>
 	
+	
+	
+	<p>The <em>getCategoryBlock()</em> template tag will output the categories that an entry is assigned to. 
+	By default as an unordered list. The tag accepts multiple attribute to customize 
+	the display of the categories. See the following examples:</p>
+
+	<p>This will output an ordered list. </p>
+	
+	<pre>
+	<code>getCategoryBlock( array( 'list' =>  'ordered' ) )</code>
+	</pre>
+
+
+	<p>This will output the categories within a span element separated by a comma space. </p>
+	
+	<pre>
+	<code>getCategoryBlock( array( 'string' => ', ', 'before' => '<span>', 'after' => '</span>' ) )</code>
+	</pre>
+
+
+	<p><strong>Accepted Values </strong></p>
+	<ul>
+		<li><strong>list:</strong> Accepted values are <em>ordered</em> and <em>unordered</em></li>
+		<li><strong>separator:</strong> The string that will be output between the category names.</li>
+		<li><strong>before:</strong></li>
+		<li><strong>after:</strong></li>
+		<li><strong>label:</strong> The label. Default is: "Categories:"</li>
+		<li><strong>parents:</strong> Not yet implemented.</li>
+		<li><strong>return:</strong> Return the result rather then echo it. Default is FALSE.</li>
+	</ul>
+ 
+	
 	<p>Returns the notes in	hCard compatible format wrapped in a <code>&lt;div&gt;</code>.</p>
 
 	<pre>
@@ -801,12 +833,66 @@ function connectionsShowHelpPage()
 	preferred email program.</p>
 	
 	
+
+	<h3><a name="tocIdThemeTags"></a>Theme Template Tags</h3>
+	
+	<p>If you want to incorporate Connections into your theme template, there are two theme template tags provided. 
+	They are <em>connectionsEntryList()</em> which displays the entry list and <em>connectionsUpcomingList()</em> which shows the 
+	upcoming list. Both tags support all of the shortcode attributes which are passed as an associative array with the key being 
+	the shortcode attribute name and the value being the setting. See the following examples:</p>
+ 
+	<p>This will display the entries where the post categories and entries category names match exactly.</p>
+	
+	<pre>
+	<code>connectionsEntryList( array( 'wp_current_category' => TRUE ) )</code>
+	</pre>
+	
+	 
+	<p>This will display the entries where the organization is 'ACME' and department is 'Accounting'</p>
+	
+	<pre>
+	<code>connectionsEntryList( array( 'organization' => 'ACME',  'department' => 'Accounting' ) )</code>
+	</pre>
+	
+	 
+	<p>This will show all the birthdays for the next 90 days.</p>
+	
+	<pre>
+	<code>connectionsUpcomingList( array( 'days' => 90 ) )</code>
+	</pre>
+	
+	 
+	<p>This will show all the anniversaries for the next 30 days.</p>
+	
+	<pre>
+	<code>connectionsUpcomingList( array( 'list_type' => 'anniversary', 'days' => 30 ) )</code>
+	</pre>
+	
+	
+	
 	<h3><a name="tocIdSupport"></a>Support</h3>
 	
 	<p>If support is needed go to <a href="http://www.connections-pro.com">connections-pro.com</a> and submit a help desk ticket.</p>
 	
 	
 	<h3><a name="tocIdFAQ"></a>FAQ</h3>
+	
+	<ol>
+		<li><a href="#tocIdFAQ001">Upgrading</a></li>
+
+		<li><a href="#tocIdFAQ002">Why don't any entries show in my page/post?</a></li>
+
+		<li><a href="#tocIdFAQ003">Why don't all individuals show using the list_type option in the shortcode?</a></li>
+
+		<li><a href="#tocIdFAQ004">Where are the images I upload for entries stored?</a></li>
+
+		<li><a href="#tocIdFAQ005">Where do my custom templates need uploaded to?</a></li>
+
+		<li><a href="#tocIdFAQ006">Error upon activation?</a></li>
+
+		<li><a href="#tocIdFAQ007">Why do dotted underlines show under the dates?</a></li>
+		
+	</ol>
 	
 	<h4><a name="tocIdFAQ001"></a>Upgrading</h4>
 	

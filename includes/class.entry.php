@@ -1364,8 +1364,8 @@ class cnEntry
      */
     public function getImageNameCard()
     {
-        //if ( empty($this->imageNameCard) ) return NULL;
-		return $this->imageNameCard;
+        if ( empty( $this->options['image']['name']['entry'] ) ) return NULL;
+		return $this->options['image']['name']['entry'];
     }
     
     /**
@@ -1384,8 +1384,8 @@ class cnEntry
      */
     public function getImageNameProfile()
     {
-        //if ( empty($this->imageNameProfile) ) return NULL;
-		return $this->imageNameProfile;
+        if ( empty( $this->options['image']['name']['profile'] ) ) return NULL;
+		return $this->options['image']['name']['profile'];
     }
     
     /**
@@ -1404,8 +1404,8 @@ class cnEntry
      */
     public function getImageNameThumbnail()
     {
-        //if ( empty($this->imageNameThumbnail) ) return NULL;
-		return $this->imageNameThumbnail;
+        if ( empty( $this->options['image']['name']['thumbnail'] ) ) return NULL;
+		return $this->options['image']['name']['thumbnail'];
     }
     
     /**
@@ -1424,8 +1424,8 @@ class cnEntry
      */
     public function getImageNameOriginal()
     {
-        //if ( empty($this->imageNameOriginal) ) return NULL;
-		return $this->imageNameOriginal;
+        if ( empty( $this->options['image']['name']['original'] ) ) return NULL;
+		return $this->options['image']['name']['original'];
     }
     
     /**
@@ -1726,7 +1726,7 @@ class cnEntry
 		 * plus a couple weeks for good measure.
 		 */
 		
-		$compatiblityDate = mktime(0, 0, 0, 5, 1, 2010);
+		$compatiblityDate = mktime(0, 0, 0, 6, 1, 2010);
 		
 		if ( is_file( CN_IMAGE_PATH . $this->getImageNameOriginal() ) )
 		{
