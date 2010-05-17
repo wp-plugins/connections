@@ -10,6 +10,7 @@ Connections is a simple to use addressbook, business, staff directory that is hi
 == Description ==
 
 **IMPORTANT:** If you are using a custom template, update 0.7.0.0 might break the template.
+
 Connections is a simple to use address book system but is also very versatile. You can use it to create a church directory, business directory, staff directory and even profiles pages using the default templates. If the default layouts don’t suit your needs you can easily create your own custom template. Want to show a list of upcoming birthdays and anniversaries, no problem, you can do that too. Take a look at the screen shots and the samples on this site to see all Connections can do.
 
 = Admin Features =
