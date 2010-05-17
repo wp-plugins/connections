@@ -10,10 +10,14 @@ function connectionsShowHelpPage()
 	
 	<h2>Connections : Help</h2>
 	
+	<div class="updated fade" id="message"><p><strong>IMPORTANT: </strong>If you copy code from this page, make sure you switch the editor
+	to the HTML tab before pasting, otherwise extra code will be copied which will cause the directory to be incorrectly displayed</p></div>
+	
 	<div id="toc">
 		<ol>
 			<li><a href="#tocIdUsageInstructions">Usage Instructions</a>
 				<ul>
+					<li><a href="#tocIdDisplay">Display on a Page / Post</a></li>
 					<li><a href="#tocIdConnectionGroups">Connection Groups</a></li>
 				</ul>
 			</li>
@@ -54,7 +58,14 @@ function connectionsShowHelpPage()
 		
 		<h3><a name="tocIdUsageInstructions"></a>Usage Instructions:</h3>
 		
-		<p><a name="tocIdConnectionGroups"></a>Here is an example on how to use the Connection Groups entry type.</p>
+		<h4><a name="tocIdDisplay"></a>Display</h4>
+		<p>To display the directory in a page or post you must use a shortcode. 
+		The shortcode is <code>[connections_list]</code>. You can also display a list of upcoming anniversaries and birthdays using 
+		<code>[upcoming_list]</code>. Both shortcodes have many options to customize the display
+		of both lists. See the <a href="#tocIdShortCodeInstructions">Shortcode Instructions</a> section for additonal instructions.</p>
+		
+		<h4><a name="tocIdConnectionGroups"></a>Connection Groups</h4>
+		<p>Here is an example on how to use the Connection Groups entry type.</p>
 		
 		<p>Say we have a family, the Doe's.</p>
 		

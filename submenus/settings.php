@@ -119,6 +119,7 @@ function connectionsShowSettingsPage()
 										<p>None will scale both image dimensions to fit the entered values un-proportionally.</p>
 										<p><strong>NOTE: </strong>Although these options are available they are not recommended to be changed.</p>
 										<p><strong>NOTE: </strong>Changes will only be applied to images uploaded after the change was saved. This will not affect images uploaded previously.</p>
+										<p><strong>Default Values: </strong>Quality: 80%; Width: 80px; Height: 54px; Crop</p>
 									</td>
 								</tr>
 								
@@ -173,6 +174,7 @@ function connectionsShowSettingsPage()
 										<p>Shrink will use the image's larger dimension and scale it to fit and then add white space equally to both sides or top and bottom equally to the smaller dimension.</p>
 										<p>None will scale both image dimensions to fit the entered values un-proportionally.</p>
 										<p><strong>NOTE: </strong>Changes will only be applied to images uploaded after the change was saved. This will not affect images uploaded previously.</p>
+										<p><strong>Default Values: </strong>Quality: 80%; Width: 225px; Height: 150px; Crop</p>
 									</td>
 								</tr>
 								
@@ -226,6 +228,7 @@ function connectionsShowSettingsPage()
 										<p>Shrink will use the image's larger dimension and scale it to fit and then add white space equally to both sides or top and bottom equally to the smaller dimension.</p>
 										<p>None will scale both image dimensions to fit the entered values un-proportionally.</p>
 										<p><strong>NOTE: </strong>Changes will only be applied to images uploaded after the change was saved. This will not affect images uploaded previously.</p>
+										<p><strong>Default Values: </strong>Quality: 80%; Width: 300px; Height: 225px; Crop</p>
 									</td>
 								</tr>
 								

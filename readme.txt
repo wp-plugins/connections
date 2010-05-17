@@ -33,12 +33,22 @@ Connections is a simple to use address book system but is also very versatile. Y
 * Download the vCard of an individual entry that can be imported into you email application.
 
 = New features this version: =
-* RTE for the Bio and Notes fields
-* Custom ordering shortcode attribute.
+* A new shortcode option, wp_current_category. When used on a post, all entries that are assigned to a category with the exact same names as the post categories will be displayed.
+* Multiple categoies can now be specified with the category shortcode attribute.
+* Theme template tags for theme developers.
+* Reduced memory usage.
+* Performance optimizations.
+* See the changelog for more details.
 
 = New features coming in the next version: =
 * Add honorable pre/suffix
 * Contact name for the organization entry type.
+* Add in_category shortcode attribute. Define multiple categories by id that an entry must be assigned in order to be displayed. [Operational AND]
+* Add exclude_category shortcode attribute to allow multiple categories by id to be excluded from the output.
+* Add category_name shortcode attribute to allow multiple categories to be called by name. [Operational OR]
+* Add in_category_name shortcode attribute. Define multiple categories by name that an entry must be assigned in order to be displayed. [Operational AND]
+* Add exclude_category_name shortcode attribute to allow multiple categories by name entries to be excluded from the output.
+* Expand the RTE for the bio and notes fields to allow more styling
 
 = Upcoming features: =
 * Pagination
@@ -67,15 +77,15 @@ Connections is a simple to use address book system but is also very versatile. Y
 == Installation ==
 1. Upload the `connections` directory to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
-4. If you wish to create and use custom template be sure to create the `./wp-content/connections_templates` directory/folder. This is where you will copy any custom templates you might create.
-
+3. If you wish to create and use custom template be sure to create the `./wp-content/connections_templates` directory/folder. This is where you will copy any custom templates you might create.
+4. Add the shortcode `[connections_list]` to display the directory on a page or post.
 
 == Frequently Asked Questions ==
 [FAQs can be found here](http://connections-pro.com/?page_id=56)
 
 == Changelog ==
 
-= 0.7.0.0 X/X/2010 =
+= 0.7.0.0 5/16/2010 =
 * FEATURE: Add links on the plug-in management admin page for Settings, Help, Support and Donate.
 * FEATURE: Added group_name shortcode attribute filter.
 * FEATURE: Theme Template tag for theme developement to display the entry list. All shortcode attributes are supported.
@@ -118,6 +128,7 @@ Connections is a simple to use address book system but is also very versatile. Y
 * OTHER: Add place holders in the admin entry list if no image is associated to an entry.
 * OTHER: Add dependecies and versions to all wp_enqueue_script / wp_enqueue_style calls.
 * OTHER: Upgrade the class.php.upload class to .29
+* OTHER: Better documention throughout.
 
 == Upgrade Notice ==
 
