@@ -134,12 +134,6 @@ Connections is a simple to use address book system but is also very versatile. Y
 * OTHER: Upgrade the class.php.upload class to .29
 * OTHER: Better documention throughout.
 
-== Upgrade Notice ==
-
-= 0.7.0.0 =
-Upgrading to this version might break custom templates.
-
-
 = 0.6.2.1 2/3/2010 =
 * BUG: Fixed fatal error when using the shortcode attribute repeat_alphaindex.
 
@@ -264,3 +258,11 @@ Upgrading to this version might break custom templates.
 
 = 0.2.3 =
 * First version in the repository
+
+== Upgrade Notice ==
+
+= 0.7.0.1 =
+Upgrading to this version might break custom templates.
+
+= 0.7.0.0 =
+Upgrading to this version might break custom templates.
