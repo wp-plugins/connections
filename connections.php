@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: An address book and business directory.
-Version: 0.7.0.0
+Version: 0.7.0.1
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 
@@ -117,7 +117,7 @@ if (!class_exists('connectionsLoad'))
 		{
 			global $wpdb;
 			
-			define('CN_CURRENT_VERSION', '0.7.0.0');
+			define('CN_CURRENT_VERSION', '0.7.0.1');
 			define('CN_DB_VERSION', '0.1.2');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
@@ -722,11 +722,17 @@ if (!class_exists('connectionsLoad'))
 			
 			$current = get_transient( 'update_plugins' );
 			$r = $current->response[ plugin_basename(__FILE__) ]; // response should contain the slug and upgrade_notice within an array.
-			//print_r($current);
 			//print_r($r);
-			//print_r( get_plugins() );
-			//print_r( get_plugins('/connections') );
-			//print_r( get_plugin_updates() );
+			
+			/*stdClass Object
+			(
+			    [id] => 5801
+			    [slug] => connections
+			    [new_version] => 0.7.0.0
+			    [upgrade_notice] => Upgrading to this version might break custom templates.
+			    [url] => http://wordpress.org/extend/plugins/connections/
+			    [package] => http://downloads.wordpress.org/plugin/connections.0.7.0.0.zip
+			)*/
 		}
 		
 		/**

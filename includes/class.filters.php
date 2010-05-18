@@ -146,7 +146,8 @@ class cnFilters
 							
 							foreach ($addresses as $address)
 							{
-								${$field[0]}[$key] = $address[$field[0]];
+								//${$field[0]}[$key] = $address[$field[0]];
+								${$field[0]}[$key] = $address->$field;
 								
 								// Only set the data from the first address.
 								break;
