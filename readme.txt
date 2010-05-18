@@ -4,7 +4,7 @@ Donate link: http://connections-pro.com/
 Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, business directory, business-directory, church, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, staff, user, users, vcard
 Requires at least: 2.8
 Tested up to: 2.9
-Stable tag: 0.7.0.0
+Stable tag: 0.7.0.1
 Connections is a simple to use addressbook, business, staff directory that is highly customizable.
 
 == Description ==
@@ -84,6 +84,10 @@ Connections is a simple to use address book system but is also very versatile. Y
 [FAQs can be found here](http://connections-pro.com/?page_id=56)
 
 == Changelog ==
+
+= 0.7.0.1 5/17/2010 =
+* BUG: Fix fatel error when custom ordering the results.
+* BUG: Fix CSS error for a gradient.
 
 = 0.7.0.0 5/16/2010 =
 * FEATURE: Add links on the plug-in management admin page for Settings, Help, Support and Donate.
