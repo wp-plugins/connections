@@ -127,21 +127,7 @@
 	    
 	    <tr>
 	        <td valign="bottom">
-	        	<?php if ($entry->getNotes() != '') { ?>
-				
-				<a href="#" id="close_note_link_<?php echo $entry->getId(); ?>" onclick='jQuery("a#close_note_link_<?php echo $entry->getId(); ?>").live("click", function(e){
-				jQuery("a#close_note_link_<?php echo $entry->getId(); ?>").hide();
-				jQuery("#note_block_<?php echo $entry->getId(); ?>").fadeOut();
-				jQuery("a#note_link_<?php echo $entry->getId(); ?>").fadeIn();
-				}); return false' style="display: none;">Hide Green Points</a>
-				
-				<a href="#" id="note_link_<?php echo $entry->getId(); ?>" onclick='jQuery("a#note_link_<?php echo $entry->getId(); ?>").live("click", function(e){
-				jQuery("a#note_link_<?php echo $entry->getId(); ?>").hide();
-				jQuery("#note_block_<?php echo $entry->getId(); ?>").fadeIn();
-				jQuery("a#close_note_link_<?php echo $entry->getId(); ?>").fadeIn();
-				}); return false'>Show Green Points</a>
-				
-				<?php } ?>
+	        	<?php echo $vCard->download() ?>
 				
 				<?php if ($entry->getWebsites()) echo ' | '; ?>
 				
@@ -210,11 +196,6 @@
 		<tr>
 			<td colspan="2">
 				<?php 
-					if ($entry->getNotes() != '')
-					{
-						echo '<div id="note_block_' . $entry->getId() . '" style="display: none; margin: 10px 0 0 0;"><strong>Green Points</strong><br />' . $entry->getNotesBlock() . '</div>';
-					}
-					
 					if ($entry->getBio() != '')
 					{
 						echo '<div id="bio_block_' . $entry->getId() . '" style="display: none; margin: 10px 0 0 0;"><strong>Business Description</strong><br />' . $entry->getBioBlock() . '</div>';
