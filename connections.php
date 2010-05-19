@@ -3,12 +3,15 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: An address book and business directory.
-Version: 0.7.0.1
+Version: 0.6.2.1
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 
 Connections is based on Little Black Book  1.1.2 by Gerald S. Fuller which was based on
 Little Black Book is based on Addressbook 0.7 by Sam Wilson
+
+Update Notice in plugin admin inspired by Changelogger 1.2.8 by Oliver Schlöbe
+
 ----------------------------------------
     Copyright (C)  2008  Steven A. Zahm
 
@@ -99,7 +102,7 @@ if (!class_exists('connectionsLoad'))
 				$this->controllers();
 				
 				// Add Changelog table row in the Manage Plugins admin page.
-				//add_action('after_plugin_row_' . plugin_basename(__FILE__), array(&$this, 'displayChangelog'), 50, 2);
+				add_action('after_plugin_row_' . plugin_basename(__FILE__), array(&$this, 'displayUpgradeNotice'), 1, 0);
 				
 			}
 			else
@@ -713,16 +716,33 @@ if (!class_exists('connectionsLoad'))
 		 * 
 		 * @return 
 		 */
-		public function displayChangelog()
+		public function displayUpgradeNotice()
 		{
 			include_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
 			
-			$api = plugins_api('plugin_information', array('slug' => 'connections', 'fields' => array('tested' => true, 'requires' => false, 'rating' => false, 'downloaded' => false, 'downloadlink' => false, 'last_updated' => false, 'homepage' => false, 'tags' => false, 'sections' => true) ));
+			//$api = plugins_api('plugin_information', array('slug' => 'connections', 'fields' => array('tested' => true, 'requires' => false, 'rating' => false, 'downloaded' => false, 'downloadlink' => false, 'last_updated' => false, 'homepage' => false, 'tags' => false, 'sections' => true) ));
 			//print_r($api);
 			
 			$current = get_transient( 'update_plugins' );
+			//print_r($current);
+			
+			if ( !isset($current->response[ plugin_basename(__FILE__) ]) ) return NULL;
+			
 			$r = $current->response[ plugin_basename(__FILE__) ]; // response should contain the slug and upgrade_notice within an array.
 			//print_r($r);
+			
+			if ( isset($r->upgrade_notice) )
+			{
+				$columns = CLOSMINWP28 ? 3 : 5;
+				
+				$output .= '<tr class="plugin-update-tr"><td class="plugin-update" colspan="' . $columns . '"><div class="update-message" style="font-weight: normal;">';
+				$output .= '<strong>Upgrade notice for version: ' . $r->new_version . '</strong>';
+				$output .= '<ul style="list-style-type: square; margin-left:20px;"><li>' . $r->upgrade_notice . '</li></ul>';
+				$output .= '</div></td></tr>';
+			
+				echo $output;
+			}
+			
 			
 			/*stdClass Object
 			(

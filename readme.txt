@@ -85,8 +85,11 @@ Connections is a simple to use address book system but is also very versatile. Y
 
 == Changelog ==
 
+= 0.7.1.0 x/x/2010 =
+* FEATURE: Add upgrade notice to the plugin admin page.
+
 = 0.7.0.1 5/17/2010 =
-* BUG: Fix fatel error when custom ordering the results.
+* BUG: Fix fatal error when custom ordering the results.
 * BUG: Fix CSS error for a gradient.
 
 = 0.7.0.0 5/16/2010 =
@@ -133,12 +136,6 @@ Connections is a simple to use address book system but is also very versatile. Y
 * OTHER: Add dependecies and versions to all wp_enqueue_script / wp_enqueue_style calls.
 * OTHER: Upgrade the class.php.upload class to .29
 * OTHER: Better documention throughout.
-
-== Upgrade Notice ==
-
-= 0.7.0.0 =
-Upgrading to this version might break custom templates.
-
 
 = 0.6.2.1 2/3/2010 =
 * BUG: Fixed fatal error when using the shortcode attribute repeat_alphaindex.
@@ -264,3 +261,11 @@ Upgrading to this version might break custom templates.
 
 = 0.2.3 =
 * First version in the repository
+
+== Upgrade Notice ==
+
+= 0.7.0.1 =
+Upgrading to this version might break custom templates.
+
+= 0.7.0.0 =
+Upgrading to this version might break custom templates.
