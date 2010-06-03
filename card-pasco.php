@@ -16,17 +16,16 @@
 						// Build the address query for Google.
 						if ($entry->getAddresses())
 						{
-							$addressObject = new cnAddresses;
-							foreach ($entry->getAddresses() as $addressRow)
+							foreach ($entry->getAddresses() as $address)
 							{
 								$map_link = "http://maps.google.com/?q=";
 								
 								//if ($entry->getOrganization() != NULL) $map_link .= $entry->getOrganization() . '+';
 								//if ($addressObject->getLineOne($addressRow) != null) $map_link .= $addressObject->getLineOne($addressRow) . '+';
-								if ($addressObject->getLineTwo($addressRow) != null) $map_link .= $addressObject->getLineTwo($addressRow) . '+';
-								if ($addressObject->getCity($addressRow) != null) $map_link .= $addressObject->getCity($addressRow) . '+';
-								if ($addressObject->getState($addressRow) != null) $map_link .= $addressObject->getState($addressRow) . '+';
-								if ($addressObject->getZipCode($addressRow) != null) $map_link .= $addressObject->getZipCode($addressRow);
+								if ($address->line_two != NULL) $map_link .= $address->line_two . '+';
+								if ($address->city != NULL) $map_link .= $address->city . '+';
+								if ($address->state != NULL) $map_link .= $address->state . '+';
+								if ($address->zipcode != NULL) $map_link .= $address->zipcode;
 								break; // Only store the address info from the first address.							
 							}
 							
@@ -64,13 +63,12 @@
 		        	<?php
 						if ($entry->getPhoneNumbers())
 						{
-							$phoneNumberObject = new cnPhoneNumber();
 							echo '<div class="phone_numbers" style="margin-bottom: 10px;">' . "\n";
-							foreach ($entry->getPhoneNumbers() as $phoneNumberRow) 
+							foreach ($entry->getPhoneNumbers() as $phone) 
 							{
-								if ($phoneNumberObject->getNumber($phoneNumberRow) != null)
+								if ($phone->number != NULL)
 								{
-									switch ($phoneNumberRow['type'])
+									switch ($phone->type)
 									{
 										case 'home':
 											$phoneNumberName = 'Home Phone';
@@ -102,7 +100,7 @@
 									}
 									
 									//Type for hCard compatibility. Hidden.
-									echo  '<strong>' . $phoneNumberName . '</strong>: <span class="tel">' . $entry->gethCardTelType($phoneNumberRow) . '<span class="value">' .  $phoneNumberObject->getNumber($phoneNumberRow) . '</span></span><br />' . "\n";
+									echo  '<strong>' . $phoneNumberName . '</strong>: <span class="tel">' . $entry->gethCardTelType($phone->type) . '<span class="value">' .  $phone->number . '</span></span><br />' . "\n";
 								}
 							}
 							echo '</div>' . "\n";
@@ -115,12 +113,11 @@
 					<div class="websites" style="margin-bottom: 10px;">
 					 
 						<?php
-						$websiteObject = new cnWebsite;
-							if ($entry->getWebsites())
+						if ($entry->getWebsites())
 							{
-								foreach ($entry->getWebsites() as $websiteRow)
+								foreach ($entry->getWebsites() as $website)
 								{
-									if ($websiteObject->getAddress($websiteRow) != null) $anchorOut .= '<a class="url" href="' . $websiteObject->getAddress($websiteRow) . '" target="_blank">Visit Website</a>' . "\n";
+									if ($website->address != NULL) $anchorOut .= '<a class="url" href="' . $website->address . '" target="_blank">Visit Website</a>' . "\n";
 									break; // Only show the first stored web address
 								}
 							}

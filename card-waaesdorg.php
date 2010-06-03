@@ -35,7 +35,7 @@
 							echo '<div style="margin-bottom: 10px;" class="websites">';
 							foreach ($entry->getWebsites() as $website)
 							{
-								if ($website['address'] != null) echo '<a class="url" href="' . $website['address'] . '" target="_blank">Website</a>' . "\n";
+								if ($website->address != NULL) echo '<a class="url" href="' . $website->address . '" target="_blank">Website</a>' . "\n";
 								break; // Only show the first stored web address
 							}
 							echo '</div>';

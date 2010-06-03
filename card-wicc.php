@@ -19,13 +19,13 @@
 		        	<?php
 						if ($entry->getPhoneNumbers())
 						{
-							$phoneNumberObject = new cnPhoneNumber();
+							
 							echo '<div class="phone_numbers" style="margin-bottom: 10px;">' . "\n";
-							foreach ($entry->getPhoneNumbers() as $phoneNumberRow) 
+							foreach ($entry->getPhoneNumbers() as $phone) 
 							{
-								if ($phoneNumberObject->getNumber($phoneNumberRow) != null)
+								if ($phone->number != NULL)
 								{
-									switch ($phoneNumberRow['type'])
+									switch ($phone->type)
 									{
 										case 'home':
 											$phoneNumberName = 'Home Phone';
@@ -57,7 +57,7 @@
 									}
 									
 									//Type for hCard compatibility. Hidden.
-									echo  '<strong>' . $phoneNumberName . '</strong>: <span class="tel">' . $entry->gethCardTelType($phoneNumberRow) . '<span class="value">' .  $phoneNumberObject->getNumber($phoneNumberRow) . '</span></span><br />' . "\n";
+									echo  '<strong>' . $phoneNumberName . '</strong>: <span class="tel">' . $entry->gethCardTelType($phone->type) . '<span class="value">' .  $phone->number . '</span></span><br />' . "\n";
 								}
 							}
 							echo '</div>' . "\n";
@@ -70,12 +70,12 @@
 					<div class="websites" style="margin-bottom: 10px;">
 					 
 						<?php
-						$websiteObject = new cnWebsite;
+						
 							if ($entry->getWebsites())
 							{
-								foreach ($entry->getWebsites() as $websiteRow)
+								foreach ($entry->getWebsites() as $website)
 								{
-									if ($websiteObject->getAddress($websiteRow) != null) $anchorOut .= '<a class="url" href="' . $websiteObject->getAddress($websiteRow) . '" target="_blank">Visit Website</a>' . "\n";
+									if ($website->address != NULL) $anchorOut .= '<a class="url" href="' . $website->address . '" target="_blank">Visit Website</a>' . "\n";
 									break; // Only show the first stored web address
 								}
 							}
