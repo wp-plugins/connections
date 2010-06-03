@@ -293,7 +293,7 @@ class cnOutput extends cnEntry
 			$out = '<div class="social-media-block" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getSocialMedia() as $socialNetwork)
 			{
-				if ($socialNetwork->id != null) $out .= '<span class="social-media-item"><a class="url uid ' . $socialNetwork->type . '" href="' . $socialNetwork->id . '" target="_blank">' . $socialNetwork->name . '</a></span><br />' . "\n";
+				if ($socialNetwork->id != null) $out .= '<span class="social-media-item"><a class="url uid ' . $socialNetwork->type . '" href="' . $socialNetwork->url . '" target="_blank">' . $socialNetwork->name . '</a></span><br />' . "\n";
 			}
 			$out .= '</div>' . "\n";
 		}

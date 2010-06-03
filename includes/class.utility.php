@@ -81,8 +81,8 @@ class cnFormatting
 			$escapedText = str_replace('&lt;/i&gt;', '</i>', $escapedText);
 			
 			// Allow <em> and </em>
-			$escapedText = str_replace('&lt;strong&gt;', '<em>', $escapedText);
-			$escapedText = str_replace('&lt;/strong&gt;', '</em>', $escapedText);
+			$escapedText = str_replace('&lt;em&gt;', '<em>', $escapedText);
+			$escapedText = str_replace('&lt;/em&gt;', '</em>', $escapedText);
 			
 			// Allow <br> and <br/> and <br />
 			$escapedText = str_replace('&lt;br&gt;', '<br />', $escapedText);
