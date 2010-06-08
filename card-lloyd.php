@@ -8,17 +8,33 @@
 	        </td>
 	        <td align="right" valign="top" style="text-align: right; border: medium none transparent">
 	        	<div style="clear:both; margin: 5px 5px;">
-					<span style="font-size:larger;font-variant: small-caps; margin-bottom: 10px;"><strong><?php echo $entry->getFullFirstLastNameBlock() ?></strong></span><br />
+					<span style="font-size:larger;font-variant: small-caps; margin-bottom: 10px;"><strong><?php echo $entry->getFullFirstLastNameBlock() ?></strong></span>
 					<strong><?php echo $entry->getTitleBlock() ?></strong><br />
 					<?php echo $entry->getOrgUnitBlock() ?>
 						
 		        	<?php
-						echo $entry->getAddressBlock();
+						if ($entry->getAddresses())
+						{
+							foreach ($entry->getAddresses() as $address)
+							{
+								echo '<div class="adr">' . "\n";
+									if ($address->name != NULL || $address->type != NULL) echo '<span class="address_name"><strong>' . $address->name . '</strong></span><br />' . "\n"; //The OR is for compatiblity for 0.2.24 and under
+									if ($address->line_one != NULL) echo '<div class="street-address">' . $address->line_one . '</div>' . "\n";
+									if ($address->line_two != NULL) echo '<div class="extended-address">' . $address->line_two . '</div>' . "\n";
+									if ($address->city != NULL) echo '<span class="locality">' . $address->city . '</span>&nbsp;' . "\n";
+									if ($address->state != NULL) echo '<span class="region">' . $address->state . '</span>&nbsp;' . "\n";
+									if ($address->zipcode != NULL) echo '<span class="postal-code">' . $address->zipcode . '</span><br />' . "\n";
+									if ($address->country != NULL) echo '<span class="country-name">' . $address->country . '</span>' . "\n";
+									echo $entry->gethCardAdrType($address->type);
+								echo '</div>' . "\n\n";
+																			
+							}
+						}
 					
 						if ($entry->getPhoneNumbers())
 						{
 							
-							echo '<div class="phone_numbers" style="margin-bottom: 10px;">' . "\n";
+							echo '<div class="phone_numbers">' . "\n";
 							foreach ($entry->getPhoneNumbers() as $phone) 
 							{
 								if ($phone->number != NULL)
@@ -65,7 +81,7 @@
 					<?php
 						if ($entry->getEmailAddresses())
 						{
-							echo '<div class="email-addresses" style="margin-bottom: 10px;">' . "\n";
+							echo '<div class="email-addresses">' . "\n";
 							foreach ($entry->getEmailAddresses() as $email)
 							{
 								//Type for hCard compatibility. Hidden.
