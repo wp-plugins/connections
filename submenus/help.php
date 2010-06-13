@@ -466,217 +466,122 @@ function connectionsShowHelpPage()
 	output preformatted HTML to maintain hCard
 	compatibility.</p>
 
-	<pre>
-	<code>&lt;?php echo $entry-&gt;getId(); ?&gt;</code>
-	</pre>
-	
-	<p>Example of a template tag that return the entry's
-	ID.</p>
+	<pre><code>&lt;?php echo $entry-&gt;getId(); ?&gt;</code></pre>
+	<p>Example of a template tag that return the entry's ID.</p>
 
-	<pre>
-	<code>$entry-&gt;getId()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getId()</code></pre>
 	<p>Returns the ID.</p>
 
-	<pre>
-	<code>$entry-&gt;getFormattedTimeStamp('FORMAT')</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getFormattedTimeStamp('FORMAT')</code></pre>
 	<p>Returns the last updated time. The format is
 	optional and conforms to the PHP standard, refer to the
 	<a href="http://us2.php.net/date">PHP Manual</a> for
 	the format characters.</p>
 
-	<pre>
-	<code>$entry-&gt;getUnixTimeStamp()</code>
-	</pre>
-	
-	<p>Returns the last updated time in raw unix time
-	format.</p>
+	<pre><code>$entry-&gt;getUnixTimeStamp()</code></pre>
+	<p>Returns the last updated time in raw unix time format.</p>
 
-	<pre>
-	<code>$entry-&gt;getHumanTimeDiff()</code>
-	</pre>
-	
-	<p>Returns the last updated time using human time
-	difference.</p>
+	<pre><code>$entry-&gt;getHumanTimeDiff()</code></pre>
+	<p>Returns the last updated time using human time difference.</p>
 
-	<pre>
-	<code>$entry-&gt;getFirstName()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getFirstName()</code></pre>
 	<p>Returns the first name.</p>
 
-	<pre>
-	<code>$entry-&gt;getLastName()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getLastName()</code></pre>
 	<p>Returns the last name.</p>
-	<pre>
-
-	<code>$entry-&gt;getFullFirstLastName()</code>
-	</pre>
 	
-	<p>Retuns the full name with the first name first.
+	<pre><code>$entry-&gt;getFullFirstLastName()</code></pre>
+	<p>Returns the full name with the first name first.
 	NOTE: if the entry type in an Organization or Connection Group 
 	this will return the Organization/Connection Group name instead.</p>
 
-	<pre>
-	<code>$entry-&gt;getFullLastFirstName()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getFullLastFirstName()</code></pre>
 	<p>Retuns the full name with the last name first. NOTE:
 	if the entry type in an Organization or Connection Group
 	this will return the Organization/Connection Group name instead.</p>
 	
-	<pre>
-	<code>$entry-&gt;getGroupName()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getGroupName()</code></pre>
 	<p>Returns the Connection Group name.</p>
 	
-	<pre>
-	<code>$entry-&gt;getConnectionGroup()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getConnectionGroup()</code></pre>
 	<p>Returns an associative array containing the relation's entry id 
 	as the key and the relation</p>
 	
-	<pre>
-	<code>$entry-&gt;getOrganization()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getOrganization()</code></pre>
 	<p>Returns the organization.</p>
 
-	<pre>
-	<code>$entry-&gt;getTitle()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getTitle()</code></pre>
 	<p>Returns the title.</p>
 
-	<pre>
-	<code>$entry-&gt;getDepartment()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getDepartment()</code></pre>
 	<p>Returns the department.</p>
 
-	<pre>
-	<code>$entry-&gt;getAddresses()</code>
-	</pre>
-	
-	<p>Returns an associative array containing all the addresses.</p>
+	<pre><code>$entry-&gt;getAddresses()</code></pre>
+	<p>Returns an object containing all the addresses.</p>
 
-	<pre>
-	<code>$entry-&gt;getPhoneNumbers()</code>
-	</pre>
+	<pre><code>$entry-&gt;getPhoneNumbers()</code></pre>
+	<p>Returns an object containing all the	phone numbers.</p>
 	
-	<p>Returns an associative array containing all the
-	phone numbers.</p>
+	<pre><code>$entry-&gt;getEmailAddresses()</code></pre>
+	<p>Returns an object containing all the email addresses.</p>
 
-	<pre>
-	<code>$entry-&gt;getEmailAddresses()</code>
-	</pre>
+	<pre><code>$entry-&gt;getIm()</code></pre>
+	<p>Returns an object containing all the IM ID's.</p>
 	
-	<p>Returns an associative array containing all the
-	email addresses.</p>
+	<pre><code>$entry-&gt;getSocialMedia()</code></pre>
+	<p>Returns an object containing all the social network ID's.</p>
+	
+	<pre><code>$entry-&gt;getWebsites()</code></pre>
+	<p>Returns an object containing all the websites.</p>
 
-	<pre>
-	<code>$entry-&gt;getIm()</code>
-	</pre>
-	
-	<p>Returns an associative array containing all the IM ID's.</p>
-
-	<pre>
-	<code>$entry-&gt;getWebsites()</code>
-	</pre>
-	
-	<p>Returns an associative array containing all the websites.</p>
-
-	<pre>
-	<code>$entry-&gt;getAnniversary('FORMAT')</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getAnniversary('FORMAT')</code></pre>
 	<p>Returns the anniversary date for the entry. The
 	format is optional and conforms to the PHP standard,
 	refer to the <a href="http://us2.php.net/date">PHP
 	Manual</a> for the format characters.</p>
 
-	<pre>
-	<code>$entry-&gt;getBirthday('FORMAT')</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getBirthday('FORMAT')</code></pre>
 	<p>Returns the birthday date for the entry. The format
 	is optional and conforms to the PHP standard, refer to
 	the <a href="http://us2.php.net/date">PHP Manual</a>
 	for the format characters.</p>
 
-	<pre>
-	<code>$entry-&gt;getBio()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getBio()</code></pre>
 	<p>Returns the biography.</p>
 
-	<pre>
-	<code>$entry-&gt;getNotes()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getNotes()</code></pre>
 	<p>Returns the notes.</p>
 
 	<h4><a name="tocIdhCard"></a>These tags return some
 	preformatted HTML blocks and should be used to maintain
 	hCard compatibility.</h4>
 
-	<pre>
-	<code>$entry-&gt;getThumbnailImage()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getThumbnailImage()</code></pre>
 	<p>Returns the thumbnail image.</p>
 
-	<pre>
-	<code>$entry-&gt;getCardImage()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getCardImage()</code></pre>
 	<p>Returns the card image.</p>
 
-	<pre>
-	<code>$entry-&gt;getProfileImage()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getProfileImage()</code></pre>
 	<p>Returns the profile image.</p>
 
-	<pre>
-	<code>$entry-&gt;getFullFirstLastNameBlock()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getFullFirstLastNameBlock()</code></pre>
 	<p>Returns the full name with the first name first.
 	NOTE: if the entry type in an Organization or a Connection Group
 	this will return the Organization/Connection Group name instead.</p>
 
-	<pre>
-	<code>$entry-&gt;getFullLastFirstNameBlock()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getFullLastFirstNameBlock()</code></pre>
 	<p>Returns the full name with the last name first. NOTE:
 	if the entry type in an Organization or a Connection Group
 	this will return the Organization/Connection Group name instead.</p>
 	
-	<pre>
-	<code>$entry-&gt;getConnectionGroupBlock()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getConnectionGroupBlock()</code></pre>
 	<p>Returns the Connection Group items in a <code>&lt;span&gt;</code> tag followed by a <code>&lt;br&gt;</code>.</p>
 	
-	<pre>
-	<code>$entry-&gt;getTitleBlock()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getTitleBlock()</code></pre>
 	<p>Returns the title in a <code>&lt;span&gt;</code>tag.</p>
 
-	<pre>
-	<code>$entry-&gt;getOrgUnitBlock()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getOrgUnitBlock()</code></pre>
 	<p>Returns the organization ** AND ** the department in
 	a <code>&lt;div&gt;</code> tag with each wrapped in a
 	span. NOTE: this will only output the organization if
@@ -685,26 +590,17 @@ function connectionsShowHelpPage()
 	organization name, use one of the full name template
 	tags.</p>
 
-	<pre>
-	<code>$entry-&gt;getOrganizationBlock()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getOrganizationBlock()</code></pre>
 	<p>Returns the organization in a
 	<code>&lt;span&gt;</code>. If the entry type is an
 	organization, this tag will not output any HTML. You
 	should use one of the full name tags to get the
 	organization name.</p>
 
-	<pre>
-	<code>$entry-&gt;getDepartmentBlock()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getDepartmentBlock()</code></pre>
 	<p>Returns the department in a <code>&lt;span&gt;</code>.</p>
 
-	<pre>
-	<code>$entry-&gt;getAddressBlock()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getAddressBlock()</code></pre>
 	<p>Returns all the addresses in a
 	<code>&lt;div&gt;</code> and each address item in a
 	<code>&lt;span&gt;</code>. NOTE: in order for proper
@@ -713,113 +609,78 @@ function connectionsShowHelpPage()
 	will be used to set the address type as either home or
 	work.</p>
 
-	<pre>
-	<code>$entry-&gt;getPhoneNumberBlock()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getPhoneNumberBlock()</code></pre>
 	<p>Returns all the phone numbers in a
 	<code>&lt;div&gt;</code> and each phone number item in
 	a <code>&lt;span&gt;</code>.</p>
 
-	<pre>
-	<code>$entry-&gt;getEmailAddressBlock()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getEmailAddressBlock()</code></pre>
 	<p>Returns all the email addresses in a
 	<code>&lt;div&gt;</code> and each email address item in
 	a <code>&lt;span&gt;</code>.</p>
 
-	<pre>
-	<code>$entry-&gt;getImBlock()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getImBlock()</code></pre>
 	<p>Returns all the IM ID's in a
 	<code>&lt;div&gt;</code> and each IM item in a
 	<code>&lt;span&gt;</code>.</p>
-
-	<pre>
-	<code>$entry-&gt;getWebsiteBlock()</code>
-	</pre>
 	
+	<pre><code>$entry-&gt;getSocialMediaBlock()</code></pre>
+	<p>Returns all the social network ID's as a link to the profile page in a
+	<code>&lt;div&gt;</code> and each network in a <code>&lt;span&gt;</code>.</p>
+
+	<pre><code>$entry-&gt;getWebsiteBlock()</code></pre>
 	<p>Returns all the wesites in a
 	<code>&lt;div&gt;</code> and each website item in a
 	<code>&lt;span&gt;</code>.</p>
 
-	<pre>
-	<code>$entry-&gt;getBirthdayBlock('FORMAT')</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getBirthdayBlock('FORMAT')</code></pre>
 	<p>Returns the birthday date in a
 	<code>&lt;span&gt;</code>. The format is optional and
 	conforms to the PHP standard, refer to the <a href=
 	"http://us2.php.net/date">PHP Manual</a> for the format
 	characters.</p>
 
-	<pre>
-	<code>$entry-&gt;getAnniversaryBlock('FORMAT')</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getAnniversaryBlock('FORMAT')</code></pre>
 	<p>Returns the anniversary date in a
 	<code>&lt;span&gt;</code>. The format is optional and
 	conforms to the PHP standard, refer to the <a href=
 	"http://us2.php.net/date">PHP Manual</a> for the format
 	characters.</p>
 	
-	<pre>
-	<code>$entry-&gt;getNotesBlock()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getNotesBlock()</code></pre>
 	<p>Returns the notes in hCard compatible format wrapped in a <code>&lt;div&gt;</code>.</p>
 	
-	<pre>
-	<code>$entry-&gt;getBioBlock()</code>
-	</pre>
+	<pre><code>$entry-&gt;getBioBlock()</code></pre>
+	<p>Returns the bio wrapped in a <code>&lt;div&gt;</code>.</p>
 	
-	
-	
-	<p>The <em>getCategoryBlock()</em> template tag will output the categories that an entry is assigned to. 
-	By default as an unordered list. The tag accepts multiple attribute to customize 
+	<p>The <code>getCategoryBlock()</code> template tag will output the categories that an entry is assigned to. 
+	By default as an unordered list. The tag accepts multiple attributes to customize 
 	the display of the categories. See the following examples:</p>
 
-	<p>This will output an ordered list. </p>
+	<pre><code>getCategoryBlock( array( 'list' =>  'ordered' ) )</code></pre>
+	<p>This will output an ordered list.</p>
 	
-	<pre>
-	<code>getCategoryBlock( array( 'list' =>  'ordered' ) )</code>
-	</pre>
-
-
-	<p>This will output the categories within a span element separated by a comma space. </p>
+	<pre><code>getCategoryBlock( array( 'string' => ', ', 'before' => '<span>', 'after' => '</span>' ) )</code></pre>
+	<p>This will output the categories within a span element separated by a comma space.</p>
 	
-	<pre>
-	<code>getCategoryBlock( array( 'string' => ', ', 'before' => '<span>', 'after' => '</span>' ) )</code>
-	</pre>
-
-
-	<p><strong>Accepted Values </strong></p>
-	<ul>
-		<li><strong>list:</strong> Accepted values are <em>ordered</em> and <em>unordered</em></li>
-		<li><strong>separator:</strong> The string that will be output between the category names.</li>
-		<li><strong>before:</strong></li>
-		<li><strong>after:</strong></li>
-		<li><strong>label:</strong> The label. Default is: "Categories:"</li>
-		<li><strong>parents:</strong> Not yet implemented.</li>
-		<li><strong>return:</strong> Return the result rather then echo it. Default is FALSE.</li>
-	</ul>
- 
+	<p><strong>Accepted Values</strong>
+		<ul>
+			<li><strong>list:</strong> Accepted values are <em>ordered</em> and <em>unordered</em></li>
+			<li><strong>separator:</strong> The string that will be output between the category names.</li>
+			<li><strong>before:</strong></li>
+			<li><strong>after:</strong></li>
+			<li><strong>label:</strong> The label. Default is: "Categories:"</li>
+			<li><strong>parents:</strong> Not yet implemented.</li>
+			<li><strong>return:</strong> Return the result rather then echo it. Default is FALSE.</li>
+		</ul>
+	</p>
 	
-	<p>Returns the notes in	hCard compatible format wrapped in a <code>&lt;div&gt;</code>.</p>
-
-	<pre>
-	<code>$entry-&gt;getRevisionDateBlock()</code>
-	</pre>
-	
+	<br />
+	<pre><code>$entry-&gt;getRevisionDateBlock()</code></pre>
 	<p>Returns the last revision date in hCard compatible
 	format wrapped in a <code>&lt;span&gt;</code>.</p>
 
-	<pre>
-	<code>$entry-&gt;getLastUpdatedStyle()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;getLastUpdatedStyle()</code></pre>
 	<p>Returns <code>color: VARIES BY AGE;</code> that can
 	be used in then style HTML tag. Example usage:
 	<code>&lt;span style="&lt;?php echo
@@ -829,16 +690,10 @@ function connectionsShowHelpPage()
 	Updated and the timestamp in human difference time
 	based on age.</p>
 
-	<pre>
-	<code>$entry-&gt;returnToTopAnchor()</code>
-	</pre>
-	
+	<pre><code>$entry-&gt;returnToTopAnchor()</code></pre>
 	<p>Returns the HTML anchor to return to the top of the entry list using an up arrow graphic.</p>
 
-	<pre>
-	<code>$vCard-&gt;download()</code>
-	</pre>
-	
+	<pre><code>$vCard-&gt;download()</code></pre>
 	<p>Returns the HTML anchor to allow downloading the
 	entry in a vCard that can be imported into your
 	preferred email program.</p>

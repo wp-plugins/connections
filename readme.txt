@@ -85,10 +85,11 @@ Connections is a simple to use address book system but is also very versatile. Y
 
 == Changelog ==
 
-= 0.7.1.0 x/x/2010 =
+= 0.7.0.2 6/12/2010 =
 * FEATURE: Add upgrade notice to the plugin admin page.
 * BUG: Fix WYSIWYG <em> tag parse.
 * BUG: Fix order_by bug. Would not sot sort by city, state, zipcode, country.
+* OTHER: Add missing documentions for the social media template tags.
 
 = 0.7.0.1 5/17/2010 =
 * BUG: Fix fatal error when custom ordering the results.
@@ -265,6 +266,9 @@ Connections is a simple to use address book system but is also very versatile. Y
 * First version in the repository
 
 == Upgrade Notice ==
+
+= 0.7.0.2 =
+Fixed critical order_by error.
 
 = 0.7.0.1 =
 Upgrading to this version might break custom templates.
