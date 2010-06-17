@@ -90,17 +90,17 @@ class cnvCard extends cnEntry
 		$this->card .= "CLASS:".$this->data['class']."\r\n";
 		$this->card .= "PRODID:-//Connections - WordPress Plug-in//Version 1.0//EN\r\n";
 		$this->card .= "REV:".$this->data['revision_date']."\r\n";
-		$this->card .= "FN:".$this->data['display_name']."\r\n";
-		$this->card .= "N:"
+		$this->card .= "FN;CHARSET=utf-8:".$this->data['display_name']."\r\n";
+		$this->card .= "N;CHARSET=utf-8:"
 			. $this->data['last_name'].";"
 			. $this->data['first_name'].";"
 			. $this->data['additional_name'].";"
 			. $this->data['name_prefix'].";"
 			. $this->data['name_suffix']."\r\n";
 		
-		if ($this->data['nickname']) { $this->card .= "NICKNAME:".$this->data['nickname']."\r\n"; }
-		if ($this->data['title']) { $this->card .= "TITLE:".$this->data['title']."\r\n"; }
-		if ($this->data['company']) { $this->card .= "ORG:".$this->data['company']; }
+		if ($this->data['nickname']) { $this->card .= "NICKNAME;CHARSET=utf-8:".$this->data['nickname']."\r\n"; }
+		if ($this->data['title']) { $this->card .= "TITLE;CHARSET=utf-8:".$this->data['title']."\r\n"; }
+		if ($this->data['company']) { $this->card .= "ORG;CHARSET=utf-8:".$this->data['company']; }
 		if ($this->data['department']) { $this->card .= ";".$this->data['department']; }
 		$this->card .= "\r\n";
 			
@@ -112,7 +112,7 @@ class cnvCard extends cnEntry
 			|| $this->data['work_postal_code']
 			|| $this->data['work_country'])
 		{
-			$this->card .= "ADR;TYPE=work:"
+			$this->card .= "ADR;CHARSET=utf-8;TYPE=work:"
 		    . $this->data['work_po_box'].";"
 		    . $this->data['work_extended_address'].";"
 		    . $this->data['work_address'].";"
@@ -130,7 +130,7 @@ class cnvCard extends cnEntry
 			|| $this->data['home_postal_code']
 			|| $this->data['home_country'])
 		{
-			$this->card .= "ADR;TYPE=home:"
+			$this->card .= "ADR;CHARSET=utf-8;TYPE=home:"
 		    . $this->data['home_po_box'].";"
 		    . $this->data['home_extended_address'].";"
 		    . $this->data['home_address'].";"
@@ -148,7 +148,7 @@ class cnvCard extends cnEntry
 			|| $this->data['other_postal_code']
 			|| $this->data['other_country'])
 		{
-			$this->card .= "ADR;TYPE=other:"
+			$this->card .= "ADR;CHARSET=utf-8;TYPE=other:"
 		    . $this->data['other_po_box'].";"
 		    . $this->data['other_extended_address'].";"
 		    . $this->data['other_address'].";"
@@ -158,34 +158,35 @@ class cnvCard extends cnEntry
 		    . $this->data['other_country']."\r\n";
 		}
 		
-		if ($this->data['email1']) { $this->card .= "EMAIL;TYPE=internet:".$this->data['email1']."\r\n"; }
-		if ($this->data['email2']) { $this->card .= "EMAIL;TYPE=internet:".$this->data['email2']."\r\n"; }
-		if ($this->data['work_tel']) { $this->card .= "TEL;TYPE=work,voice:".$this->data['work_tel']."\r\n"; }
-		if ($this->data['home_tel']) { $this->card .= "TEL;TYPE=home,voice:".$this->data['home_tel']."\r\n"; }
-		if ($this->data['cell_tel']) { $this->card .= "TEL;TYPE=cell,voice:".$this->data['cell_tel']."\r\n"; }
-		if ($this->data['work_fax']) { $this->card .= "TEL;TYPE=work,fax:".$this->data['work_fax']."\r\n"; }
-		if ($this->data['home_fax']) { $this->card .= "TEL;TYPE=home,fax:".$this->data['home_fax']."\r\n"; }
-		if ($this->data['pager_tel']) { $this->card .= "TEL;TYPE=work,pager:".$this->data['pager_tel']."\r\n"; }
-		if ($this->data['url']) { $this->card .= "URL:".$this->data['url']."\r\n"; }
+		if ($this->data['email1']) { $this->card .= "EMAIL;CHARSET=utf-8;TYPE=internet:".$this->data['email1']."\r\n"; }
+		if ($this->data['email2']) { $this->card .= "EMAIL;CHARSET=utf-8;TYPE=internet:".$this->data['email2']."\r\n"; }
+		if ($this->data['work_tel']) { $this->card .= "TEL;CHARSET=utf-8;TYPE=work,voice:".$this->data['work_tel']."\r\n"; }
+		if ($this->data['home_tel']) { $this->card .= "TEL;CHARSET=utf-8;TYPE=home,voice:".$this->data['home_tel']."\r\n"; }
+		if ($this->data['cell_tel']) { $this->card .= "TEL;CHARSET=utf-8;TYPE=cell,voice:".$this->data['cell_tel']."\r\n"; }
+		if ($this->data['work_fax']) { $this->card .= "TEL;CHARSET=utf-8;TYPE=work,fax:".$this->data['work_fax']."\r\n"; }
+		if ($this->data['home_fax']) { $this->card .= "TEL;CHARSET=utf-8;TYPE=home,fax:".$this->data['home_fax']."\r\n"; }
+		if ($this->data['pager_tel']) { $this->card .= "TEL;CHARSET=utf-8;TYPE=work,pager:".$this->data['pager_tel']."\r\n"; }
+		if ($this->data['url']) { $this->card .= "URL;CHARSET=utf-8:".$this->data['url']."\r\n"; }
 		
 		// http://tools.ietf.org/html/rfc4770
-		if ($this->data['aim']) { $this->card .= "IMPP;TYPE=personal:aim:".$this->data['aim']."\r\n"; }
-		if ($this->data['aim']) { $this->card .= "X-AIM:".$this->data['aim']."\r\n"; }
-		if ($this->data['messenger']) { $this->card .= "IMPP;TYPE=personal:msn:".$this->data['messenger']."\r\n"; }
-		if ($this->data['messenger']) { $this->card .= "X-MSN:".$this->data['messenger']."\r\n"; }
-		if ($this->data['yim']) { $this->card .= "IMPP;TYPE=personal:ymsgr:".$this->data['yim']."\r\n"; }
-		if ($this->data['yim']) { $this->card .= "X-YAHOO:".$this->data['yim']."\r\n"; }
-		if ($this->data['jabber']) { $this->card .= "IMPP;TYPE=personal:xmpp:".$this->data['jabber']."\r\n"; }
-		if ($this->data['jabber']) { $this->card .= "X-JABBER:".$this->data['jabber']."\r\n"; }
+		if ($this->data['aim']) { $this->card .= "IMPP;CHARSET=utf-8;TYPE=personal:aim:".$this->data['aim']."\r\n"; }
+		if ($this->data['aim']) { $this->card .= "X-AIM;CHARSET=utf-8:".$this->data['aim']."\r\n"; }
+		if ($this->data['messenger']) { $this->card .= "IMPP;CHARSET=utf-8;TYPE=personal:msn:".$this->data['messenger']."\r\n"; }
+		if ($this->data['messenger']) { $this->card .= "X-MSN;CHARSET=utf-8:".$this->data['messenger']."\r\n"; }
+		if ($this->data['yim']) { $this->card .= "IMPP;CHARSET=utf-8;TYPE=personal:ymsgr:".$this->data['yim']."\r\n"; }
+		if ($this->data['yim']) { $this->card .= "X-YAHOO;CHARSET=utf-8:".$this->data['yim']."\r\n"; }
+		if ($this->data['jabber']) { $this->card .= "IMPP;CHARSET=utf-8;TYPE=personal:xmpp:".$this->data['jabber']."\r\n"; }
+		if ($this->data['jabber']) { $this->card .= "X-JABBER;CHARSET=utf-8:".$this->data['jabber']."\r\n"; }
 		
 		// @TODO: Add social media IDs here.
 		// http://tools.ietf.org/html/draft-george-vcarddav-vcard-extension-01
 		
 		if ($this->data['birthday']) { $this->card .= "BDAY:".$this->data['birthday']."\r\n"; }
 		if ($this->data['anniversary']) { $this->card .= "X-ANNIVERSARY:".$this->data['anniversary']."\r\n"; }
-		if ($this->data['spouse']) { $this->card .= "X-SPOUSE:".$this->data['spouse']."\r\n"; }
-		if ($this->data['role']) { $this->card .= "ROLE:".$this->data['role']."\r\n"; }
-		if ($this->data['note']) { $this->card .= "NOTE:".$this->data['note']."\r\n"; }
+		if ($this->data['spouse']) { $this->card .= "X-SPOUSE;CHARSET=utf-8:".$this->data['spouse']."\r\n"; }
+		if ($this->data['role']) { $this->card .= "ROLE;CHARSET=utf-8:".$this->data['role']."\r\n"; }
+		if ($this->data['note']) { $this->card .= "NOTE;CHARSET=utf-8:".$this->data['note']."\r\n"; }
+		// @TODO: Base64 encode the image rather than link to it.
 		if ($this->data['photo']) { $this->card .= "PHOTO;VALUE=uri:".$this->data['photo']."\r\n"; }
 		$this->card .= "TZ:".$this->data['timezone']."\r\n";
 		$this->card .= "END:VCARD\r\n";
