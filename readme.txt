@@ -86,6 +86,7 @@ Connections is a simple to use address book system but is also very versatile. Y
 == Changelog ==
 
 = 0.7.0.3 X/XX/2010 =
+* BUG: Set initial DB version during activation.
 * OTHER: Add UTF-8 support in the vCard file.
 
 = 0.7.0.2 6/12/2010 =

@@ -145,44 +145,51 @@ class cnEntry
 	{
 		global $connections;
 		
-		$this->id = $entry->id;
-		$this->timeStamp = $entry->ts;
-		$this->dateAdded = (integer) $entry->date_added;
-		$this->firstName = $entry->first_name;
-		$this->middleName = $entry->middle_name;
-		$this->lastName = $entry->last_name;
-		$this->title = $entry->title;
-		$this->organization = $entry->organization;
-		$this->contactFirstName = $entry->contact_first_name;
-		$this->contactLastName = $entry->contact_last_name;
-		$this->department = $entry->department;
-		$this->groupName = $entry->group_name;
-		$this->addresses = unserialize($entry->addresses);
-		$this->phoneNumbers = unserialize($entry->phone_numbers);
-		$this->emailAddresses = unserialize($entry->email);
-		$this->im = unserialize($entry->im);
-		$this->socialMedia = unserialize($entry->social);
-		$this->websites = unserialize($entry->websites);
-		$this->birthday = $entry->birthday;
-		$this->anniversary = $entry->anniversary;
-		$this->bio = $entry->bio;
-		$this->notes = $entry->notes;
-		$this->visibility = $entry->visibility;
-		
-		$this->options = unserialize($entry->options);
-		$this->imageLinked = $this->options['image']['linked'];
-		$this->imageDisplay = $this->options['image']['display'];
-		$this->imageNameThumbnail =$this->options['image']['name']['thumbnail'];
-		$this->imageNameCard = $this->options['image']['name']['entry'];
-		$this->imageNameProfile = $this->options['image']['name']['profile'];
-		$this->imageNameOriginal = $this->options['image']['name']['original'];
-		$this->entryType = $this->options['entry']['type'];
-		$this->connectionGroup = $this->options['connection_group'];
-		
-		$this->categories = $connections->retrieve->entryCategories($this->getId());
-		
-		$this->addedBy = $entry->added_by;
-		$this->editedBy = $entry->edited_by;
+		if ( isset($entry) )
+		{
+			$this->id = $entry->id;
+			$this->timeStamp = $entry->ts;
+			$this->dateAdded = (integer) $entry->date_added;
+			$this->firstName = $entry->first_name;
+			$this->middleName = $entry->middle_name;
+			$this->lastName = $entry->last_name;
+			$this->title = $entry->title;
+			$this->organization = $entry->organization;
+			$this->contactFirstName = $entry->contact_first_name;
+			$this->contactLastName = $entry->contact_last_name;
+			$this->department = $entry->department;
+			$this->groupName = $entry->group_name;
+			$this->addresses = unserialize($entry->addresses);
+			$this->phoneNumbers = unserialize($entry->phone_numbers);
+			$this->emailAddresses = unserialize($entry->email);
+			$this->im = unserialize($entry->im);
+			$this->socialMedia = unserialize($entry->social);
+			$this->websites = unserialize($entry->websites);
+			$this->birthday = $entry->birthday;
+			$this->anniversary = $entry->anniversary;
+			$this->bio = $entry->bio;
+			$this->notes = $entry->notes;
+			$this->visibility = $entry->visibility;
+			
+			$this->options = unserialize($entry->options);
+			
+			if ( isset($this->options['image']) )
+			{
+				$this->imageLinked = $this->options['image']['linked'];
+				$this->imageDisplay = $this->options['image']['display'];
+				$this->imageNameThumbnail =$this->options['image']['name']['thumbnail'];
+				$this->imageNameCard = $this->options['image']['name']['entry'];
+				$this->imageNameProfile = $this->options['image']['name']['profile'];
+				$this->imageNameOriginal = $this->options['image']['name']['original'];
+			}
+			$this->entryType = $this->options['entry']['type'];
+			$this->connectionGroup = $this->options['connection_group'];
+			
+			$this->categories = $connections->retrieve->entryCategories($this->getId());
+			
+			$this->addedBy = $entry->added_by;
+			$this->editedBy = $entry->edited_by;
+		}
 		
 		// Load the formatting class for sanitizing the get methods.
 		$this->format = new cnFormatting();
@@ -1443,7 +1450,7 @@ class cnEntry
 	{
 		$addedBy = get_userdata($this->addedBy);
 		
-		if (!$addedBy->display_name == NULL)
+		if ($addedBy)
 		{
 			return $addedBy->display_name;
 		}
@@ -1452,13 +1459,22 @@ class cnEntry
 			return 'Unknown';
 		}
 		
+		/*if (!$addedBy->display_name == NULL)
+		{
+			return $addedBy->display_name;
+		}
+		else
+		{
+			return 'Unknown';
+		}*/
+		
 	}
 	
 	public function getEditedBy()
 	{
 		$editedBy = get_userdata($this->editedBy);
 		
-		if (!$editedBy->display_name == NULL)
+		if ($editedBy)
 		{
 			return $editedBy->display_name;
 		}
@@ -1466,6 +1482,15 @@ class cnEntry
 		{
 			return 'Unknown';
 		}
+		
+		/*if (!$editedBy->display_name == NULL)
+		{
+			return $editedBy->display_name;
+		}
+		else
+		{
+			return 'Unknown';
+		}*/
 		
 	}
 	

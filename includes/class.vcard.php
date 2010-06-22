@@ -429,7 +429,7 @@ class cnvCard extends cnEntry
 	{
 		$token = wp_create_nonce('download_vcard_' . $this->getId());
 		
-		$filenameEncoded = rawurlencode($filename);
+		//$filenameEncoded = rawurlencode($filename);
 		
 		echo '<a href="' . get_option('siteurl') . '/download.vCard.php?token=' . $token . '&entry=' . $this->getId() . '" rel="nofollow">' . $atts['anchorText'] . '</a>';
 	}

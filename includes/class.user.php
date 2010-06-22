@@ -2,6 +2,12 @@
 class cnUser
 {
 	/**
+	 * @TODO: Initialize the cnUser class with the current user ID and
+	 * add a method to make a single call to get_user_meta() rather than
+	 * making multiples calls to reduce db accesses.
+	 */
+	
+	/**
 	 * Interger: stores the current WP user ID
 	 * @var interger
 	 */
@@ -31,9 +37,20 @@ class cnUser
 	
 	public function getFilterEntryType()
     {
-        $user_meta = get_usermeta($this->ID, 'connections');
+		/*
+		 * Use get_user_meta() used in WP 3.0 and newer
+		 * since get_usermeta() was deprecated.
+		 */
+		if ( function_exists('get_user_meta') )
+		{
+			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		}
+		else
+		{
+			$user_meta = get_usermeta($this->ID, 'connections');
+		}
 		
-		if (!$user_meta == NULL)
+		if ( !$user_meta == NULL && isset($user_meta['filter']) )
 		{
 			return $user_meta['filter']['entry_type'];
 		}
@@ -57,10 +74,20 @@ class cnUser
 	
 	public function getFilterVisibility()
     {
-        
-		$user_meta = get_usermeta($this->ID, 'connections');
+        /*
+		 * Use get_user_meta() used in WP 3.0 and newer
+		 * since get_usermeta() was deprecated.
+		 */
+		if ( function_exists('get_user_meta') )
+		{
+			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		}
+		else
+		{
+			$user_meta = get_usermeta($this->ID, 'connections');
+		}
 		
-		if (!$user_meta == NULL)
+		if ( !$user_meta == NULL && isset($user_meta['filter']) )
 		{
 			/*
 			 * Reset the user's cached visibility filter if they no longer have access.
@@ -125,9 +152,20 @@ class cnUser
 	
 	public function getFilterCategory()
     {
-        $user_meta = get_usermeta($this->ID, 'connections');
+        /*
+		 * Use get_user_meta() used in WP 3.0 and newer
+		 * since get_usermeta() was deprecated.
+		 */
+		if ( function_exists('get_user_meta') )
+		{
+			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		}
+		else
+		{
+			$user_meta = get_usermeta($this->ID, 'connections');
+		}
 		
-		if (!$user_meta == NULL)
+		if ( !$user_meta == NULL && isset($user_meta['filter']) )
 		{
 			return $user_meta['filter']['category'];
 		}
@@ -142,22 +180,69 @@ class cnUser
         // If value is -1 from drop down, set to NULL
 		if ($id == -1) $id = NULL;
 		
-		$user_meta = get_usermeta($this->ID, 'connections');
+		/*
+		 * Use get_user_meta() used in WP 3.0 and newer
+		 * since get_usermeta() was deprecated.
+		 */
+		if ( function_exists('get_user_meta') )
+		{
+			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		}
+		else
+		{
+			$user_meta = get_usermeta($this->ID, 'connections');
+		}
+		
 		$user_meta['filter']['category'] = $id;
 		update_usermeta($this->ID, 'connections', $user_meta);
     }
 	
 	public function setMessage($message)
 	{
-		$user_meta = get_usermeta($this->ID, 'connections');
+		/*
+		 * Use get_user_meta() used in WP 3.0 and newer
+		 * since get_usermeta() was deprecated.
+		 */
+		if ( function_exists('get_user_meta') )
+		{
+			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		}
+		else
+		{
+			$user_meta = get_usermeta($this->ID, 'connections');
+		}
+		
 		$user_meta['messages'][] = $message;
-		update_usermeta($this->ID, 'connections', $user_meta);
+		//print_r('setMessage '. $user_meta);
+		/*
+		 * Use update_user_meta() used in WP 3.0 and newer
+		 * since update_usermeta() was deprecated.
+		 */
+		if ( function_exists('update_user_meta') )
+		{
+			update_user_meta($this->ID, 'connections', $user_meta);
+		}
+		else
+		{
+			update_usermeta($this->ID, 'connections', $user_meta);
+		}
 	}
 	
 	public function getMessages()
 	{
-		$user_meta = get_usermeta($this->ID, 'connections');
-		
+		/*
+		 * Use get_user_meta() used in WP 3.0 and newer
+		 * since get_usermeta() was deprecated.
+		 */
+		if ( function_exists('get_user_meta') )
+		{
+			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		}
+		else
+		{
+			$user_meta = get_usermeta($this->ID, 'connections');
+		}
+		//print_r($user_meta);
 		if (!empty($user_meta['messages']))
 		{
 			return $user_meta['messages'];
@@ -170,9 +255,33 @@ class cnUser
 	
 	public function resetMessages()
 	{
-		$user_meta = get_usermeta($this->ID, 'connections');
-		unset($user_meta['messages']);
-		update_usermeta($this->ID, 'connections', $user_meta);
+		/*
+		 * Use get_user_meta() used in WP 3.0 and newer
+		 * since get_usermeta() was deprecated.
+		 */
+		if ( function_exists('get_user_meta') )
+		{
+			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		}
+		else
+		{
+			$user_meta = get_usermeta($this->ID, 'connections');
+		}
+		
+		if ( isset($user_meta['messages']) )unset($user_meta['messages']);
+		//print_r($user_meta);
+		/*
+		 * Use update_user_meta() used in WP 3.0 and newer
+		 * since update_usermeta() was deprecated.
+		 */
+		if ( function_exists('update_user_meta') )
+		{
+			update_user_meta($this->ID, 'connections', $user_meta);
+		}
+		else
+		{
+			update_usermeta($this->ID, 'connections', $user_meta);
+		}
 	}
 }
 ?>

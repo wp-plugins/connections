@@ -200,6 +200,9 @@ function connectionsShowViewPage()
 									/*
 									 * Dynamically builds the alpha index based on the available entries.
 									 */
+									$previousLetter = NULL;
+									$setAnchor = NULL;
+									
 									foreach ($results as $row)
 									{
 										$entry = new cnEntry($row);

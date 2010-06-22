@@ -17,14 +17,22 @@ class cnFormObjects
 	 */
 	 public function open($attr)
 	{
-		if ($attr['name'] != null) $name = 'name="' . $attr['name'] . '" ';
-		if ($attr['action'] != null) $action = 'action="' . $attr['action'] . '" ';
-		if ($attr['accept'] != null) $accept = 'accept="' . $attr['accept'] . '" ';
-		if ($attr['accept-charset'] != null) $acceptcharset = 'accept-charset="' . $attr['accept-charset'] . '" ';
-		if ($attr['enctype'] != null) $enctype = 'enctype="' . $attr['enctype'] . '" ';
-		if ($attr['method'] != null) $method = 'method="' . $attr['method'] . '" ';
+		if ( isset($attr['name']) ) $attr['name'] = 'name="' . $attr['name'] . '" ';
+		if ( isset($attr['action']) ) $attr['action'] = 'action="' . $attr['action'] . '" ';
+		if ( isset($attr['accept']) ) $attr['accept'] = 'accept="' . $attr['accept'] . '" ';
+		if ( isset($attr['accept-charset']) ) $attr['accept-charset'] = 'accept-charset="' . $attr['accept-charset'] . '" ';
+		if ( isset($attr['enctype']) ) $attr['enctype'] = 'enctype="' . $attr['enctype'] . '" ';
+		if ( isset($attr['method']) ) $attr['method'] = 'method="' . $attr['method'] . '" ';
 				
-		echo '<form ' . $action . $method . $enctype . '>';
+		//echo '<form ' . $action . $method . $enctype . '>';
+		$out = '<form ';
+		
+		foreach ($attr as $key => $value)
+		{
+			$out .= $value;
+		}
+		
+		echo $out , '>';
 	}
 	
 	/**
@@ -256,13 +264,16 @@ class cnEntryForm
 		
 		$date = new cnDate();
 		
-		$action = esc_attr($_GET['action']);
+		if ( isset($_GET['action']) ) $action = esc_attr($_GET['action']);
 		
 		/**
 		 * @TODO: Do something better with these statements.
 		 */
-		if (!$data->visibility) $defaultVisibility = 'unlisted'; else $defaultVisibility = $entry->getVisibility();
-		if (!isset($options['entry']['type'])) $defaultEntryType = "individual"; else $defaultEntryType = $entry->getEntryType();
+		if ( isset($data) )
+		{
+			if (!$data->visibility) $defaultVisibility = 'unlisted'; else $defaultVisibility = $entry->getVisibility();
+			if (!isset($options['entry']['type'])) $defaultEntryType = "individual"; else $defaultEntryType = $entry->getEntryType();
+		}
 		
 		
 		$out = '<div id="side-info-column" class="inner-sidebar">';

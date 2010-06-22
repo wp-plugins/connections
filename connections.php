@@ -82,7 +82,7 @@ if (!class_exists('connectionsLoad'))
 		
 			get_currentuserinfo();
 			$connections->currentUser->setID($current_user->ID);
-			
+			//print_r($current_user);
 			if (is_admin())
 			{
 				// Calls the methods to load the admin scripts and CSS.
@@ -258,15 +258,16 @@ if (!class_exists('connectionsLoad'))
 		
 		public function displayMessages()
 		{
+			// Exit the method if $_GET['display_messages'] isn't set.
+			if ( !isset($_GET['display_messages']) ) return;
+			
 			global $connections;
-			$output = null;
+			$output = NULL;
 			
 			$messages = $connections->currentUser->getMessages();
 			
-			if (isset($_SESSION['cn_session']['messages']) || !empty($messages))
+			if ( !empty($messages) )
 			{
-				if (!isset($messages)) $messages = $_SESSION['cn_session']['messages'];
-				
 				foreach ($messages as $message)
 				{
 					foreach($message as $type => $code)
@@ -284,8 +285,9 @@ if (!class_exists('connectionsLoad'))
 					}
 				}
 			}
-			unset($_SESSION['cn_session']['messages']);
+			
 			if ($_GET['display_messages'] === 'true') $connections->currentUser->resetMessages();
+			
 			echo $output;
 		}
 		
@@ -520,6 +522,7 @@ if (!class_exists('connectionsLoad'))
 			
 			$this->options->setDefaultCapabilities();
 			$this->options->setVersion(CN_CURRENT_VERSION);
+			$this->options->setDBVersion(CN_DB_VERSION);
 			
 			// Check if the Uncategorized term exists and if it doesn't create it.
 			$term = $connections->term->getTermBy('slug', 'uncategorized', 'category');
@@ -585,6 +588,9 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function loadAdminScripts()
 		{
+			// Exit the method if $_GET['page'] isn't set.
+			if ( !isset($_GET['page']) ) return;
+			
 			switch ($_GET['page'])
 			{
 				case CN_BASE_NAME:
@@ -628,6 +634,9 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function loadAdminStyles()
 		{
+			// Exit the method if $_GET['page'] isn't set.
+			if ( !isset($_GET['page']) ) return;
+			
 			/*
 			 * Load styles only on the Connections plug-in admin pages.
 			 */
@@ -663,6 +672,9 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function addEntryFavorite($actions)
 		{
+			// Exit the method if $_GET['page'] isn't set.
+			if ( !isset($_GET['page']) ) return $actions;
+			
 			switch ($_GET['page'])
 			{
 				
@@ -825,6 +837,10 @@ if (!class_exists('connectionsLoad'))
 		 */
 		private function controllers()
 		{
+			// Exit the method if $_GET['page'] isn't set.
+			if ( !isset($_GET['page']) ) return;
+			if ( !isset($_GET['action']) ) return;
+			
 			global $connections;
 			
 			include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );

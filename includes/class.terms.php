@@ -126,7 +126,7 @@ class cnTerms
 				$termList[] = $term;
 			}
 		}
-		return $termList;
+		if ( isset($termList) ) return $termList;
 		//return $this->termChildren[$termID];
 	}
 	

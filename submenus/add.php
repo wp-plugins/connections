@@ -32,6 +32,10 @@ function connectionsShowAddPage()
 			$atts['id'] = $id;
 			$entry = $connections->retrieve->entry($id);
 		}
+		else
+		{
+			$entry = NULL;
+		}
 		
 		$entryForm = new cnEntryForm();
 		$form = new cnFormObjects();

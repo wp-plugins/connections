@@ -88,6 +88,15 @@ class cnRetrieve
 			if ( !empty($catIDString) ) $termIDs = ' AND ' . CN_TERM_TAXONOMY_TABLE . ".term_id IN ('" . $catIDString . "') ";
 			if ( !empty($catNameString) )$termNames = ' AND ' . CN_TERMS_TABLE . ".name IN ('" . $catNameString . "') ";
 		}
+		else
+		{
+			$taxonomy = NULL;
+			$termIDs = NULL;
+			$termNames = NULL;
+			$joinTermRelationships = NULL;
+			$joinTermTaxonomy = NULL;
+			$joinTerm = NULL;
+		}
 		
 		
 		/*
@@ -106,13 +115,31 @@ class cnRetrieve
 			// Set query string to return specific entries.
 			$entryIDs = " AND `id` IN ('" . $atts['id'] . "') ";
 		}
+		else
+		{
+			$entryIDs = NULL;
+		}
 		
 				
 		// Set query string for visibility.
-		if ( $atts['visibility'] !== 'all' && in_array($atts['visibility'], $permittedVisibilities, TRUE) ) $visibility = " AND `visibility` = '" . $atts['visibility'] . "' ";
+		if ( $atts['visibility'] !== 'all' && in_array($atts['visibility'], $permittedVisibilities, TRUE) )
+		{
+			$visibility = " AND `visibility` = '" . $atts['visibility'] . "' ";
+		}
+		else
+		{
+			$visibility = NULL;
+		}
 		
 		// Set query string for entry type.
-		if ( $atts['list_type'] !== 'all' && in_array($atts['list_type'], $permittedEntryTypes, TRUE) ) $entryType = " AND `entry_type` = '" . $atts['list_type'] . "' ";
+		if ( $atts['list_type'] !== 'all' && in_array($atts['list_type'], $permittedEntryTypes, TRUE) )
+		{
+			$entryType = " AND `entry_type` = '" . $atts['list_type'] . "' ";
+		}
+		else
+		{
+			$entryType = NULL;
+		}		
 		
 		$sql = "SELECT DISTINCT " . CN_ENTRY_TABLE . ".*,
 				

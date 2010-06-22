@@ -187,8 +187,8 @@ class cnOptions
 		$this->options['version'] = $this->version;
 		$this->options['db_version'] = $this->dbVersion;
 		
-		$this->options[$this->currentUserID]['filter']['entry_type'] = $this->entryType;
-		$this->options[$this->currentUserID]['filter']['visibility_type'] = $this->visibilityType;
+		//$this->options[$this->currentUserID]['filter']['entry_type'] = $this->entryType;
+		//$this->options[$this->currentUserID]['filter']['visibility_type'] = $this->visibilityType;
 		
 		$this->options['settings']['allow_public'] = $this->allowPublic;
 		$this->options['settings']['allow_public_override'] = $this->allowPublicOverride;
