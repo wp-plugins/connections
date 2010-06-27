@@ -25,7 +25,16 @@ function connectionsShowCategoriesPage()
 		$form = new cnFormObjects();
 		$categoryObjects = new cnCategoryObjects();
 		
-		if ($_GET['action'] === 'edit')
+		if ( isset($_GET['action']) )
+		{
+			$action = $_GET['action'];
+		}
+		else
+		{
+			$action = NULL;
+		}
+		
+		if ($action === 'edit')
 		{
 			$id = esc_attr($_GET['id']);
 			check_admin_referer('category_edit_' . $id);

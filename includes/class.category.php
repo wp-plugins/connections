@@ -14,15 +14,18 @@ class cnCategory
 	
 	function __construct($data = NULL)
 	{
-		$this->id = $data->term_id;
-		$this->name = $data->name;
-		$this->slug =$data->slug;
-		$this->termGroup = $data->term_group;
-		$this->taxonomy = $data->taxonomy;
-		$this->description = $data->description;
-		$this->parent = $data->parent;
-		$this->count = $data->count;
-		$this->children = $data->children;
+		if ( isset($data) )
+		{
+			if ( isset($data->term_id) ) $this->id = $data->term_id;
+			if ( isset($data->name) ) $this->name = $data->name;
+			if ( isset($data->slug) ) $this->slug = $data->slug;
+			if ( isset($data->term_group) ) $this->termGroup = $data->term_group;
+			if ( isset($data->taxonomy) ) $this->taxonomy = $data->taxonomy;
+			if ( isset($data->description) ) $this->description = $data->description;
+			if ( isset($data->parent) ) $this->parent = $data->parent;
+			if ( isset($data->count) ) $this->count = $data->count;
+			if ( isset($data->children) ) $this->children = $data->children;
+		}
 	}
     
     /**

@@ -147,48 +147,52 @@ class cnEntry
 		
 		if ( isset($entry) )
 		{
-			$this->id = $entry->id;
-			$this->timeStamp = $entry->ts;
-			$this->dateAdded = (integer) $entry->date_added;
-			$this->firstName = $entry->first_name;
-			$this->middleName = $entry->middle_name;
-			$this->lastName = $entry->last_name;
-			$this->title = $entry->title;
-			$this->organization = $entry->organization;
-			$this->contactFirstName = $entry->contact_first_name;
-			$this->contactLastName = $entry->contact_last_name;
-			$this->department = $entry->department;
-			$this->groupName = $entry->group_name;
-			$this->addresses = unserialize($entry->addresses);
-			$this->phoneNumbers = unserialize($entry->phone_numbers);
-			$this->emailAddresses = unserialize($entry->email);
-			$this->im = unserialize($entry->im);
-			$this->socialMedia = unserialize($entry->social);
-			$this->websites = unserialize($entry->websites);
-			$this->birthday = $entry->birthday;
-			$this->anniversary = $entry->anniversary;
-			$this->bio = $entry->bio;
-			$this->notes = $entry->notes;
-			$this->visibility = $entry->visibility;
+			if ( isset($entry->id) ) $this->id = (integer) $entry->id;
+			if ( isset($entry->ts) ) $this->timeStamp = (integer) $entry->ts;
+			if ( isset($entry->date_added) ) $this->dateAdded = (integer) $entry->date_added;
+			if ( isset($entry->first_name) ) $this->firstName = $entry->first_name;
+			if ( isset($entry->middle_name) ) $this->middleName = $entry->middle_name;
+			if ( isset($entry->last_name) ) $this->lastName = $entry->last_name;
+			if ( isset($entry->title) ) $this->title = $entry->title;
+			if ( isset($entry->organization) ) $this->organization = $entry->organization;
+			if ( isset($entry->contact_first_name) ) $this->contactFirstName = $entry->contact_first_name;
+			if ( isset($entry->contact_last_name) ) $this->contactLastName = $entry->contact_last_name;
+			if ( isset($entry->department) ) $this->department = $entry->department;
+			if ( isset($entry->group_name) ) $this->groupName = $entry->group_name;
+			if ( isset($entry->addresses) ) $this->addresses = unserialize($entry->addresses);
+			if ( isset($entry->phone_numbers) ) $this->phoneNumbers = unserialize($entry->phone_numbers);
+			if ( isset($entry->email) ) $this->emailAddresses = unserialize($entry->email);
+			if ( isset($entry->im) ) $this->im = unserialize($entry->im);
+			if ( isset($entry->social) ) $this->socialMedia = unserialize($entry->social);
+			if ( isset($entry->websites) ) $this->websites = unserialize($entry->websites);
+			if ( isset($entry->birthday) ) $this->birthday = $entry->birthday;
+			if ( isset($entry->anniversary) ) $this->anniversary = $entry->anniversary;
+			if ( isset($entry->bio) ) $this->bio = $entry->bio;
+			if ( isset($entry->notes) ) $this->notes = $entry->notes;
+			if ( isset($entry->visibility) ) $this->visibility = $entry->visibility;
 			
-			$this->options = unserialize($entry->options);
-			
-			if ( isset($this->options['image']) )
+			if ( isset($entry->options) )
 			{
-				$this->imageLinked = $this->options['image']['linked'];
-				$this->imageDisplay = $this->options['image']['display'];
-				$this->imageNameThumbnail =$this->options['image']['name']['thumbnail'];
-				$this->imageNameCard = $this->options['image']['name']['entry'];
-				$this->imageNameProfile = $this->options['image']['name']['profile'];
-				$this->imageNameOriginal = $this->options['image']['name']['original'];
+				$this->options = unserialize($entry->options);
+				
+				if ( isset($this->options['image']) )
+				{
+					$this->imageLinked = $this->options['image']['linked'];
+					$this->imageDisplay = $this->options['image']['display'];
+					$this->imageNameThumbnail =$this->options['image']['name']['thumbnail'];
+					$this->imageNameCard = $this->options['image']['name']['entry'];
+					$this->imageNameProfile = $this->options['image']['name']['profile'];
+					$this->imageNameOriginal = $this->options['image']['name']['original'];
+				}
+				
+				if ( isset($this->options['entry']['type']) ) $this->entryType = $this->options['entry']['type'];
+				if ( isset($this->options['connection_group']) ) $this->connectionGroup = $this->options['connection_group'];
 			}
-			$this->entryType = $this->options['entry']['type'];
-			$this->connectionGroup = $this->options['connection_group'];
 			
-			$this->categories = $connections->retrieve->entryCategories($this->getId());
+			if ( isset($entry->id) ) $this->categories = $connections->retrieve->entryCategories($this->getId());
 			
-			$this->addedBy = $entry->added_by;
-			$this->editedBy = $entry->edited_by;
+			if ( isset($entry->added_by) ) $this->addedBy = $entry->added_by;
+			if ( isset($entry->edited_by) ) $this->editedBy = $entry->edited_by;
 		}
 		
 		// Load the formatting class for sanitizing the get methods.
@@ -1732,7 +1736,7 @@ class cnEntry
 											$this->notes,
 											$this->options,
 											$connections->currentUser->getID(),
-											'',
+											$connections->currentUser->getID(),
 											$connections->currentUser->getID(),
 											'approved'));
 		$wpdb->show_errors = FALSE;

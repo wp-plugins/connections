@@ -5,38 +5,40 @@ function processAddEntry()
 	global $wpdb, $connections;
 	$entry = new cnEntry();
 	
+	if ( isset($_GET['action']) ) $action = $_GET['action'];
+	
 	// The modification file date that image will be deleted. to maintain compatibility with 0.6.2.1 and older.
 	$compatiblityDate = mktime(0, 0, 0, 6, 1, 2010);
 	
 	// If copying/editing an entry, the entry data is loaded into the class 
 	// properties and then properties are overwritten by the POST data as needed.
-	if (isset($_GET['id']))
+	if ( isset($_GET['id']) )
 	{
 		$entry->set(esc_attr($_GET['id']));
 	}
 						
-	$entry->setEntryType($_POST['entry_type']);
-	$entry->setGroupName($_POST['connection_group_name']);
-	$entry->setConnectionGroup($_POST['connection_group']);
-	$entry->setFirstName($_POST['first_name']);
-	$entry->setMiddleName($_POST['middle_name']);
-	$entry->setLastName($_POST['last_name']);
-	$entry->setTitle($_POST['title']);
-	$entry->setOrganization($_POST['organization']);
-	$entry->setDepartment($_POST['department']);
-	$entry->setContactFirstName($_POST['contact_first_name']);
-	$entry->setContactLastName($_POST['contact_last_name']);
-	$entry->setAddresses($_POST['address']);
-	$entry->setPhoneNumbers($_POST['phone_numbers']);
-	$entry->setEmailAddresses($_POST['email']);
-	$entry->setIm($_POST['im']);
-	$entry->setSocialMedia($_POST['social_media']);
-	$entry->setWebsites($_POST['website']);
-	$entry->setBirthday($_POST['birthday_day'], $_POST['birthday_month']);
-	$entry->setAnniversary($_POST['anniversary_day'], $_POST['anniversary_month']);
-	$entry->setBio($_POST['bio']);
-	$entry->setNotes($_POST['notes']);
-	$entry->setVisibility($_POST['visibility']);
+	if ( isset($_POST['entry_type']) ) $entry->setEntryType($_POST['entry_type']);
+	if ( isset($_POST['connection_group_name']) ) $entry->setGroupName($_POST['connection_group_name']);
+	if ( isset($_POST['connection_group']) ) $entry->setConnectionGroup($_POST['connection_group']);
+	if ( isset($_POST['first_name']) ) $entry->setFirstName($_POST['first_name']);
+	if ( isset($_POST['middle_name']) ) $entry->setMiddleName($_POST['middle_name']);
+	if ( isset($_POST['last_name']) ) $entry->setLastName($_POST['last_name']);
+	if ( isset($_POST['title']) ) $entry->setTitle($_POST['title']);
+	if ( isset($_POST['organization']) ) $entry->setOrganization($_POST['organization']);
+	if ( isset($_POST['department']) ) $entry->setDepartment($_POST['department']);
+	if ( isset($_POST['contact_first_name']) ) $entry->setContactFirstName($_POST['contact_first_name']);
+	if ( isset($_POST['contact_last_name']) ) $entry->setContactLastName($_POST['contact_last_name']);
+	if ( isset($_POST['address']) ) $entry->setAddresses($_POST['address']);
+	if ( isset($_POST['phone_numbers']) ) $entry->setPhoneNumbers($_POST['phone_numbers']);
+	if ( isset($_POST['email']) ) $entry->setEmailAddresses($_POST['email']);
+	if ( isset($_POST['im']) ) $entry->setIm($_POST['im']);
+	if ( isset($_POST['social_media']) ) $entry->setSocialMedia($_POST['social_media']);
+	if ( isset($_POST['website']) ) $entry->setWebsites($_POST['website']);
+	if ( isset($_POST['birthday_day']) && isset($_POST['birthday_month']) ) $entry->setBirthday($_POST['birthday_day'], $_POST['birthday_month']);
+	if ( isset($_POST['anniversary_day']) && isset($_POST['anniversary_month']) ) $entry->setAnniversary($_POST['anniversary_day'], $_POST['anniversary_month']);
+	if ( isset($_POST['bio']) ) $entry->setBio($_POST['bio']);
+	if ( isset($_POST['notes']) ) $entry->setNotes($_POST['notes']);
+	if ( isset($_POST['visibility']) ) $entry->setVisibility($_POST['visibility']);
 									
 	if ($_FILES['original_image']['error'] != 4)
 	{
@@ -96,7 +98,7 @@ function processAddEntry()
 	else
 	{
 		// Don't do this if an entry is being updated.
-		if ( $_GET['action'] !== 'update' )
+		if ( $action !== 'update' )
 		{
 			// If an entry is being copied and there is an image, the image will be duplicated for the new entry.
 			// That way if an entry is deleted, only the entry specific images will be deleted.
@@ -182,7 +184,7 @@ function processAddEntry()
 		}
 	}
 	
-	switch ($_GET['action'])
+	switch ($action)
 	{
 		case 'add':
 			if ($entry->save() == FALSE)
@@ -210,8 +212,19 @@ function processAddEntry()
 			}
 		break;
 	}
-						
-	$connections->term->setTermRelationships($entryID, $_POST['entry_category'], 'category');
+	
+	/*
+	 * Save the entry category(ies). If none were checked, send an empty array
+	 * which will add the entry to the default category.
+	 */	
+	if ( isset($_POST['entry_category']) )
+	{
+		$connections->term->setTermRelationships($entryID, $_POST['entry_category'], 'category');
+	}
+	else
+	{
+		$connections->term->setTermRelationships($entryID, array(), 'category');
+	}
 		
 	unset($entry);
 	return TRUE;
@@ -463,48 +476,101 @@ function updateSettings()
 	global $connections;
 	$format = new cnFormatting();
 	
-	if (isset($_POST['settings']['allow_public']) && $_POST['settings']['allow_public'] === 'true')
+	if ( isset($_POST['settings']['allow_public']) )
 	{
-		$connections->options->setAllowPublic(TRUE);
-	}
-	else
-	{
-		$connections->options->setAllowPublic(FALSE);
-	}
-	
-	
-	if ($_POST['settings']['allow_public_override'] === 'true' && !$connections->options->getAllowPublic())
-	{
-		$connections->options->setAllowPublicOverride(TRUE);
-	}
-	else
-	{
-		$connections->options->setAllowPublicOverride(FALSE);
+		if ( $_POST['settings']['allow_public'] === 'true' )
+		{
+			$connections->options->setAllowPublic(TRUE);
+		}
+		else
+		{
+			$connections->options->setAllowPublic(FALSE);
+		}
 	}
 	
-	if ($_POST['settings']['allow_private_override'] === 'true')
+	if ( isset($_POST['settings']['allow_public_override']) )
 	{
-		$connections->options->setAllowPrivateOverride(TRUE);
+		if ($_POST['settings']['allow_public_override'] === 'true' && !$connections->options->getAllowPublic())
+		{
+			$connections->options->setAllowPublicOverride(TRUE);
+		}
+		else
+		{
+			$connections->options->setAllowPublicOverride(FALSE);
+		}
 	}
-	else
+	
+	if ( isset($_POST['settings']['allow_private_override']) )
 	{
-		$connections->options->setAllowPrivateOverride(FALSE);
+		if ($_POST['settings']['allow_private_override'] === 'true')
+		{
+			$connections->options->setAllowPrivateOverride(TRUE);
+		}
+		else
+		{
+			$connections->options->setAllowPrivateOverride(FALSE);
+		}
 	}
 	
-	$connections->options->setImgThumbQuality($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['quality']));
-	$connections->options->setImgThumbX($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['x']));
-	$connections->options->setImgThumbY($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['y']));
-	$connections->options->setImgThumbCrop($_POST['settings']['image']['thumbnail']['crop']);
+	if ( isset($_POST['settings']['image']['thumbnail']['quality']) )
+	{
+		$connections->options->setImgThumbQuality($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['quality']));
+	}
 	
-	$connections->options->setImgEntryQuality($format->stripNonNumeric($_POST['settings']['image']['entry']['quality']));
-	$connections->options->setImgEntryX($format->stripNonNumeric($_POST['settings']['image']['entry']['x']));
-	$connections->options->setImgEntryY($format->stripNonNumeric($_POST['settings']['image']['entry']['y']));
-	$connections->options->setImgEntryCrop($_POST['settings']['image']['entry']['crop']);
+	if ( isset($_POST['settings']['image']['thumbnail']['x']) )
+	{
+		$connections->options->setImgThumbX($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['x']));
+	}
 	
-	$connections->options->setImgProfileQuality($format->stripNonNumeric($_POST['settings']['image']['profile']['quality']));
-	$connections->options->setImgProfileX($format->stripNonNumeric($_POST['settings']['image']['profile']['x']));
-	$connections->options->setImgProfileY($format->stripNonNumeric($_POST['settings']['image']['profile']['y']));
-	$connections->options->setImgProfileCrop($_POST['settings']['image']['profile']['crop']);
+	if ( isset($_POST['settings']['image']['thumbnail']['y']) )
+	{
+		$connections->options->setImgThumbY($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['y']));
+	}
+	
+	if ( isset($_POST['settings']['image']['thumbnail']['crop']) )
+	{
+		$connections->options->setImgThumbCrop($_POST['settings']['image']['thumbnail']['crop']);
+	}
+	
+	if ( isset($_POST['settings']['image']['entry']['quality']) )
+	{
+		$connections->options->setImgEntryQuality($format->stripNonNumeric($_POST['settings']['image']['entry']['quality']));
+	}
+	
+	if ( isset($_POST['settings']['image']['entry']['x']) )
+	{
+		$connections->options->setImgEntryX($format->stripNonNumeric($_POST['settings']['image']['entry']['x']));
+	}
+	
+	if ( isset($_POST['settings']['image']['entry']['y']) )
+	{
+		$connections->options->setImgEntryY($format->stripNonNumeric($_POST['settings']['image']['entry']['y']));
+	}
+	
+	if ( isset($_POST['settings']['image']['entry']['crop']) )
+	{
+		$connections->options->setImgEntryCrop($_POST['settings']['image']['entry']['crop']);
+	}
+	
+	if ( isset($_POST['settings']['image']['profile']['quality']) )
+	{
+		$connections->options->setImgProfileQuality($format->stripNonNumeric($_POST['settings']['image']['profile']['quality']));
+	}
+	
+	if ( isset($_POST['settings']['image']['profile']['x']) )
+	{
+		$connections->options->setImgProfileX($format->stripNonNumeric($_POST['settings']['image']['profile']['x']));
+	}
+	
+	if ( isset($_POST['settings']['image']['profile']['y']) )
+	{
+		$connections->options->setImgProfileY($format->stripNonNumeric($_POST['settings']['image']['profile']['y']));
+	}
+	
+	if ( isset($_POST['settings']['image']['profile']['crop']) )
+	{
+		$connections->options->setImgProfileCrop($_POST['settings']['image']['profile']['crop']);
+	}
 	
 	$connections->options->saveOptions();
 	$connections->setSuccessMessage('settings_updated');

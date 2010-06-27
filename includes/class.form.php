@@ -221,7 +221,8 @@ class cnFormObjects
 	 */
 	public function buildRadio($name, $id, $value_labels, $checked=null)
 	{
-		$radio = null;
+		$selected = NULL;
+		$radio = NULL;
 		$count = 0;
 		
 		foreach ($value_labels as $label => $value)
@@ -255,24 +256,31 @@ class cnEntryForm
 	{
 		global $wpdb, $connections;
 		
-		if ( !empty($data) ) $options = unserialize($data->options);
-		
 		$entry = new cnEntry($data);
-		
 		$form = new cnFormObjects();
 		$categoryObjects = new cnCategoryObjects();
-		
 		$date = new cnDate();
 		
-		if ( isset($_GET['action']) ) $action = esc_attr($_GET['action']);
+		if ( isset($_GET['action']) )
+		{
+			$action = esc_attr($_GET['action']);
+		}
+		else
+		{
+			$action = NULL;
+		}
 		
-		/**
-		 * @TODO: Do something better with these statements.
-		 */
+		
 		if ( isset($data) )
 		{
-			if (!$data->visibility) $defaultVisibility = 'unlisted'; else $defaultVisibility = $entry->getVisibility();
-			if (!isset($options['entry']['type'])) $defaultEntryType = "individual"; else $defaultEntryType = $entry->getEntryType();
+			$data->options = unserialize($data->options);
+			$defaultVisibility = $entry->getVisibility();
+			$defaultEntryType = $entry->getEntryType();
+		}
+		else
+		{
+			$defaultVisibility = 'unlisted';
+			$defaultEntryType = "individual";
 		}
 		
 		
@@ -283,7 +291,7 @@ class cnEntryForm
 				$out .= '<div class="inside">';
 					$out .= '<div id="minor-publishing">';
 						$out .= '<div id="entry-type">';
-							$out .= $form->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Connection Group"=>"connection_group"),$defaultEntryType);
+							$out .= $form->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Connection Group"=>"connection_group"), $defaultEntryType);
 						$out .= '</div>';
 						$out .= '<div id="visibility">';
 							$out .= '<span class="radio_group">' . $form->buildRadio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$defaultVisibility) . '</span>';
@@ -502,7 +510,7 @@ class cnEntryForm
 					$out .= '</textarea>';
 					// --> End template for Addresses <-- \\
 					
-					if ($data->addresses != NULL)
+					if ( !empty($data->addresses) )
 					{
 						$addressValues = $entry->getAddresses();
 						
@@ -570,7 +578,7 @@ class cnEntryForm
 				$out .= '</textarea>';
 				// --> End template for Phone Numbers <-- \\
 				
-				if ($data->phone_numbers != NULL)
+				if ( isset($data->phone_numbers) )
 				{
 					$phoneNumberValues = $entry->getPhoneNumbers();
 					
@@ -611,7 +619,7 @@ class cnEntryForm
 				$out .= '</textarea>';
 				// --> End template for Email Addresses <-- \\
 				
-				if ($data->email != NULL)
+				if ( !empty($data->email) )
 				{
 					$emailValues = $entry->getEmailAddresses();
 					
@@ -651,7 +659,7 @@ class cnEntryForm
 				$out .= '</textarea>';
 				// --> End template for IM IDs <-- \\
 				
-				if ($data->im != null)
+				if ( !empty($data->im) )
 				{
 					$imValues = $entry->getIm();
 					
@@ -691,7 +699,7 @@ class cnEntryForm
 				$out .= '</textarea>';
 				// --> End template for Social Media IDs <-- \\
 				
-				if ($data->social != null)
+				if ( !empty($data->social) )
 				{
 					$socialMedia = $entry->getSocialMedia();
 					
@@ -811,6 +819,8 @@ class cnCategoryObjects
 		
 	public function buildCategoryRow($type, $parents, $level = 0, $selected = NULL)
 	{
+		$out = NULL;
+		
 		foreach ($parents as $child)
 		{
 			$category = new cnCategory($child);
@@ -885,6 +895,7 @@ class cnCategoryObjects
 	private function buildOptionRowHTML($term, $level, $selected)
 	{
 		global $rowClass;
+		$selectString = NULL;
 		
 		$category = new cnCategory($term);
 		$pad = str_repeat('&nbsp;&nbsp;&nbsp;', max(0, $level));
@@ -904,7 +915,18 @@ class cnCategoryObjects
 		
 		if (!empty($checked))
 		{
-			if (in_array($category->getId(), $checked)) $checkString = ' CHECKED ';
+			if (in_array($category->getId(), $checked))
+			{
+				$checkString = ' CHECKED ';
+			}
+			else
+			{
+				$checkString = NULL;
+			}
+		}
+		else
+		{
+			$checkString = NULL;
 		}
 		
 		$out = '<li id="category-' . $category->getId() . '" class="category"><label class="selectit">' . $pad . '<input id="check-category-' . $category->getId() . '" type="checkbox" name="entry_category[]" value="' . $category->getId() . '" ' . $checkString . '> ' . $category->getName() . '</input></label></li>';
@@ -918,6 +940,7 @@ class cnCategoryObjects
 		$form = new cnFormObjects();
 		$category = new cnCategory($data);
 		$parent = new cnCategory($connections->retrieve->category($category->getParent()));
+		$level = NULL;
 		
 		$out = '<div class="form-field form-required connectionsform">';
 			$out .= '<label for="cat_name">Category Name</label>';

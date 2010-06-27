@@ -419,16 +419,17 @@ if (!class_exists('connectionsLoad'))
 		public function activate()
 		{
 			global $wpdb, $connections;
-			require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
+			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 			
+			$charsetCollate = '';
 			
-			/**
-			 * @TODO: Build a proper upgrade function for the table.
-			 */
-			if ($wpdb->get_var("SHOW TABLES LIKE 'CN_ENTRY_TABLE'") != CN_ENTRY_TABLE)
+			if ( ! empty($wpdb->charset) ) $charsetCollate = "DEFAULT CHARACTER SET $wpdb->charset";
+			if ( ! empty($wpdb->collate) ) $charsetCollate .= " COLLATE $wpdb->collate";
+
+			
+			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_ENTRY_TABLE . "'") != CN_ENTRY_TABLE)
 			{
-				//$table_name = $this->db->getEntryTableName();
-			    $entryTable = "CREATE TABLE " . CN_ENTRY_TABLE . " (
+				$entryTable = "CREATE TABLE " . CN_ENTRY_TABLE . " (
 			        id bigint(20) NOT NULL AUTO_INCREMENT,
 			        ts TIMESTAMP,
 					date_added tinytext NOT NULL,
@@ -461,12 +462,12 @@ if (!class_exists('connectionsLoad'))
 					owner bigint(20) NOT NULL,
 					status varchar(20) NOT NULL,
 			        PRIMARY KEY  (id)
-			    );";
+			    ) $charsetCollate;";
 			    
 			    dbDelta($entryTable);
 			}
 			
-			if ($wpdb->get_var("SHOW TABLES LIKE 'CN_TERMS_TABLE'") != CN_TERMS_TABLE)
+			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_TERMS_TABLE . "'") != CN_TERMS_TABLE)
 			{
 				$termsTable = "CREATE TABLE " . CN_TERMS_TABLE . " (
 			        term_id bigint(20) NOT NULL AUTO_INCREMENT,
@@ -476,12 +477,12 @@ if (!class_exists('connectionsLoad'))
 			        PRIMARY KEY  (term_id),
 					UNIQUE KEY slug (slug),
 					INDEX name (name)
-			    );";
+			    ) $charsetCollate;";
 			    
 			    dbDelta($termsTable);
 			}
 			
-			if ($wpdb->get_var("SHOW TABLES LIKE 'CN_TERM_TAXONOMY_TABLE'") != CN_TERM_TAXONOMY_TABLE)
+			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_TERM_TAXONOMY_TABLE . "'") != CN_TERM_TAXONOMY_TABLE)
 			{
 				$termTaxonomyTable = "CREATE TABLE " . CN_TERM_TAXONOMY_TABLE . " (
 			        term_taxonomy_id bigint(20) NOT NULL AUTO_INCREMENT,
@@ -493,12 +494,12 @@ if (!class_exists('connectionsLoad'))
 			        PRIMARY KEY  (term_taxonomy_id),
 					UNIQUE KEY term_id_taxonomy (term_id, taxonomy),
 					INDEX taxonomy (taxonomy)
-			    );";
+			    ) $charsetCollate;";
 			    
 			    dbDelta($termTaxonomyTable);
 			}
 			
-			if ($wpdb->get_var("SHOW TABLES LIKE 'CN_TERM_RELATIONSHIP_TABLE'") != CN_TERM_RELATIONSHIP_TABLE)
+			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_TERM_RELATIONSHIP_TABLE . "'") != CN_TERM_RELATIONSHIP_TABLE)
 			{
 				$termTermRelationshipTable = "CREATE TABLE " . CN_TERM_RELATIONSHIP_TABLE . " (
 			        entry_id bigint(20) NOT NULL,
@@ -506,7 +507,7 @@ if (!class_exists('connectionsLoad'))
 					term_order int(11) NOT NULL,
 			        PRIMARY KEY (entry_id,term_taxonomy_id),
 					KEY term_taxonomy_id (term_taxonomy_id)
-			    );";
+			    ) $charsetCollate;";
 			    
 			    dbDelta($termTermRelationshipTable);
 			}
@@ -940,7 +941,7 @@ if (!class_exists('connectionsLoad'))
 									break;
 								}
 								
-								if ($_POST['filter'])
+								if ( isset($_POST['filter']) )
 								{
 									check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
 									processSetUserFilter();

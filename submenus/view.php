@@ -1,14 +1,20 @@
 <?php
 function connectionsShowViewPage()
 {
-	//global $wpdb, $current_user, $connections;
 	global $wpdb, $connections;
 	
 	if (class_exists('connectionsProLoad')) global $connectionsPro;
 		
-	//get_currentuserinfo();
+	if ( isset($_GET['action']) )
+		{
+			$action = $_GET['action'];
+		}
+		else
+		{
+			$action = NULL;
+		}
 	
-	switch ($_GET['action'])
+	switch ($action)
 	{
 		case 'copy':
 			/*
@@ -301,6 +307,8 @@ function connectionsShowViewPage()
 											
 											if ( !empty($categories) )
 											{
+												$i = 0;
+												
 												foreach ($categories as $category)
 												{
 													/*

@@ -146,6 +146,8 @@ class cnTerms
 	
 	private function isChild($termID)
 	{
+		$isChild = FALSE;
+		
 		foreach ($this->termChildren as $parentID => $children)
 		{
 			foreach ($children as $child)

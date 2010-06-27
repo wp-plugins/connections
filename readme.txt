@@ -87,7 +87,11 @@ Connections is a simple to use address book system but is also very versatile. Y
 
 = 0.7.0.3 X/XX/2010 =
 * BUG: Set initial DB version during activation.
+* BUG: Fix all errors reported by when WP_DEBUG is set to true.
+* BUG: Fix database table check befor the table is created.
+* BUG: When an entry is added, the last modified by field is correctly set.
 * OTHER: Add UTF-8 support in the vCard file.
+* OTHER: When creating tables the character set and collate will honor the settings in wp-config.php or the default settings for WP.
 
 = 0.7.0.2 6/12/2010 =
 * FEATURE: Add upgrade notice to the plugin admin page.
