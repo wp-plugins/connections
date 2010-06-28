@@ -7,6 +7,19 @@ class cnvCard extends cnEntry
   
 	private function setvCardData()
 	{
+		$imageName = $this->getImageNameCard();
+		
+		if ( !empty($imageName) )
+		{
+			//$imageURL = CN_IMAGE_BASE_URL . $imageName;
+			$imageURL = CN_IMAGE_PATH . $imageName;
+		}
+		else
+		{
+			$imageURL = NULL;
+		}
+		
+		
 		$this->data = array(
 							'class'=>null,
 							'display_name'=>$this->getFullFirstLastName(),
@@ -35,7 +48,7 @@ class cnvCard extends cnEntry
 							'home_postal_code'=>null,
 							'home_country'=>null,
 							'other_po_box'=>null,
-							'Other_extended_address'=>null,
+							'other_extended_address'=>null,
 							'other_address'=>null,
 							'other_city'=>null,
 							'other_state'=>null,
@@ -54,13 +67,14 @@ class cnvCard extends cnEntry
 							'messenger'=>null,
 							'yim'=>null,
 							'jabber'=>null,
-							'photo'=>CN_IMAGE_BASE_URL . $this->getImageNameCard(),
+							'photo'=>$imageURL,
 							'birthday'=>$this->getBirthday('Y-m-d'),
 							'anniversary'=>$this->getAnniversary('Y-m-d'),
-							'spouce'=>null,
+							'spouse'=>null,
 							'timezone'=>null,
 							'revision_date'=>date('Y-m-d H:i:s', strtotime($this->getUnixTimeStamp())),
 							'sort_string'=>null,
+							'categories'=>$this->getCategory(),
 							'note'=>$this->getNotes()
 							);
 		
@@ -186,8 +200,68 @@ class cnvCard extends cnEntry
 		if ($this->data['spouse']) { $this->card .= "X-SPOUSE;CHARSET=utf-8:".$this->data['spouse']."\r\n"; }
 		if ($this->data['role']) { $this->card .= "ROLE;CHARSET=utf-8:".$this->data['role']."\r\n"; }
 		if ($this->data['note']) { $this->card .= "NOTE;CHARSET=utf-8:".$this->data['note']."\r\n"; }
-		// @TODO: Base64 encode the image rather than link to it.
-		if ($this->data['photo']) { $this->card .= "PHOTO;VALUE=uri:".$this->data['photo']."\r\n"; }
+		
+		// @Author: http://www.hotscripts.com/forums/php/47729-solved-how-create-vcard-photo.html
+		if ($this->data['photo'])
+		{
+			$imageTypes = array
+								(
+								    IMAGETYPE_JPEG => 'JPEG',
+								    IMAGETYPE_GIF  => 'GIF',
+								    IMAGETYPE_PNG  => 'PNG',
+								    IMAGETYPE_BMP  => 'BMP'
+								);
+			
+			if ($imageInfo = getimagesize( $this->data['photo'] ) AND isset($imageTypes[$imageInfo[2]]))
+			{
+			    $photo = base64_encode( file_get_contents($this->data['photo']) );
+			    $type  = $imageTypes[$imageInfo[2]];
+			}
+			
+			//$this->card .= sprintf("PHOTO;ENCODING=BASE64;TYPE=%s:%s\r\n", $type, $photo);
+			$this->card .= sprintf("PHOTO;ENCODING=BASE64;TYPE=%s:", $type);
+			
+			$i = 0;
+			$strphoto = sprintf($photo);
+			
+			while($i < strlen($strphoto))
+			{
+				if( $i%75 == 0 )
+				{
+			  		$this->card .= "\r\n " . $strphoto[$i];
+				}
+				else
+				{
+				  	$this->card .= $strphoto[$i];
+				}
+			      
+				$i++;
+			}  
+			
+			$this->card .= "\r\n";
+			//$this->card .= "PHOTO;VALUE=uri:".$this->data['photo']."\r\n";
+		}
+		
+		if ($this->data['categories'])
+		{
+			$count = count($this->data['categories']);
+			$i = 0;
+			
+			$this->card .= "CATEGORIES;CHARSET=utf-8:";
+			
+			foreach ($this->data['categories'] as $category)
+			{
+				$this->card .= $category->name;
+				
+				$i++;
+				if ( $count > $i ) $this->card .= ',';
+			}
+			
+			$this->card .= "\r\n";
+			
+			unset($i);
+		}
+		
 		$this->card .= "TZ:".$this->data['timezone']."\r\n";
 		$this->card .= "END:VCARD\r\n";
 	}

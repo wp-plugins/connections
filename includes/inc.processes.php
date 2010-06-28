@@ -195,7 +195,7 @@ function processAddEntry()
 			else
 			{
 				$connections->setSuccessMessage('entry_added');
-				$entryID = (int) $wpdb->insert_id;
+				$entryID = (int) $connections->lastInsertID;
 			}
 		break;
 		
@@ -405,10 +405,10 @@ function processSetUserFilter()
 {
 	global $connections;
 	
-	$connections->currentUser->setFilterEntryType($_POST['entry_type']);
-	$connections->currentUser->setFilterVisibility($_POST['visibility_type']);
+	if ( isset($_POST['entry_type']) ) $connections->currentUser->setFilterEntryType($_POST['entry_type']);
+	if ( isset($_POST['visibility_type']) ) $connections->currentUser->setFilterVisibility($_POST['visibility_type']);
 	
-	if ( !empty($_POST['category']) ) $connections->currentUser->setFilterCategory(esc_attr($_POST['category']));
+	if ( isset($_POST['category']) ) $connections->currentUser->setFilterCategory(esc_attr($_POST['category']));
 	if ( !empty($_GET['category_id']) ) $connections->currentUser->setFilterCategory(esc_attr($_GET['category_id']));
 }
 

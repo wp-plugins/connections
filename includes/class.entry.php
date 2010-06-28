@@ -159,12 +159,12 @@ class cnEntry
 			if ( isset($entry->contact_last_name) ) $this->contactLastName = $entry->contact_last_name;
 			if ( isset($entry->department) ) $this->department = $entry->department;
 			if ( isset($entry->group_name) ) $this->groupName = $entry->group_name;
-			if ( isset($entry->addresses) ) $this->addresses = unserialize($entry->addresses);
-			if ( isset($entry->phone_numbers) ) $this->phoneNumbers = unserialize($entry->phone_numbers);
-			if ( isset($entry->email) ) $this->emailAddresses = unserialize($entry->email);
-			if ( isset($entry->im) ) $this->im = unserialize($entry->im);
-			if ( isset($entry->social) ) $this->socialMedia = unserialize($entry->social);
-			if ( isset($entry->websites) ) $this->websites = unserialize($entry->websites);
+			if ( isset($entry->addresses) ) $this->addresses = $entry->addresses;
+			if ( isset($entry->phone_numbers) ) $this->phoneNumbers = $entry->phone_numbers;
+			if ( isset($entry->email) ) $this->emailAddresses = $entry->email;
+			if ( isset($entry->im) ) $this->im = $entry->im;
+			if ( isset($entry->social) ) $this->socialMedia = $entry->social;
+			if ( isset($entry->websites) ) $this->websites = $entry->websites;
 			if ( isset($entry->birthday) ) $this->birthday = $entry->birthday;
 			if ( isset($entry->anniversary) ) $this->anniversary = $entry->anniversary;
 			if ( isset($entry->bio) ) $this->bio = $entry->bio;
@@ -508,7 +508,9 @@ class cnEntry
     {
         if ( !empty($this->addresses) )
 		{
-			foreach ($this->addresses as $key => $address)
+			$addresses = unserialize($this->addresses);
+			
+			foreach ( (array) $addresses as $key => $address)
 			{
 				$row->name = $this->format->sanitizeString($address['name']);
 				$row->type = $this->format->sanitizeString($address['type']);
@@ -521,28 +523,31 @@ class cnEntry
 				$row->visibility = $this->format->sanitizeString($address['visibility']);
 				
 				// Start compatibility for versions 0.2.24 and older. \\
-				switch ($row->type)
+				if ( empty($row->name) )
 				{
-		        	case "home":
-		        		$row->name = "Home Address";
-		        	break;
-					
-					case "work":
-		        		$row->name = "Work Address";
-		        	break;
-					
-					case "school":
-		        		$row->name = "School Address";
-		        	break;
-					
-					case "other":
-		        		$row->name = "Other Address";
-		        	break;
-		        	
-		        	default:
-		        		$row->name = $this->format->sanitizeString($address['name']);
-		        	break;
-		        }	
+					switch ($row->type)
+					{
+			        	case "home":
+			        		$row->name = "Home Address";
+			        	break;
+						
+						case "work":
+			        		$row->name = "Work Address";
+			        	break;
+						
+						case "school":
+			        		$row->name = "School Address";
+			        	break;
+						
+						case "other":
+			        		$row->name = "Other Address";
+			        	break;
+			        	
+			        	default:
+			        		$row->name = $this->format->sanitizeString($address['name']);
+			        	break;
+			        }	
+				}
 				// End compatibility for versions 0.2.24 and older. \\
 				
 				$out[] = $row;
@@ -574,12 +579,17 @@ class cnEntry
 				// First validate the supplied data.
 				$address[$key] = $this->validate->attributesArray($validFields, $address);
 				
-				$addressValues = $connections->options->getDefaultPhoneNumberValues();
+				$addressValues = $connections->options->getDefaultAddressValues();
 				$addresses[$key]['name'] = $addressValues[$address['type']];
 			}
+			
+			$this->addresses = serialize($addresses);
+		}
+		else
+		{
+			$this->addresses = NULL;
 		}
 		
-		$this->addresses = $addresses;
     }
 
     /**
@@ -599,7 +609,9 @@ class cnEntry
     {
         if ( !empty($this->phoneNumbers) )
 		{
-			foreach ($this->phoneNumbers as $key => $number)
+			$phoneNumbers = unserialize($this->phoneNumbers);
+			
+			foreach ( (array) $phoneNumbers as $key => $number)
 			{
 				$row->name = $this->format->sanitizeString($number['name']);
 				$row->type = $this->format->sanitizeString($number['type']);
@@ -642,49 +654,53 @@ class cnEntry
 					break;
 				}
 				
-				switch ($row->type)
+				if ( empty($row->name) )
 				{
-					case 'home':
-						$row->name = "Home Phone";
+					switch ($row->type)
+					{
+						case 'home':
+							$row->name = "Home Phone";
+							break;
+						case 'homephone':
+							$row->name = "Home Phone";
+							break;
+						case 'homefax':
+							$row->name = "Home Fax";
+							break;
+						case 'cell':
+							$row->name = "Cell Phone";
+							break;
+						case 'cellphone':
+							$row->name = "Cell Phone";
+							break;
+						case 'work':
+							$row->name = "Work Phone";
+							break;
+						case 'workphone':
+							$row->name = "Work Phone";
+							break;
+						case 'workfax':
+							$row->name = "Work Fax";
+							break;
+						case 'fax':
+							$row->name = "Work Fax";
+							break;
+						
+						default:
+							$row->name = $this->format->sanitizeString($number['name']);
 						break;
-					case 'homephone':
-						$row->name = "Home Phone";
-						break;
-					case 'homefax':
-						$row->name = "Home Fax";
-						break;
-					case 'cell':
-						$row->name = "Cell Phone";
-						break;
-					case 'cellphone':
-						$row->name = "Cell Phone";
-						break;
-					case 'work':
-						$row->name = "Work Phone";
-						break;
-					case 'workphone':
-						$row->name = "Work Phone";
-						break;
-					case 'workfax':
-						$row->name = "Work Fax";
-						break;
-					case 'fax':
-						$row->name = "Work Fax";
-						break;
-					
-					default:
-						$row->name = $this->format->sanitizeString($number['name']);
-					break;
+					}
 				}
 				
-				if ( isset($number['homephone']) )
+				/*if ( isset($number['homephone']) )
 				{
 		        	$row->number = $this->format->sanitizeString($number['homephone']);
 		        }
 				else
 				{
 					$row->number = $this->format->sanitizeString($number['number']);
-				}
+				}*/
+				
 				// End compatibility for versions 0.2.24 and older. \\
 				
 				$out[] = $row;
@@ -725,9 +741,14 @@ class cnEntry
 				// If the number is emty, no need to store it.
 				if ( empty($phoneNumber['number']) ) unset($phoneNumbers[$key]);
 			}
+			
+			$this->phoneNumbers = serialize($phoneNumbers);
+		}
+		else
+		{
+			$this->phoneNumbers = NULL;
 		}
 		
-		$this->phoneNumbers = $phoneNumbers;
     }
 
     /**
@@ -747,7 +768,9 @@ class cnEntry
     {
         if ( !empty($this->emailAddresses) )
 		{
-			foreach ($this->emailAddresses as $key => $email)
+			$emailAddresses = unserialize($this->emailAddresses);
+			
+			foreach ( (array) $emailAddresses as $key => $email)
 			{
 				$row->name = $this->format->sanitizeString($email['name']);
 				$row->type = $this->format->sanitizeString($email['type']);
@@ -755,18 +778,21 @@ class cnEntry
 				$row->visibility = $this->format->sanitizeString($email['visibility']);
 				
 				// Start compatibility for versions 0.2.24 and older. \\
-				switch ($row->type)
+				if ( empty($row->name) )
 				{
-					case 'personal':
-						$row->name = "Personal Email";
+					switch ($row->type)
+					{
+						case 'personal':
+							$row->name = "Personal Email";
+							break;
+						case 'work':
+							$row->name = "Work Email";
+							break;
+						
+						default:
+							$row->name = $this->format->sanitizeString($email['name']);
 						break;
-					case 'work':
-						$row->name = "Work Email";
-						break;
-					
-					default:
-						$row->name = $this->format->sanitizeString($email['name']);
-					break;
+					}
 				}
 				// End compatibility for versions 0.2.24 and older. \\
 				
@@ -809,9 +835,14 @@ class cnEntry
 				// If the address is emty, no need to store it.
 				if ( empty($email['address']) ) unset($email[$key]);
 			}
+			
+			$this->emailAddresses = serialize($emailAddresses);
+		}
+		else
+		{
+			$this->emailAddresses = NULL;
 		}
 		
-		$this->emailAddresses = $emailAddresses;
     }
 
     /**
@@ -831,7 +862,9 @@ class cnEntry
     {
         if ( !empty($this->im) )
 		{
-			foreach ($this->im as $key => $network)
+			$networks = unserialize($this->im);
+			
+			foreach ( (array) $networks as $key => $network)
 			{
 				$row->name = $this->format->sanitizeString($network['name']);
 				$row->type = $this->format->sanitizeString($network['type']);
@@ -864,27 +897,30 @@ class cnEntry
 				// End compatibility with versions 0.5.48 and older. \\
 				
 				// Start compatibility with versions 0.5.48 and older. \\
-				switch ($row->type)
+				if ( empty($row->name) )
 				{
-					case 'aim':
-						$row->name = 'AIM';
-					break;
-					
-					case 'yahoo':
-						$row->name = 'Yahoo IM';
-					break;
-					
-					case 'jabber':
-						$row->name = 'Jabber / Google Talk';
-					break;
-					
-					case 'messenger':
-						$row->name = 'Messenger';
-					break;
-					
-					default:
-						$row->name = $this->format->sanitizeString($row->name);
-					break;
+					switch ($row->type)
+					{
+						case 'aim':
+							$row->name = 'AIM';
+						break;
+						
+						case 'yahoo':
+							$row->name = 'Yahoo IM';
+						break;
+						
+						case 'jabber':
+							$row->name = 'Jabber / Google Talk';
+						break;
+						
+						case 'messenger':
+							$row->name = 'Messenger';
+						break;
+						
+						default:
+							$row->name = $this->format->sanitizeString($row->name);
+						break;
+					}
 				}
 				// End compatibility with versions 0.5.48 and older. \\
 				
@@ -928,9 +964,15 @@ class cnEntry
 				// If the id is emty, no need to store it.
 				if ( empty($imNetwork['id']) ) unset($im[$key]);
 			}
+			
+			$this->im = serialize($im);
+		}
+		else
+		{
+			$this->im = NULL;
 		}
 		
-		$this->im = $im;
+		
     }
 	
 	/**
@@ -951,7 +993,9 @@ class cnEntry
     {
 		if ( !empty($this->socialMedia) )
 		{
-			foreach ($this->socialMedia as $key => $network)
+			$networks = unserialize($this->socialMedia);
+			
+			foreach ( (array) $networks as $key => $network)
 			{
 				$row->name = $this->format->sanitizeString($network['name']);
 				$row->type = $this->format->sanitizeString($network['type']);
@@ -1030,9 +1074,14 @@ class cnEntry
 				if ( array_key_exists($key, $socialMedia) ) $socialMedia[$key]['url'] = $socialMedia[$key]['id'];
 				
 			}
+			
+			$this->socialMedia = serialize($socialMedia);
+		}
+		else
+		{
+			$this->socialMedia = NULL;
 		}
 		
-		$this->socialMedia = $socialMedia;
     }
 
     /**
@@ -1208,13 +1257,17 @@ class cnEntry
     {
         if ( !empty($this->websites) )
 		{
-			foreach ($this->websites as $key => $website)
+			$websites = unserialize($this->websites);
+			
+			foreach ( (array) $websites as $key => $website)
 			{
 				$websiteRow->name = $this->format->sanitizeString($website['name']);
 				$websiteRow->type = $this->format->sanitizeString($website['type']);
 				$websiteRow->address = $this->format->sanitizeString($website['address']);
 				$websiteRow->url = $this->format->sanitizeString($website['url']);
 				$websiteRow->visibility = $this->format->sanitizeString($website['visibility']);
+				
+				if ( empty($websiteRow->url) ) $websiteRow->url = $websiteRow->address;
 				
 				$out[] = $websiteRow;
 				unset($websiteRow);
@@ -1263,16 +1316,23 @@ class cnEntry
 						if ( substr($website['address'], 0, 7) != 'http://' )
 						{
 							$websites[$key]['address'] = 'http://' . $website['address'];
+							$websites[$key]['url'] = $websites[$key]['address'];
 						}
 					break;
 				}
 				
-				if ( array_key_exists($key, $websites) ) $websites[$key]['url'] = $website['address'];
+				//if ( array_key_exists($key, $websites) ) $websites[$key]['url'] = $website['address'];
 				
 			}
+			
+			$this->websites = serialize($websites);
+		}
+		else
+		{
+			$this->websites = NULL;
 		}
 		
-		$this->websites = $websites;
+		
     }
 
     /**
@@ -1301,7 +1361,14 @@ class cnEntry
      */
     public function getConnectionGroup()
     {
-        return $this->options['connection_group'];
+        if ( !empty($this->options['connection_group']) )
+		{
+			return $this->options['connection_group'];
+		}
+		else
+		{
+			return array();
+		}
     }
     
     /**
@@ -1534,12 +1601,12 @@ class cnEntry
 	{
 		global $wpdb, $connections;
 		
-		$this->addresses = serialize($this->addresses);
-		$this->phoneNumbers = serialize($this->phoneNumbers);
-		$this->emailAddresses = serialize($this->emailAddresses);
-		$this->im = serialize($this->im);
-		$this->socialMedia = serialize($this->socialMedia);
-		$this->websites = serialize($this->websites);
+		//$this->addresses = serialize($this->addresses);
+		//$this->phoneNumbers = serialize($this->phoneNumbers);
+		//$this->emailAddresses = serialize($this->emailAddresses);
+		//$this->im = serialize($this->im);
+		//$this->socialMedia = serialize($this->socialMedia);
+		//$this->websites = serialize($this->websites);
 		$this->setOptions();
 		
 		// Ensure fields that should be empty depending on the entry type.
@@ -1636,12 +1703,12 @@ class cnEntry
 	{
 		global $wpdb, $connections;
 		
-		$this->addresses = serialize($this->addresses);
-		$this->phoneNumbers = serialize($this->phoneNumbers);
-		$this->emailAddresses = serialize($this->emailAddresses);
-		$this->im = serialize($this->im);
-		$this->socialMedia = serialize($this->socialMedia);
-		$this->websites = serialize($this->websites);
+		//$this->addresses = serialize($this->addresses);
+		//$this->phoneNumbers = serialize($this->phoneNumbers);
+		//$this->emailAddresses = serialize($this->emailAddresses);
+		//$this->im = serialize($this->im);
+		//$this->socialMedia = serialize($this->socialMedia);
+		//$this->websites = serialize($this->websites);
 		$this->setOptions();
 		
 		// Ensure fields that should be empty depending on the entry type.
@@ -1680,7 +1747,7 @@ class cnEntry
 		
 		$wpdb->show_errors = true;
 		
-		return $wpdb->query($wpdb->prepare('INSERT INTO ' . CN_ENTRY_TABLE . ' SET
+		$sql = $wpdb->prepare('INSERT INTO ' . CN_ENTRY_TABLE . ' SET
 											date_added   		= "%d",
 											entry_type  		= "%s",
 											visibility  		= "%s",
@@ -1738,8 +1805,17 @@ class cnEntry
 											$connections->currentUser->getID(),
 											$connections->currentUser->getID(),
 											$connections->currentUser->getID(),
-											'approved'));
+											'approved');
+		
+		$result = $wpdb->query($sql);
+		
+		$connections->lastQuery = $wpdb->last_query;
+		$connections->lastQueryError = $wpdb->last_error;
+		$connections->lastInsertID = $wpdb->insert_id;
+		
 		$wpdb->show_errors = FALSE;
+		
+		return $result;
 	}
 	
 	public function delete($id)

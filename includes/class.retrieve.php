@@ -85,17 +85,32 @@ class cnRetrieve
 			
 			// Set the query string to return entries within specific categories.
 			$taxonomy = ' AND ' . CN_TERM_TAXONOMY_TABLE . ".taxonomy = 'category' ";
-			if ( !empty($catIDString) ) $termIDs = ' AND ' . CN_TERM_TAXONOMY_TABLE . ".term_id IN ('" . $catIDString . "') ";
-			if ( !empty($catNameString) )$termNames = ' AND ' . CN_TERMS_TABLE . ".name IN ('" . $catNameString . "') ";
+			if ( !empty($catIDString) )
+			{
+				$termIDs = ' AND ' . CN_TERM_TAXONOMY_TABLE . ".term_id IN ('" . $catIDString . "') ";
+			}
+			else
+			{
+				$termIDs = NULL;
+			}
+			
+			if ( !empty($catNameString) )
+			{
+				$termNames = ' AND ' . CN_TERMS_TABLE . ".name IN ('" . $catNameString . "') ";
+			}
+			else
+			{
+				$termNames = NULL;
+			}
 		}
 		else
 		{
-			$taxonomy = NULL;
-			$termIDs = NULL;
-			$termNames = NULL;
 			$joinTermRelationships = NULL;
 			$joinTermTaxonomy = NULL;
 			$joinTerm = NULL;
+			$taxonomy = NULL;
+			$termIDs = NULL;
+			$termNames = NULL;
 		}
 		
 		
@@ -161,6 +176,7 @@ class cnRetrieve
 		
 		$connections->lastQuery = $wpdb->last_query;
 		$connections->lastQueryError = $wpdb->last_error;
+		$connections->lastInsertID = $wpdb->insert_id;
 		
 		return $results;
 		

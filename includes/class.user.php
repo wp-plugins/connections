@@ -50,7 +50,7 @@ class cnUser
 			$user_meta = get_usermeta($this->ID, 'connections');
 		}
 		
-		if ( !$user_meta == NULL && isset($user_meta['filter']) )
+		if ( !$user_meta == NULL && isset($user_meta['filter']['entry_type']) )
 		{
 			return $user_meta['filter']['entry_type'];
 		}
@@ -67,9 +67,33 @@ class cnUser
 		
 		if (!in_array($entryType, $permittedEntryTypes)) return FALSE;
 		
-		$user_meta = get_usermeta($this->ID, 'connections');
+		/*
+		 * Use get_user_meta() used in WP 3.0 and newer
+		 * since get_usermeta() was deprecated.
+		 */
+		if ( function_exists('get_user_meta') )
+		{
+			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		}
+		else
+		{
+			$user_meta = get_usermeta($this->ID, 'connections');
+		}
+		
 		$user_meta['filter']['entry_type'] = $entryType;
-		update_usermeta($this->ID, 'connections', $user_meta);
+		
+		/*
+		 * Use update_user_meta() used in WP 3.0 and newer
+		 * since update_usermeta() was deprecated.
+		 */
+		if ( function_exists('update_user_meta') )
+		{
+			update_user_meta($this->ID, 'connections', $user_meta);
+		}
+		else
+		{
+			update_usermeta($this->ID, 'connections', $user_meta);
+		}
     }
 	
 	public function getFilterVisibility()
@@ -87,7 +111,7 @@ class cnUser
 			$user_meta = get_usermeta($this->ID, 'connections');
 		}
 		
-		if ( !$user_meta == NULL && isset($user_meta['filter']) )
+		if ( !$user_meta == NULL && isset($user_meta['filter']['visibility']) )
 		{
 			/*
 			 * Reset the user's cached visibility filter if they no longer have access.
@@ -145,9 +169,33 @@ class cnUser
 		
 		if (!in_array($visibility, $permittedVisibility)) return FALSE;
 		
-		$user_meta = get_usermeta($this->ID, 'connections');
+		/*
+		 * Use get_user_meta() used in WP 3.0 and newer
+		 * since get_usermeta() was deprecated.
+		 */
+		if ( function_exists('get_user_meta') )
+		{
+			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		}
+		else
+		{
+			$user_meta = get_usermeta($this->ID, 'connections');
+		}
+		
 		$user_meta['filter']['visibility'] = $visibility;
-		update_usermeta($this->ID, 'connections', $user_meta);
+		
+		/*
+		 * Use update_user_meta() used in WP 3.0 and newer
+		 * since update_usermeta() was deprecated.
+		 */
+		if ( function_exists('update_user_meta') )
+		{
+			update_user_meta($this->ID, 'connections', $user_meta);
+		}
+		else
+		{
+			update_usermeta($this->ID, 'connections', $user_meta);
+		}
     }
 	
 	public function getFilterCategory()
@@ -194,7 +242,19 @@ class cnUser
 		}
 		
 		$user_meta['filter']['category'] = $id;
-		update_usermeta($this->ID, 'connections', $user_meta);
+		
+		/*
+		 * Use update_user_meta() used in WP 3.0 and newer
+		 * since update_usermeta() was deprecated.
+		 */
+		if ( function_exists('update_user_meta') )
+		{
+			update_user_meta($this->ID, 'connections', $user_meta);
+		}
+		else
+		{
+			update_usermeta($this->ID, 'connections', $user_meta);
+		}
     }
 	
 	public function setMessage($message)
@@ -213,7 +273,7 @@ class cnUser
 		}
 		
 		$user_meta['messages'][] = $message;
-		//print_r('setMessage '. $user_meta);
+		
 		/*
 		 * Use update_user_meta() used in WP 3.0 and newer
 		 * since update_usermeta() was deprecated.
