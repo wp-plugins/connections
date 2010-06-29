@@ -299,6 +299,7 @@ jQuery(document).ready(function(){
 				insertHorizontalRule : { visible : false },
 				
 				insertImage : { visible : false },
+				insertTable : { visible : false },
 				
 				separator06 : { visible : false },
 				
@@ -362,6 +363,7 @@ jQuery(document).ready(function(){
 				insertHorizontalRule : { visible : false },
 				
 				insertImage : { visible : false },
+				insertTable : { visible : false },
 				
 				separator06 : { visible : false },
 				
