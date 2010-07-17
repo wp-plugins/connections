@@ -172,30 +172,41 @@ class cnTerms
 	/**
 	 * Returns all the children term IDs of the parent term ID recursively.
 	 * 
-	 * @param integer $id
-	 * @return array
+	 * @param interger $id
+	 * @param string $taxonomy
+	 * @param object $_CNpreviousIDs [optional]
+	 * @return array || NULL
 	 */
 	public function getTermChildrenIDs($id, $taxonomy, $_CNpreviousIDs = NULL)
 	{
 		global $wpdb, $_CNpreviousIDs;
+		$termChildrenIDs = array();
 		
 		$query = $wpdb->prepare( "SELECT DISTINCT tt.term_id from " . CN_TERMS_TABLE . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE . " AS tt ON t.term_id = tt.term_id WHERE parent = %d ", $id);
 		
 		$childrenIDs = $wpdb->get_col($query);
 		
 		//print_r($childrenIDs);
-		if (!empty($childrenIDs))
+		if ( !empty($childrenIDs) )
 		{
 			foreach ($childrenIDs as $ttID)
 			{
 				//$this->termChildrenIDs[] = $ttID;
-				$_CNpreviousIDs[] = $ttID;
+				//$_CNpreviousIDs[] = $ttID;
+				$termChildrenIDs[] = $ttID;
 
-				$this->getTermChildrenIDs($ttID, $taxonomy, $_CNpreviousIDs);
+				$result = $this->getTermChildrenIDs($ttID, $taxonomy, $_CNpreviousIDs);
+				
+				$termChildrenIDs = array_merge($termChildrenIDs, (array) $result);
 			}
 		}
+		else
+		{
+			return NULL;
+		}
 		
-		return $_CNpreviousIDs;
+		return $termChildrenIDs;
+		//return $_CNpreviousIDs;
 		//return $this->termChildrenIDs;
 	}
 	

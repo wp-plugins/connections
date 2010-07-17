@@ -30,20 +30,20 @@ class cnRetrieve
 			
 			// Common defaults whether in the admin or frontend.
 			$defaultAttr['id'] = NULL;
+			$defaultAttr['wp_current_category'] = FALSE;
 			
 			if ( !is_admin() )
 			{
 				// Frontend defaults.
-				$defaultAttr['wp_current_category'] = NULL;
 				$defaultAttr['list_type'] = 'all';
 				$defaultAttr['category'] = NULL;
 			}
 			else
 			{
 				// Admin defaults.
-				$defaultAttr['visibility'] = $connections->currentUser->getFilterVisibility();
 				$defaultAttr['list_type'] = $connections->currentUser->getFilterEntryType();
 				$defaultAttr['category'] = $connections->currentUser->getFilterCategory();
+				$defaultAttr['visibility'] = $connections->currentUser->getFilterVisibility();
 			}
 			
 			if ( !isset($suppliedAttr) ) $suppliedAttr = array();
