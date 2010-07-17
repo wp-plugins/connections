@@ -251,12 +251,14 @@ function connectionsShowViewPage()
 								
 								foreach ($results as $row) {
 									//$entry = new cnEntry($row);
-									$vCard = new cnvCard($row);
+									//$vCard = new cnvCard($row);
 									
 									/**
 									 * @TODO: Use the Output class to show entry details.
 									 */								
-									$entry = new cnOutput($row);
+									//$entry = new cnOutput($row);
+									$entry = new cnvCard($row);
+									$vCard =& $entry;
 									
 									$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
 									if ($currentLetter != $previousLetter) {

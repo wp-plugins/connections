@@ -307,7 +307,7 @@ class cnOutput extends cnEntry
 			$out = '<div class="website-block" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getWebsites() as $website)
 			{
-				if ($website->url != NULL) $out .= '<span class="website-address" style="display: block"><strong>Website:</strong> <a class="url" href="' . $website->url . '">' . $website->url . '</a></span>' . "\n";
+				if ($website->url != NULL) $out .= '<span class="website-address" style="display: block"><strong>Website:</strong> <a class="url" href="' . $website->url . ' target="_blank">' . $website->url . '</a></span>' . "\n";
 			}
 			$out .= "</div>" . "\n";
 		}

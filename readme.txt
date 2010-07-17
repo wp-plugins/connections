@@ -1,5 +1,5 @@
 === Plugin Name ===
-Contributors: Steven A. Zahm
+Contributors: shazahm1@hotmail.com
 Donate link: http://connections-pro.com/
 Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, business directory, business-directory, church, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, staff, user, users, vcard
 Requires at least: 2.8
@@ -86,11 +86,13 @@ Connections is a simple to use address book system but is also very versatile. Y
 == Changelog ==
 
 = 0.7.0.3 X/XX/2010 =
+* FEATURE: Set website urls to open in a new window/tab as the default.
 * BUG: Set initial DB version during activation.
 * BUG: Fix many errors reported when WP_DEBUG is set to true.
 * BUG: Fix database table check before the table is created.
 * BUG: When an entry is added, the last modified by field is correctly set.
 * BUG: The intial entry category relationship would not be set correctly to uncatgorized if no categories were selected.
+* OTHER: Reduced memory requirements further by passing a few large objects by reference rather than creating new instances.
 * OTHER: Add UTF-8 support in the vCard file.
 * OTHER: Base64 encode image into the vCard rather than the URI.
 * OTHER: When creating tables the character set and collate will honor the settings in wp-config.php or the default settings for WP.

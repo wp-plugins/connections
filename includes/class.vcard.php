@@ -1,6 +1,6 @@
 <?php
 
-class cnvCard extends cnEntry
+class cnvCard extends cnOutput
 {
 	private $data;
 	private $card;

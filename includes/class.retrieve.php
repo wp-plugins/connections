@@ -6,9 +6,20 @@ class cnRetrieve
 	 * @param array $id [optional]
 	 * @return object
 	 */
-	public function entries($atts = NULL)
+	public function entries($suppliedAttr = NULL)
 	{
 		global $wpdb, $connections;
+		
+		$validate = new cnValidate();
+		$entryIDs = NULL;
+		$joinTermRelationships = NULL;
+		$joinTermTaxonomy = NULL;
+		$joinTerm = NULL;
+		$taxonomy = NULL;
+		$termIDs = NULL;
+		$termNames = NULL;
+		$entryType = NULL;
+		$visibility = NULL;
 		
 		$permittedEntryTypes = array('individual', 'organization', 'connection_group');
 		$permittedVisibilities = array('unlisted', 'private', 'public');
@@ -16,23 +27,29 @@ class cnRetrieve
 		/*
 		 * // START -- Set the default attributes array if not supplied. \\
 		 */
-			if ( !isset($atts['id']) ) $atts['id'] = NULL;
-			if ( !isset($atts['wp_current_category']) ) $atts['wp_current_category'] = FALSE;
 			
-			// If user in in the admin the stored visibility filter is used as the default value.
-			if ( !isset($atts['visibility']) && is_admin() ) $atts['visibility'] = $connections->currentUser->getFilterVisibility();
+			// Common defaults whether in the admin or frontend.
+			$defaultAttr['id'] = NULL;
 			
-			// If user in in the admin the stored entry type filter is used as the default value.
-			if ( !isset($atts['list_type']) && is_admin() ) $atts['list_type'] = $connections->currentUser->getFilterEntryType();
+			if ( !is_admin() )
+			{
+				// Frontend defaults.
+				$defaultAttr['wp_current_category'] = NULL;
+				$defaultAttr['list_type'] = 'all';
+				$defaultAttr['category'] = NULL;
+			}
+			else
+			{
+				// Admin defaults.
+				$defaultAttr['visibility'] = $connections->currentUser->getFilterVisibility();
+				$defaultAttr['list_type'] = $connections->currentUser->getFilterEntryType();
+				$defaultAttr['category'] = $connections->currentUser->getFilterCategory();
+			}
 			
-			// If user in in the front end the defaul is set to 'all'.
-			if ( !isset($atts['list_type']) && !is_admin() ) $atts['list_type'] = 'all';
+			if ( !isset($suppliedAttr) ) $suppliedAttr = array();
 			
-			// If user is in the admin the stored category filter ID is used for the default value.
-			if ( !isset($atts['category']) && is_admin() ) $atts['category'] = $connections->currentUser->getFilterCategory();
+			$atts = $validate->attributesArray($defaultAttr, $suppliedAttr);
 			
-			// If user is in the front end the default value is NULL.
-			if ( !isset($atts['category']) && !is_admin() ) $atts['category'] = NULL;
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -50,6 +67,8 @@ class cnRetrieve
 			}
 			
 			$catNameString = implode("', '", $wpCategoryNames);
+			
+			unset( $wpCategoryNames );
 		}
 				
 		if ( !empty($atts['category']) )
@@ -74,6 +93,8 @@ class cnRetrieve
 			}
 			
 			$catIDString = implode("', '", $categoryIDs);
+			
+			unset( $categoryIDs );
 		}
 			
 		if ( !empty($catIDString) || !empty($catNameString) )
@@ -85,32 +106,16 @@ class cnRetrieve
 			
 			// Set the query string to return entries within specific categories.
 			$taxonomy = ' AND ' . CN_TERM_TAXONOMY_TABLE . ".taxonomy = 'category' ";
+			
 			if ( !empty($catIDString) )
 			{
 				$termIDs = ' AND ' . CN_TERM_TAXONOMY_TABLE . ".term_id IN ('" . $catIDString . "') ";
-			}
-			else
-			{
-				$termIDs = NULL;
 			}
 			
 			if ( !empty($catNameString) )
 			{
 				$termNames = ' AND ' . CN_TERMS_TABLE . ".name IN ('" . $catNameString . "') ";
 			}
-			else
-			{
-				$termNames = NULL;
-			}
-		}
-		else
-		{
-			$joinTermRelationships = NULL;
-			$joinTermTaxonomy = NULL;
-			$joinTerm = NULL;
-			$taxonomy = NULL;
-			$termIDs = NULL;
-			$termNames = NULL;
 		}
 		
 		
@@ -130,10 +135,6 @@ class cnRetrieve
 			// Set query string to return specific entries.
 			$entryIDs = " AND `id` IN ('" . $atts['id'] . "') ";
 		}
-		else
-		{
-			$entryIDs = NULL;
-		}
 		
 				
 		// Set query string for visibility.
@@ -141,20 +142,12 @@ class cnRetrieve
 		{
 			$visibility = " AND `visibility` = '" . $atts['visibility'] . "' ";
 		}
-		else
-		{
-			$visibility = NULL;
-		}
 		
 		// Set query string for entry type.
 		if ( $atts['list_type'] !== 'all' && in_array($atts['list_type'], $permittedEntryTypes, TRUE) )
 		{
 			$entryType = " AND `entry_type` = '" . $atts['list_type'] . "' ";
-		}
-		else
-		{
-			$entryType = NULL;
-		}		
+		}	
 		
 		$sql = "SELECT DISTINCT " . CN_ENTRY_TABLE . ".*,
 				

@@ -84,7 +84,8 @@ function _connections_list($atts, $content=null) {
 		$connections->filter->orderBy(&$results, $atts['order_by']);
 	}
 	
-	if ($results != null) {
+	if ($results != NULL)
+	{
 		
 		$out = '<a name="connections-list-head"></a>';
 		/*
@@ -97,9 +98,10 @@ function _connections_list($atts, $content=null) {
 		
 		foreach ($results as $row)
 		{
-			$entry = new cnOutput($row);
-			$vCard = new cnvCard($row);
-			
+			//$entry = new cnOutput($row);
+			$entry = new cnvCard($row);
+			//$vCard = new cnvCard($row);
+			$vCard =& $entry;
 			
 			if (isset($continue)) unset($continue);
 			if (isset($cities)) unset($cities);

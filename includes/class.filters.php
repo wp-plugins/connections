@@ -68,7 +68,7 @@ class cnFilters
 	 * 
 	 * @param array of object $entries
 	 * @param string $orderBy
-	 * @return array of obejects
+	 * @return array of objects
 	 */
 	public function orderBy($entries, $orderBy)
 	{
