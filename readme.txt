@@ -92,6 +92,7 @@ Connections is a simple to use address book system but is also very versatile. Y
 * BUG: Fix database table check before the table is created.
 * BUG: When an entry is added, the last modified by field is correctly set.
 * BUG: The intial entry category relationship would not be set correctly to uncatgorized if no categories were selected.
+* BUG: Fix recursive category children when using specified categories multiple times on the same page.
 * OTHER: Reduced memory requirements further by passing a few large objects by reference rather than creating new instances.
 * OTHER: Add UTF-8 support in the vCard file.
 * OTHER: Base64 encode image into the vCard rather than the URI.

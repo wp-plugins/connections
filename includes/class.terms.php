@@ -179,6 +179,10 @@ class cnTerms
 	 */
 	public function getTermChildrenIDs($id, $taxonomy, $_CNpreviousIDs = NULL)
 	{
+		/*
+		 * @TODO: Should be able to remove the $_CNpreviousIDs global as it shouldn't be need.
+		 * Keeping it around for now incase I have to revert the code.
+		 */
 		global $wpdb, $_CNpreviousIDs;
 		$termChildrenIDs = array();
 		
