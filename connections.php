@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: An address book and business directory.
-Version: 0.7.0.2
+Version: 0.7.0.3
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 
@@ -120,7 +120,7 @@ if (!class_exists('connectionsLoad'))
 		{
 			global $wpdb;
 			
-			define('CN_CURRENT_VERSION', '0.7.0.2');
+			define('CN_CURRENT_VERSION', '0.7.0.3');
 			define('CN_DB_VERSION', '0.1.2');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
@@ -129,6 +129,7 @@ if (!class_exists('connectionsLoad'))
 			define('CN_TERM_TAXONOMY_TABLE', $wpdb->prefix . 'connections_term_taxonomy');
 			define('CN_TERM_RELATIONSHIP_TABLE', $wpdb->prefix . 'connections_term_relationships');
 			define('CN_BASE_NAME', plugin_basename( dirname(__FILE__)) );
+			define('CN_BASE_PATH', WP_PLUGIN_DIR . '/' . plugin_basename( dirname(__FILE__)));
 			
 			$siteURL = get_option('siteurl');
 			if(is_ssl())
@@ -860,7 +861,7 @@ if (!class_exists('connectionsLoad'))
 								if (current_user_can('connections_add_entry'))
 								{
 									check_admin_referer($form->getNonce('add_entry'), '_cn_wpnonce');
-									processAddEntry();
+									processAddEntry($_POST, 'add');
 									wp_redirect('admin.php?page=connections&display_messages=true');
 								}
 								else
@@ -963,7 +964,7 @@ if (!class_exists('connectionsLoad'))
 						if ($_POST['save'] && $_GET['action'] === 'add')
 						{
 							check_admin_referer($form->getNonce('add_entry'), '_cn_wpnonce');
-							processAddEntry();	
+							processAddEntry($_POST, 'add');
 							wp_redirect('admin.php?page=connections_add&display_messages=true');
 						}
 					}

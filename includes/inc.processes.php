@@ -1,11 +1,18 @@
 <?php
 
-function processAddEntry()
+/**
+ * Add or edit and entry.
+ * 
+ * @param array $data
+ * @param string $action
+ * @return bool
+ */
+function processAddEntry($data, $action)
 {
 	global $wpdb, $connections;
 	$entry = new cnEntry();
 	
-	if ( isset($_GET['action']) ) $action = $_GET['action'];
+	//if ( isset($_GET['action']) ) $action = $_GET['action'];
 	
 	// The modification file date that image will be deleted. to maintain compatibility with 0.6.2.1 and older.
 	$compatiblityDate = mktime(0, 0, 0, 6, 1, 2010);
@@ -17,28 +24,28 @@ function processAddEntry()
 		$entry->set(esc_attr($_GET['id']));
 	}
 						
-	if ( isset($_POST['entry_type']) ) $entry->setEntryType($_POST['entry_type']);
-	if ( isset($_POST['connection_group_name']) ) $entry->setGroupName($_POST['connection_group_name']);
-	if ( isset($_POST['connection_group']) ) $entry->setConnectionGroup($_POST['connection_group']);
-	if ( isset($_POST['first_name']) ) $entry->setFirstName($_POST['first_name']);
-	if ( isset($_POST['middle_name']) ) $entry->setMiddleName($_POST['middle_name']);
-	if ( isset($_POST['last_name']) ) $entry->setLastName($_POST['last_name']);
-	if ( isset($_POST['title']) ) $entry->setTitle($_POST['title']);
-	if ( isset($_POST['organization']) ) $entry->setOrganization($_POST['organization']);
-	if ( isset($_POST['department']) ) $entry->setDepartment($_POST['department']);
-	if ( isset($_POST['contact_first_name']) ) $entry->setContactFirstName($_POST['contact_first_name']);
-	if ( isset($_POST['contact_last_name']) ) $entry->setContactLastName($_POST['contact_last_name']);
-	if ( isset($_POST['address']) ) $entry->setAddresses($_POST['address']);
-	if ( isset($_POST['phone_numbers']) ) $entry->setPhoneNumbers($_POST['phone_numbers']);
-	if ( isset($_POST['email']) ) $entry->setEmailAddresses($_POST['email']);
-	if ( isset($_POST['im']) ) $entry->setIm($_POST['im']);
-	if ( isset($_POST['social_media']) ) $entry->setSocialMedia($_POST['social_media']);
-	if ( isset($_POST['website']) ) $entry->setWebsites($_POST['website']);
-	if ( isset($_POST['birthday_day']) && isset($_POST['birthday_month']) ) $entry->setBirthday($_POST['birthday_day'], $_POST['birthday_month']);
-	if ( isset($_POST['anniversary_day']) && isset($_POST['anniversary_month']) ) $entry->setAnniversary($_POST['anniversary_day'], $_POST['anniversary_month']);
-	if ( isset($_POST['bio']) ) $entry->setBio($_POST['bio']);
-	if ( isset($_POST['notes']) ) $entry->setNotes($_POST['notes']);
-	if ( isset($_POST['visibility']) ) $entry->setVisibility($_POST['visibility']);
+	if ( isset($data['entry_type']) ) $entry->setEntryType($data['entry_type']);
+	if ( isset($data['connection_group_name']) ) $entry->setGroupName($data['connection_group_name']);
+	if ( isset($data['connection_group']) ) $entry->setConnectionGroup($data['connection_group']);
+	if ( isset($data['first_name']) ) $entry->setFirstName($data['first_name']);
+	if ( isset($data['middle_name']) ) $entry->setMiddleName($data['middle_name']);
+	if ( isset($data['last_name']) ) $entry->setLastName($data['last_name']);
+	if ( isset($data['title']) ) $entry->setTitle($data['title']);
+	if ( isset($data['organization']) ) $entry->setOrganization($data['organization']);
+	if ( isset($data['department']) ) $entry->setDepartment($data['department']);
+	if ( isset($data['contact_first_name']) ) $entry->setContactFirstName($data['contact_first_name']);
+	if ( isset($data['contact_last_name']) ) $entry->setContactLastName($data['contact_last_name']);
+	if ( isset($data['address']) ) $entry->setAddresses($data['address']);
+	if ( isset($data['phone_numbers']) ) $entry->setPhoneNumbers($data['phone_numbers']);
+	if ( isset($data['email']) ) $entry->setEmailAddresses($data['email']);
+	if ( isset($data['im']) ) $entry->setIm($data['im']);
+	if ( isset($data['social_media']) ) $entry->setSocialMedia($data['social_media']);
+	if ( isset($data['website']) ) $entry->setWebsites($data['website']);
+	if ( isset($data['birthday_day']) && isset($data['birthday_month']) ) $entry->setBirthday($data['birthday_day'], $data['birthday_month']);
+	if ( isset($data['anniversary_day']) && isset($data['anniversary_month']) ) $entry->setAnniversary($data['anniversary_day'], $data['anniversary_month']);
+	if ( isset($data['bio']) ) $entry->setBio($data['bio']);
+	if ( isset($data['notes']) ) $entry->setNotes($data['notes']);
+	if ( isset($data['visibility']) ) $entry->setVisibility($data['visibility']);
 									
 	if ($_FILES['original_image']['error'] != 4)
 	{
@@ -112,9 +119,9 @@ function processAddEntry()
 	
 	// If copying an entry, the image visibility property is set based on the user's choice.
 	// NOTE: This must come after the image processing.
-	if (isset($_POST['imgOptions']))
+	if (isset($data['imgOptions']))
 	{
-		switch ($_POST['imgOptions'])
+		switch ($data['imgOptions'])
 		{
 			case 'remove':
 				$entry->setImageDisplay(false);
@@ -217,9 +224,9 @@ function processAddEntry()
 	 * Save the entry category(ies). If none were checked, send an empty array
 	 * which will add the entry to the default category.
 	 */	
-	if ( isset($_POST['entry_category']) )
+	if ( isset($data['entry_category']) )
 	{
-		$connections->term->setTermRelationships($entryID, $_POST['entry_category'], 'category');
+		$connections->term->setTermRelationships($entryID, $data['entry_category'], 'category');
 	}
 	else
 	{
@@ -250,6 +257,8 @@ function copyImage($image)
 
 function processImages()
 {
+	if ( !isset($_FILES['original_image']) ) return FALSE;
+	
 	global $connections;
 	
 	// Uses the upload.class.php to handle file uploading and image manipulation.
