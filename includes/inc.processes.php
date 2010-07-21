@@ -7,7 +7,7 @@
  * @param string $action
  * @return bool
  */
-function processAddEntry($data, $action)
+function processEntry($data, $action)
 {
 	global $wpdb, $connections;
 	$entry = new cnEntry();

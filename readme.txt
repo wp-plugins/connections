@@ -4,12 +4,12 @@ Donate link: http://connections-pro.com/
 Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, business directory, business-directory, church, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, staff, user, users, vcard
 Requires at least: 2.8
 Tested up to: 3.0
-Stable tag: 0.7.0.2
-Connections is a simple to use addressbook, business, staff directory that is highly customizable.
+Stable tag: 0.7.0.3
+Connections is a simple to use directory manager for an address, business, or staff directory.
 
 == Description ==
 
-Connections is a simple to use address book system but is also very versatile. You can use it to create a church directory, business directory, staff directory and even profiles pages using the default templates. If the default layouts don’t suit your needs you can easily create your own custom template. Want to show a list of upcoming birthdays and anniversaries, no problem, you can do that too. Take a look at the screen shots and the samples on this site to see all Connections can do.
+Connections is a simple to use directory manager but is also very versatile. You can use it for an address book, to create a church directory, business directory, staff directory and even profiles pages using  templates. If none of the default templates do not suit your needs, you can easily create your own custom template. Want to show a list of upcoming birthdays and anniversaries, no problem, you can do that too. Take a look at the screen shots and the samples on this site to see all Connections can do.
 
 = Admin Features =
 * Built-in help page
@@ -85,7 +85,7 @@ Connections is a simple to use address book system but is also very versatile. Y
 
 == Changelog ==
 
-= 0.7.0.3 7/19/2010 =
+= 0.7.0.3 7/20/2010 =
 * FEATURE: Set website urls to open in a new window/tab as the default.
 * BUG: Set initial DB version during activation.
 * BUG: Fix many errors reported when WP_DEBUG is set to true.

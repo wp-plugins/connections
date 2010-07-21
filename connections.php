@@ -2,7 +2,7 @@
 /*
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
-Description: An address book and business directory.
+Description: A business directory and address book manager.
 Version: 0.7.0.3
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
@@ -861,7 +861,7 @@ if (!class_exists('connectionsLoad'))
 								if (current_user_can('connections_add_entry'))
 								{
 									check_admin_referer($form->getNonce('add_entry'), '_cn_wpnonce');
-									processAddEntry($_POST, 'add');
+									processEntry($_POST, 'add');
 									wp_redirect('admin.php?page=connections&display_messages=true');
 								}
 								else
@@ -877,7 +877,7 @@ if (!class_exists('connectionsLoad'))
 								if (current_user_can('connections_edit_entry'))
 								{
 									check_admin_referer($form->getNonce('update_entry'), '_cn_wpnonce');
-									processAddEntry();;
+									processEntry($_POST, 'update');;
 									wp_redirect('admin.php?page=connections&display_messages=true');
 								}
 								else
