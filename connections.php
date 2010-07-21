@@ -964,7 +964,7 @@ if (!class_exists('connectionsLoad'))
 						if ($_POST['save'] && $_GET['action'] === 'add')
 						{
 							check_admin_referer($form->getNonce('add_entry'), '_cn_wpnonce');
-							processAddEntry($_POST, 'add');
+							processEntry($_POST, 'add');
 							wp_redirect('admin.php?page=connections_add&display_messages=true');
 						}
 					}
