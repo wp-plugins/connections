@@ -85,6 +85,9 @@ Connections is a simple to use directory manager but is also very versatile. You
 
 == Changelog ==
 
+= 0.7.1.0 7/XX/2010 =
+* FEATURE: 
+
 = 0.7.0.3 7/20/2010 =
 * FEATURE: Set website urls to open in a new window/tab as the default.
 * BUG: Set initial DB version during activation.
@@ -282,14 +285,5 @@ Connections is a simple to use directory manager but is also very versatile. You
 
 == Upgrade Notice ==
 
-= 0.7.0.3 =
+= 0.7.1.0 =
 This release fixes many non-critical bugs.
-
-= 0.7.0.2 =
-Fixed critical order_by error.
-
-= 0.7.0.1 =
-Upgrading to this version might break custom templates.
-
-= 0.7.0.0 =
-Upgrading to this version might break custom templates.

@@ -284,6 +284,7 @@ function connectionsShowHelpPage()
 	Here are the available sort fields and attributes.</p>
 	<p><strong>Sort fields:</strong>
 		<ul>
+			<li>id</li>
 			<li>first_name</li>
 			<li>last_name</li>
 			<li>organization</li>
@@ -300,6 +301,8 @@ function connectionsShowHelpPage()
 		<ul>
 			<li>SORT_ACS</li>
 			<li>SORT_DESC</li>
+			<li>SPECIFIC**</li>
+			<li>RANDOM**</li>
 		</ul>
 	</p>
 	<p><strong>Sort Types:</strong>
@@ -309,6 +312,12 @@ function connectionsShowHelpPage()
 			<li>SORT_STRING</li>
 		</ul>
 	</p>
+	
+	<p><strong>**NOTE:</strong> The SPECIFIC and RANDOM Order Flags can only 
+	 be used with the id sort field. The SPECIFIC flag must be used in conjuction
+	 with the id shortcode attribute which must be a comma delimited of entry IDs. 
+	 If this is set, other sort fields/flags are ignored.</p>
+	
 	<p>You can put your fields in order to be sorted separated by commas. You can also add the flag to tell it to be sorted ascending or descending like so:</p>
 	
 	<pre>
