@@ -32,12 +32,7 @@ Update Notice in plugin admin inspired by Changelogger 1.2.8 by Oliver Schlöbe
 /**
  * @TODO: Add support for SSL using the CN_PLUGIN_URL constant throughout.
  */
-/**
- * @TODO: Fix bug. The output class will output entry divs for some data fields.
- */
-/**
- * @TODO: Add plug-in version to the Javascript and CSS hooks.
- */
+
 
 if (!class_exists('connectionsLoad'))
 {
@@ -103,7 +98,7 @@ if (!class_exists('connectionsLoad'))
 				
 				// Add Changelog table row in the Manage Plugins admin page.
 				add_action('after_plugin_row_' . plugin_basename(__FILE__), array(&$this, 'displayUpgradeNotice'), 1, 0);
-				
+				// Maybe should use this action hook instead: in_plugin_update_message-{$file}
 			}
 			else
 			{
