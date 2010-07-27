@@ -5,7 +5,7 @@ Tags: addresses, address book, addressbook, bio, bios, biographies, business, bu
 Requires at least: 2.8
 Tested up to: 3.0
 Stable tag: 0.7.0.4
-Connections is a simple to use directory manager for an address, business, or staff directory.
+Connections is a simple to use directory manager for an addressbook, business, or staff directory.
 
 == Description ==
 
