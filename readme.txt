@@ -85,8 +85,11 @@ Connections is a simple to use directory manager but is also very versatile. You
 
 == Changelog ==
 
-= 0.7.1.0 7/XX/2010 =
-* FEATURE: 
+= 0.7.0.4 7/26/2010 =
+* FEATURE: Add the option to display the front end list in a specified order.
+* FEATURE: Add the option to display the front end list in a random order on each page visit/refresh.
+* BUG: Fixed type that cause the website URLs to be invalid.
+* BUG: Fixed so Select wouldn't wouldn't be saved as the address type.
 
 = 0.7.0.3 7/20/2010 =
 * FEATURE: Set website urls to open in a new window/tab as the default.
@@ -285,5 +288,5 @@ Connections is a simple to use directory manager but is also very versatile. You
 
 == Upgrade Notice ==
 
-= 0.7.1.0 =
-This release fixes many non-critical bugs.
+= 0.7.0.4 =
+This release fixes a couple non-critical bugs.

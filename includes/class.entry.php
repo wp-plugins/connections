@@ -580,7 +580,11 @@ class cnEntry
 				$address[$key] = $this->validate->attributesArray($validFields, $address);
 				
 				$addressValues = $connections->options->getDefaultAddressValues();
-				$addresses[$key]['name'] = $addressValues[$address['type']];
+				
+				if ( !empty( $address['type'] ) )
+				{
+					$addresses[$key]['name'] = $addressValues[$address['type']];
+				}
 			}
 			
 			$this->addresses = serialize($addresses);
