@@ -339,8 +339,8 @@ function connectionsShowViewPage()
 									echo "</tr> \n";
 									
 									echo "<tr class='child-row-" . $entry->getId() . " entrydetails' id='contact-" . $entry->getId() . "-detail' style='display:none;'>";
-										echo "<td >&nbsp;</td> \n";
-										echo "<td >&nbsp;</td> \n";
+										echo "<td colspan='2' >&nbsp;</td> \n";
+										//echo "<td >&nbsp;</td> \n";
 										echo "<td colspan='2'>";
 											
 											/*
@@ -381,9 +381,10 @@ function connectionsShowViewPage()
 												unset($count);
 											}
 											
-											if ($entry->getTitle()) echo "<strong>Title:</strong><br />" . $entry->getTitle() . "<br /><br />";
-											if ($entry->getOrganization() && $entry->getEntryType() != "organization" ) echo "<strong>Organization:</strong><br />" . $entry->getOrganization() . "<br /><br />";
-											if ($entry->getDepartment()) echo "<strong>Department:</strong><br />" . $entry->getDepartment() . "<br /><br />";
+											if ($entry->getContactFirstName() || $entry->getContactLastName()) echo '<strong>Contact:</strong> ' . $entry->getContactFirstName() . ' ' . $entry->getContactLastName() . '<br />';
+											if ($entry->getTitle()) echo '<strong>Title:</strong> ' . $entry->getTitle() . '<br />';
+											if ($entry->getOrganization() && $entry->getEntryType() !== 'organization' ) echo '<strong>Organization:</strong> ' . $entry->getOrganization() . '<br />';
+											if ($entry->getDepartment()) echo '<strong>Department:</strong> ' . $entry->getDepartment() . '<br />';
 											
 											if ($entry->getAddresses())
 											{
@@ -452,8 +453,8 @@ function connectionsShowViewPage()
 									echo "</tr> \n";
 									
 									echo "<tr class='child-row-" . $entry->getId() . " entrynotes' id='contact-" . $entry->getId() . "-detail-notes' style='display:none;'>";
-										echo "<td>&nbsp;</td> \n";
-										echo "<td >&nbsp;</td> \n";
+										echo "<td colspan='2'>&nbsp;</td> \n";
+										//echo "<td >&nbsp;</td> \n";
 										echo "<td colspan='3'>";
 											if ($entry->getBio()) echo "<strong>Bio:</strong> " . $entry->getBio() . "<br />"; else echo "&nbsp;";
 											if ($entry->getNotes()) echo "<strong>Notes:</strong> " . $entry->getNotes(); else echo "&nbsp;";

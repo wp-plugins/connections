@@ -435,7 +435,7 @@ class cnEntryForm
 						<label for="department">Department:</label>
 						<input type="text" name="department" value="' . $entry->getDepartment() . '" />';
 						
-						/*$out .= '
+						$out .= '
 						<div id="contact_name">
 							<div class="input inputhalfwidth">
 								<label for="contact_first_name">Contact First Name:</label>
@@ -447,7 +447,7 @@ class cnEntryForm
 							</div>
 							
 							<div class="clear"></div>
-						</div>';*/
+						</div>';
 					$out .= '
 					</div>
 			</div>

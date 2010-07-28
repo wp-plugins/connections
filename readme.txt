@@ -85,6 +85,9 @@ Connections is a simple to use directory manager but is also very versatile. You
 
 == Changelog ==
 
+= 0.7.0.4 XX/XX/2010 =
+* FEATURE: Added Contact First and Last name fields the the Organization entry type.
+
 = 0.7.0.4 7/26/2010 =
 * FEATURE: Add the option to display the front end list in a specified order.
 * FEATURE: Add the option to display the front end list in a random order on each page visit/refresh.
