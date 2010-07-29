@@ -389,7 +389,7 @@ class cnOutput extends cnEntry
 		{
 			foreach ($categories as $category)
 			{
-				$out .= $category->name;
+				$out .= '<span class="cn_category" id="cn_category_' . $category->term_id . '">' . $category->name . '</span>';
 				
 				$i++;
 				if ( count($categories) > $i ) $out .= $atts['separator'];
