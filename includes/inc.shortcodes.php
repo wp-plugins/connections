@@ -81,7 +81,7 @@ function _connections_list($atts, $content=null) {
 	
 	if (!empty($atts['order_by']) && !empty($results))
 	{
-		$connections->filter->orderBy(&$results, $atts['order_by'], $atts['id']);
+		$connections->filter->orderBy($results, $atts['order_by'], $atts['id']);
 	}
 	
 	if ($results != NULL)

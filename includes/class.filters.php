@@ -80,7 +80,7 @@ class cnFilters
 	 * @param string || array $ids [optional]
 	 * @return array of objects
 	 */
-	public function orderBy($entries, $orderBy, $suppliedIDs = NULL)
+	public function orderBy(&$entries, $orderBy, $suppliedIDs = NULL)
 	{
 		$orderFields = array(
 							'id',
