@@ -148,7 +148,7 @@ class cnEntry
 		if ( isset($entry) )
 		{
 			if ( isset($entry->id) ) $this->id = (integer) $entry->id;
-			if ( isset($entry->ts) ) $this->timeStamp = (integer) $entry->ts;
+			if ( isset($entry->ts) ) $this->timeStamp = $entry->ts;
 			if ( isset($entry->date_added) ) $this->dateAdded = (integer) $entry->date_added;
 			if ( isset($entry->first_name) ) $this->firstName = $entry->first_name;
 			if ( isset($entry->middle_name) ) $this->middleName = $entry->middle_name;
