@@ -125,6 +125,7 @@ if (!class_exists('connectionsLoad'))
 			define('CN_TERM_RELATIONSHIP_TABLE', $wpdb->prefix . 'connections_term_relationships');
 			define('CN_BASE_NAME', plugin_basename( dirname(__FILE__)) );
 			define('CN_BASE_PATH', WP_PLUGIN_DIR . '/' . plugin_basename( dirname(__FILE__)));
+			define('CN_TEMPLATE_PATH', WP_CONTENT_DIR . '/connections_templates');
 			
 			$siteURL = get_option('siteurl');
 			if(is_ssl())
@@ -173,6 +174,8 @@ if (!class_exists('connectionsLoad'))
 			//shortcodes
 			require_once(WP_PLUGIN_DIR . '/connections/includes/inc.shortcodes.php'); // Required for front end
 			
+			//templates
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.template.php'); // Required for the front end template processing
 		}
 		
 		private function initDependencies()

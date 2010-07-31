@@ -21,6 +21,7 @@ function _connections_list($atts, $content=null) {
 	$form = new cnFormObjects();
 	$convert = new cnFormatting();
 	$format =& $convert;
+	$template = new stdClass();
 	
 	$atts = shortcode_atts( array(
 				'id' => null,
@@ -42,6 +43,7 @@ function _connections_list($atts, $content=null) {
 				'state' => null,
 				'zip_code' => null,
 				'country' => null,
+				'template' => null,
 				'template_name' => 'card'
 				), $atts ) ;
 				
@@ -56,22 +58,33 @@ function _connections_list($atts, $content=null) {
 	$convert->toBoolean(&$atts['wp_current_category']);
 	
 	// First check to see if the template is in the custom template folder.
-	if (is_dir(WP_CONTENT_DIR . '/connections_templates'))
+	if ( is_dir(CN_TEMPLATE_PATH) )
 	{
-		if (file_exists(WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php'))
+		if (file_exists(CN_TEMPLATE_PATH . '/' .  $atts['template_name'] . '.php'))
 		{
-			$template = WP_CONTENT_DIR . '/connections_templates/' .  $atts['template_name'] . '.php';
+			$template->path = CN_TEMPLATE_PATH . '/' .  $atts['template_name'] . '.php';
 		}
 	}
 	
 	// If the template isn't a custom template, check for it in the default templates folder.
-	if ( !isset($template) )
+	if ( !isset($template->path) )
 	{
-		if (file_exists(WP_PLUGIN_DIR . '/connections/templates/' .  $atts['template_name'] . '.php'))
+		if (file_exists(CN_BASE_PATH . '/templates/' .  $atts['template_name'] . '.php'))
 		{
-			$template = WP_PLUGIN_DIR . '/connections/templates/' .  $atts['template_name'] . '.php';
+			$template->path = CN_BASE_PATH . '/templates/' .  $atts['template_name'] . '.php';
 		}
 		
+	}
+	
+	if ( isset($atts['template']) )
+	{
+		if (file_exists(CN_TEMPLATE_PATH . '/' .  $atts['template'] . '.php'))
+		{
+			$template = new cnTemplate($atts['template']);
+			
+			include_once(CN_TEMPLATE_PATH . '/' .  $atts['template'] . '.php');
+			print_r($template);
+		}
 	}
 	
 	$results = $connections->retrieve->entries($atts);
@@ -86,8 +99,14 @@ function _connections_list($atts, $content=null) {
 	
 	if ($results != NULL)
 	{
+		$out = '';
 		
-		$out = '<a name="connections-list-head"></a>';
+		if ( isset($template->css) )
+		{
+			$out .= '<style type="text/css" scoped>' . "\n" . file_get_contents( $template->css ) . '</style>' . "\n";
+		}
+		
+		$out .= '<a name="connections-list-head"></a>';
 		/*
 		 * The alpha index is only displayed if set set to true and not set to repeat using the shortcode attributes.
 		 * If a alpha index is set to repeat, that is handled down separately.
@@ -133,7 +152,7 @@ function _connections_list($atts, $content=null) {
 			 * because not every entry will have addresses to populate the arrays created above.
 			 * 
 			 * NOTE: Since the entry class returns all fields escaped, the shortcode filter
-			 * attribute needs to be escaped as well so the comparason bewteen the two functions
+			 * attribute needs to be escaped as well so the comparason between the two functions
 			 * as expected.
 			 */
 			$atts['group_name'] = esc_attr($atts['group_name']);
@@ -184,11 +203,11 @@ function _connections_list($atts, $content=null) {
 			if ($atts['show_alphaindex'] || $atts['show_alphahead']) $out .= $setAnchor;
 			
 			
-			if (isset($template))
+			if (isset($template->path))
 			{
 				$out .= '<div class="vcard ' . $entry->getCategoryClass(TRUE) . '">' . "\n";
 					ob_start();
-				    include($template);
+					include($template->path);
 				    $out .= ob_get_contents();
 				    ob_end_clean();
 				$out .= '</div>' . "\n";

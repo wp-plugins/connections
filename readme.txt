@@ -87,6 +87,7 @@ Connections is a simple to use versatile directory manager. You can use it for a
 
 = 0.7.0.4 XX/XX/2010 =
 * FEATURE: Added Contact First and Last name fields the the Organization entry type.
+* FEATURE: Enhanced the template loader to allow the use of style sheets.
 * BUG: Fixed PHP Warning: Call-time pass-by-reference has been deprecated error in the admin.
 * BUG: The last updated time and date now function correctly.
 
