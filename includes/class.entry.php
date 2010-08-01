@@ -234,9 +234,7 @@ class cnEntry
 			$format = "m/d/Y";
 		}
 		
-		$formattedTimeStamp = date($format, strtotime($this->timeStamp));
-		
-		return $formattedTimeStamp;
+		return date($format, strtotime($this->timeStamp));
     }
 	
 	/**
@@ -263,9 +261,7 @@ class cnEntry
 				$format = 'm/d/Y';
 			}
 			
-			$formattedTimeStamp = date($format, $this->dateAdded);
-			
-			return $formattedTimeStamp;
+			return date($format, $this->dateAdded);
 		}
 		else
 		{
