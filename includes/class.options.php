@@ -95,7 +95,9 @@ class cnOptions
 											 'facebook' => 'Facebook',
 											 'flickr' => 'Flickr',
 											 'linked-in' => 'Linked-in',
-											 'mysapce' => 'MySpace',
+											 'myspace' => 'MySpace',
+											 'podcast' => 'Podcast',
+											 'rss' => 'RSS',
 											 'technorati' => 'Technorati',
 											 'twitter' => 'Twitter'
 											 );
