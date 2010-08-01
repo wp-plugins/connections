@@ -62,7 +62,7 @@ function _connections_list($atts, $content=null) {
 	{
 		if (file_exists(CN_TEMPLATE_PATH . '/' .  $atts['template_name'] . '.php'))
 		{
-			$template->path = CN_TEMPLATE_PATH . '/' .  $atts['template_name'] . '.php';
+			$template->file = CN_TEMPLATE_PATH . '/' .  $atts['template_name'] . '.php';
 		}
 	}
 	
@@ -71,19 +71,19 @@ function _connections_list($atts, $content=null) {
 	{
 		if (file_exists(CN_BASE_PATH . '/templates/' .  $atts['template_name'] . '.php'))
 		{
-			$template->path = CN_BASE_PATH . '/templates/' .  $atts['template_name'] . '.php';
+			$template->file = CN_BASE_PATH . '/templates/' .  $atts['template_name'] . '.php';
 		}
 		
 	}
 	
 	if ( isset($atts['template']) )
 	{
-		if (file_exists(CN_TEMPLATE_PATH . '/' .  $atts['template'] . '.php'))
+		if ( file_exists(CN_TEMPLATE_PATH . '/' .  $atts['template']) )
 		{
 			$template = new cnTemplate($atts['template']);
 			
-			include_once(CN_TEMPLATE_PATH . '/' .  $atts['template'] . '.php');
-			print_r($template);
+			include_once($template->path .  $atts['template'] . '.php');
+			
 		}
 	}
 	
@@ -203,11 +203,11 @@ function _connections_list($atts, $content=null) {
 			if ($atts['show_alphaindex'] || $atts['show_alphahead']) $out .= $setAnchor;
 			
 			
-			if (isset($template->path))
+			if (isset($template->file))
 			{
 				$out .= '<div class="vcard ' . $entry->getCategoryClass(TRUE) . '">' . "\n";
 					ob_start();
-					include($template->path);
+					include($template->file);
 				    $out .= ob_get_contents();
 				    ob_end_clean();
 				$out .= '</div>' . "\n";

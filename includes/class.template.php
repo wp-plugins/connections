@@ -5,29 +5,28 @@ class cnTemplate
 	public $uri;
 	public $version;
 	public $author;
-	public $path;
+	public $file;
 	public $css;
-	
-	private $templateDir;
+	public $path;
 	
 	public function __construct($filename)
 	{
-		$this->templateDir = CN_TEMPLATE_PATH . '/' . $filename . '/';
+		$this->path = CN_TEMPLATE_PATH . '/' . $filename . '/';
 		
-		$this->path = $this->setTemplatePath();
+		$this->file = $this->setTemplatePath();
 		$this->css = $this->setCSSPath();
 	}
 	
 	private function setTemplatePath()
 	{
-		return $this->templateDir . 'index.php';
+		return $this->path . 'template.php';
 	}
 	
 	private function setCSSPath()
 	{
-		if ( file_exists( $this->templateDir . 'styles.css' ) )
+		if ( file_exists( $this->path . 'styles.css' ) )
 		{
-			return $this->templateDir . 'styles.css';
+			return $this->path . 'styles.css';
 		}
 	}
 }
