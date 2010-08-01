@@ -93,12 +93,13 @@ Connections is a simple to use versatile directory manager. You can use it for a
 * BUG: Fixed PHP Warning: Call-time pass-by-reference has been deprecated error in the admin.
 * BUG: The last updated time and date now function correctly.
 * BUG: Fix MySpace spelling typo. Any entries saved with a MySpace link will need to be updated.
+* OTHER: Entry human time difference in now based the current blog time.
 
 = 0.7.0.4 7/26/2010 =
 * FEATURE: Add the option to display the front end list in a specified order.
 * FEATURE: Add the option to display the front end list in a random order on each page visit/refresh.
-* BUG: Fixed type that cause the website URLs to be invalid.
-* BUG: Fixed so Select wouldn't wouldn't be saved as the address type.
+* BUG: Fixed typo that caused the website URLs to be invalid.
+* BUG: Fixed so "Select" wouldn't be saved as the address type.
 
 = 0.7.0.3 7/20/2010 =
 * FEATURE: Set website urls to open in a new window/tab as the default.

@@ -246,14 +246,12 @@ class cnEntry
      */
     public function getUnixTimeStamp()
     {
-        $unixTimeStamp = $this->timeStamp;
-		
-		return $unixTimeStamp;
+        return $this->timeStamp;
     }
 		
 	public function getHumanTimeDiff()
 	{
-		return human_time_diff(strtotime($this->getUnixTimeStamp()));
+		return human_time_diff( strtotime( $this->timeStamp ), current_time('timestamp') );
 	}
 	
 	public function getDateAdded($format = NULL)
