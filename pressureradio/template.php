@@ -22,8 +22,10 @@
         </td>
 		
         <td align="right" valign="top">
-        	
-			<?php echo $entry->getCardImage() ?>
+        	<div>
+        		<?php echo $entry->getCardImage() ?>
+        	</div>
+			
 			
 			<?php echo $entry->getBirthdayBlock('F j') ?>
         	
@@ -38,10 +40,19 @@
 			<?php
 			if ($entry->getSocialMedia())
 			{
-				foreach ($entry->getSocialMedia() as $socialNetwork)
+				$showSocialMediaNetwork = array('myspace', 'twitter', 'facebook', 'rss', 'podcast');
+				
+				echo '<ul class="cn_social-media-icons">';
+				
+				foreach ($showSocialMediaNetwork as $networkID)
 				{
-					if ($socialNetwork->id != null) echo '<span class="social-media-item"><a class="url uid ' . $socialNetwork->type . '" href="' . $socialNetwork->url . '" target="_blank" alt="' . $socialNetwork->name . '" title="' . $socialNetwork->name . '"></a></span>';
+					foreach ($entry->getSocialMedia() as $socialNetwork)
+					{
+						if ($socialNetwork->id != null && $socialNetwork->type == $networkID) echo '<li class="social-media-item"><a class="url uid ' . $socialNetwork->type . '" href="' . $socialNetwork->url . '" target="_blank" alt="' . $socialNetwork->name . '" title="' . $socialNetwork->name . '"></a></li>';
+					}
 				}
+				
+				echo '</ul>';
 			}
 			?>
 		</td>
