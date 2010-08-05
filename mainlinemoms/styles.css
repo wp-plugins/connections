@@ -1,0 +1,18 @@
+div.vcard div.cn_entry { -moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #D3D3D3; margin:8px 0px; padding: 12px; position: relative; }
+div.vcard span.cn_label { font-size: larger; font-variant: small-caps; font-weight: bold; }
+div.vcard div.cn_name { font-size: larger; font-variant: small-caps; font-weight: bold; }
+div.vcard div.bio { margin: 10px 0 0; }
+div.vcard div.note { margin: 10px 0 18px; }
+div.vcard .vevent abbr{border:0}
+div.vcard span.cn_update-time { font-size:x-small; font-variant: small-caps; }
+div.vcard ul li { list-style-type: none; margin: 0; padding: 0; }
+div.vcard ul.phone-number-block { margin: 0; padding: 0; }
+div.vcard ul.website-block { margin: 0 0 8px; padding: 0; }
+div.vcard ul.website-block li.website-address a.url { font-size: larger; font-weight: bold; }
+div.vcard ul.cn_social-media-icons { margin: 0; padding: 0; }
+div.vcard ul.cn_social-media-icons li { float: left; }
+div.vcard li.social-media-item a:hover { background-color: transparent; border: none; }
+div.vcard li.social-media-item a.twitter { background-image: url(wp-content/connections_templates/mainlinemoms/twitter.gif); background-repeat: no-repeat; display: block; height: 47px; margin: 0 5px 0 0; width: 74px; }
+div.vcard li.social-media-item a.facebook { background-image: url(wp-content/connections_templates/mainlinemoms/facebook.gif); background-repeat: no-repeat; display: block; height: 47px; margin: 0 5px 0 0; width: 74px; }
+div.vcard li.email a:hover { background-color: transparent; border: none; }
+div.vcard li.email a.email { background-image: url(wp-content/connections_templates/mainlinemoms/email.gif); background-repeat: no-repeat; display: block; height: 47px; margin: 0 5px 0 0; width: 74px; }

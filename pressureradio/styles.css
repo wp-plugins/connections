@@ -1,5 +1,5 @@
 div.vcard div.cn_entry { -moz-border-radius:4px; background-color: #222222; border:1px solid #D3D3D3; color: #FFFFFF; margin:8px 0px; padding: 12px; position: relative; }
-div.vcard div.cn_entry table {  }
+div.vcard div.cn_entry table tr td { vertical-align: top; }
 div.vcard div.cn_entry a { color: #99FF00 }
 div.vcard div.cn_name { margin: 0 0 10px }
 div.vcard span.cn_label { font-size: larger ;font-variant: small-caps; font-weight: bold; }
@@ -8,8 +8,8 @@ div.vcard span.cn_update-time { font-size:x-small; font-variant: small-caps; }
 div.vcard ul.cn_social-media-icons { float: right; margin: 0; padding: 0; }
 div.vcard ul.cn_social-media-icons li { float: left; list-style-type: none; margin: 0; padding: 0; }
 div.vcard li.social-media-item a:hover { background-color: transparent; border: none; }
-div.vcard li.social-media-item a.twitter { background-image: url(wp-content/connections_templates/pressureradio/twitter.png); background-repeat: no-repeat; display: block; height: 40px; margin: 0 0 12px 5px; width: 40px; }
-div.vcard li.social-media-item a.facebook { background-image: url(wp-content/connections_templates/pressureradio/facebook.png); background-repeat: no-repeat; display: block; height: 40px; margin: 0 0 12px 5px; width: 40px; }
-div.vcard li.social-media-item a.myspace { background-image: url(wp-content/connections_templates/pressureradio/myspace.png); background-repeat: no-repeat; display: block; height: 40px; margin: 0 0 12px 5px; width: 40px; }
-div.vcard li.social-media-item a.podcast { background-image: url(wp-content/connections_templates/pressureradio/podcast.png); background-repeat: no-repeat; display: block; height: 40px; margin: 0 0 12px 5px; width: 40px; }
-div.vcard li.social-media-item a.rss { background-image: url(wp-content/connections_templates/pressureradio/rss.png); background-repeat: no-repeat; display: block; height: 40px; margin: 0 0 12px 5px; width: 40px; }
+div.vcard li.social-media-item a.twitter { background-image: url(../wp-content/connections_templates/pressureradio/twitter.png); background-repeat: no-repeat; display: block; height: 40px; margin: 0 0 12px 5px; width: 40px; }
+div.vcard li.social-media-item a.facebook { background-image: url(../wp-content/connections_templates/pressureradio/facebook.png); background-repeat: no-repeat; display: block; height: 40px; margin: 0 0 12px 5px; width: 40px; }
+div.vcard li.social-media-item a.myspace { background-image: url(../wp-content/connections_templates/pressureradio/myspace.png); background-repeat: no-repeat; display: block; height: 40px; margin: 0 0 12px 5px; width: 40px; }
+div.vcard li.social-media-item a.podcast { background-image: url(../wp-content/connections_templates/pressureradio/podcast.png); background-repeat: no-repeat; display: block; height: 40px; margin: 0 0 12px 5px; width: 40px; }
+div.vcard li.social-media-item a.rss { background-image: url(../wp-content/connections_templates/pressureradio/rss.png); background-repeat: no-repeat; display: block; height: 40px; margin: 0 0 12px 5px; width: 40px; }
