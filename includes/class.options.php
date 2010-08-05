@@ -99,7 +99,8 @@ class cnOptions
 											 'podcast' => 'Podcast',
 											 'rss' => 'RSS',
 											 'technorati' => 'Technorati',
-											 'twitter' => 'Twitter'
+											 'twitter' => 'Twitter',
+											 'soundcloud' => 'SoundCloud'
 											 );
 	
 	private $defaultIMValues  =   array

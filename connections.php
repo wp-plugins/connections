@@ -52,7 +52,7 @@ if (!class_exists('connectionsLoad'))
 			$this->loadConstants();
 			$this->loadDependencies();
 			$this->initDependencies();
-			$this->initOptions();
+			$this->initOptions(); // This should only be called during plugin activation!
 			$this->initErrorMessages();
 			$this->initSuccessMessages();
 			
@@ -73,11 +73,36 @@ if (!class_exists('connectionsLoad'))
 		
 		public function start()
 		{
-			global $connections, $current_user;
+			global $wpdb, $connections, $current_user;
 		
 			get_currentuserinfo();
 			$connections->currentUser->setID($current_user->ID);
-			//print_r($current_user);
+			
+			/*
+			Test code to attemp to adjust the SQL timestamp to the local time as set in the WP admin General settings.
+			 
+			$connections->wpCurrentTime = current_time('timestamp');
+			$connections->phpCurrentTime = date('U');
+			
+			$mySQLTimeStamp = $wpdb->get_results("SELECT NOW() as timestamp");
+			$connections->sqlCurrentTime = strtotime($mySQLTimeStamp[0]->timestamp);
+			
+			switch ($mySQLTimeStamp)
+			{
+				case ($connections->sqlCurrentTime > $connections->wpCurrentTime):
+					$connections->sqlTimeOffset = $connections->sqlCurrentTime - $connections->wpCurrentTime;
+					$connections->test = $connections->sqlCurrentTime - $connections->sqlTimeOffset;
+				break;
+				
+				case ($connections->sqlCurrentTime < $connections->wpCurrentTime):
+					$connections->sqlTimeOffset = $connections->wpCurrentTime - $connections->sqlCurrentTime;
+					$connections->test = $connections->sqlCurrentTime + $connections->sqlTimeOffset;
+				break;
+			}
+			*/
+			
+			
+			
 			if (is_admin())
 			{
 				// Calls the methods to load the admin scripts and CSS.

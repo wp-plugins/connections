@@ -1644,6 +1644,7 @@ class cnEntry
 		$wpdb->show_errors = true;
 		
 		return $wpdb->query($wpdb->prepare('UPDATE ' . CN_ENTRY_TABLE . ' SET
+											ts			   		= "%s",
 											entry_type			= "%s",
 											first_name			= "%s",
 											middle_name			= "%s",
@@ -1669,6 +1670,7 @@ class cnEntry
 											edited_by			= "%d",
 											status				= "%s"
 											WHERE id			= "%d"',
+											current_time('mysql'),
 											$this->entryType,
 											$this->firstName,
 											$this->middleName,
@@ -1746,6 +1748,7 @@ class cnEntry
 		$wpdb->show_errors = true;
 		
 		$sql = $wpdb->prepare('INSERT INTO ' . CN_ENTRY_TABLE . ' SET
+											ts			   		= "%s",
 											date_added   		= "%d",
 											entry_type  		= "%s",
 											visibility  		= "%s",
@@ -1775,7 +1778,8 @@ class cnEntry
 											edited_by     		= "%d",
 											owner				= "%d",
 											status	      		= "%s"',
-											time(),
+											current_time('mysql'),
+											current_time('timestamp'),
 											$this->entryType,
 											$this->visibility,
 											$this->groupName,

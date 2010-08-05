@@ -122,6 +122,10 @@ function connectionsShowViewPage()
 						$results = $connections->retrieve->entries();
 						$connections->filter->permitted($results);
 						//print_r($connections->lastQuery);
+						/*print_r('WP Current Time ' . date('Y-m-d H:i:s', $connections->wpCurrentTime) . '<br />');
+						print_r('PHP Current Time ' . date('Y-m-d H:i:s', $connections->phpCurrentTime) . '<br />');
+						print_r('SQL Current Time ' . date('Y-m-d H:i:s', $connections->sqlCurrentTime) . '<br />');
+						print_r('Test Current Time ' . date('Y-m-d H:i:s', $connections->test) . '<br />');*/
 					?>
 						
 						<form action="admin.php?page=connections&action=do" method="post">
@@ -332,7 +336,7 @@ function connectionsShowViewPage()
 											
 										echo "</td> \n";											
 										echo '<td >';
-											echo '<strong>On:</strong> ' . $entry->getFormattedTimeStamp() . '<br />';
+											echo '<strong>On:</strong> ' . $entry->getFormattedTimeStamp('m/d/Y g:ia') . '<br />';
 											echo '<strong>By:</strong> ' . $entry->getEditedBy(). '<br />';
 											echo '<strong>Visibility:</strong> ' . $entry->displayVisibiltyType();
 										echo "</td> \n";											
@@ -461,7 +465,7 @@ function connectionsShowViewPage()
 										echo "</td> \n";
 										echo '<td>
 											<strong>Entry ID:</strong> ' . $entry->getId() . '<br />' . '
-											<strong>Date Added:</strong> ' . $entry->getDateAdded() . '<br />
+											<strong>Date Added:</strong> ' . $entry->getDateAdded('m/d/Y g:ia') . '<br />
 											<strong>Added By:</strong> ' . $entry->getAddedBy() . '<br />';
 											if (!$entry->getImageLinked()) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";
 											if ($entry->getImageLinked() && $entry->getImageDisplay()) echo "<br /><strong>Display:</strong> Yes"; else echo "<br /><strong>Display:</strong> No";
