@@ -40,7 +40,7 @@
 			<?php
 			if ($entry->getSocialMedia())
 			{
-				$showSocialMediaNetwork = array('myspace', 'twitter', 'facebook', 'rss', 'podcast');
+				$showSocialMediaNetwork = array('myspace', 'twitter', 'facebook', 'rss', 'podcast', 'soundcloud');
 				
 				echo '<ul class="cn_social-media-icons">';
 				
