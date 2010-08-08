@@ -654,6 +654,22 @@ function processActivateTemplate()
 	$connections->setSuccessMessage('template_change_active');
 }
 
+function processInstallTemplate()
+{
+	global $connections;
+	require_once(ABSPATH . 'wp-admin/includes/file.php');
+	
+	WP_Filesystem();
+	if ( unzip_file($_FILES['template']['tmp_name'], CN_CUSTOM_TEMPLATE_PATH) )
+	{
+		$connections->setSuccessMessage('template_installed');
+	}
+	else
+	{
+		$connections->setErrorMessage('template_install_failed');
+	}
+}
+
 function processDeleteTemplate()
 {
 	global $connections;

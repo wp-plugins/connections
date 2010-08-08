@@ -93,7 +93,7 @@ function _connections_list($atts, $content=null) {
 				{
 					if ( file_exists($templatePath . '/' .  $atts['template'] . '/' .  'meta.php') )
 					{
-						$templateAttr = array( 'template_meta' => $templatePath . '/' . $atts['template'] . '/meta.php', 'template_path' => $templatePath . '/' . $atts['template'] );
+						$templateAttr = array( 'template_meta' => $templatePath . '/' . $atts['template'] . '/meta.php', 'template_path' => $templatePath . '/' , 'slug' => $atts['template'] );
 						
 						$template = new cnTemplate($templateAttr);
 						
@@ -120,7 +120,7 @@ function _connections_list($atts, $content=null) {
 		
 		if ( isset($template->css) )
 		{
-			$out .= '<style type="text/css" scoped>' . "\n" . file_get_contents( $template->css ) . '</style>' . "\n";
+			$out .= '<style type="text/css" scoped>' . "\n" . $template->getCSS() . '</style>' . "\n";
 		}
 		
 		$out .= '<a name="connections-list-head"></a>';

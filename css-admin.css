@@ -98,6 +98,7 @@ table.connections div.cn_thumbnail_place_holder {-moz-border-radius: 4px;
 												}
 
 table#availablethemes td.current_template {border-left: 0; border-right: 0;}
+table#availablethemes td.install_template {border-left: 0; border-right: 0;}
 
 /* Publish Styles */
 #entry-type {border-color: #DFDFDF; border-style: solid; border-width: 1px; margin: 6px;}

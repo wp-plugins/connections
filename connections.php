@@ -361,6 +361,7 @@ if (!class_exists('connectionsLoad'))
 			$this->errorMessages->add('image_entry_failed', 'Entry image could not be created and/or saved to the destination folder.');
 			$this->errorMessages->add('image_thumbnail_failed', 'Thumbnail image could not be created and/or saved to the destination folder.');
 			
+			$this->errorMessages->add('template_install_failed', 'The template installation has failed.');
 			$this->errorMessages->add('template_delete_failed', 'The template could not be deleted.');
 		}
 		
@@ -416,6 +417,7 @@ if (!class_exists('connectionsLoad'))
 			$this->successMessages->add('role_settings_updated', 'Role capabilities have been updated.');
 			
 			$this->successMessages->add('template_change_active', 'The default active template has been changed.');
+			$this->successMessages->add('template_installed', 'A new template has been installed.');
 			$this->successMessages->add('template_deleted', 'The template has been deleted.');
 		}
 		
@@ -1083,6 +1085,12 @@ if (!class_exists('connectionsLoad'))
 							switch ($_GET['action']) {
 								case 'activate':
 									processActivateTemplate();
+									wp_redirect('admin.php?page=connections_templates&display_messages=true');
+								break;
+								
+								case 'install':
+									check_admin_referer($form->getNonce('install_template'), '_cn_wpnonce');
+									processInstallTemplate();
 									wp_redirect('admin.php?page=connections_templates&display_messages=true');
 								break;
 								

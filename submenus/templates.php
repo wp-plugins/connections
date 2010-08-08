@@ -62,16 +62,6 @@ function connectionsShowTemplatesPage()
 			
 			<h2>Connections : Templates</h2>
 			
-			<?php 
-				$attr = array(
-							 'action' => 'admin.php?page=connections_templates&action=set_default_template',
-							 'method' => 'post',
-							 );
-				
-				$form->open($attr);
-				$form->tokenField('set_default_template');
-			?>
-			
 			<table cellspacing="0" cellpadding="0" id="availablethemes">
 				<tbody>
 					<tr>
@@ -94,6 +84,32 @@ function connectionsShowTemplatesPage()
 								?>
 							</div>
 							<div class="clear"></div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td class="install_template" colspan="3">
+							<h2>Install Template</h2>
+							
+							<?php 
+							$formAttr = array(
+										 'action' => 'admin.php?page=connections_templates&action=install',
+										 'method' => 'post',
+										 'enctype' => 'multipart/form-data'
+										 );
+							
+							$form->open($formAttr);
+							$form->tokenField('install_template');
+							?>
+							
+							<p>
+								<label for='template'>Select Template:
+									<input type='file' value='' name='template' size='25' />
+								</label>
+								<input type="submit" value="Install Now" class="button">
+							</p>
+							
+							<?php $form->close(); ?>
 						</td>
 					</tr>
 					
@@ -134,17 +150,22 @@ function connectionsShowTemplatesPage()
 								if ( isset( $templates[$templateName]['template_meta'] ) )
 								{
 									$template = new stdClass();
+									$author = '';
 									$template->slug = $templateName;
 									include_once( $templates[$templateName]['template_meta'] );
 									
 									if ( isset($template->uri) )
 									{
-										//CREATE Author link here.
+										$author = '<a title="Visit author\'s homepage." href="http://' . esc_attr($template->uri) . '">' . esc_attr($template->author) . '</a>';
+									}
+									else
+									{
+										$author = esc_attr($template->author);
 									}
 									
-									echo '<h3>', esc_attr($template->name), ' ', esc_attr($template->version), ' by ', esc_attr($template->author), '</h3>';
+									echo '<h3>', esc_attr($template->name), ' ', esc_attr($template->version), ' by ', $author, '</h3>';
 									echo '<p class="description">', esc_attr($template->description), '</p>';
-								
+									if ( $templates[$templateName]['type'] === 'default' ) echo '<p>This a supplied template and can not be deleted.</p>';
 								?>
 									<span class="action-links">
 										<?php
@@ -184,7 +205,6 @@ function connectionsShowTemplatesPage()
 				</tbody>
 			</table>
 			
-			<?php $form->close(); ?>
 		</div>
 	<?php
 	}
