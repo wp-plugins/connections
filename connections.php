@@ -150,8 +150,11 @@ if (!class_exists('connectionsLoad'))
 			define('CN_TERM_RELATIONSHIP_TABLE', $wpdb->prefix . 'connections_term_relationships');
 			define('CN_BASE_NAME', plugin_basename( dirname(__FILE__)) );
 			define('CN_BASE_PATH', WP_PLUGIN_DIR . '/' . plugin_basename( dirname(__FILE__)));
+			define('CN_BASE_URL', WP_PLUGIN_URL . '/' . plugin_basename( dirname(__FILE__)));
 			define('CN_TEMPLATE_PATH', CN_BASE_PATH . '/templates');
+			define('CN_TEMPLATE_URL', CN_BASE_URL . '/templates');
 			define('CN_CUSTOM_TEMPLATE_PATH', WP_CONTENT_DIR . '/connections_templates');
+			define('CN_CUSTOM_TEMPLATE_URL', WP_CONTENT_URL . '/connections_templates');
 			
 			$siteURL = get_option('siteurl');
 			if(is_ssl())

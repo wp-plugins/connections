@@ -54,11 +54,11 @@ class cnTemplate
 		
 		if ( $this->path === CN_CUSTOM_TEMPLATE_PATH . '/' )
 		{
-			$path = WP_CONTENT_URL  . '/connections_templates/' . $this->slug;
+			$path = CN_CUSTOM_TEMPLATE_URL  . '/' . $this->slug;
 		}
 		else
 		{
-			$path = WP_CONTENT_URL  . '/plugins/connections/templates/' . $this->slug;
+			$path = CN_TEMPLATE_URL  . '/' . $this->slug;
 		}
 		
 		return str_replace('%%PATH%%', $path, $contents);

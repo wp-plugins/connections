@@ -73,10 +73,32 @@ function connectionsShowTemplatesPage()
 								$currentTemplate = $connections->options->getActiveTemplate();
 								
 								$template = new stdClass();
-								$template->slug = $templateName;
+								$author = '';
+								$template->slug = $currentTemplate;
 								include_once( $templates[$currentTemplate]['template_meta'] );
 								
-								echo '<h3>', esc_attr($template->name), ' ', esc_attr($template->version), ' by ', esc_attr($template->author), '</h3>';
+								if ( file_exists( $templates[$currentTemplate]['template_path'] . '/thumbnail.png' ) )
+								{
+									if ( $templates[$currentTemplate]['type'] === 'custom' )
+									{
+										echo '<div class="current-template"><img class="template-thumbnail" src="' . CN_CUSTOM_TEMPLATE_URL . '/' . $template->slug . '/thumbnail.png' . '" /></div>';
+									}
+									else
+									{
+										echo '<div class="current-template"><img class="template-thumbnail" src="' . CN_TEMPLATE_URL . '/' . $template->slug . '/thumbnail.png' . '" /></div>';
+									}
+								}
+								
+								if ( isset($template->uri) )
+								{
+									$author = '<a title="Visit author\'s homepage." href="http://' . esc_attr($template->uri) . '">' . esc_attr($template->author) . '</a>';
+								}
+								else
+								{
+									$author = esc_attr($template->author);
+								}
+								
+								echo '<h3>', esc_attr($template->name), ' ', esc_attr($template->version), ' by ', $author, '</h3>';
 								echo '<p class="theme-description">', esc_attr($template->description), '</p>';
 								
 								// Remove the current active template.
@@ -153,6 +175,18 @@ function connectionsShowTemplatesPage()
 									$author = '';
 									$template->slug = $templateName;
 									include_once( $templates[$templateName]['template_meta'] );
+									
+									if ( file_exists( $templates[$templateName]['template_path'] . '/thumbnail.png' ) )
+									{
+										if ( $templates[$templateName]['type'] === 'custom' )
+										{
+											echo '<div class="center-thumbnail"><img class="template-thumbnail" src="' . CN_CUSTOM_TEMPLATE_URL . '/' . $template->slug . '/thumbnail.png' . '" /></div>';
+										}
+										else
+										{
+											echo '<div class="center-thumbnail"><img class="template-thumbnail" src="' . CN_TEMPLATE_URL . '/' . $template->slug . '/thumbnail.png' . '" /></div>';
+										}
+									}
 									
 									if ( isset($template->uri) )
 									{
