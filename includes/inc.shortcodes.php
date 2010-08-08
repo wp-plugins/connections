@@ -43,8 +43,8 @@ function _connections_list($atts, $content=null) {
 				'state' => null,
 				'zip_code' => null,
 				'country' => null,
-				'template' => null,
-				'template_name' => 'card'
+				'template' => $connections->options->getActiveTemplate(),
+				'template_name' => null
 				), $atts ) ;
 				
 	/*
@@ -57,33 +57,50 @@ function _connections_list($atts, $content=null) {
 	$convert->toBoolean(&$atts['show_alphahead']);
 	$convert->toBoolean(&$atts['wp_current_category']);
 	
-	// First check to see if the template is in the custom template folder.
-	if ( is_dir(CN_TEMPLATE_PATH) )
+	/*
+	 * As of version 0.7.0.5 the $atts['template_name'] is deprecated.
+	 */
+	if ( isset($atts['template_name']) )
 	{
-		if (file_exists(CN_TEMPLATE_PATH . '/' .  $atts['template_name'] . '.php'))
+		// First check to see if the template is in the custom template folder.
+		if ( is_dir(CN_CUSTOM_TEMPLATE_PATH) && is_readable(CN_CUSTOM_TEMPLATE_PATH) )
 		{
-			$template->file = CN_TEMPLATE_PATH . '/' .  $atts['template_name'] . '.php';
-		}
-	}
-	
-	// If the template isn't a custom template, check for it in the default templates folder.
-	if ( !isset($template->path) )
-	{
-		if (file_exists(CN_BASE_PATH . '/templates/' .  $atts['template_name'] . '.php'))
-		{
-			$template->file = CN_BASE_PATH . '/templates/' .  $atts['template_name'] . '.php';
+			if (file_exists(CN_CUSTOM_TEMPLATE_PATH . '/' .  $atts['template_name'] . '.php'))
+			{
+				$template->file = CN_CUSTOM_TEMPLATE_PATH . '/' .  $atts['template_name'] . '.php';
+			}
 		}
 		
-	}
-	
-	if ( isset($atts['template']) )
-	{
-		if ( file_exists(CN_TEMPLATE_PATH . '/' .  $atts['template']) )
+		// If the template is not in the custom template folder, check for it in the default template folder.
+		if ( !isset($template->file) )
 		{
-			$template = new cnTemplate($atts['template']);
+			if (file_exists(CN_BASE_PATH . '/templates/' .  $atts['template_name'] . '.php'))
+			{
+				$template->file = CN_BASE_PATH . '/templates/' .  $atts['template_name'] . '.php';
+			}
 			
-			include_once($template->path .  $atts['template'] . '.php');
+		}
+	}
+	else
+	{
+		if ( isset($atts['template']) )
+		{
+			$templatePaths = array(CN_CUSTOM_TEMPLATE_PATH, CN_TEMPLATE_PATH);
 			
+			foreach ($templatePaths as $templatePath)
+			{
+				if ( is_dir($templatePath . '/' .  $atts['template']) && is_readable($templatePath . '/' .  $atts['template']) )
+				{
+					if ( file_exists($templatePath . '/' .  $atts['template'] . '/' .  'meta.php') )
+					{
+						$templateAttr = array( 'template_meta' => $templatePath . '/' . $atts['template'] . '/meta.php', 'template_path' => $templatePath . '/' . $atts['template'] );
+						
+						$template = new cnTemplate($templateAttr);
+						
+						break;
+					}
+				}
+			}
 		}
 	}
 	

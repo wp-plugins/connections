@@ -150,7 +150,8 @@ if (!class_exists('connectionsLoad'))
 			define('CN_TERM_RELATIONSHIP_TABLE', $wpdb->prefix . 'connections_term_relationships');
 			define('CN_BASE_NAME', plugin_basename( dirname(__FILE__)) );
 			define('CN_BASE_PATH', WP_PLUGIN_DIR . '/' . plugin_basename( dirname(__FILE__)));
-			define('CN_TEMPLATE_PATH', WP_CONTENT_DIR . '/connections_templates');
+			define('CN_TEMPLATE_PATH', CN_BASE_PATH . '/templates');
+			define('CN_CUSTOM_TEMPLATE_PATH', WP_CONTENT_DIR . '/connections_templates');
 			
 			$siteURL = get_option('siteurl');
 			if(is_ssl())
@@ -238,6 +239,8 @@ if (!class_exists('connectionsLoad'))
 			if ($this->options->getImgProfileX() === NULL) $this->options->setImgProfileX(300);
 			if ($this->options->getImgProfileY() === NULL) $this->options->setImgProfileY(225);
 			if ($this->options->getImgProfileCrop() === NULL) $this->options->setImgProfileCrop('crop');
+			
+			if ($this->options->getActiveTemplate() === NULL) $this->options->setActiveTemplate('card');
 			
 			$this->options->saveOptions();
 		}
@@ -357,6 +360,8 @@ if (!class_exists('connectionsLoad'))
 			$this->errorMessages->add('image_profile_failed', 'Profile image could not be created and/or saved to the destination folder.');
 			$this->errorMessages->add('image_entry_failed', 'Entry image could not be created and/or saved to the destination folder.');
 			$this->errorMessages->add('image_thumbnail_failed', 'Thumbnail image could not be created and/or saved to the destination folder.');
+			
+			$this->errorMessages->add('template_delete_failed', 'The template could not be deleted.');
 		}
 		
 		/**
@@ -409,6 +414,9 @@ if (!class_exists('connectionsLoad'))
 			
 			$this->successMessages->add('settings_updated', 'Settings have been updated.');
 			$this->successMessages->add('role_settings_updated', 'Role capabilities have been updated.');
+			
+			$this->successMessages->add('template_change_active', 'The default active template has been changed.');
+			$this->successMessages->add('template_deleted', 'The template has been deleted.');
 		}
 		
 		/**
@@ -604,6 +612,7 @@ if (!class_exists('connectionsLoad'))
 			}
 			
 			add_submenu_page(CN_BASE_NAME, 'Connections : Settings','Settings', 'connections_change_settings', 'connections_settings', array (&$this, 'showPage'));
+			add_submenu_page(CN_BASE_NAME, 'Connections : Templates','Templates', 'connections_manage_template', 'connections_templates', array (&$this, 'showPage'));
 			add_submenu_page(CN_BASE_NAME, 'Connections : Roles &amp; Capabilites','Roles', 'connections_change_roles', 'connections_roles', array (&$this, 'showPage'));
 			add_submenu_page(CN_BASE_NAME, 'Connections : Help','Help', 'connections_view_help', 'connections_help', array (&$this, 'showPage'));
 		}
@@ -622,6 +631,7 @@ if (!class_exists('connectionsLoad'))
 				case 'connections_add':
 				case 'connections_categories':
 				case 'connections_settings':
+				case 'connections_templates':
 				case 'connections_roles':
 				case 'connections_csv':
 				case 'connections_help':
@@ -671,6 +681,7 @@ if (!class_exists('connectionsLoad'))
 				case 'connections_add':
 				case 'connections_categories':
 				case 'connections_settings':
+				case 'connections_templates':
 				case 'connections_roles':
 				case 'connections_csv':
 				case 'connections_help':
@@ -842,6 +853,11 @@ if (!class_exists('connectionsLoad'))
 				case 'connections_settings':
 					include_once ( dirname (__FILE__) . '/submenus/settings.php' );
 					connectionsShowSettingsPage();
+				break;
+				
+				case 'connections_templates':
+					include_once ( dirname (__FILE__) . '/submenus/templates.php' );
+					connectionsShowTemplatesPage();
 				break;
 				
 				case 'connections_roles':
@@ -1052,6 +1068,34 @@ if (!class_exists('connectionsLoad'))
 					}
 					else
 					{
+						$connections->setErrorMessage('capability_settings');
+					}
+				break;
+				
+				case 'connections_templates':
+					/*
+					 * Check whether user can manage Templates
+					 */
+					if (current_user_can('connections_manage_template'))
+					{
+						if ($_GET['action'])
+						{
+							switch ($_GET['action']) {
+								case 'activate':
+									processActivateTemplate();
+									wp_redirect('admin.php?page=connections_templates&display_messages=true');
+								break;
+								
+								case 'delete':
+									processDeleteTemplate();
+									wp_redirect('admin.php?page=connections_templates&display_messages=true');
+								break;
+							}
+						}
+					}
+					else
+					{
+						// @TODO: Create template specific error message.
 						$connections->setErrorMessage('capability_settings');
 					}
 				break;

@@ -33,6 +33,7 @@ class cnOptions
 								'connections_view_unlisted' => 'View Unlisted Entries',
 								'connections_edit_categories' => 'Edit Categories',
 								'connections_change_settings' => 'Change Settings',
+								'connections_manage_template' => 'Manage Templates',
 								'connections_change_roles' => 'Change Role Capabilities',
 								'connections_view_help' => 'View Help'
 							);
@@ -143,6 +144,8 @@ class cnOptions
 	private $imgProfileRatioCrop;
 	private $imgProfileRatioFill;
 	
+	private $activeTemplate;
+	
 	/**
 	 * Sets up the plugin option properties. Requires the current WP user ID.
 	 * @param interger $userID
@@ -180,6 +183,8 @@ class cnOptions
 		$this->imgProfileCrop = $this->options['settings']['image']['profile']['crop'];
 		$this->imgProfileRatioCrop = $this->options['settings']['image']['profile']['ratio_crop'];
 		$this->imgProfileRatioFill = $this->options['settings']['image']['profile']['ratio_fill'];
+		
+		$this->activeTemplate = $this->options['settings']['template']['active'];
 	}
 	
 	/**
@@ -218,6 +223,8 @@ class cnOptions
 		$this->options['settings']['image']['profile']['crop'] = $this->imgProfileCrop;
 		$this->options['settings']['image']['profile']['ratio_crop'] = $this->imgProfileRatioCrop;
 		$this->options['settings']['image']['profile']['ratio_fill'] = $this->imgProfileRatioFill;
+		
+		$this->options['settings']['template']['active'] = $this->activeTemplate;
 		
 		update_option('connections_options', $this->options);
 	}
@@ -854,6 +861,26 @@ class cnOptions
     {
         return $this->imgThumbRatioFill;
     }
+    
+    /**
+     * Returns $activeTemplate.
+     *
+     * @see cnOptions::$activeTemplate
+     */
+    public function getActiveTemplate() {
+        return $this->activeTemplate;
+    }
+    
+    /**
+     * Sets $activeTemplate.
+     *
+     * @param object $activeTemplate
+     * @see cnOptions::$activeTemplate
+     */
+    public function setActiveTemplate($activeTemplate) {
+        $this->activeTemplate = $activeTemplate;
+    }
+    
 
     /**
      * Returns $defaultConnectionGroupValues.

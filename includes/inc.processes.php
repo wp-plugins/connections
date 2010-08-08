@@ -641,6 +641,68 @@ function processDeleteCategory($type)
 	}
 }
 
+function processActivateTemplate()
+{
+	global $connections;
+	
+	$templateName = esc_attr($_GET['template']);
+	check_admin_referer('activate_' . $templateName);
+	
+	$connections->options->setActiveTemplate($templateName);
+	
+	$connections->options->saveOptions();
+	$connections->setSuccessMessage('template_change_active');
+}
+
+function processDeleteTemplate()
+{
+	global $connections;
+	
+	$templateName = esc_attr($_GET['template']);
+	check_admin_referer('delete_' . $templateName);
+	
+	function removeDirectory($directory)
+	{
+		$deleteError = FALSE;
+		$currentDirectory = opendir($directory);
+		
+		while( ( $file = readdir($currentDirectory) ) !== FALSE )
+		{
+		    if( $file != "." && $file != ".." )
+			{
+		        chmod( $directory . $file, 0777 );
+				
+		        if( is_dir( $directory . $file ) )
+				{
+		            chdir('.');
+		            removeDirectory( $directory . $file . '/' );
+		            rmdir( $directory . $file ) or $deleteError = TRUE;
+		        }
+		        else
+				{
+		            unlink( $directory . $file ) or $deleteError = TRUE;
+				}
+				
+				if ( $deleteError ) return FALSE;
+		    }
+		}
+		
+		closedir($currentDirectory);
+		if ( !rmdir( $directory ) ) return FALSE;
+		
+		return TRUE;
+	}
+	
+	if ( removeDirectory( CN_CUSTOM_TEMPLATE_PATH . '/' . $templateName . '/' ) )
+	{
+		$connections->setSuccessMessage('template_deleted');
+	}
+	else
+	{
+		$connections->setErrorMessage('template_delete_failed');
+	}
+}
+
 function updateRoleSettings()
 {
 	global $connections, $wp_roles;
