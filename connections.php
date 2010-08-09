@@ -78,15 +78,16 @@ if (!class_exists('connectionsLoad'))
 			get_currentuserinfo();
 			$connections->currentUser->setID($current_user->ID);
 			
-			/*
-			Test code to attemp to adjust the SQL timestamp to the local time as set in the WP admin General settings.
+			
+			//Test code to attemp to adjust the SQL timestamp to the local time as set in the WP admin General settings.
 			 
-			$connections->wpCurrentTime = current_time('timestamp');
-			$connections->phpCurrentTime = date('U');
+			//$connections->wpCurrentTime = current_time('timestamp');
+			//$connections->phpCurrentTime = date('U');
 			
 			$mySQLTimeStamp = $wpdb->get_results("SELECT NOW() as timestamp");
 			$connections->sqlCurrentTime = strtotime($mySQLTimeStamp[0]->timestamp);
-			
+			$connections->sqlTimeOffset = time() - $connections->sqlCurrentTime;
+			/*
 			switch ($mySQLTimeStamp)
 			{
 				case ($connections->sqlCurrentTime > $connections->wpCurrentTime):

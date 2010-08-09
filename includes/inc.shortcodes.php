@@ -259,7 +259,7 @@ function connectionsUpcomingList($atts)
 
 add_shortcode('upcoming_list', '_upcoming_list');
 function _upcoming_list($atts, $content=null) {
-    global $wpdb;
+    global $connections, $wpdb;
 	
 	$atts = shortcode_atts( array(
 			'list_type' => 'birthday',
@@ -273,7 +273,7 @@ function _upcoming_list($atts, $content=null) {
 	if (is_user_logged_in() or $atts['private_override'] != false) { 
 		$visibilityfilter = " AND (visibility='private' OR visibility='public') AND (".$atts['list_type']." != '')";
 	} else {
-		$visibilityfilter = " AND (visibility='public') AND (".$atts['list_type']." != '')";
+		$visibilityfilter = " AND (visibility='public') AND (`".$atts['list_type']."` != '')";
 	}
 	
 	if ($atts['list_title'] == null) {
@@ -293,8 +293,28 @@ function _upcoming_list($atts, $content=null) {
         . " < MID(FROM_UNIXTIME(".$atts['list_type']."),5,6) )"
 		. $visibilityfilter
 		. " ORDER BY FROM_UNIXTIME(".$atts['list_type'].") ASC";
-
-	$results = $wpdb->get_results($sql);
+	
+	//$wpCurrentDate = date( 'Y-m-d', current_time('timestamp') );
+	
+	$newSQL = "SELECT id, ".$atts['list_type'].", last_name, first_name FROM ".$wpdb->prefix."connections where (YEAR(DATE_ADD(CURRENT_DATE, INTERVAL ".$atts['days']." DAY))"
+        . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND)) )"
+        . " - ( MID(DATE_ADD(CURRENT_DATE, INTERVAL ".$atts['days']." DAY),5,6)"
+        . " < MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND),5,6) )"
+        . " > ( YEAR(CURRENT_DATE)"
+        . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND)) )"
+        . " - ( MID(CURRENT_DATE,5,6)"
+        . " < MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND),5,6) )"
+		. $visibilityfilter
+		. " ORDER BY DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND) ASC";
+	
+	$results = $wpdb->get_results($newSQL);
+	
+	/*print_r($wpdb->last_query);
+	print_r($wpdb->last_error);
+	print_r( time() + ( get_option( 'gmt_offset' ) * 3600 ) . '<br />' );
+	print_r( $connections->sqlCurrentTime . '<br />' );
+	print_r( time() . '<br />' );
+	print_r( time() - $connections->sqlCurrentTime );*/
 	
 	if ($results != null) {
 		$out = "<div class='connections-list' style='-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; position: relative;'>\n";
