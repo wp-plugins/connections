@@ -652,11 +652,6 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function loadScripts()
 		{
-			/**
-			 * @TODO: enqueuing the built-in jQuery breaks the Fancy Theme 2.0 by Mip Design Studio at http://www.mip-design.com/
-			 * Is there a way to fix this???
-			 */
-			
 			wp_enqueue_script('jquery');
 			
 			// Commented out for now because it's not needed.
@@ -665,8 +660,8 @@ if (!class_exists('connectionsLoad'))
 			/**
 			 * @TODO: Move this javascript to the templates directory.
 			 */
-			wp_register_script('contactpreview', WP_PLUGIN_URL . '/connections/js/jquery.contactpreview.js', array('jquery'), CN_CURRENT_VERSION);
-			wp_enqueue_script( 'contactpreview' );
+			//wp_register_script('contactpreview', WP_PLUGIN_URL . '/connections/js/jquery.contactpreview.js', array('jquery'), CN_CURRENT_VERSION);
+			//wp_enqueue_script( 'contactpreview' );
 		}
 		
 		/**
