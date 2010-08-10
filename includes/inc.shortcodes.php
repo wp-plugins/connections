@@ -283,6 +283,7 @@ function _upcoming_list($atts, $content=null) {
 		$list_title = $atts['list_title'];
 	}
 	
+	/* Old and busted query!
 	$sql = "SELECT id, ".$atts['list_type'].", last_name, first_name FROM ".$wpdb->prefix."connections where (YEAR(DATE_ADD(CURRENT_DATE, INTERVAL ".$atts['days']." DAY))"
         . " - YEAR(FROM_UNIXTIME(".$atts['list_type'].")) )"
         . " - ( MID(DATE_ADD(CURRENT_DATE, INTERVAL ".$atts['days']." DAY),5,6)"
@@ -293,31 +294,31 @@ function _upcoming_list($atts, $content=null) {
         . " < MID(FROM_UNIXTIME(".$atts['list_type']."),5,6) )"
 		. $visibilityfilter
 		. " ORDER BY FROM_UNIXTIME(".$atts['list_type'].") ASC";
+	*/
 	
-	//$wpCurrentDate = date( 'Y-m-d', current_time('timestamp') );
+	// Get the current date from WP which should have the current time zone offset.
+	$wpCurrentDate = date( 'Y-m-d', current_time('timestamp') );
 	
-	$newSQL = "SELECT id, ".$atts['list_type'].", last_name, first_name FROM ".$wpdb->prefix."connections where (YEAR(DATE_ADD(CURRENT_DATE, INTERVAL ".$atts['days']." DAY))"
+	/*
+	 * 
+	 */
+	$newSQL = "SELECT id, ".$atts['list_type'].", last_name, first_name FROM ".CN_ENTRY_TABLE." WHERE"
+		. "  (YEAR(DATE_ADD('$wpCurrentDate', INTERVAL ".$atts['days']." DAY))"
         . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND)) )"
-        . " - ( MID(DATE_ADD(CURRENT_DATE, INTERVAL ".$atts['days']." DAY),5,6)"
-        . " < MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND),5,6) )"
-        . " > ( YEAR(CURRENT_DATE)"
+        . " - ( MID(DATE_ADD('$wpCurrentDate', INTERVAL ".$atts['days']." DAY),5,6)"
+        . " <= MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND),5,6) )"
+        . " > ( YEAR('$wpCurrentDate')"
         . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND)) )"
-        . " - ( MID(CURRENT_DATE,5,6)"
-        . " < MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND),5,6) )"
+        . " - ( MID('$wpCurrentDate',5,6)"
+        . " <= MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND),5,6) )"
 		. $visibilityfilter
 		. " ORDER BY DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND) ASC";
 	
 	$results = $wpdb->get_results($newSQL);
 	
-	/*print_r($wpdb->last_query);
-	print_r($wpdb->last_error);
-	print_r( time() + ( get_option( 'gmt_offset' ) * 3600 ) . '<br />' );
-	print_r( $connections->sqlCurrentTime . '<br />' );
-	print_r( time() . '<br />' );
-	print_r( time() - $connections->sqlCurrentTime );*/
-	
-	if ($results != null) {
-		$out = "<div class='connections-list' style='-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; position: relative;'>\n";
+	if ($results != NULL)
+	{
+		$out = "<div class='connections-list cn_upcoming' style='-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; position: relative;'>\n";
 		$out .= "<div class='cn_list_title' style='font-size: large; font-variant: small-caps; font-weight: bold; text-align:center;'>" . $list_title  . "</div>";
 		
 		
@@ -325,33 +326,29 @@ function _upcoming_list($atts, $content=null) {
 		Otherwise earlier months of the year show before the later months in the year. Example Jan before Dec. The desired output is to show
 		Dec then Jan dates.  This function checks to see if the month is a month earlier than the current month. If it is the year is changed to the following year rather than the current.
 		After a new list is built, it is resorted based on the date.*/
-		foreach ($results as $row) {
-			if ($row->$atts['list_type']) {
-				if (date("m", $row->$atts['list_type']) <= date("m") && date("d", $row->$atts['list_type']) < date("d")) {
-					$current_date = strtotime(date("d", $row->$atts['list_type']) . '-' . date("m", $row->$atts['list_type']) . '-' . date("Y") . " + 1 year");
-				} else {
-					$current_date = strtotime(date("d", $row->$atts['list_type']) . '-' . date("m", $row->$atts['list_type']) . '-' . date("Y"));
-				}
-				if (!$atts['show_lastname']) {
-					$upcoming_list["<span class='name'>" . $row->first_name . " " . $row->last_name{0} . ".</span>"] .= $current_date;
-				} else {
-					$upcoming_list["<span class='name'>" . $row->first_name . " " . $row->last_name . "</span>"] .= $current_date;
-				}
+		foreach ($results as $key => $row)
+		{
+			if ( mktime(23, 59, 59, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', current_time('timestamp')) ) < current_time('timestamp') )
+			{
+				$dateSort[] = $row->$atts['list_type'] = mktime(0, 0, 0, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', current_time('timestamp')) + 1 );
+			}
+			else
+			{
+				$dateSort[] = $row->$atts['list_type'] = mktime(0, 0, 0, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', current_time('timestamp')) );
 			}
 		}
-		asort($upcoming_list);
-
-		foreach ($upcoming_list as $key=>$value) {
 		
-			if (!$setstyle == "alternate") {
-				$setstyle = "alternate";
-				$alternate = "background-color:#F9F9F9; ";
-			} else {
-				$setstyle = "";
-				$alternate = "";
-			}
+		array_multisort($dateSort, SORT_ASC, $results);
+
+		foreach ($results as $key => $entry)
+		{
+			$name = '';
 			
-				$out .= "<div class='cn_row' style='" . $alternate . "padding:2px 4px;'>" . $key . " <span class='cn_date' style='position: absolute; right:4px;'>" . date($atts['date_format'],$value) . "</span></div>";
+			$setstyle != 'background-color:#F9F9F9;' ? $setstyle = 'background-color:#F9F9F9;' : $setstyle = '';
+			
+			!$atts['show_lastname'] ? $name = $entry->first_name : $name = $entry->first_name . ' ' . $entry->last_name;
+			
+			$out .= "<div class='cn_row' style='" . $setstyle . " padding:2px 4px;'>" . $name . " <span class='cn_date' style='position: absolute; right:4px;'>" . date($atts['date_format'], $entry->$atts['list_type']) . "</span></div>";
 		}
 		
 		$out .= "</div>\n";
