@@ -52,7 +52,7 @@ if (!class_exists('connectionsLoad'))
 			$this->loadConstants();
 			$this->loadDependencies();
 			$this->initDependencies();
-			$this->initOptions(); // This should only be called during plugin activation!
+			$this->initOptions();
 			$this->initErrorMessages();
 			$this->initSuccessMessages();
 			
@@ -78,30 +78,19 @@ if (!class_exists('connectionsLoad'))
 			get_currentuserinfo();
 			$connections->currentUser->setID($current_user->ID);
 			
+			$connections->wpCurrentTime = current_time('timestamp');
+			$connections->CurrentTime = date('U');
 			
-			//Test code to attemp to adjust the SQL timestamp to the local time as set in the WP admin General settings.
-			 
-			//$connections->wpCurrentTime = current_time('timestamp');
-			//$connections->phpCurrentTime = date('U');
-			
+			/*
+			 * Because MySQL returns timestamps adjusted to the local timezone
+			 * it is handy to have the offset so it can be compensated for.
+			 * One example is when using FROM_UNIXTIME the timestamp returned will
+			 * not be the actual stored timestamp, it will be the timestamp adjusted
+			 * to the timezone set in MySQL.
+			 */
 			$mySQLTimeStamp = $wpdb->get_results("SELECT NOW() as timestamp");
 			$connections->sqlCurrentTime = strtotime($mySQLTimeStamp[0]->timestamp);
 			$connections->sqlTimeOffset = time() - $connections->sqlCurrentTime;
-			/*
-			switch ($mySQLTimeStamp)
-			{
-				case ($connections->sqlCurrentTime > $connections->wpCurrentTime):
-					$connections->sqlTimeOffset = $connections->sqlCurrentTime - $connections->wpCurrentTime;
-					$connections->test = $connections->sqlCurrentTime - $connections->sqlTimeOffset;
-				break;
-				
-				case ($connections->sqlCurrentTime < $connections->wpCurrentTime):
-					$connections->sqlTimeOffset = $connections->wpCurrentTime - $connections->sqlCurrentTime;
-					$connections->test = $connections->sqlCurrentTime + $connections->sqlTimeOffset;
-				break;
-			}
-			*/
-			
 			
 			
 			if (is_admin())
@@ -245,6 +234,40 @@ if (!class_exists('connectionsLoad'))
 			if ($this->options->getImgProfileCrop() === NULL) $this->options->setImgProfileCrop('crop');
 			
 			if ($this->options->getActiveTemplate() === NULL) $this->options->setActiveTemplate('card');
+			
+			
+			/*
+			 * --> START <-- Check to make sure the template exists; if not set it to the default template.
+			 */
+			$templatePaths = array(CN_CUSTOM_TEMPLATE_PATH, CN_TEMPLATE_PATH);
+			$currentTemplate = $this->options->getActiveTemplate();
+			
+			foreach ($templatePaths as $templatePath)
+			{
+				if ( is_dir( $templatePath . '/' .  $currentTemplate ) && is_readable( $templatePath . '/' .  $currentTemplate ) )
+				{
+					if ( !file_exists($templatePath . '/' .  $currentTemplate . '/' .  'meta.php') ||
+						 !file_exists($templatePath . '/' .  $currentTemplate . '/' .  'template.php')
+						)
+					{
+						$this->options->setActiveTemplate('card');
+						break;
+					}
+					else
+					{
+						$this->options->setActiveTemplate($currentTemplate);
+						break;
+					}
+				}
+				else
+				{
+					$this->options->setActiveTemplate('card');
+				}
+			}
+			/*
+			 * --> End <-- Check to make sure the template exists; if not set it to the default template.
+			 */
+			
 			
 			$this->options->saveOptions();
 		}

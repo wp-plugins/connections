@@ -28,19 +28,23 @@ function connectionsShowTemplatesPage()
 		$connections->displayMessages();
 		
 		/**
-		 * Find the available templates --> START <--
+		 * --> START <-- Find the available templates
 		 */
 		$templatePaths = array(CN_TEMPLATE_PATH, CN_CUSTOM_TEMPLATE_PATH);
 		
 		foreach ($templatePaths as $templatePath)
 		{
+			if ( !is_dir($templatePath . '/') && !is_readable($templatePath . '/') ) continue;
+			
 			$templateDirectories = opendir($templatePath);
 			
 			while ( ( $templateDirectory = readdir($templateDirectories) ) !== FALSE )
 			{
 				if ( is_dir($templatePath . '/' . $templateDirectory) && is_readable($templatePath . '/' . $templateDirectory) )
 				{
-					if ( file_exists($templatePath . '/' . $templateDirectory . '/meta.php') )
+					if ( file_exists($templatePath . '/' . $templateDirectory . '/meta.php') &&
+						 file_exists($templatePath . '/' . $templateDirectory . '/template.php') 
+						)
 					{
 						$templates[$templateDirectory] = array( 'template_meta' => $templatePath . '/' . $templateDirectory . '/meta.php', 'template_path' => $templatePath . '/' . $templateDirectory);
 						$templates[$templateDirectory]['type'] = ( $templatePath === CN_TEMPLATE_PATH ) ? 'default' : 'custom';
@@ -51,7 +55,7 @@ function connectionsShowTemplatesPage()
 			closedir($templateDirectories);
 		}
 		/**
-		 * Find the available templates --> END <--
+		 * --> END <-- Find the available templates
 		 */
 		
 	?>
@@ -70,12 +74,12 @@ function connectionsShowTemplatesPage()
 							
 							<div id="current-theme">
 								<?php
-								$currentTemplate = $connections->options->getActiveTemplate();
-								
 								$template = new stdClass();
 								$author = '';
-								$template->slug = $currentTemplate;
+								
+								$currentTemplate = $connections->options->getActiveTemplate();
 								include_once( $templates[$currentTemplate]['template_meta'] );
+								$template->slug = $currentTemplate;
 								
 								if ( file_exists( $templates[$currentTemplate]['template_path'] . '/thumbnail.png' ) )
 								{

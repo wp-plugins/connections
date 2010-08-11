@@ -264,26 +264,51 @@ function _upcoming_list($atts, $content=null) {
 	$atts = shortcode_atts( array(
 			'list_type' => 'birthday',
 			'days' => '30',
-			'private_override' => false,
+			'private_override' => FALSE,
 			'date_format' => 'F jS',
-			'show_lastname' => false,
-			'list_title' => null,
+			'show_lastname' => FALSE,
+			'list_title' => NULL,
 			), $atts ) ;
 	
-	if (is_user_logged_in() or $atts['private_override'] != false) { 
+	if (is_user_logged_in() || $atts['private_override'] != FALSE) { 
 		$visibilityfilter = " AND (visibility='private' OR visibility='public') AND (".$atts['list_type']." != '')";
 	} else {
 		$visibilityfilter = " AND (visibility='public') AND (`".$atts['list_type']."` != '')";
 	}
 	
-	if ($atts['list_title'] == null) {
-		if ($atts['list_type'] == "birthday") $list_title = "Upcoming Birthdays the next " . $atts['days'] . " days";
-		if ($atts['list_type'] == "anniversary") $list_title = "Upcoming Anniversaries the next " . $atts['days'] . " days";
-	} else {
+	if ($atts['list_title'] == NULL)
+	{
+		switch ($atts['list_type'])
+		{
+			case 'birthday':
+				if ( $atts['days'] >= 1 )
+				{
+					$list_title = 'Upcoming Birthdays the next ' . $atts['days'] . ' days';
+				}
+				else
+				{
+					$list_title = 'Today\'s Birthdays';
+				}
+			break;
+			
+			case 'anniversary':
+				if ( $atts['days'] >= 1 )
+				{
+					$list_title = 'Upcoming Anniversaries the next ' . $atts['days'] . ' days';
+				}
+				else
+				{
+					$list_title = 'Today\'s Anniversaries';
+				}
+			break;
+		}
+	}
+	else
+	{
 		$list_title = $atts['list_title'];
 	}
 	
-	/* Old and busted query!
+	/* Old and busted query!2
 	$sql = "SELECT id, ".$atts['list_type'].", last_name, first_name FROM ".$wpdb->prefix."connections where (YEAR(DATE_ADD(CURRENT_DATE, INTERVAL ".$atts['days']." DAY))"
         . " - YEAR(FROM_UNIXTIME(".$atts['list_type'].")) )"
         . " - ( MID(DATE_ADD(CURRENT_DATE, INTERVAL ".$atts['days']." DAY),5,6)"
@@ -297,7 +322,7 @@ function _upcoming_list($atts, $content=null) {
 	*/
 	
 	// Get the current date from WP which should have the current time zone offset.
-	$wpCurrentDate = date( 'Y-m-d', current_time('timestamp') );
+	$wpCurrentDate = date( 'Y-m-d', $connections->wpCurrentTime );
 	
 	/*
 	 * 
@@ -306,7 +331,7 @@ function _upcoming_list($atts, $content=null) {
 		. "  (YEAR(DATE_ADD('$wpCurrentDate', INTERVAL ".$atts['days']." DAY))"
         . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND)) )"
         . " - ( MID(DATE_ADD('$wpCurrentDate', INTERVAL ".$atts['days']." DAY),5,6)"
-        . " <= MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND),5,6) )"
+        . " < MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND),5,6) )"
         . " > ( YEAR('$wpCurrentDate')"
         . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND)) )"
         . " - ( MID('$wpCurrentDate',5,6)"
@@ -328,13 +353,13 @@ function _upcoming_list($atts, $content=null) {
 		After a new list is built, it is resorted based on the date.*/
 		foreach ($results as $key => $row)
 		{
-			if ( mktime(23, 59, 59, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', current_time('timestamp')) ) < current_time('timestamp') )
+			if ( mktime(23, 59, 59, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', $connections->wpCurrentTime) ) < $connections->wpCurrentTime )
 			{
-				$dateSort[] = $row->$atts['list_type'] = mktime(0, 0, 0, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', current_time('timestamp')) + 1 );
+				$dateSort[] = $row->$atts['list_type'] = mktime(0, 0, 0, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', $connections->wpCurrentTime) + 1 );
 			}
 			else
 			{
-				$dateSort[] = $row->$atts['list_type'] = mktime(0, 0, 0, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', current_time('timestamp')) );
+				$dateSort[] = $row->$atts['list_type'] = mktime(0, 0, 0, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', $connections->wpCurrentTime) );
 			}
 		}
 		
