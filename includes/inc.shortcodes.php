@@ -336,8 +336,7 @@ function _upcoming_list($atts, $content=null) {
         . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND)) )"
         . " - ( MID('$wpCurrentDate',5,6)"
         . " <= MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND),5,6) )"
-		. $visibilityfilter
-		. " ORDER BY DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND) ASC";
+		. $visibilityfilter;
 	
 	$results = $wpdb->get_results($newSQL);
 	
