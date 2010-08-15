@@ -43,7 +43,7 @@ function _connections_list($atts, $content=null) {
 				'state' => null,
 				'zip_code' => null,
 				'country' => null,
-				'template' => $connections->options->getActiveTemplate(),
+				'template' => $connections->options->getActiveTemplate('all'),
 				'template_name' => null
 				), $atts ) ;
 				
@@ -83,23 +83,34 @@ function _connections_list($atts, $content=null) {
 	}
 	else
 	{
-		if ( isset($atts['template']) )
+		/*
+		 * $atts['template'] can be either a string or an object. It is a string when set
+		 * with the shortcode attribute. If it is a string, the template will be loaded
+		 * via the cnTemplate class.
+		 * 
+		 * If the attribute is not set, it will be the object returned from the
+		 * cnOptions::getActiveTemplate() method which stores the default template
+		 * per list style.
+		 */
+		if ( isset($atts['template']) && !is_object($atts['template']) )
 		{
-			$templatePaths = array(CN_CUSTOM_TEMPLATE_PATH, CN_TEMPLATE_PATH);
-			
-			foreach ($templatePaths as $templatePath)
+			$template = new cnTemplate();
+			$template->load($atts['template']);
+		}
+		else
+		{
+			/*
+			 * If $atts['list_type'] is set to 'all', which is the default list type,
+			 * pass it by reference to $template. However if the list type is not 'all'
+			 * the template for the list type must be loaded.
+			 */
+			if ( $atts['list_type'] === 'all' )
 			{
-				if ( is_dir($templatePath . '/' .  $atts['template']) && is_readable($templatePath . '/' .  $atts['template']) )
-				{
-					if ( file_exists($templatePath . '/' .  $atts['template'] . '/' .  'meta.php') )
-					{
-						$templateAttr = array( 'template_meta' => $templatePath . '/' . $atts['template'] . '/meta.php', 'template_path' => $templatePath . '/' , 'slug' => $atts['template'] );
-						
-						$template = new cnTemplate($templateAttr);
-						
-						break;
-					}
-				}
+				$template =& $atts['template'];
+			}
+			else
+			{
+				$template = $connections->options->getActiveTemplate( $atts['list_type'] );
 			}
 		}
 	}
@@ -120,7 +131,23 @@ function _connections_list($atts, $content=null) {
 		
 		if ( isset($template->css) )
 		{
-			$out .= '<style type="text/css" scoped>' . "\n" . $template->getCSS() . '</style>' . "\n";
+			// Loads the CSS style in the body, valid HTML5 when set with the 'scoped' attribute.
+			$out .= '<style type="text/css" scoped>' . "\n";
+			
+			$cssContents = file_get_contents( $template->css );
+		
+			if ( $template->path === CN_CUSTOM_TEMPLATE_PATH . '/' . $template->slug )
+			{
+				$cssPath = CN_CUSTOM_TEMPLATE_URL  . '/' . $template->slug;
+			}
+			else
+			{
+				$cssPath = CN_TEMPLATE_URL  . '/' . $template->slug;
+			}
+			
+			$out .= str_replace('%%PATH%%', $cssPath, $cssContents);
+			
+			$out .= '</style>' . "\n";
 		}
 		
 		$out .= '<a name="connections-list-head"></a>';

@@ -233,42 +233,6 @@ if (!class_exists('connectionsLoad'))
 			if ($this->options->getImgProfileY() === NULL) $this->options->setImgProfileY(225);
 			if ($this->options->getImgProfileCrop() === NULL) $this->options->setImgProfileCrop('crop');
 			
-			if ($this->options->getActiveTemplate() === NULL) $this->options->setActiveTemplate('card');
-			
-			
-			/*
-			 * --> START <-- Check to make sure the template exists; if not set it to the default template.
-			 */
-			$templatePaths = array(CN_CUSTOM_TEMPLATE_PATH, CN_TEMPLATE_PATH);
-			$currentTemplate = $this->options->getActiveTemplate();
-			
-			foreach ($templatePaths as $templatePath)
-			{
-				if ( is_dir( $templatePath . '/' .  $currentTemplate ) && is_readable( $templatePath . '/' .  $currentTemplate ) )
-				{
-					if ( !file_exists($templatePath . '/' .  $currentTemplate . '/' .  'meta.php') ||
-						 !file_exists($templatePath . '/' .  $currentTemplate . '/' .  'template.php')
-						)
-					{
-						$this->options->setActiveTemplate('card');
-						break;
-					}
-					else
-					{
-						$this->options->setActiveTemplate($currentTemplate);
-						break;
-					}
-				}
-				else
-				{
-					$this->options->setActiveTemplate('card');
-				}
-			}
-			/*
-			 * --> End <-- Check to make sure the template exists; if not set it to the default template.
-			 */
-			
-			
 			$this->options->saveOptions();
 		}
 		
@@ -581,6 +545,8 @@ if (!class_exists('connectionsLoad'))
 			 * @TODO: Shouldn't setVersion here. Do it in the showPage method
 			 * as part of the upgade check.
 			 */
+			
+			if ($this->options->getDefaultTemplatesSet() === NULL) $this->options->setDefaultTemplates();
 			
 			$this->options->setDefaultCapabilities();
 			$this->options->setVersion(CN_CURRENT_VERSION);
@@ -1107,18 +1073,24 @@ if (!class_exists('connectionsLoad'))
 							switch ($_GET['action']) {
 								case 'activate':
 									processActivateTemplate();
-									wp_redirect('admin.php?page=connections_templates&display_messages=true');
+									
+									( !isset($_GET['type']) ) ? $tab = 'all' : $tab = esc_attr($_GET['type']);
+									wp_redirect('admin.php?page=connections_templates&type=' . $tab . '&display_messages=true');
 								break;
 								
 								case 'install':
 									check_admin_referer($form->getNonce('install_template'), '_cn_wpnonce');
 									processInstallTemplate();
-									wp_redirect('admin.php?page=connections_templates&display_messages=true');
+									
+									( !isset($_GET['type']) ) ? $tab = 'all' : $tab = esc_attr($_GET['type']);
+									wp_redirect('admin.php?page=connections_templates&type=' . $tab . '&display_messages=true');
 								break;
 								
 								case 'delete':
 									processDeleteTemplate();
-									wp_redirect('admin.php?page=connections_templates&display_messages=true');
+									
+									( !isset($_GET['type']) ) ? $tab = 'all' : $tab = esc_attr($_GET['type']);
+									wp_redirect('admin.php?page=connections_templates&type=' . $tab . '&display_messages=true');
 								break;
 							}
 						}

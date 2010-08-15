@@ -144,7 +144,8 @@ class cnOptions
 	private $imgProfileRatioCrop;
 	private $imgProfileRatioFill;
 	
-	private $activeTemplate;
+	private $defaultTemplatesSet;
+	private $activeTemplates;
 	
 	/**
 	 * Sets up the plugin option properties. Requires the current WP user ID.
@@ -184,7 +185,8 @@ class cnOptions
 		$this->imgProfileRatioCrop = $this->options['settings']['image']['profile']['ratio_crop'];
 		$this->imgProfileRatioFill = $this->options['settings']['image']['profile']['ratio_fill'];
 		
-		$this->activeTemplate = $this->options['settings']['template']['active'];
+		$this->defaultTemplatesSet = $this->options['settings']['template']['defaults_set'];
+		$this->activeTemplates = (array) $this->options['settings']['template']['active'];
 	}
 	
 	/**
@@ -224,7 +226,8 @@ class cnOptions
 		$this->options['settings']['image']['profile']['ratio_crop'] = $this->imgProfileRatioCrop;
 		$this->options['settings']['image']['profile']['ratio_fill'] = $this->imgProfileRatioFill;
 		
-		$this->options['settings']['template']['active'] = $this->activeTemplate;
+		$this->options['settings']['template']['defaults_set'] = $this->defaultTemplatesSet;
+		$this->options['settings']['template']['active'] = $this->activeTemplates;
 		
 		update_option('connections_options', $this->options);
 	}
@@ -863,24 +866,65 @@ class cnOptions
     }
     
     /**
-     * Returns $activeTemplate.
+     * Returns $defaultTemplatesSet.
      *
-     * @see cnOptions::$activeTemplate
+     * @see cnOptions::$defaultTemplatesSet
      */
-    public function getActiveTemplate() {
-        return $this->activeTemplate;
+    public function getDefaultTemplatesSet() {
+        return $this->defaultTemplatesSet;
     }
     
     /**
-     * Sets $activeTemplate.
+     * Sets $defaultTemplatesSet.
      *
+     * @param object $defaultTemplatesSet
+     * @see cnOptions::$defaultTemplatesSet
+     */
+    public function setDefaultTemplatesSet($defaultTemplatesSet) {
+        $this->defaultTemplatesSet = $defaultTemplatesSet;
+    }
+    
+    
+    /**
+     * Returns the active template by type.
+     * 
+     * @param string $type
+     * @return object || NULL
+     */
+	public function getActiveTemplate($type)
+	{
+        ( !empty($this->activeTemplates[$type]) ) ? $result = (object) $this->activeTemplates[$type] : $result = NULL;
+		return $result;
+    }
+    
+    /**
+     * Sets $activeTemplate by type.
+     *
+     * @param string $type
      * @param object $activeTemplate
      * @see cnOptions::$activeTemplate
      */
-    public function setActiveTemplate($activeTemplate) {
-        $this->activeTemplate = $activeTemplate;
+    public function setActiveTemplate($type, $activeTemplate)
+	{
+       $this->activeTemplates[$type] = (array) $activeTemplate;
     }
     
+	public function setDefaultTemplates()
+	{
+		$templates = new cnTemplate();
+		$templates->buildCatalog();
+		
+		$all = $templates->getCatalog('all');
+		
+		$this->setActiveTemplate('all', $all->card);
+		$this->setActiveTemplate('individual', $all->card);
+		$this->setActiveTemplate('organization', $all->card);
+		$this->setActiveTemplate('family', $all->card);
+		$this->setActiveTemplate('anniversary', $all->card);
+		$this->setActiveTemplate('birthday', $all->card);
+		
+		$this->defaultTemplatesSet = TRUE;
+	}
 
     /**
      * Returns $defaultConnectionGroupValues.

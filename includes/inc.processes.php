@@ -643,12 +643,19 @@ function processDeleteCategory($type)
 
 function processActivateTemplate()
 {
-	global $connections;
-	
 	$templateName = esc_attr($_GET['template']);
 	check_admin_referer('activate_' . $templateName);
 	
-	$connections->options->setActiveTemplate($templateName);
+	global $connections;
+	
+	$tmplts = new cnTemplate();
+	$tmplts->buildCatalog();
+	
+	$type = esc_attr($_GET['type']);
+	$slug = esc_attr($_GET['template']);
+	
+	$template =  $tmplts->getCatalog($type);
+	$connections->options->setActiveTemplate($type, $template->$slug);
 	
 	$connections->options->saveOptions();
 	$connections->setSuccessMessage('template_change_active');
