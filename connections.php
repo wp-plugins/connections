@@ -642,6 +642,12 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function loadScripts()
 		{
+			/*
+			 * http://beerpla.net/2010/01/13/wordpress-plugin-development-how-to-include-css-and-javascript-conditionally-and-only-when-needed-by-the-posts/
+			 * http://beerpla.net/2010/01/15/follow-up-to-loading-css-and-js-conditionally/
+			 * http://scribu.net/wordpress/optimal-script-loading.html
+			 */
+			
 			wp_enqueue_script('jquery');
 			
 			// Commented out for now because it's not needed.

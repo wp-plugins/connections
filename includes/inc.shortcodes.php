@@ -129,6 +129,7 @@ function _connections_list($atts, $content=null) {
 	{
 		$out = '';
 		
+		// Loads the templates CSS file if the path is set in $template->css.
 		if ( isset($template->css) )
 		{
 			// Loads the CSS style in the body, valid HTML5 when set with the 'scoped' attribute.
@@ -138,16 +139,57 @@ function _connections_list($atts, $content=null) {
 		
 			if ( $template->path === CN_CUSTOM_TEMPLATE_PATH . '/' . $template->slug )
 			{
-				$cssPath = CN_CUSTOM_TEMPLATE_URL  . '/' . $template->slug;
+				$cssPath = CN_CUSTOM_TEMPLATE_URL . '/' . $template->slug;
 			}
 			else
 			{
-				$cssPath = CN_TEMPLATE_URL  . '/' . $template->slug;
+				$cssPath = CN_TEMPLATE_URL . '/' . $template->slug;
 			}
 			
 			$out .= str_replace('%%PATH%%', $cssPath, $cssContents);
 			
 			$out .= '</style>' . "\n";
+		}
+		
+		// Prints the javascript tag in the footer if $template->js path is set
+		if ( isset($template->js) )
+		{
+			global $cnPrintTemplateJS, $cnJSPath;
+			$cnPrintTemplateJS = TRUE;
+			
+			if ( $template->path === CN_CUSTOM_TEMPLATE_PATH . '/' . $template->slug )
+			{
+				$cnJSPath = CN_CUSTOM_TEMPLATE_URL . '/' . $template->slug . '/template.js';
+				
+				function cnPrintTemplateJS()
+				{
+					global $cnPrintTemplateJS, $cnJSPath;
+					
+					if ($cnPrintTemplateJS)
+					{
+						wp_register_script('cn_template_js', $cnJSPath, array(), CN_CURRENT_VERSION, TRUE);
+						wp_print_scripts('cn_template_js');
+					}
+				}
+				
+			}
+			else
+			{
+				$cnJSPath = CN_TEMPLATE_URL . '/' . $template->slug . '/template.js';
+				
+				function cnPrintTemplateJS()
+				{
+					global $cnPrintTemplateJS, $cnJSPath;
+					
+					if ($cnPrintTemplateJS)
+					{
+						wp_register_script('cn_template_js', $cnJSPath, array(), CN_CURRENT_VERSION, TRUE);
+						wp_print_scripts('cn_template_js');
+					}
+				}
+			}
+			
+			add_action('wp_footer', 'cnPrintTemplateJS');
 		}
 		
 		$out .= '<a name="connections-list-head"></a>';
@@ -422,6 +464,8 @@ function _upcoming_list($atts, $content=null) {
 		
 		$out = '';
 		
+		
+		// Loads the templates CSS file if the path is set in $template->css.
 		if ( isset($template->css) )
 		{
 			// Loads the CSS style in the body, valid HTML5 when set with the 'scoped' attribute.
@@ -441,6 +485,48 @@ function _upcoming_list($atts, $content=null) {
 			$out .= str_replace('%%PATH%%', $cssPath, $cssContents);
 			
 			$out .= '</style>' . "\n";
+		}
+		
+		
+		// Prints the javascript tag in the footer if $template->js path is set
+		if ( isset($template->js) )
+		{
+			global $cnPrintTemplateJS, $cnJSPath;
+			$cnPrintTemplateJS = TRUE;
+			
+			if ( $template->path === CN_CUSTOM_TEMPLATE_PATH . '/' . $template->slug )
+			{
+				$cnJSPath = CN_CUSTOM_TEMPLATE_URL . '/' . $template->slug . '/template.js';
+				
+				function cnPrintTemplateJS()
+				{
+					global $cnPrintTemplateJS, $cnJSPath;
+					
+					if ($cnPrintTemplateJS)
+					{
+						wp_register_script('cn_template_js', $cnJSPath, array(), CN_CURRENT_VERSION, TRUE);
+						wp_print_scripts('cn_template_js');
+					}
+				}
+				
+			}
+			else
+			{
+				$cnJSPath = CN_TEMPLATE_URL . '/' . $template->slug . '/template.js';
+				
+				function cnPrintTemplateJS()
+				{
+					global $cnPrintTemplateJS, $cnJSPath;
+					
+					if ($cnPrintTemplateJS)
+					{
+						wp_register_script('cn_template_js', $cnJSPath, array(), CN_CURRENT_VERSION, TRUE);
+						wp_print_scripts('cn_template_js');
+					}
+				}
+			}
+			
+			add_action('wp_footer', 'cnPrintTemplateJS');
 		}
 		
 		

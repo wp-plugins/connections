@@ -62,6 +62,12 @@ class cnTemplate
 	public $css;
 	
 	/**
+	 * The path to the template's Javascript file.
+	 * @var string
+	 */
+	public $js;
+	
+	/**
 	 * The template base path.
 	 * @var string
 	 */
@@ -126,6 +132,11 @@ class cnTemplate
 						if ( file_exists( $templates->{$template->type}->{$template->slug}->path . '/' . 'styles.css' ) )
 						{
 							$templates->{$template->type}->{$template->slug}->css = $templates->{$template->type}->{$template->slug}->path . '/' . 'styles.css';
+						}
+						
+						if ( file_exists( $templates->{$template->type}->{$template->slug}->path . '/' . 'template.js' ) )
+						{
+							$templates->{$template->type}->{$template->slug}->js = $templates->{$template->type}->{$template->slug}->path . '/' . 'template.js';
 						}
 						
 						if ( file_exists( $templates->{$template->type}->{$template->slug}->path . '/' . 'thumbnail.png' ) )
@@ -193,6 +204,7 @@ class cnTemplate
 					
 					$this->custom = ( $templatePath === CN_TEMPLATE_PATH ) ? FALSE : TRUE;
 					if ( file_exists( $this->path . '/' . 'styles.css') ) $this->css = $this->path . '/' . 'styles.css';
+					if ( file_exists( $this->path . '/' . 'template.js') ) $this->js = $this->path . '/' . 'template.js';
 					
 					break;
 				}

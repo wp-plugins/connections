@@ -52,7 +52,7 @@ function connectionsShowTemplatesPage()
 			<table cellspacing="0" cellpadding="0" id="availablethemes">
 				<tbody>
 					<tr>
-						<td class="current_template" colspan="3">
+						<td class="current_template">
 							<h2>Current Template</h2>
 							
 							<div id="current-theme">
@@ -86,6 +86,11 @@ function connectionsShowTemplatesPage()
 								?>
 							</div>
 							<div class="clear"></div>
+						</td>
+						
+						<td class="template_instructions" colspan="2">
+							<p><strong>Instructions:</strong></p>
+							<p>blah blah blah</p>
 						</td>
 					</tr>
 					
