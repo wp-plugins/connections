@@ -97,6 +97,7 @@ table.connections div.cn_thumbnail_place_holder {-moz-border-radius: 4px;
 												 padding: 5px;
 												}
 
+table#availablethemes a { text-decoration: none; }
 table#availablethemes td.current_template {border-left: 0; border-right: 0;}
 table#availablethemes td.install_template {border-left: 0; border-right: 0;}
 table#availablethemes div.current-template img {border-width: 0;}

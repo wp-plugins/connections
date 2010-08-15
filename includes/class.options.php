@@ -915,13 +915,15 @@ class cnOptions
 		$templates->buildCatalog();
 		
 		$all = $templates->getCatalog('all');
+		$anniversary = $templates->getCatalog('anniversary');
+		$birthday = $templates->getCatalog('birthday');
 		
 		$this->setActiveTemplate('all', $all->card);
 		$this->setActiveTemplate('individual', $all->card);
 		$this->setActiveTemplate('organization', $all->card);
 		$this->setActiveTemplate('family', $all->card);
-		$this->setActiveTemplate('anniversary', $all->card);
-		$this->setActiveTemplate('birthday', $all->card);
+		$this->setActiveTemplate('anniversary', $anniversary->{'anniversary-light'});
+		$this->setActiveTemplate('birthday', $birthday->{'birthday-light'});
 		
 		$this->defaultTemplatesSet = TRUE;
 	}

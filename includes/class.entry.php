@@ -1087,7 +1087,7 @@ class cnEntry
      * @return string
      * @param string $format[optional]
      */
-	public function getAnniversary($format=null)
+	public function getAnniversary($format = NULL)
     {
         if (!$format)
 		{
@@ -1128,7 +1128,7 @@ class cnEntry
      * @return string
      * @param string $format[optional]
      */
-    public function getBirthday($format=null)
+    public function getBirthday($format = NULL)
     {
         if (!$format)
 		{
@@ -1163,7 +1163,32 @@ class cnEntry
         //Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
 		$this->birthday = strtotime($day . '-' . $month . '-' . '1970 00:00:00');
     }
+	
+	public function getUpcoming($type, $format = NULL)
+    {
+        if (!$format)
+		{
+			$format = "F jS";
+		}
+		
+		if ($this->$type)
+		{
+			$currentYear = date('Y');
+			
+			if (date('m', $this->$type) <= date('m') && date('d', $this->$type) < date('d'))
+			{
+				$nextADay = strtotime($currentYear . '-' . date('m', $this->$type) . '-' . date('d', $this->$type) . '+ 1 year');
+			}
+			else
+			{
+				$nextADay = strtotime($currentYear . '-' . date('m', $this->$type) . '-' . date('d', $this->$type));
+			}
+			
+			return date($format, $nextADay);
+		}
 
+    }
+	
     /**
      * Returns $bio.
      * @see entry::$bio

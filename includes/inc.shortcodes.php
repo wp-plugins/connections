@@ -295,6 +295,7 @@ function _upcoming_list($atts, $content=null) {
 			'date_format' => 'F jS',
 			'show_lastname' => FALSE,
 			'list_title' => NULL,
+			'template' => $connections->options->getActiveTemplate('birthday')
 			), $atts ) ;
 	
 	if (is_user_logged_in() || $atts['private_override'] != FALSE) { 
@@ -335,6 +336,37 @@ function _upcoming_list($atts, $content=null) {
 		$list_title = $atts['list_title'];
 	}
 	
+	/*
+	 * $atts['template'] can be either a string or an object. It is a string when set
+	 * with the shortcode attribute. If it is a string, the template will be loaded
+	 * via the cnTemplate class.
+	 * 
+	 * If the attribute is not set, it will be the object returned from the
+	 * cnOptions::getActiveTemplate() method which stores the default template
+	 * per list style.
+	 */
+	if ( isset($atts['template']) && !is_object($atts['template']) )
+	{
+		$template = new cnTemplate();
+		$template->load($atts['template']);
+	}
+	else
+	{
+		/*
+		 * If $atts['list_type'] is set to 'birthday', which is the default list type,
+		 * pass it by reference to $template. However if the list type is not 'birthday'
+		 * the template for the list type must be loaded.
+		 */
+		if ( $atts['list_type'] === 'birthday' )
+		{
+			$template =& $atts['template'];
+		}
+		else
+		{
+			$template = $connections->options->getActiveTemplate( $atts['list_type'] );
+		}
+	}
+		
 	/* Old and busted query!2
 	$sql = "SELECT id, ".$atts['list_type'].", last_name, first_name FROM ".$wpdb->prefix."connections where (YEAR(DATE_ADD(CURRENT_DATE, INTERVAL ".$atts['days']." DAY))"
         . " - YEAR(FROM_UNIXTIME(".$atts['list_type'].")) )"
@@ -354,7 +386,7 @@ function _upcoming_list($atts, $content=null) {
 	/*
 	 * 
 	 */
-	$newSQL = "SELECT id, ".$atts['list_type'].", last_name, first_name FROM ".CN_ENTRY_TABLE." WHERE"
+	$newSQL = "SELECT * FROM ".CN_ENTRY_TABLE." WHERE"
 		. "  (YEAR(DATE_ADD('$wpCurrentDate', INTERVAL ".$atts['days']." DAY))"
         . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND)) )"
         . " - ( MID(DATE_ADD('$wpCurrentDate', INTERVAL ".$atts['days']." DAY),5,6)"
@@ -369,10 +401,6 @@ function _upcoming_list($atts, $content=null) {
 	
 	if ($results != NULL)
 	{
-		$out = "<div class='connections-list cn_upcoming' style='-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; position: relative;'>\n";
-		$out .= "<div class='cn_list_title' style='font-size: large; font-variant: small-caps; font-weight: bold; text-align:center;'>" . $list_title  . "</div>";
-		
-		
 		/*The SQL returns an array sorted by the birthday and/or anniversary date. However the year end wrap needs to be accounted for.
 		Otherwise earlier months of the year show before the later months in the year. Example Jan before Dec. The desired output is to show
 		Dec then Jan dates.  This function checks to see if the month is a month earlier than the current month. If it is the year is changed to the following year rather than the current.
@@ -390,19 +418,65 @@ function _upcoming_list($atts, $content=null) {
 		}
 		
 		array_multisort($dateSort, SORT_ASC, $results);
-
-		foreach ($results as $key => $entry)
+		
+		
+		$out = '';
+		
+		if ( isset($template->css) )
 		{
-			$name = '';
+			// Loads the CSS style in the body, valid HTML5 when set with the 'scoped' attribute.
+			$out .= '<style type="text/css" scoped>' . "\n";
 			
-			$setstyle != 'background-color:#F9F9F9;' ? $setstyle = 'background-color:#F9F9F9;' : $setstyle = '';
+			$cssContents = file_get_contents( $template->css );
+		
+			if ( $template->path === CN_CUSTOM_TEMPLATE_PATH . '/' . $template->slug )
+			{
+				$cssPath = CN_CUSTOM_TEMPLATE_URL  . '/' . $template->slug;
+			}
+			else
+			{
+				$cssPath = CN_TEMPLATE_URL  . '/' . $template->slug;
+			}
 			
-			!$atts['show_lastname'] ? $name = $entry->first_name : $name = $entry->first_name . ' ' . $entry->last_name;
+			$out .= str_replace('%%PATH%%', $cssPath, $cssContents);
 			
-			$out .= "<div class='cn_row' style='" . $setstyle . " padding:2px 4px;'>" . $name . " <span class='cn_date' style='position: absolute; right:4px;'>" . date($atts['date_format'], $entry->$atts['list_type']) . "</span></div>";
+			$out .= '</style>' . "\n";
+		}
+		
+		
+		$out .= '<div class="connections-list cn-upcoming">' . "\n";
+		$out .= '<div class="cn-upcoming-title">' . $list_title  . '</div>';
+				
+		foreach ($results as $row)
+		{
+			$entry = new cnvCard($row);
+			$vCard =& $entry;
+			
+			$entry->name = '';
+			
+			$alternate == '' ? $alternate = '-alternate' : $alternate = '';
+			
+			!$atts['show_lastname'] ? $entry->name = $entry->getFirstName() : $entry->name = $entry->getFullFirstLastName();
+			
+			if (isset($template->file))
+			{
+				$out .= '<div class="cn-upcoming-row' . $alternate . '">' . "\n";
+					ob_start();
+					include($template->file);
+				    $out .= ob_get_contents();
+				    ob_end_clean();
+				$out .= '</div>' . "\n";
+			}
+			else
+			{
+				// If no template is found, return an error message.
+				return '<p style="color:red; font-weight:bold; text-align:center;">ERROR: Template "' . $atts['template_name'] . '" not found.</p>';
+			}
+		
 		}
 		
 		$out .= "</div>\n";
+		
 		return $out;
 	}
 }
