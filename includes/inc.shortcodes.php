@@ -305,6 +305,7 @@ function _connections_list($atts, $content=null) {
 			}
 						
 		}
+		$out .= '<div class="clear"></div>' . "\n";
 		$out .= "</div>\n";
 	}
 	return $out;

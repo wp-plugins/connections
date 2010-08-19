@@ -89,6 +89,8 @@ Connections is a simple to use versatile directory manager. You can use it for a
 * FEATURE: Added Contact First and Last name fields the the Organization entry type.
 * FEATURE: Enhanced the template loader to allow the use of style sheets.
 * FEATURE: Added a template manager to the admin.
+* FEATURE: Templates now support stylesheets.
+* FEATURE: Template no support javascript.
 * FEATURE: Added RSS option under social media.
 * FEATURE: Added Podcast option under social media.
 * FEATURE: Added SoundCloud option under social media.
