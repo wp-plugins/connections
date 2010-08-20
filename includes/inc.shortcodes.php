@@ -192,7 +192,7 @@ function _connections_list($atts, $content=null) {
 			add_action('wp_footer', 'cnPrintTemplateJS');
 		}
 		
-		$out .= '<a name="connections-list-head" style="display: none;"></a>' . "\n";
+		$out .= '<a name="connections-list-head" style="display: block; height: 1px;"></a>' . "\n";
 		/*
 		 * The alpha index is only displayed if set set to true and not set to repeat using the shortcode attributes.
 		 * If a alpha index is set to repeat, that is handled down separately.
