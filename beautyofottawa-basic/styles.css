@@ -1,0 +1,14 @@
+div.vcard div.cn-entry { -moz-border-radius:4px; background-color: #D7EEFC; border:1px solid #D3D3D3; margin:8px 0px; padding: 12px; position: relative; }
+div.vcard div.basic { float: left; height: 140px; margin-right: 16px; overflow: hidden; width: 45%; }
+div.vcard table p { margin: 0 0 12px; }
+div.vcard span.cn-label { font-weight: bold; }
+div.vcard div.cn-name { font-size: larger; font-variant: small-caps; font-weight: bold; margin-bottom: 10px; }
+div.vcard table td.left { padding: 0 10px 0 0; }
+div.vcard table td.middle { padding: 0 4px; }
+div.vcard table td.right { padding: 0 0 0 10px; }
+div.vcard div.bio { margin: 10px 0 0; }
+div.vcard div.note { margin: 0; }
+div.vcard .vevent abbr{border:0}
+div.vcard ul li { list-style-type: none; margin: 0; padding: 0; }
+div.vcard ul.cn-phone-number-block { margin: 0; padding: 0; }
+div.vcard ul.cn-website-block { margin: 0 0 8px; padding: 0; }

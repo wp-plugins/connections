@@ -1,0 +1,37 @@
+div.vcard div.cn-entry { -moz-border-radius:4px;
+						 -moz-box-shadow: 4px 4px 3px #999;
+						 -webkit-box-shadow: 4px 4px 5px #999;
+						 filter: progid:DXImageTransform.Microsoft.dropShadow(color=#999, offX=4, offY=4, positive=1);
+						 -ms-filter: "progid:DXImageTransform.Microsoft.dropShadow(color=#999, offX=4, offY=4, positive=1)";
+						 background-color: #9D9D9D;
+						 background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F1F1F1), to(#E3E3E3));
+						 background: -moz-linear-gradient(-90deg, #F1F1F1, #E3E3E3);
+						 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#F1F1F1', endColorstr='#E3E3E3');
+						 -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#F1F1F1', endColorstr='#E3E3E3')";
+						 border:1px solid #D3D3D3;
+						 margin:8px 0px;
+						 padding: 12px;
+						 position: relative;
+						 width: 580px;
+						}
+div.vcard div.cn-entry { font-weight: bolder; }
+div.vcard div.cn-entry table { width: 100%; }
+div.vcard div.cn-entry table p { margin: 0 0 12px; }
+div.vcard div.cn-entry span.cn-label { font-weight: bold; }
+div.vcard div.cn-entry span.cn-name { display: block; font-size: larger; font-variant: small-caps; font-weight: bold; }
+div.vcard div.cn-entry span.title { display: block; }
+div.vcard div.cn-entry div.phone-numbers { margin-bottom: 10px; }
+div.vcard div.cn-entry div.bio { margin: 10px 0 0; }
+div.vcard div.cn-entry div.note { margin: 10px 0 18px; }
+div.vcard div.cn-entry .vevent abbr{border:0}
+div.vcard div.cn-entry ul li { list-style-type: none; margin: 0; padding: 0; }
+div.vcard div.cn-entry ul.cn-phone-number-block { margin: 0; padding: 0; }
+div.vcard div.cn-entry ul.cn-website-block { margin: 0 0 8px; padding: 0; }
+div.vcard div.cn-entry img { -moz-border-radius: 4px;
+							 border-radius: 4px;
+							 background-color: #FFFFFF;
+							 border: 1px solid #E3E3E3;
+							 margin: 10px 0 10px 0;
+							 padding:5px;
+							}
+div.vcard div.cn-entry span.cn-return-to-top img { margin: 0 0 -6px; }
