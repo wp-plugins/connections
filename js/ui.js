@@ -262,7 +262,7 @@ jQuery(document).ready(function(){
 			});
 	});
 
-	jQuery(function()
+	/*jQuery(function()
 	{
 		jQuery('#bio_wysiwyg').wysiwyg(
 		{
@@ -388,7 +388,7 @@ jQuery(document).ready(function(){
 				paste : { visible : false }
 			}
 		});
-	});
+	});*/
 
 });
 

@@ -776,14 +776,14 @@ class cnEntryForm
 			
 			<div class='form-field connectionsform'>
 					<label for='bio'>Biographical Info:</label>
-					<textarea id='bio_wysiwyg' name='bio' rows='15'>" . $entry->getBio() . "</textarea>
-					<p><strong>Permitted HTML tags:</strong> &lt;p&gt; &lt;a&gt; &lt;strong&gt; &lt;em&gt; &lt;br /&gt;</p>
+					<textarea class='tinymce' id='bio' name='bio' rows='15'>" . $entry->getBio() . "</textarea>
+					<p><strong>Permitted tags:</strong> &lt;p&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;span&gt; &lt;a&gt; &lt;b&gt; &lt;strong&gt; &lt;i&gt; &lt;em&gt; &lt;u&gt; &lt;br&gt;</p>
 			</div>
 			
 			<div class='form-field connectionsform'>
 					<label for='notes'>Notes:</label>
-					<textarea id='note_wysiwyg' name='notes' rows='5'>" . $entry->getNotes() . "</textarea>
-					<p><strong>Permitted HTML tags:</strong> &lt;p&gt; &lt;a&gt; &lt;strong&gt; &lt;em&gt; &lt;br /&gt;</p>
+					<textarea class='tinymce' id='note' name='notes' rows='15'>" . $entry->getNotes() . "</textarea>
+					<p><strong>Permitted tags:</strong> &lt;p&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;span&gt; &lt;a&gt; &lt;b&gt; &lt;strong&gt; &lt;i&gt; &lt;em&gt; &lt;u&gt; &lt;br&gt;</p>
 			</div>";
 			
 		

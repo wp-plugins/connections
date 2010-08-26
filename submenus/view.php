@@ -30,6 +30,17 @@ function connectionsShowViewPage()
 				$form = new cnFormObjects();
 				$entry = $connections->retrieve->entry($id);
 				
+				
+				wp_tiny_mce( 	FALSE , // true makes the editor "teeny"
+							array(
+								'editor_selector' => 'tinymce',
+								'theme_advanced_buttons1' => 'bold, italic, underline, |, bullist, numlist, |, justifyleft, justifycenter, justifyright, |, link, unlink, |, pastetext, pasteword, removeformat, |, undo, redo',
+								'theme_advanced_buttons2' => '',
+								'inline_styles' => TRUE,
+							)
+						);
+				
+				
 				echo '<div class="wrap">';
 					echo '<div class="form-wrap" style="width:880px; margin: 0 auto;">';
 						echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
@@ -71,6 +82,17 @@ function connectionsShowViewPage()
 				
 				$entryForm = new cnEntryForm();
 				$entry = $connections->retrieve->entry($id);
+				
+				
+				wp_tiny_mce( 	FALSE , // true makes the editor "teeny"
+								array(
+									'editor_selector' => 'tinymce',
+									'theme_advanced_buttons1' => 'bold, italic, underline, |, bullist, numlist, |, justifyleft, justifycenter, justifyright, |, link, unlink, |, pastetext, pasteword, removeformat, |, undo, redo',
+									'theme_advanced_buttons2' => '',
+									'inline_styles' => TRUE,
+								)
+							);
+				
 				
 				echo '<div class="wrap">';
 					echo '<div class="form-wrap" style="width:880px; margin: 0 auto;">';

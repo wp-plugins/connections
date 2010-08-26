@@ -259,13 +259,16 @@ class cnOutput extends cnEntry
 		if ($this->getEmailAddresses())
 		{
 			$out .= '<div class="email-address-block">' . "\n";
-			foreach ($this->getEmailAddresses() as $emailRow)
+			foreach ($this->getEmailAddresses() as $email)
 			{
 				//Type for hCard compatibility. Hidden.
-				if ($emailRow->address != NULL) $out .= '<strong>' . $emailRow->name . ':</strong><br /><span class="email"><span class="type" style="display: none;">INTERNET</span><a class="value" href="mailto:' . $emailRow->address . '">' . $emailRow->address . '</a></span><br /><br />' . "\n";
+				if ($email->address != NULL) $out .= '<strong>' . $email->name . ':</strong><br /><span class="email"><span class="type" style="display: none;">INTERNET</span><a class="value" href="mailto:' . $email->address . '">' . $email->address . '</a></span><br /><br />' . "\n";
 			}
 			$out .= '</div>' . "\n";
 		}
+		
+		$out = apply_filters('cn_output_email_addresses', $out);
+		
 		return $out;
 	}
 	

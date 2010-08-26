@@ -12,21 +12,21 @@ Little Black Book is based on Addressbook 0.7 by Sam Wilson
 
 Update Notice in plugin admin inspired by Changelogger 1.2.8 by Oliver Schlöbe
 
-----------------------------------------
-    Copyright (C)  2008  Steven A. Zahm
+	Copyright 2009  Steven A. Zahm  (email : shazahm1@hotmail.com)
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License, version 2, as 
+    published by the Free Software Foundation.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-	http://www.gnu.org/licenses/
-----------------------------------------
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
 */
 
 /**
@@ -620,7 +620,7 @@ if (!class_exists('connectionsLoad'))
 			// Exit the method if $_GET['page'] isn't set.
 			if ( !isset($_GET['page']) ) return;
 			
-			switch ($_GET['page'])
+			/*switch ($_GET['page'])
 			{
 				case CN_BASE_NAME:
 				case 'connections_add':
@@ -634,7 +634,16 @@ if (!class_exists('connectionsLoad'))
 					wp_enqueue_script('load_ui_js', WP_PLUGIN_URL . '/connections/js/ui.js', array('jquery'), CN_CURRENT_VERSION);
 					//wp_enqueue_script('load_jquery_plugin', WP_PLUGIN_URL . '/connections/js/jquery.template.js');
 				break;
+			}*/
+			
+			$allPages = array( 'connections', 'connections_add', 'connections_categories', 'connections_settings', 'connections_templates', 'connections_roles', 'connections_csv', 'connections_help' );
+			
+			if ( in_array($_GET['page'], $allPages) )
+			{
+				//wp_enqueue_script('load_jwysiwyg_js', WP_PLUGIN_URL . '/connections/js/jwysiwyg/jwysiwyg/jquery.wysiwyg.js', array('jquery'), '0.6');
+				wp_enqueue_script('load_ui_js', WP_PLUGIN_URL . '/connections/js/ui.js', array('jquery'), CN_CURRENT_VERSION);
 			}
+			
 		}
 		
 		/**

@@ -794,9 +794,13 @@ class cnEntry
 				}
 				// End compatibility for versions 0.2.24 and older. \\
 				
+				$row = apply_filters('cn_email_address', $row);
+				
 				$out[] = $row;
 				unset($row);
 			}
+			
+			$row = apply_filters('cn_email_addresses', $row);
 			
 			if ( !empty($out) ) return $out;
 			
