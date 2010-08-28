@@ -42,16 +42,6 @@ function connectionsShowAddPage()
 		
 		$connections->displayMessages();
 		
-		
-		wp_tiny_mce( 	FALSE , // true makes the editor "teeny"
-						array(
-							'editor_selector' => 'tinymce',
-							'theme_advanced_buttons1' => 'bold, italic, underline, |, bullist, numlist, |, justifyleft, justifycenter, justifyright, |, link, unlink, |, pastetext, pasteword, removeformat, |, undo, redo',
-							'theme_advanced_buttons2' => '',
-							'inline_styles' => TRUE,
-						)
-					);
-
 	?>
 		<div class="wrap">
 			<div id="icon-connections" class="icon32">

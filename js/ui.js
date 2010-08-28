@@ -261,134 +261,35 @@ jQuery(document).ready(function(){
 				intCount++;
 			});
 	});
-
-	/*jQuery(function()
-	{
-		jQuery('#bio_wysiwyg').wysiwyg(
-		{
-			controls : {
-				strikeThrough : { visible : false },
-				underline     : { visible : false },
-				
-				separator00 : { visible : false },
-				
-				justifyLeft   : { visible : false },
-				justifyCenter : { visible : false },
-				justifyRight  : { visible : false },
-				justifyFull   : { visible : false },
-				
-				separator01 : { visible : false },
-				
-				indent  : { visible : false },
-				outdent : { visible : false },
-				
-				separator02 : { visible : false },
-				
-				subscript   : { visible : false },
-				superscript : { visible : false },
-				
-				separator03 : { visible : false },
-				
-				undo : { visible : false },
-				redo : { visible : false },
-				
-				separator04 : { visible : false },
-				
-				insertOrderedList    : { visible : false },
-				insertUnorderedList  : { visible : false },
-				insertHorizontalRule : { visible : false },
-				
-				insertImage : { visible : false },
-				insertTable : { visible : false },
-				
-				separator06 : { visible : false },
-				
-				h1mozilla : { visible : false && $.browser.mozilla, className : 'h1', command : 'heading', arguments : ['h1'], tags : ['h1'], tooltip : "Header 1" },
-				h2mozilla : { visible : false && $.browser.mozilla, className : 'h2', command : 'heading', arguments : ['h2'], tags : ['h2'], tooltip : "Header 2" },
-				h3mozilla : { visible : false && $.browser.mozilla, className : 'h3', command : 'heading', arguments : ['h3'], tags : ['h3'], tooltip : "Header 3" },
-				h4mozilla : { visible : false && $.browser.mozilla, className : 'h4', command : 'heading', arguments : ['h4'], tags : ['h4'], tooltip : "Header 4" },
-				h5mozilla : { visible : false && $.browser.mozilla, className : 'h5', command : 'heading', arguments : ['h5'], tags : ['h5'], tooltip : "Header 5" },
-				h6mozilla : { visible : false && $.browser.mozilla, className : 'h6', command : 'heading', arguments : ['h6'], tags : ['h6'], tooltip : "Header 6" },
-				
-				h1 : { visible : false && !( $.browser.mozilla ), className : 'h1', command : 'formatBlock', arguments : ['<H1>'], tags : ['h1'], tooltip : "Header 1" },
-				h2 : { visible : false && !( $.browser.mozilla ), className : 'h2', command : 'formatBlock', arguments : ['<H2>'], tags : ['h2'], tooltip : "Header 2" },
-				h3 : { visible : false && !( $.browser.mozilla ), className : 'h3', command : 'formatBlock', arguments : ['<H3>'], tags : ['h3'], tooltip : "Header 3" },
-				h4 : { visible : false && !( $.browser.mozilla ), className : 'h4', command : 'formatBlock', arguments : ['<H4>'], tags : ['h4'], tooltip : "Header 4" },
-				h5 : { visible : false && !( $.browser.mozilla ), className : 'h5', command : 'formatBlock', arguments : ['<H5>'], tags : ['h5'], tooltip : "Header 5" },
-				h6 : { visible : false && !( $.browser.mozilla ), className : 'h6', command : 'formatBlock', arguments : ['<H6>'], tags : ['h6'], tooltip : "Header 6" },
-				
-				separator07 : { visible : false },
-				
-				cut   : { visible : false },
-				copy  : { visible : false },
-				paste : { visible : false }
-			}
-		});
-	});
 	
-	jQuery(function()
-	{
-		jQuery('#note_wysiwyg').wysiwyg(
-		{
-			controls : {
-				strikeThrough : { visible : false },
-				underline     : { visible : false },
-				
-				separator00 : { visible : false },
-				
-				justifyLeft   : { visible : false },
-				justifyCenter : { visible : false },
-				justifyRight  : { visible : false },
-				justifyFull   : { visible : false },
-				
-				separator01 : { visible : false },
-				
-				indent  : { visible : false },
-				outdent : { visible : false },
-				
-				separator02 : { visible : false },
-				
-				subscript   : { visible : false },
-				superscript : { visible : false },
-				
-				separator03 : { visible : false },
-				
-				undo : { visible : false },
-				redo : { visible : false },
-				
-				separator04 : { visible : false },
-				
-				insertOrderedList    : { visible : false },
-				insertUnorderedList  : { visible : false },
-				insertHorizontalRule : { visible : false },
-				
-				insertImage : { visible : false },
-				insertTable : { visible : false },
-				
-				separator06 : { visible : false },
-				
-				h1mozilla : { visible : false && $.browser.mozilla, className : 'h1', command : 'heading', arguments : ['h1'], tags : ['h1'], tooltip : "Header 1" },
-				h2mozilla : { visible : false && $.browser.mozilla, className : 'h2', command : 'heading', arguments : ['h2'], tags : ['h2'], tooltip : "Header 2" },
-				h3mozilla : { visible : false && $.browser.mozilla, className : 'h3', command : 'heading', arguments : ['h3'], tags : ['h3'], tooltip : "Header 3" },
-				h4mozilla : { visible : false && $.browser.mozilla, className : 'h4', command : 'heading', arguments : ['h4'], tags : ['h4'], tooltip : "Header 4" },
-				h5mozilla : { visible : false && $.browser.mozilla, className : 'h5', command : 'heading', arguments : ['h5'], tags : ['h5'], tooltip : "Header 5" },
-				h6mozilla : { visible : false && $.browser.mozilla, className : 'h6', command : 'heading', arguments : ['h6'], tags : ['h6'], tooltip : "Header 6" },
-				
-				h1 : { visible : false && !( $.browser.mozilla ), className : 'h1', command : 'formatBlock', arguments : ['<H1>'], tags : ['h1'], tooltip : "Header 1" },
-				h2 : { visible : false && !( $.browser.mozilla ), className : 'h2', command : 'formatBlock', arguments : ['<H2>'], tags : ['h2'], tooltip : "Header 2" },
-				h3 : { visible : false && !( $.browser.mozilla ), className : 'h3', command : 'formatBlock', arguments : ['<H3>'], tags : ['h3'], tooltip : "Header 3" },
-				h4 : { visible : false && !( $.browser.mozilla ), className : 'h4', command : 'formatBlock', arguments : ['<H4>'], tags : ['h4'], tooltip : "Header 4" },
-				h5 : { visible : false && !( $.browser.mozilla ), className : 'h5', command : 'formatBlock', arguments : ['<H5>'], tags : ['h5'], tooltip : "Header 5" },
-				h6 : { visible : false && !( $.browser.mozilla ), className : 'h6', command : 'formatBlock', arguments : ['<H6>'], tags : ['h6'], tooltip : "Header 6" },
-				
-				separator07 : { visible : false },
-				
-				cut   : { visible : false },
-				copy  : { visible : false },
-				paste : { visible : false }
+	jQuery('a#toggleBioEditor').click(
+		function() {
+			id = 'bio';
+			if (tinyMCE.get(id))
+			{
+				tinyMCE.execCommand('mceRemoveControl', false, id);
 			}
-		});
-	});*/
+			else
+			{
+				tinyMCE.execCommand('mceAddControl', false, id);
+			}
+		}
+	);
+
+	jQuery('a#toggleNoteEditor').click(
+		function() {
+			id = 'note';
+			if (tinyMCE.get(id))
+			{
+				tinyMCE.execCommand('mceRemoveControl', false, id);
+			}
+			else
+			{
+				tinyMCE.execCommand('mceAddControl', false, id);
+			}
+		}
+	);
+	
 
 });
 

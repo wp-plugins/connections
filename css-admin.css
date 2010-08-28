@@ -76,11 +76,12 @@ form p.add  {font-style:normal; padding:12px 0 0; text-align: right;}
 table.form-table td input {width:auto;}
 
 #cancel-button {float:left;}
-#cancel-button .button {display: block; padding: 5px 10px !important;}
+#cancel-button .button {display: block; padding: 5px 10px;}
 .button-warning:hover {background:#CE0000 none repeat scroll 0 0; color:#FFFFFF;}
-.button {margin: 1px !important}
-.button-primary {margin: 1px !important; padding: 3px 10px !important}
-
+.button {margin: 1px;}
+.button-primary  {margin: 1px ; padding: 3px 10px; }
+#toggleBioEditor { margin: 4px 6px 0 0; }
+#toggleNoteEditor { margin: 4px 6px 0 0; }
 /*
 form div.tablenav-pages {height: !important;}
 */

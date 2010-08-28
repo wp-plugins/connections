@@ -620,28 +620,28 @@ if (!class_exists('connectionsLoad'))
 			// Exit the method if $_GET['page'] isn't set.
 			if ( !isset($_GET['page']) ) return;
 			
-			/*switch ($_GET['page'])
-			{
-				case CN_BASE_NAME:
-				case 'connections_add':
-				case 'connections_categories':
-				case 'connections_settings':
-				case 'connections_templates':
-				case 'connections_roles':
-				case 'connections_csv':
-				case 'connections_help':
-					wp_enqueue_script('load_jwysiwyg_js', WP_PLUGIN_URL . '/connections/js/jwysiwyg/jwysiwyg/jquery.wysiwyg.js', array('jquery'), '0.6');
-					wp_enqueue_script('load_ui_js', WP_PLUGIN_URL . '/connections/js/ui.js', array('jquery'), CN_CURRENT_VERSION);
-					//wp_enqueue_script('load_jquery_plugin', WP_PLUGIN_URL . '/connections/js/jquery.template.js');
-				break;
-			}*/
-			
 			$allPages = array( 'connections', 'connections_add', 'connections_categories', 'connections_settings', 'connections_templates', 'connections_roles', 'connections_csv', 'connections_help' );
 			
 			if ( in_array($_GET['page'], $allPages) )
 			{
-				//wp_enqueue_script('load_jwysiwyg_js', WP_PLUGIN_URL . '/connections/js/jwysiwyg/jwysiwyg/jquery.wysiwyg.js', array('jquery'), '0.6');
 				wp_enqueue_script('load_ui_js', WP_PLUGIN_URL . '/connections/js/ui.js', array('jquery'), CN_CURRENT_VERSION);
+			}
+			
+			
+			// Only Load the tinyMCE scripts on these pages.
+			$editorPages = array( 'connections', 'connections_add' );
+			
+			if ( in_array( $_GET['page'],  $editorPages ) )
+			{
+				wp_tiny_mce( 	FALSE , // true makes the editor "teeny"
+								array
+								(
+									'editor_selector' => 'tinymce',
+									'theme_advanced_buttons1' => 'bold, italic, underline, |, bullist, numlist, |, justifyleft, justifycenter, justifyright, |, link, unlink, |, pastetext, pasteword, removeformat, |, undo, redo',
+									'theme_advanced_buttons2' => '',
+									'inline_styles' => TRUE,
+								)
+							);
 			}
 			
 		}

@@ -43,104 +43,35 @@ class cnFormatting
 	 */
 	public function sanitizeString($string, $allowHTML = FALSE, $permittedTags = NULL)
 	{
-		// Ensure all tags are closed. Uses WordPress method balanceTags().
-		$balancedText = balanceTags($string, TRUE);
-		
 		// Strip all tags except the permitted.
 		if (!$allowHTML)
 		{
+			// Ensure all tags are closed. Uses WordPress method balanceTags().
+			$balancedText = balanceTags($string, TRUE);
+			
 			$strippedText = strip_tags($balancedText);
+			
+			// Strip all script and style tags.
+			$strippedText = preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', $strippedText );
+			
+			// Escape text using the WordPress method and then strip slashes.
+			$escapedText = stripslashes(esc_attr($strippedText));
+			
+			// Remove line breaks.
+			$escapedText = preg_replace('/[\r\n\t ]+/', ' ', $escapedText);
+			
+			return trim($escapedText);
 		}
 		else
 		{
-			$strippedText = strip_tags($balancedText, '<p><ul><ol><li><span><a><b><strong><i><em><u><br>');
+			// Strip all script and style tags.
+			$strippedText = preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', $string );
+			$strippedText = preg_replace( '/&lt;(script|style).*?&gt;.*?&lt;\/\\1&gt;/si', '', stripslashes($strippedText) );
+			
+			// Use WordPress method make_clickable().
+			return make_clickable( wp_kses_post($strippedText) );
 		}
 		
-		// Strip all script and style tags.
-		$strippedText = preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', $strippedText );
-		
-		// Escape text using the WordPress method and then strip slashes.
-		$escapedText = stripslashes(esc_attr($strippedText));
-		
-		if ($allowHTML)
-		{
-			// Allow <p> and </p>
-			//$escapedText = str_replace('&lt;p&gt;', '<p>', $escapedText);
-			//$escapedText = str_replace('&lt;/p&gt;', '</p>', $escapedText);
-			
-			//$escapedText = preg_replace('/\&lt\;p\s[^\&gt\;]*(.*)[^\&gt\;]*\&gt\;(.*)\&lt\;\/p\&gt\;/siU', '<p \\1>\\2</p>', $escapedText);
-			$escapedText = preg_replace_callback('/\&lt\;p[\s]*[^\&gt\;]*(.*)[^\&gt\;]*\&gt\;(.*)\&lt\;\/p\&gt\;/siU',
-												 create_function('$match', 'return "<p " . html_entity_decode($match[1]) . ">" . $match[2] . "</p>";'),
-												 $escapedText
-												);
-			
-			// Allow <b> and </b> and convert it <strong>
-			$escapedText = str_replace('&lt;b&gt;', '<strong>', $escapedText);
-			$escapedText = str_replace('&lt;/b&gt;', '</strong>', $escapedText);
-			
-			// Allow <strong> and </strong>
-			$escapedText = str_replace('&lt;strong&gt;', '<strong>', $escapedText);
-			$escapedText = str_replace('&lt;/strong&gt;', '</strong>', $escapedText);
-			
-			// Allow <i> and </i> and convert it to <em>
-			$escapedText = str_replace('&lt;i&gt;', '<em>', $escapedText);
-			$escapedText = str_replace('&lt;/i&gt;', '</em>', $escapedText);
-			
-			// Allow <em> and </em>
-			$escapedText = str_replace('&lt;em&gt;', '<em>', $escapedText);
-			$escapedText = str_replace('&lt;/em&gt;', '</em>', $escapedText);
-			
-			// Allow <u> and </u>
-			$escapedText = str_replace('&lt;u&gt;', '<u>', $escapedText);
-			$escapedText = str_replace('&lt;/u&gt;', '</u>', $escapedText);
-			$escapedText = preg_replace_callback('/\&lt\;span[\s]*[^\&gt\;]*(.*)[^\&gt\;]*\&gt\;(.*)\&lt\;\/span\&gt\;/siU',
-												 create_function('$match', 'return "<span " . html_entity_decode($match[1]) . ">" . $match[2] . "</span>";'),
-												 $escapedText
-												);
-			
-			// Allow <ul> and </ul>
-			$escapedText = str_replace('&lt;ul&gt;', '<ul>', $escapedText);
-			$escapedText = str_replace('&lt;/ul&gt;', '</ul>', $escapedText);
-			
-			// Allow <ol> and </ol>
-			$escapedText = str_replace('&lt;ol&gt;', '<ol>', $escapedText);
-			$escapedText = str_replace('&lt;/ol&gt;', '</ol>', $escapedText);
-			
-			// Allow <li> and </li>
-			//$escapedText = str_replace('&lt;li&gt;', '<li>', $escapedText);
-			//$escapedText = str_replace('&lt;/li&gt;', '</li>', $escapedText);
-			$escapedText = preg_replace_callback('/\&lt\;li[\s]*[^\&gt\;]*(.*)[^\&gt\;]*\&gt\;(.*)\&lt\;\/li\&gt\;/siU',
-												 create_function('$match', 'return "<li " . html_entity_decode($match[1]) . ">" . $match[2] . "</li>";'),
-												 $escapedText
-												);
-			
-			// Allow <br> and <br/> and <br />
-			$escapedText = str_replace('&lt;br&gt;', '<br />', $escapedText);
-			$escapedText = str_replace('&lt;br/&gt;', '<br />', $escapedText);
-			$escapedText = str_replace('&lt;br /&gt;', '<br />', $escapedText);
-			
-			/*
-			$regexp0 = '#\[(b|i|quote)]((?>[^[]|\[(?!/?\1])|(?R))+)\[/\1]#si';
-			$regexp1 = '/\&lt\;(b|strong|i|em|u|br)[^\&gt\;]*?\&gt\;(.*?)\&lt\;\/\\1\&gt\;/si';
-			$regexp2 = '#\\&lt\;(b|strong|i|em|u|br)\&gt\;((?>\&lt\;^\&lt\;\&gt\;|\\&lt\;(?!/?\1\&gt\;)|(?R))+)\\&lt\;/\1\&gt\;#si';
-			$escapedText = preg_replace($regexp1, '<\1>\2</\1>', $escapedText);
-			*/
-			
-			// Allow <a>. Uses WordPress method make_clickable().
-			$escapedText = make_clickable($escapedText);
-			//$escapedText = preg_replace('/\&lt\;a.*\s[^>]*href\s*=\s*(\&quot\;??)(.*)\\1[^>]*\&gt\;(.*)\&lt\;\/a\&gt\;/siU', '<a href="\2">\3</a>' ,$escapedText);
-			$escapedText = preg_replace_callback('/\&lt\;a\s[^\&gt\;]*(.*)[^\&gt\;]*\&gt\;(.*)\&lt\;\/a\&gt\;/siU',
-												 create_function('$match','return "<a " . html_entity_decode($match[1]) . ">" . $match[2] . "</a>";'),
-												 $escapedText
-												);
-			// Reference here for the regexp http://www.the-art-of-web.com/php/parse-links/
-
-		}
-		
-		// Remove line breaks.
-		$escapedText = preg_replace('/[\r\n\t ]+/', ' ', $escapedText);
-		
-		return trim($escapedText);
 	}
 	
 	/**
