@@ -94,11 +94,13 @@ Connections is a simple to use versatile directory manager. You can use it for a
 * FEATURE: Added RSS option under social media.
 * FEATURE: Added Podcast option under social media.
 * FEATURE: Added SoundCloud option under social media.
+* FEATURE: Improved the rich text editor by using the bundled tinyMCE.
 * BUG: Fixed PHP Warning: Call-time pass-by-reference has been deprecated error in the admin.
 * BUG: The last updated time and date now function correctly.
 * BUG: Fix MySpace spelling typo. Any entries saved with a MySpace link will need to be updated.
 * BUG: Fix the upcoming birthday/anniversary query to show today's birthdays as well as to take into account the current time zone set in the WordPress General settings.
 * BUG: Fix the sort algorithm for sorting the upcoming birthday/anniversary list by date.
+* BUG: Fix birthday/anniversary with date of Jan 1st not being saved.
 * OTHER: Entry human time difference in now based the current blog time.
 * OTHER: The local timestamp will be used when adding/updating an entry rather than the server timestamp.
 * OTHER: The last updated time will be adjusted to the local timestamp.

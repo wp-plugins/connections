@@ -164,8 +164,8 @@ class cnEntry
 			if ( isset($entry->email) ) $this->emailAddresses = $entry->email;
 			if ( isset($entry->im) ) $this->im = $entry->im;
 			if ( isset($entry->social) ) $this->socialMedia = $entry->social;
-			if ( isset($entry->websites) ) $this->websites = $entry->websites;
-			if ( isset($entry->birthday) ) $this->birthday = $entry->birthday;
+			if ( isset($entry->websites) ) (integer) $this->websites = $entry->websites;
+			if ( isset($entry->birthday) ) (integer) $this->birthday = $entry->birthday;
 			if ( isset($entry->anniversary) ) $this->anniversary = $entry->anniversary;
 			if ( isset($entry->bio) ) $this->bio = $entry->bio;
 			if ( isset($entry->notes) ) $this->notes = $entry->notes;
@@ -1091,24 +1091,19 @@ class cnEntry
      * @return string
      * @param string $format[optional]
      */
-	public function getAnniversary($format = NULL)
+	public function getAnniversary($format = 'F jS Y')
     {
-        if (!$format)
+        if ($this->anniversary)
 		{
-			$format = "F jS";
-		}
-		
-		if ($this->anniversary)
-		{
-			$currentYear = date('Y');
+			global $connections;
 			
-			if (date('m', $this->anniversary) <= date('m') && date('d', $this->anniversary) < date('d'))
+			if ( mktime(23, 59, 59, date('m', $this->anniversary), date('d', $this->anniversary), date('Y', $connections->wpCurrentTime) ) < $connections->wpCurrentTime )
 			{
-				$nextADay = strtotime($currentYear . '-' . date('m', $this->anniversary) . '-' . date('d', $this->anniversary) . '+ 1 year');
+				$nextADay = mktime(0, 0, 0, date('m', $this->anniversary), date('d', $this->anniversary), date('Y', $connections->wpCurrentTime) + 1 );
 			}
 			else
 			{
-				$nextADay = strtotime($currentYear . '-' . date('m', $this->anniversary) . '-' . date('d', $this->anniversary));
+				$nextADay = mktime(0, 0, 0, date('m', $this->anniversary), date('d', $this->anniversary), date('Y', $connections->wpCurrentTime) );
 			}
 			
 			return date($format, $nextADay);
@@ -1124,7 +1119,7 @@ class cnEntry
     public function setAnniversary($day, $month)
     {
         //Create the anniversary with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
-		$this->anniversary = strtotime($day . '-' . $month . '-' . '1970 00:00:00');
+		$this->anniversary = mktime(0, 0, 1, $month, $day, 1970);
     }
     
     /**
@@ -1132,29 +1127,23 @@ class cnEntry
      * @return string
      * @param string $format[optional]
      */
-    public function getBirthday($format = NULL)
+    public function getBirthday($format = 'F jS Y')
     {
-        if (!$format)
-		{
-			$format = "F jS";
-		}
-		
-		if ($this->birthday)
+        if ($this->birthday)
 		{		
-			$currentYear = date('Y');
+			global $connections;
 			
-			if (date('m', $this->birthday) <= date('m') && date('d', $this->birthday) < date('d'))
+			if ( mktime(23, 59, 59, date('m', $this->birthday), date('d', $this->birthday), date('Y', $connections->wpCurrentTime) ) < $connections->wpCurrentTime )
 			{
-				$nextBDay = strtotime($currentYear . '-' . date('m', $this->birthday) . '-' . date('d', $this->birthday) . '+ 1 year');
+				$nextBDay = mktime(0, 0, 0, date('m', $this->birthday), date('d', $this->birthday), date('Y', $connections->wpCurrentTime) + 1 );
 			}
 			else
 			{
-				$nextBDay = strtotime($currentYear . '-' . date('m', $this->birthday) . '-' . date('d', $this->birthday));
+				$nextBDay = mktime(0, 0, 0, date('m', $this->birthday), date('d', $this->birthday), date('Y', $connections->wpCurrentTime) );
 			}
 			
 			return date($format, $nextBDay);
 		}
-
     }
     
     /**
@@ -1165,32 +1154,23 @@ class cnEntry
     public function setBirthday($day, $month)
     {
         //Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
-		$this->birthday = strtotime($day . '-' . $month . '-' . '1970 00:00:00');
+		$this->birthday = mktime(0, 0, 1, $month, $day, 1970);
     }
 	
-	public function getUpcoming($type, $format = NULL)
+	public function getUpcoming($type, $format = 'F jS')
     {
-        if (!$format)
+		global $connections;
+			
+		if ( mktime(23, 59, 59, date('m', $this->$type), date('d', $this->$type), date('Y', $connections->wpCurrentTime) ) < $connections->wpCurrentTime )
 		{
-			$format = "F jS";
+			$nextUDay = mktime(0, 0, 0, date('m', $this->$type), date('d', $this->$type), date('Y', $connections->wpCurrentTime) + 1 );
+		}
+		else
+		{
+			$nextUDay = mktime(0, 0, 0, date('m', $this->$type), date('d', $this->$type), date('Y', $connections->wpCurrentTime) );
 		}
 		
-		if ($this->$type)
-		{
-			$currentYear = date('Y');
-			
-			if (date('m', $this->$type) <= date('m') && date('d', $this->$type) < date('d'))
-			{
-				$nextADay = strtotime($currentYear . '-' . date('m', $this->$type) . '-' . date('d', $this->$type) . '+ 1 year');
-			}
-			else
-			{
-				$nextADay = strtotime($currentYear . '-' . date('m', $this->$type) . '-' . date('d', $this->$type));
-			}
-			
-			return date($format, $nextADay);
-		}
-
+		return date($format, $nextUDay);
     }
 	
     /**
@@ -1685,8 +1665,8 @@ class cnEntry
 											contact_last_name	= "%s",
 											group_name			= "%s",
 											visibility			= "%s",
-											birthday			= "%s",
-											anniversary			= "%s",
+											birthday			= "%d",
+											anniversary			= "%d",
 											addresses			= "%s",
 											phone_numbers		= "%s",
 											email				= "%s",
@@ -1798,8 +1778,8 @@ class cnEntry
 											im  	      		= "%s",
 											social 	      		= "%s",
 											websites      		= "%s",
-											birthday      		= "%s",
-											anniversary   		= "%s",
+											birthday      		= "%d",
+											anniversary   		= "%d",
 											bio           		= "%s",
 											notes         		= "%s",
 											options       		= "%s",

@@ -262,6 +262,11 @@ jQuery(document).ready(function(){
 			});
 	});
 	
+	/*
+	 * Switching Visual/HTML Modes With TinyMCE
+	 * http://www.keighl.com/2010/04/switching-visualhtml-modes-with-tinymce/
+	 */
+	
 	jQuery('a#toggleBioEditor').click(
 		function() {
 			id = 'bio';

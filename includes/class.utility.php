@@ -57,7 +57,7 @@ class cnFormatting
 			// Escape text using the WordPress method and then strip slashes.
 			$escapedText = stripslashes(esc_attr($strippedText));
 			
-			// Remove line breaks.
+			// Remove line breaks and trim white space.
 			$escapedText = preg_replace('/[\r\n\t ]+/', ' ', $escapedText);
 			
 			return trim($escapedText);
@@ -68,7 +68,12 @@ class cnFormatting
 			$strippedText = preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', $string );
 			$strippedText = preg_replace( '/&lt;(script|style).*?&gt;.*?&lt;\/\\1&gt;/si', '', stripslashes($strippedText) );
 			
-			// Use WordPress method make_clickable().
+			/*
+			 * Use WordPress method make_clickable() to make links clickable and
+			 * use kses for filtering.
+			 * 
+			 * http://ottopress.com/2010/wp-quickie-kses/
+			 */
 			return make_clickable( wp_kses_post($strippedText) );
 		}
 		

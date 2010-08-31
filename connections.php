@@ -627,7 +627,10 @@ if (!class_exists('connectionsLoad'))
 				wp_enqueue_script('load_ui_js', WP_PLUGIN_URL . '/connections/js/ui.js', array('jquery'), CN_CURRENT_VERSION);
 			}
 			
-			
+			/*
+			 * TinyMCE in WordPress Plugins
+			 * http://www.keighl.com/2010/01/tinymce-in-wordpress-plugins/
+			 */ 
 			// Only Load the tinyMCE scripts on these pages.
 			$editorPages = array( 'connections', 'connections_add' );
 			
