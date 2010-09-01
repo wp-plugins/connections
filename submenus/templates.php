@@ -63,9 +63,9 @@ function connectionsShowTemplatesPage()
 								{
 									$author = '';
 									
-									if ( isset($currentTemplate->thumbnail_url) )
+									if ( isset($currentTemplate->thumbnailPath) )
 									{
-										echo '<div class="current-template"><img class="template-thumbnail" src="' . $currentTemplate->thumbnail_url . '" /></div>';
+										echo '<div class="current-template"><img class="template-thumbnail" src="' . $currentTemplate->thumbnailURL . '" /></div>';
 									}
 									
 									if ( isset($currentTemplate->uri) )
@@ -158,9 +158,9 @@ function connectionsShowTemplatesPage()
 									
 									$author = '';
 									
-									if ( isset( $templates->$slug->thumbnail_url ) )
+									if ( isset( $templates->$slug->thumbnailPath ) )
 									{
-										echo '<div class="center-thumbnail"><img class="template-thumbnail" src="' . $templates->$slug->thumbnail_url . '" /></div>';
+										echo '<div class="center-thumbnail"><img class="template-thumbnail" src="' . $templates->$slug->thumbnailURL . '" /></div>';
 									}
 									
 									if ( isset($templates->$slug->uri) )

@@ -83,6 +83,8 @@ function _connections_list($atts, $content=null) {
 	}
 	else
 	{
+		$template = new cnTemplate();
+		
 		/*
 		 * $atts['template'] can be either a string or an object. It is a string when set
 		 * with the shortcode attribute. If it is a string, the template will be loaded
@@ -94,62 +96,29 @@ function _connections_list($atts, $content=null) {
 		 */
 		if ( isset($atts['template']) && !is_object($atts['template']) )
 		{
-			$template = new cnTemplate();
 			$template->load($atts['template']);
 		}
 		else
 		{
-			/*
-			 * If $atts['list_type'] is set to 'all', which is the default list type,
-			 * pass it by reference to $template. However if the list type is not 'all'
-			 * the template for the list type must be loaded.
-			 */
-			if ( $atts['list_type'] === 'all' )
-			{
-				$template =& $atts['template'];
-			}
-			else
-			{
-				$template = $connections->options->getActiveTemplate( $atts['list_type'] );
-			}
+			$template->init( $connections->options->getActiveTemplate( $atts['list_type'] ) );
 		}
 	}
 	
 	$results = $connections->retrieve->entries($atts);
 	$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
 	
-	//print_r($connections->lastQuery);
-	
-	if (!empty($atts['order_by']) && !empty($results))
-	{
-		$connections->filter->orderBy($results, $atts['order_by'], $atts['id']);
-	}
-	
-	if ($results != NULL)
+	if ( !empty($results) )
 	{
 		$out = '';
 		
-		// Loads the templates CSS file if the path is set in $template->css.
-		if ( isset($template->css) )
+		// Order the results as specified by the shortoce attribute.
+		if (!empty($atts['order_by']))
 		{
-			// Loads the CSS style in the body, valid HTML5 when set with the 'scoped' attribute.
-			$out .= '<style type="text/css" scoped>' . "\n";
-			
-			$cssContents = file_get_contents( $template->css );
-		
-			if ( $template->path === CN_CUSTOM_TEMPLATE_PATH . '/' . $template->slug )
-			{
-				$cssPath = CN_CUSTOM_TEMPLATE_URL . '/' . $template->slug;
-			}
-			else
-			{
-				$cssPath = CN_TEMPLATE_URL . '/' . $template->slug;
-			}
-			
-			$out .= str_replace('%%PATH%%', $cssPath, $cssContents);
-			
-			$out .= '</style>' . "\n";
+			$connections->filter->orderBy($results, $atts['order_by'], $atts['id']);
 		}
+		
+		// Prints the template's CSS file.
+		if ( method_exists($template, 'printCSS') ) $out .= $template->printCSS();
 		
 		// Prints the javascript tag in the footer if $template->js path is set
 		if ( isset($template->js) )
@@ -330,6 +299,7 @@ function connectionsUpcomingList($atts)
 add_shortcode('upcoming_list', '_upcoming_list');
 function _upcoming_list($atts, $content=null) {
     global $connections, $wpdb;
+	$template = new cnTemplate();
 	
 	$atts = shortcode_atts( array(
 			'list_type' => 'birthday',
@@ -390,24 +360,11 @@ function _upcoming_list($atts, $content=null) {
 	 */
 	if ( isset($atts['template']) && !is_object($atts['template']) )
 	{
-		$template = new cnTemplate();
 		$template->load($atts['template']);
 	}
 	else
 	{
-		/*
-		 * If $atts['list_type'] is set to 'birthday', which is the default list type,
-		 * pass it by reference to $template. However if the list type is not 'birthday'
-		 * the template for the list type must be loaded.
-		 */
-		if ( $atts['list_type'] === 'birthday' )
-		{
-			$template =& $atts['template'];
-		}
-		else
-		{
-			$template = $connections->options->getActiveTemplate( $atts['list_type'] );
-		}
+		$template->init( $connections->options->getActiveTemplate( $atts['list_type'] ) );
 	}
 		
 	/* Old and busted query!2
@@ -465,29 +422,8 @@ function _upcoming_list($atts, $content=null) {
 		
 		$out = '';
 		
-		
-		// Loads the templates CSS file if the path is set in $template->css.
-		if ( isset($template->css) )
-		{
-			// Loads the CSS style in the body, valid HTML5 when set with the 'scoped' attribute.
-			$out .= '<style type="text/css" scoped>' . "\n";
-			
-			$cssContents = file_get_contents( $template->css );
-		
-			if ( $template->path === CN_CUSTOM_TEMPLATE_PATH . '/' . $template->slug )
-			{
-				$cssPath = CN_CUSTOM_TEMPLATE_URL  . '/' . $template->slug;
-			}
-			else
-			{
-				$cssPath = CN_TEMPLATE_URL  . '/' . $template->slug;
-			}
-			
-			$out .= str_replace('%%PATH%%', $cssPath, $cssContents);
-			
-			$out .= '</style>' . "\n";
-		}
-		
+		// Prints the template's CSS file.
+		if ( method_exists($template, 'printCSS') ) $out .= $template->printCSS();
 		
 		// Prints the javascript tag in the footer if $template->js path is set
 		if ( isset($template->js) )

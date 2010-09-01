@@ -14,6 +14,12 @@ class cnTemplate
 	public $slug;
 	
 	/**
+	 * Template URL
+	 * @var string
+	 */
+	public $url;
+	
+	/**
 	 * The template author's uri.
 	 * @var
 	 */
@@ -59,13 +65,19 @@ class cnTemplate
 	 * The path to the template's CSS file.
 	 * @var string
 	 */
-	public $css;
+	public $cssPath;
+	
+	/**
+	 * The URL to the template's CSS file.
+	 * @var string
+	 */
+	public $cssURL;
 	
 	/**
 	 * The path to the template's Javascript file.
 	 * @var string
 	 */
-	public $js;
+	public $jsPath;
 	
 	/**
 	 * The template base path.
@@ -126,32 +138,23 @@ class cnTemplate
 						$templates->{$template->type}->{$template->slug}->slug = $template->slug;
 						$templates->{$template->type}->{$template->slug}->custom = ( $templatePath === CN_TEMPLATE_PATH ) ? FALSE : TRUE;
 						$templates->{$template->type}->{$template->slug}->path = $templatePath . '/' . $templateDirectory;
-						$templates->{$template->type}->{$template->slug}->url = ( $templatePath === CN_TEMPLATE_PATH ) ? CN_TEMPLATE_URL . '/' . $templateDirectory : CN_CUSTOM_TEMPLATE_URL . '/' . $templateDirectory;
+						$templates->{$template->type}->{$template->slug}->url = ( $templatePath === CN_TEMPLATE_PATH ) ? CN_TEMPLATE_URL . '/' . $template->slug : CN_CUSTOM_TEMPLATE_URL . '/' . $template->slug;
 						$templates->{$template->type}->{$template->slug}->file = $templatePath . '/' . $templateDirectory . '/template.php';
 						
 						if ( file_exists( $templates->{$template->type}->{$template->slug}->path . '/' . 'styles.css' ) )
 						{
-							$templates->{$template->type}->{$template->slug}->css = $templates->{$template->type}->{$template->slug}->path . '/' . 'styles.css';
+							$templates->{$template->type}->{$template->slug}->cssPath = $templates->{$template->type}->{$template->slug}->path . '/' . 'styles.css';
 						}
 						
 						if ( file_exists( $templates->{$template->type}->{$template->slug}->path . '/' . 'template.js' ) )
 						{
-							$templates->{$template->type}->{$template->slug}->js = $templates->{$template->type}->{$template->slug}->path . '/' . 'template.js';
+							$templates->{$template->type}->{$template->slug}->jsPath = $templates->{$template->type}->{$template->slug}->path . '/' . 'template.js';
 						}
 						
 						if ( file_exists( $templates->{$template->type}->{$template->slug}->path . '/' . 'thumbnail.png' ) )
 						{
-							$templates->{$template->type}->{$template->slug}->thumbnail_path = $templates->{$template->type}->{$template->slug}->path . '/' . 'thumbnail.png';
-							
-							if ( $templates->{$template->type}->{$template->slug}->custom )
-							{
-								$templates->{$template->type}->{$template->slug}->thumbnail_url = CN_CUSTOM_TEMPLATE_URL . '/' . $template->slug . '/' . 'thumbnail.png';
-							}
-							else
-							{
-								$templates->{$template->type}->{$template->slug}->thumbnail_url = CN_TEMPLATE_URL . '/' . $template->slug . '/' . 'thumbnail.png';
-							}
-							
+							$templates->{$template->type}->{$template->slug}->thumbnailPath = $templates->{$template->type}->{$template->slug}->path . '/' . 'thumbnail.png';
+							$templates->{$template->type}->{$template->slug}->thumbnailURL = $templates->{$template->type}->{$template->slug}->url . '/' . 'thumbnail.png';
 						}
 					}
 				}
@@ -199,12 +202,21 @@ class cnTemplate
 				{
 					$this->slug = $slug;
 					$this->path = $templatePath . '/' .  $slug;
+					$this->url = ( $templatePath === CN_TEMPLATE_PATH ) ? CN_TEMPLATE_URL . '/' . $this->slug : CN_CUSTOM_TEMPLATE_URL . '/' . $this->slug;
 					$this->file = $this->path . '/template.php';
-					$this->loadMeta($this->path . '/meta.php');
+					
+					include_once( $this->path . '/meta.php' );
+		
+					$this->name = $template->name;
+					$this->uri = $template->uri;
+					$this->version = $template->version;
+					$this->author = $template->author;
+					$this->description = $template->description;
+					$this->legacy = $template->legacy;
 					
 					$this->custom = ( $templatePath === CN_TEMPLATE_PATH ) ? FALSE : TRUE;
-					if ( file_exists( $this->path . '/' . 'styles.css') ) $this->css = $this->path . '/' . 'styles.css';
-					if ( file_exists( $this->path . '/' . 'template.js') ) $this->js = $this->path . '/' . 'template.js';
+					if ( file_exists( $this->path . '/' . 'styles.css') ) $this->cssPath = $this->path . '/' . 'styles.css';
+					if ( file_exists( $this->path . '/' . 'template.js') ) $this->jsPath = $this->path . '/' . 'template.js';
 					
 					break;
 				}
@@ -214,20 +226,25 @@ class cnTemplate
 	}
 	
 	/**
-	 * Loads the meta data from the supplied file.
+	 * Initialize the class with a template object.
 	 * 
-	 * @param string $metaFile
+	 * @param object $template
 	 */
-	private function loadMeta($metaFile)
+	public function init($template)
 	{
-		include_once( $metaFile );
-		
 		$this->name = $template->name;
+		$this->slug = $template->slug;
+		$this->url = $template->url;
 		$this->uri = $template->uri;
 		$this->version = $template->version;
 		$this->author = $template->author;
 		$this->description = $template->description;
 		$this->legacy = $template->legacy;
+		$this->custom = $template->custom;
+		$this->file = $template->file;
+		$this->cssPath = $template->cssPath;
+		$this->jsPath = $template->jsPath;
+		$this->path = $template->path;
 	}
 	
 	/**
@@ -236,20 +253,18 @@ class cnTemplate
 	 * 
 	 * @return string
 	 */
-	public function getCSS()
+	public function printCSS()
 	{
-		$contents = file_get_contents( $this->css );
+		if ( !isset($this->cssPath) ) return NULL;
 		
-		if ( $this->path === CN_CUSTOM_TEMPLATE_PATH . '/' . $this->slug )
-		{
-			$path = CN_CUSTOM_TEMPLATE_URL  . '/' . $this->slug;
-		}
-		else
-		{
-			$path = CN_TEMPLATE_URL  . '/' . $this->slug;
-		}
+		$contents = file_get_contents( $this->cssPath );
 		
-		return str_replace('%%PATH%%', $path, $contents);
+		// Loads the CSS style in the body, valid HTML5 when set with the 'scoped' attribute.
+		$out = '<style type="text/css" scoped>' . "\n";
+		$out .= str_replace('%%PATH%%', $this->url, $contents);
+		$out .= '</style>' . "\n";
+		
+		return $out;
 	}
 }
 ?>

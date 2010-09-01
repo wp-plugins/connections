@@ -317,7 +317,7 @@ class cnOutput extends cnEntry
 		return $out;
 	}
 	
-	public function getBirthdayBlock($format=null)
+	public function getBirthdayBlock( $format = 'F jS' )
 	{
 		//NOTE: The vevent span is for hCalendar compatibility.
 		//NOTE: The second birthday span [hidden] is for hCard compatibility.
@@ -328,7 +328,7 @@ class cnOutput extends cnEntry
 		return $out;
 	}
 	
-	public function getAnniversaryBlock($format=null)
+	public function getAnniversaryBlock( $format = 'F jS' )
 	{
 		//NOTE: The vevent span is for hCalendar compatibility.
 		if ($this->getAnniversary()) $out = '<span class="vevent"><span class="anniversary"><strong>Anniversary:</strong> <abbr class="dtstart" title="' . $this->getAnniversary('Ymd') . '">' . $this->getAnniversary($format) . '</abbr></span>' .
