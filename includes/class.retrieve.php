@@ -147,7 +147,7 @@ class cnRetrieve
 		if ( $atts['list_type'] !== 'all' && in_array($atts['list_type'], $permittedEntryTypes, TRUE) )
 		{
 			$entryType = " AND `entry_type` = '" . $atts['list_type'] . "' ";
-		}	
+		}
 		
 		$sql = "SELECT DISTINCT " . CN_ENTRY_TABLE . ".*,
 				
