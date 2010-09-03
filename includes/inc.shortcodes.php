@@ -126,45 +126,8 @@ function _connections_list($atts, $content=null) {
 		if ( method_exists($template, 'printCSS') ) $out .= $template->printCSS();
 		
 		// Prints the javascript tag in the footer if $template->js path is set
-		if ( isset($template->js) )
-		{
-			global $cnPrintTemplateJS, $cnJSPath;
-			$cnPrintTemplateJS = TRUE;
-			
-			if ( $template->path === CN_CUSTOM_TEMPLATE_PATH . '/' . $template->slug )
-			{
-				$cnJSPath = CN_CUSTOM_TEMPLATE_URL . '/' . $template->slug . '/template.js';
-				
-				function cnPrintTemplateJS()
-				{
-					global $cnPrintTemplateJS, $cnJSPath;
-					
-					if ($cnPrintTemplateJS)
-					{
-						wp_register_script('cn_template_js', $cnJSPath, array(), CN_CURRENT_VERSION, TRUE);
-						wp_print_scripts('cn_template_js');
-					}
-				}
-				
-			}
-			else
-			{
-				$cnJSPath = CN_TEMPLATE_URL . '/' . $template->slug . '/template.js';
-				
-				function cnPrintTemplateJS()
-				{
-					global $cnPrintTemplateJS, $cnJSPath;
-					
-					if ($cnPrintTemplateJS)
-					{
-						wp_register_script('cn_template_js', $cnJSPath, array(), CN_CURRENT_VERSION, TRUE);
-						wp_print_scripts('cn_template_js');
-					}
-				}
-			}
-			
-			add_action('wp_footer', 'cnPrintTemplateJS');
-		}
+		if ( method_exists($template, 'printJS') ) $template->printJS();
+		
 		
 		$out .= '<a name="connections-list-head" style="display: block; height: 1px;"></a>' . "\n";
 		/*
@@ -431,48 +394,10 @@ function _upcoming_list($atts, $content=null) {
 		if ( method_exists($template, 'printCSS') ) $out .= $template->printCSS();
 		
 		// Prints the javascript tag in the footer if $template->js path is set
-		if ( isset($template->js) )
-		{
-			global $cnPrintTemplateJS, $cnJSPath;
-			$cnPrintTemplateJS = TRUE;
-			
-			if ( $template->path === CN_CUSTOM_TEMPLATE_PATH . '/' . $template->slug )
-			{
-				$cnJSPath = CN_CUSTOM_TEMPLATE_URL . '/' . $template->slug . '/template.js';
-				
-				function cnPrintTemplateJS()
-				{
-					global $cnPrintTemplateJS, $cnJSPath;
-					
-					if ($cnPrintTemplateJS)
-					{
-						wp_register_script('cn_template_js', $cnJSPath, array(), CN_CURRENT_VERSION, TRUE);
-						wp_print_scripts('cn_template_js');
-					}
-				}
-				
-			}
-			else
-			{
-				$cnJSPath = CN_TEMPLATE_URL . '/' . $template->slug . '/template.js';
-				
-				function cnPrintTemplateJS()
-				{
-					global $cnPrintTemplateJS, $cnJSPath;
-					
-					if ($cnPrintTemplateJS)
-					{
-						wp_register_script('cn_template_js', $cnJSPath, array(), CN_CURRENT_VERSION, TRUE);
-						wp_print_scripts('cn_template_js');
-					}
-				}
-			}
-			
-			add_action('wp_footer', 'cnPrintTemplateJS');
-		}
+		if ( method_exists($template, 'printJS') ) $template->printJS();
 		
 		
-		$out .= '<div class="connections-list cn-upcoming">' . "\n";
+		$out .= '<div class="connections-list cn-upcoming '. $atts['list_type'] . '">' . "\n";
 		$out .= '<div class="cn-upcoming-title">' . $list_title  . '</div>';
 				
 		foreach ($results as $row)

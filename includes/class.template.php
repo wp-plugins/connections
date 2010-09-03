@@ -266,5 +266,32 @@ class cnTemplate
 		
 		return $out;
 	}
+	
+	/**
+	 * Prints the template's JS in the theme's footer.
+	 */
+	public function printJS()
+	{
+		// Prints the javascript tag in the footer if $template->js path is set
+		if ( isset($this->jsPath) )
+		{
+			global $connections;
+			$connections->printJS = TRUE;
+			$connections->printJSURL = $this->url . '/template.js';
+			
+			function cnPrintTemplateJS()
+			{
+				global $connections;
+				
+				if ( $connections->printJS === TRUE )
+				{
+					wp_register_script('cn_template_js', $connections->printJSURL, array(), CN_CURRENT_VERSION, TRUE);
+					wp_print_scripts('cn_template_js');
+				}
+			}
+			
+			add_action( 'wp_footer', 'cnPrintTemplateJS' );
+		}
+	}
 }
 ?>
