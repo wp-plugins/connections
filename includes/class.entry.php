@@ -800,7 +800,7 @@ class cnEntry
 				unset($row);
 			}
 			
-			$row = apply_filters('cn_email_addresses', $row);
+			$out = apply_filters('cn_email_addresses', $out);
 			
 			if ( !empty($out) ) return $out;
 			

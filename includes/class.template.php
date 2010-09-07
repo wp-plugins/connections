@@ -151,6 +151,11 @@ class cnTemplate
 							$templates->{$template->type}->{$template->slug}->jsPath = $templates->{$template->type}->{$template->slug}->path . '/' . 'template.js';
 						}
 						
+						if ( file_exists( $templates->{$template->type}->{$template->slug}->path . '/' . 'functions.php' ) )
+						{
+							$templates->{$template->type}->{$template->slug}->phpPath = $templates->{$template->type}->{$template->slug}->path . '/' . 'functions.php';
+						}
+						
 						if ( file_exists( $templates->{$template->type}->{$template->slug}->path . '/' . 'thumbnail.png' ) )
 						{
 							$templates->{$template->type}->{$template->slug}->thumbnailPath = $templates->{$template->type}->{$template->slug}->path . '/' . 'thumbnail.png';
@@ -217,6 +222,7 @@ class cnTemplate
 					$this->custom = ( $templatePath === CN_TEMPLATE_PATH ) ? FALSE : TRUE;
 					if ( file_exists( $this->path . '/' . 'styles.css') ) $this->cssPath = $this->path . '/' . 'styles.css';
 					if ( file_exists( $this->path . '/' . 'template.js') ) $this->jsPath = $this->path . '/' . 'template.js';
+					if ( file_exists( $this->path . '/' . 'functions.php') ) $this->phpPath = $this->path . '/' . 'functions.php';
 					
 					break;
 				}
@@ -244,6 +250,7 @@ class cnTemplate
 		$this->file = $template->file;
 		$this->cssPath = $template->cssPath;
 		$this->jsPath = $template->jsPath;
+		$this->phpPath = $template->phpPath;
 		$this->path = $template->path;
 	}
 	
@@ -291,6 +298,14 @@ class cnTemplate
 			}
 			
 			add_action( 'wp_footer', 'cnPrintTemplateJS' );
+		}
+	}
+	
+	public function includeFunctions()
+	{
+		if (  isset($this->phpPath) )
+		{
+			include_once($this->phpPath);
 		}
 	}
 }

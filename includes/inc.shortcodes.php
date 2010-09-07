@@ -107,10 +107,12 @@ function _connections_list($atts, $content=null) {
 			if ( isset($atts['template']) && !is_object($atts['template']) )
 			{
 				$template->load($atts['template']);
+				$template->includeFunctions();
 			}
 			else
 			{
 				$template->init( $connections->options->getActiveTemplate( $atts['list_type'] ) );
+				$template->includeFunctions();
 			}
 		}
 		
@@ -329,10 +331,12 @@ function _upcoming_list($atts, $content=null) {
 	if ( isset($atts['template']) && !is_object($atts['template']) )
 	{
 		$template->load($atts['template']);
+		$template->includeFunctions();
 	}
 	else
 	{
 		$template->init( $connections->options->getActiveTemplate( $atts['list_type'] ) );
+		$template->includeFunctions();
 	}
 		
 	/* Old and busted query!2
