@@ -701,9 +701,13 @@ class cnEntry
 				
 				// End compatibility for versions 0.2.24 and older. \\
 				
+				$row = apply_filters('cn_phone_number', $row);
+				
 				$out[] = $row;
 				unset($row);
 			}
+			
+			$out = apply_filters('cn_phone_numbers', $out);
 			
 			if ( !empty($out) ) return $out;
 			
