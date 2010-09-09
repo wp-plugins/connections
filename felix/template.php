@@ -3,7 +3,7 @@
     <tr>
         <td align="left" width="50%" valign="top">
         	
-			<div style="clear:both; margin: 10px 5px 0;">
+			<div style="clear:both; margin: 0 5px 10px;">
 				<span style="font-size:larger;font-variant: small-caps"><strong><?php echo $entry->getFullFirstLastNameBlock() ?></strong></span><br />
 			</div>
 				
@@ -30,7 +30,7 @@
     
     <tr>
         <td colspan="2" valign="bottom">
-        	<?php echo $vCard->download() ?>
+        	<?php echo $vCard->download( array('anchorText' => 'Voeg toe aan mijn adressenboek') ) ?>
         </td>
     </tr>
 </table>
