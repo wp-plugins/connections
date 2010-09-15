@@ -82,8 +82,8 @@ if (!class_exists('connectionsLoad'))
 			$connections->CurrentTime = date('U');
 			
 			/*
-			 * Because MySQL returns timestamps adjusted to the local timezone
-			 * it is handy to have the offset so it can be compensated for.
+			 * Because MySQL FROM_UNIXTIME returns timestamps adjusted to the local
+			 * timezone it is handy to have the offset so it can be compensated for.
 			 * One example is when using FROM_UNIXTIME the timestamp returned will
 			 * not be the actual stored timestamp, it will be the timestamp adjusted
 			 * to the timezone set in MySQL.
