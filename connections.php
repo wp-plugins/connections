@@ -730,6 +730,7 @@ if (!class_exists('connectionsLoad'))
 					$cnActions = array( 'admin.php?page=connections_add' => array('Add Entry', 'connections_add_entry') );
 				break;
 				
+				case 'connections_templates':
 				case 'connections_settings':
 				case 'connections_roles':
 				case 'connections_csv':

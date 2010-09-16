@@ -227,10 +227,11 @@ function _connections_list($atts, $content=null) {
 			 */
 			if ($atts['show_alphaindex'] || $atts['show_alphahead']) $out .= $setAnchor;
 			
+			$alternate == '' ? $alternate = '-alternate' : $alternate = '';
 			
 			if (isset($template->file))
 			{
-				$out .= '<div class="vcard ' . $entry->getCategoryClass(TRUE) . '">' . "\n";
+				$out .= '<div class="cn-list-row' . $alternate . ' vcard ' . $entry->getCategoryClass(TRUE) . '">' . "\n";
 					ob_start();
 					include($template->file);
 				    $out .= ob_get_contents();
@@ -417,7 +418,7 @@ function _upcoming_list($atts, $content=null) {
 			
 			if (isset($template->file))
 			{
-				$out .= '<div class="cn-upcoming-row' . $alternate . '">' . "\n";
+				$out .= '<div class="cn-upcoming-row' . $alternate . ' vcard">' . "\n";
 					ob_start();
 					include($template->file);
 				    $out .= ob_get_contents();

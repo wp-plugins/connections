@@ -183,7 +183,14 @@ class cnTemplate
 	 */
 	public function getCatalog($type)
 	{
-		return $this->catalog->$type;
+		if ($type !== 'all')
+		{
+			return (object) array_merge( (array) $this->catalog->all, (array) $this->catalog->$type);
+		}
+		else
+		{
+			return $this->catalog->$type;
+		}
 	}
 	
 	/**

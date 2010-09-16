@@ -112,18 +112,9 @@ table#availablethemes div.center-thumbnail img {display: block; margin: 0 auto;}
 /* Field Styles */
 #fieldsdiv a {display: block; font-style: normal; text-align: center; width: 230px}
 
-/* Upgrade Page Stles */
+/* Upgrade Page Styles */
 div#connections-upgrade ul {padding-left: 20px !important; list-style-type: disc !important;}
 
-/*
- * Might need these two style to fix the display. we'll see after 2.8.1 is released.
- */
-/*
-.widefat {
-	border-collapse: separate !important;
-}
-
-#col-right {
-	overflow:visible !important;
-}
-*/
+fieldset {border: 1px solid #DFDFDF; float: left; margin: 0 3px; padding: 4px; width: 47%;}
+fieldset legend {padding: 2px 4px;}
+fieldset label {display: block;}
