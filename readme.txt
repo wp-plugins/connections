@@ -85,7 +85,7 @@ Connections is a simple to use versatile directory manager. You can use it for a
 
 == Changelog ==
 
-= 0.7.0.5 XX/XX/2010 =
+= 0.7.1.X XX/XX/2010 =
 * FEATURE: Added Contact First and Last name fields the the Organization entry type.
 * FEATURE: Enhanced the template loader to allow the use of style sheets.
 * FEATURE: Added a template manager to the admin.
@@ -101,6 +101,7 @@ Connections is a simple to use versatile directory manager. You can use it for a
 * BUG: Fix the upcoming birthday/anniversary query to show today's birthdays as well as to take into account the current time zone set in the WordPress General settings.
 * BUG: Fix the sort algorithm for sorting the upcoming birthday/anniversary list by date.
 * BUG: Fix birthday/anniversary with date of January 1st not being saved.
+* BUG: Fix Upgrade notice to be compatible with WordPress => 3.0.
 * OTHER: Entry human time difference in now based the current blog time.
 * OTHER: The local timestamp will be used when adding/updating an entry rather than the server timestamp.
 * OTHER: The last updated time will be adjusted to the local timestamp.

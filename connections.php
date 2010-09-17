@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.0.4
+Version: 0.7.1.0
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 
@@ -130,7 +130,7 @@ if (!class_exists('connectionsLoad'))
 		{
 			global $wpdb;
 			
-			define('CN_CURRENT_VERSION', '0.7.0.4');
+			define('CN_CURRENT_VERSION', '0.7.1.0');
 			define('CN_DB_VERSION', '0.1.2');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
@@ -583,6 +583,9 @@ if (!class_exists('connectionsLoad'))
 			$this->options->removeDefaultCapabilities();
 			*/
 			$this->options->saveOptions();
+			
+			//  DROP TABLE `cnpfresh_connections`, `cnpfresh_connections_terms`, `cnpfresh_connections_term_relationships`, `cnpfresh_connections_term_taxonomy`;
+			//  DELETE FROM `nhonline_freshcnpro`.`cnpfresh_options` WHERE `cnpfresh_options`.`option_name` = 'connections_options'
 		}
 				
 		public function loadAdminMenus()
@@ -606,8 +609,8 @@ if (!class_exists('connectionsLoad'))
 				add_submenu_page(CN_BASE_NAME, 'Connections : Import CSV','Import CSV', 'connections_add_entry', 'connections_csv', array ($connectionsCSV, 'showPage'));
 			}
 			
-			add_submenu_page(CN_BASE_NAME, 'Connections : Settings','Settings', 'connections_change_settings', 'connections_settings', array (&$this, 'showPage'));
 			add_submenu_page(CN_BASE_NAME, 'Connections : Templates','Templates', 'connections_manage_template', 'connections_templates', array (&$this, 'showPage'));
+			add_submenu_page(CN_BASE_NAME, 'Connections : Settings','Settings', 'connections_change_settings', 'connections_settings', array (&$this, 'showPage'));
 			add_submenu_page(CN_BASE_NAME, 'Connections : Roles &amp; Capabilites','Roles', 'connections_change_roles', 'connections_roles', array (&$this, 'showPage'));
 			add_submenu_page(CN_BASE_NAME, 'Connections : Help','Help', 'connections_view_help', 'connections_help', array (&$this, 'showPage'));
 		}
@@ -776,11 +779,17 @@ if (!class_exists('connectionsLoad'))
 		public function displayUpgradeNotice()
 		{
 			include_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
-			
+			//echo "<tr><td colspan='5'>TEST</td></tr>";
 			//$api = plugins_api('plugin_information', array('slug' => 'connections', 'fields' => array('tested' => true, 'requires' => false, 'rating' => false, 'downloaded' => false, 'downloadlink' => false, 'last_updated' => false, 'homepage' => false, 'tags' => false, 'sections' => true) ));
 			//print_r($api);
 			
-			$current = get_transient( 'update_plugins' );
+			if( CLOSMINWP30 )
+			    $current = get_option( '_site_transient_update_plugins' );
+			elseif( CLOSMINWP28 )
+			    $current = get_transient( 'update_plugins' );
+			else
+			    $current = get_option( 'update_plugins' );
+				
 			//print_r($current);
 			
 			if ( !isset($current->response[ plugin_basename(__FILE__) ]) ) return NULL;
