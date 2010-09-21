@@ -291,7 +291,7 @@ class cnEntryForm
 				$out .= '<div class="inside">';
 					$out .= '<div id="minor-publishing">';
 						$out .= '<div id="entry-type">';
-							$out .= $form->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Connection Group"=>"connection_group"), $defaultEntryType);
+							$out .= $form->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Family"=>"connection_group"), $defaultEntryType);
 						$out .= '</div>';
 						$out .= '<div id="visibility">';
 							$out .= '<span class="radio_group">' . $form->buildRadio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$defaultVisibility) . '</span>';
@@ -348,7 +348,7 @@ class cnEntryForm
 		$out .= '<div id="post-body-content">';
 			$out .= '<div id="connection_group" class="form-field connectionsform">';
 				
-					$out .= '<label for="connection_group_name">Connection Group Name:</label>';
+					$out .= '<label for="connection_group_name">Family Name:</label>';
 					$out .= '<input type="text" name="connection_group_name" value="' . $entry->getGroupName() . '" />';
 					$out .= '<div id="relations">';
 							
@@ -378,7 +378,7 @@ class cnEntryForm
 						}						
 						
 					$out .= '</div>';
-					$out .= '<p class="add"><a id="add_relation" class="button">Add Connection</a></p>';
+					$out .= '<p class="add"><a id="add_relation" class="button">Add Relation</a></p>';
 					
 					/**
 					 * @TODO: Move the inline style to the stylesheet.
@@ -801,7 +801,13 @@ class cnEntryForm
 	private function getEntrySelect($name,$selected=null)
 	{
 		global $wpdb, $connections;
-		$results = $connections->retrieve->entries();
+		
+		$atts['list_type'] = 'all';
+		$atts['category'] = NULL;
+		$atts['visibility'] = 'all';
+		
+		$results = $connections->retrieve->entries($atts);
+		$connections->filter->permitted(&$results);
 		
 	    $out = '<select name="' . $name . '">';
 			$out .= '<option value="">Select Entry</option>';

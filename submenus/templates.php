@@ -174,6 +174,7 @@ function connectionsShowTemplatesPage()
 									
 									echo '<h3>', esc_attr($templates->$slug->name), ' ', esc_attr($templates->$slug->version), ' by ', $author, '</h3>';
 									echo '<p class="description">', esc_attr($templates->$slug->description), '</p>';
+									echo '<p>Shortcode Override: <code>template="' . $slug . '"</code></p>';
 									if ( $templates->$slug->custom === FALSE ) echo '<p>This a supplied template and can not be deleted.</p>';
 									?>
 									<span class="action-links">

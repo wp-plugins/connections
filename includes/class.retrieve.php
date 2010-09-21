@@ -21,7 +21,7 @@ class cnRetrieve
 		$entryType = NULL;
 		$visibility = NULL;
 		
-		$permittedEntryTypes = array('individual', 'organization', 'connection_group');
+		$permittedEntryTypes = array('individual', 'organization', 'family', 'connection_group');
 		$permittedVisibilities = array('unlisted', 'private', 'public');
 		
 		/*
@@ -146,6 +146,11 @@ class cnRetrieve
 		// Set query string for entry type.
 		if ( $atts['list_type'] !== 'all' && in_array($atts['list_type'], $permittedEntryTypes, TRUE) )
 		{
+			/*
+			 * @TODO: Temporary for capatibility util the code is completely cleaned up, removing the connection group entry type.
+			 */
+			if ( $atts['list_type'] === 'family' ) $atts['list_type'] = 'connection_group';
+			
 			$entryType = " AND `entry_type` = '" . $atts['list_type'] . "' ";
 		}
 		

@@ -121,11 +121,6 @@ function connectionsShowViewPage()
 					<?php
 						$results = $connections->retrieve->entries();
 						$connections->filter->permitted($results);
-						//print_r($connections->lastQuery);
-						/*print_r('WP Current Time ' . date('Y-m-d H:i:s', $connections->wpCurrentTime) . '<br />');
-						print_r('PHP Current Time ' . date('Y-m-d H:i:s', $connections->phpCurrentTime) . '<br />');
-						print_r('SQL Current Time ' . date('Y-m-d H:i:s', $connections->sqlCurrentTime) . '<br />');
-						print_r('Test Current Time ' . date('Y-m-d H:i:s', $connections->test) . '<br />');*/
 					?>
 						
 						<form action="admin.php?page=connections&action=do" method="post">
@@ -149,7 +144,7 @@ function connectionsShowViewPage()
 										echo $categoryObjects->buildCategoryRow('option', $connections->retrieve->categories(), $level, $connections->currentUser->getFilterCategory());
 									echo '</select>';
 									
-									echo $form->buildSelect('entry_type', array('all'=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Connection Groups'), $connections->currentUser->getFilterEntryType());
+									echo $form->buildSelect('entry_type', array('all'=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Families'), $connections->currentUser->getFilterEntryType());
 									
 								?>
 								

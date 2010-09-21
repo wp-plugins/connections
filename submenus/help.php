@@ -39,6 +39,8 @@ function connectionsShowHelpPage()
 			
 			<li><a href="#tocIdThemeTags">Theme Template Tags</a></li>
 			
+			<li><a href="#tocIdFilters">Filters</a></li>
+			
 			<li><a href="#tocIdSupport">Support</a></li>
 				
 			<li><a href="#tocIdFAQ">FAQ</a></li>
@@ -64,8 +66,8 @@ function connectionsShowHelpPage()
 		<code>[upcoming_list]</code>. Both shortcodes have many options to customize the display
 		of both lists. See the <a href="#tocIdShortCodeInstructions">Shortcode Instructions</a> section for additonal instructions.</p>
 		
-		<h4><a name="tocIdConnectionGroups"></a>Connection Groups</h4>
-		<p>Here is an example on how to use the Connection Groups entry type.</p>
+		<h4><a name="tocIdConnectionGroups"></a>Families</h4>
+		<p>Here is an example on how to use the Family entry type.</p>
 		
 		<p>Say we have a family, the Doe's.</p>
 		
@@ -80,8 +82,8 @@ function connectionsShowHelpPage()
 		Second, simply copy John and change the first name to Jane and add/change any info that relates only to her for example her birthday. 
 		Third, do the same for Girl and Boy.</p>
 		
-		<p>Now create a new entry using the Connection Group type. For the Connection Group name enter something like "Doe, John &amp; Jane" 
-		and then click the "Add Connection" button for each member in the family, in this example, four times. 
+		<p>Now create a new entry using the Family type. For the Family Name enter something like "Doe, John &amp; Jane" 
+		and then click the "Add Relation" button for each member in the family, in this example, four times. 
 		In the first column of drop downs select each family member and in the second column of 
 		drop downs select their relationships.</p>
 		
@@ -243,9 +245,9 @@ function connectionsShowHelpPage()
 	</pre>
 	
 	
-	<p>Use to show only entries set as a Connection Group.</p>
+	<p>Use to show only entries set as famlies.</p>
 	<pre>
-	<code>[connections_list list_type='connection_group']</code>
+	<code>[connections_list list_type='family']</code>
 	</pre>
 	
 	
@@ -743,117 +745,76 @@ function connectionsShowHelpPage()
 	<code>connectionsUpcomingList( array( 'list_type' => 'anniversary', 'days' => 30 ) )</code>
 	</pre>
 	
-	
-	
-	<h3><a name="tocIdSupport"></a>Support</h3>
-	
-	<p>If support is needed go to <a href="http://www.connections-pro.com">connections-pro.com</a> and submit a help desk ticket.</p>
-	
-	
-	<h3><a name="tocIdFAQ"></a>FAQ</h3>
-	
-	<ol>
-		<li><a href="#tocIdFAQ001">Upgrading</a></li>
-
-		<li><a href="#tocIdFAQ002">Why don't any entries show in my page/post?</a></li>
-
-		<li><a href="#tocIdFAQ003">Why don't all individuals show using the list_type option in the shortcode?</a></li>
-
-		<li><a href="#tocIdFAQ004">Where are the images I upload for entries stored?</a></li>
-
-		<li><a href="#tocIdFAQ005">Where do my custom templates need uploaded to?</a></li>
-
-		<li><a href="#tocIdFAQ006">Error upon activation?</a></li>
-
-		<li><a href="#tocIdFAQ007">Why do dotted underlines show under the dates?</a></li>
+	<a name="tocIdFilters"></a>
+	<fieldset>
+		<legend>Filters</legend>
 		
-	</ol>
-	
-	<h4><a name="tocIdFAQ001"></a>Upgrading</h4>
-	
-	<p>Use the automatic plug-in upgrade feature built into WordPress. Optionally, the plugin can be downloaded
-	from the WordPress plug-in repository and manually uploaded via FTP. After the plug-in has been uploaded
-	make sure to activate and deactive the plug-in.</p>
-	
-	<h4><a name="tocIdFAQ002"></a>Why don't any entries
-	show in my page/post when I use the connections_list
-	shortcode?</h4>
-
-	<p>When adding a new entry in the entry list you have
-	the option of choosing public, private or unlisted.
-	This affects when a listing will be shown when embedded
-	in a page/post. If an entry if public, that entry will
-	show at all times. If an entry is private, that listing
-	will only be shown when a registered user is logged
-	into your site. By choosing unlisted, that entry will
-	not be shown when embedded in a page/post and is only
-	visible in the admin.</p>
-	
-	<h4><a name="tocIdFAQ003"></a>Why don't all
-	individuals show when I use the list_type option in the
-	shortcode?</h4>
-	
-	<p>Older versions of this plugin didn't set this
-	property to an entry. To fix; edit all entries that
-	should appear in the list by selecting the appropiate
-	type and then save the entry.</p>
-	
-	<h4><a name="tocIdFAQ004"></a>Where are the images I
-	upload for entries stored?</h4>
-	
-	<p>The images are unloaded to you wp-content folder.
-	The path is ../wp-content/connection_images/</p>
-	
-	<h4><a name="tocIdFAQ005"></a>Where do my custom
-	templates need uploaded to?</h4>
-	
-	<p>You need to create a folder in you wp-content folder
-	named: connections_templates.</p>
-	
-	<h4><a name="tocIdFAQ006"></a>I get this error upon
-	activation - "Parse error: syntax error, unexpected
-	T_STRING, expecting T_OLD_FUNCTION or T_FUNCTION or
-	T_VAR or '}' in *YOUR WP PATH*
-	/wp-content/plugins/connections/includes/date.php on
-	line 11", what is this?</h4>
-	
-	<p>This plugin requires PHP 5. Turn on or ask your web
-	host to turn on PHP 5 support. <strong>OR</strong>
-	because the .php extension defaults to PHP 4 on your
-	web server. The easiest fix is to add a handler that
-	maps .php to PHP 5. If you have cPanel, you can do this
-	easily by clicking on "Apache Handlers" and adding a
-	mapping for "php" to "application/x-httpd-php5" and
-	that should fix the problem.</p>
-	
-	<h4><a name="tocIdFAQ007"></a>Why do dotted underlines
-	show under the dates?</h4>
-	
-	<p>Some browsers put a dotted underline or border on
-	each <code>&lt;abbr&gt;</code> tag. The
-	<code>&lt;abbr&gt;</code> tag is needed for hCalendar
-	event compatibility. To remove this from the styling,
-	add <code>.vevent abbr{border:0}</code> to your theme's
-	CSS.</p>
+		<p>Shortcode:</p>
+		<dl>
+			<dt>cn_shortcode_attributes</dt>
+				<dd>applied before the shortcode attributes are used</dd>
+		</dl>
 		
-	<h3><a name="tocIdDisclaimers"></a>Disclaimers</h3>
+		
+		<p>Data:</p>
+		<dl>
+			<dt>cn_email_address</dt>
+				<dd>applied to each email object</dd>
+				
+			<dt>cn_email_addresses</dt>
+				<dd>applied to indexed array of email objects</dd>
+				
+			<dt>cn_phone_number</dt>
+				<dd>applied to each phone number object</dd>
+				
+			<dt>cn_phone_numbers</dt>
+				<dd>applied to indexed array of phone number objects</dd>
+		</dl>
+		
+		
+		<p>Output:</p>
+		<dl>
+			<dt>cn_output_email_addresses</dt>
+				<dd>applied to the email output string</dd>
+		</dl>
+		
+	</fieldset>
 	
-	<ul>
-	<li>This plugin is developed and tested in Firefox.
-	If your using IE and something doesn't work, try it
-	again in Firefox.</li>
+	<a name="tocIdSupport"></a>
+	<fieldset>
+		<legend>Support</legend>
+		
+		<p>If support is needed go to <a href="http://connections-pro.com/help-desk/">connections-pro.com</a> and submit a help desk ticket.</p>
+	</fieldset>
 	
-	<li>This plugin is under active developement and 
-		as such features and settings could change. You
-	may also have to re-enter or edit your entries
-	after an upgrade. An effort will be made to keep
-	this to a minimum.</li>
+	<a name="tocIdFAQ"></a>
+	<fieldset>
+		<legend>FAQ</legend>
+		
+		<p>The frequently asked questions cab be found <a href="http://connections-pro.com/faq/">here</a>.</p>
+	</fieldset>
 	
-	<li>It also should be mentioned that I am not a web
-	designer nor am I a PHP programmer, this plugin is
-	being developed out of a need and for the learning
-	experience.</li>
-	</ul>
+	<a name="tocIdDisclaimers"></a>
+	<fieldset>
+		<legend>Disclaimers</legend>
+		
+		<p>This plugin is developed and tested in Firefox.
+		If your using IE and something doesn't work, try it
+		again in Firefox.</p>
+		
+		<p>This plugin is under active developement and 
+			as such features and settings could change. You
+		may also have to re-enter or edit your entries
+		after an upgrade. An effort will be made to keep
+		this to a minimum.</p>
+		
+		<p>It also should be mentioned that I am not a web
+		designer nor am I a PHP programmer, this plugin is
+		being developed out of a need and for the learning
+		experience.</p>
+		
+	</fieldset>
+	
 	</div>
 
 <?php

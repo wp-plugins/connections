@@ -57,6 +57,7 @@ function _connections_list($atts, $content=null) {
 	$convert->toBoolean(&$atts['show_alphahead']);
 	$convert->toBoolean(&$atts['wp_current_category']);
 	
+	$atts = apply_filters('cn_shortcode_attributes', $atts);
 	
 	$results = $connections->retrieve->entries($atts);
 	$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);

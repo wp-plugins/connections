@@ -40,6 +40,10 @@ div#help div#toc form {
 	text-align: center;
 }
 
+div#help fieldset { border: 1px solid #DFDFDF; margin: 0; padding: 6px; }
+div#help fieldset legend { padding: 2px 4px; }
+div#help fieldset label { display: block; }
+
 #icon-connections {
 	-moz-background-clip:border;
 	-moz-background-inline-policy:continuous;
@@ -114,7 +118,3 @@ table#availablethemes div.center-thumbnail img {display: block; margin: 0 auto;}
 
 /* Upgrade Page Styles */
 div#connections-upgrade ul {padding-left: 20px !important; list-style-type: disc !important;}
-
-fieldset {border: 1px solid #DFDFDF; float: left; margin: 0 3px; padding: 4px; width: 47%;}
-fieldset legend {padding: 2px 4px;}
-fieldset label {display: block;}

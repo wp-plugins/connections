@@ -90,7 +90,7 @@ Connections is a simple to use versatile directory manager. You can use it for a
 * FEATURE: Enhanced the template loader to allow the use of style sheets.
 * FEATURE: Added a template manager to the admin.
 * FEATURE: Templates now support stylesheets.
-* FEATURE: Template no support javascript.
+* FEATURE: Templates now support javascript.
 * FEATURE: Added RSS option under social media.
 * FEATURE: Added Podcast option under social media.
 * FEATURE: Added SoundCloud option under social media.
@@ -102,9 +102,11 @@ Connections is a simple to use versatile directory manager. You can use it for a
 * BUG: Fix the sort algorithm for sorting the upcoming birthday/anniversary list by date.
 * BUG: Fix birthday/anniversary with date of January 1st not being saved.
 * BUG: Fix Upgrade notice to be compatible with WordPress => 3.0.
+* BUG: Fix entry drop down when creating a family. Drop downs would only show entries based on the current filter setting for the current user in the admin. The drop down will now show all permitted entries.
 * OTHER: Entry human time difference in now based the current blog time.
 * OTHER: The local timestamp will be used when adding/updating an entry rather than the server timestamp.
 * OTHER: The last updated time will be adjusted to the local timestamp.
+* OTHER: Connections Groups entry type renamed to Families.
 
 = 0.7.0.4 7/26/2010 =
 * FEATURE: Add the option to display the front end list in a specified order.
