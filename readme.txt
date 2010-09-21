@@ -13,7 +13,7 @@ Connections is a simple to use versatile directory manager. You can use it for a
 
 = Admin Features =
 * Built-in help page
-* Selectable entry type; Individual / Organization / Connection Group 
+* Selectable entry type; Individual / Organization / Family 
 * Each entry has selectable visibility. You can choose between, public, private and unlisted.
 * Image support with the ability to set custom images sizes and how they should be scaled and cropped.
 * Copy entries.
