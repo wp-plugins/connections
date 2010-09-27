@@ -98,7 +98,8 @@ function connectionsShowHelpPage()
 	<code>[connections_list]</code>
 	</pre>
 	
-	<p>This shortcode has several many options:</p>
+	<p>This shortcode has many options to customize the content and display of the list.
+	Here is the list of all the available attributes.</p>
 	
 	<ol>
 		<li><a href="#cn_attr_id">id</a></li>
@@ -119,60 +120,62 @@ function connectionsShowHelpPage()
 	
 		<li><a href="#cn_attr_list_type">list_type</a></li>
 		
-		<li><a href="#cn_attr_template_name">template_name</a></li>
+		<li><a href="#cn_attr_template_name">template</a></li>
 		
-		<li><a href="#cn_attr_order_by">order_by</a> <strong><em>sort</em></strong></li>
-	
-		<li><a href="#cn_attr_filters">last_name</a> <strong><em>filter</em></strong></li>
-	
-		<li>group_name <strong><em>filter</em></strong></li>
+		<li><a href="#cn_attr_order_by">order_by</a>
 		
-		<li>title <strong><em>filter</em></strong></li>
-	
-		<li>organization <strong><em>filter</em></strong></li>
-	
-		<li>department <strong><em>filter</em></strong></li>
-			
-		<li>city <strong><em>filter</em></strong></li>
+		<li><a href="#cn_attr_filters">filters</a>
 		
-		<li>state <strong><em>filter</em></strong></li>
-		
-		<li>zip_code <strong><em>filter</em></strong></li>
-		
-		<li>country <strong><em>filter</em></strong></li>
 	</ol>
 	
-	<p><a name="cn_attr_id"></a>The <em>id</em> option allows you to show the
-	entry details for a single entry or multiple specific entries.
-	To show multiple specific entries, list all the entries to be displayed
-	by their <em>id</em> number separated by commas within single quotes. Default is to show all
-	public and/or private entries in the list. The ID can
-	be found in the admin by showing the details for an
-	entry. It will be labeled <strong>Entry ID:</strong></p>
-
-	<pre>
-	<code>[connections_list id=2]</code>
-	</pre>
+	<a name="cn_attr_id"></a>
+	<fieldset>
+		<legend>id</legend>
+		
+		<p>The <em>id</em> option allows you to show the
+		entry details for a single entry or multiple specific entries.
+		To show multiple specific entries, list all the entries to be displayed
+		by their <em>id</em> number separated by commas within single quotes. Default is to show all
+		public and/or private entries in the list. The ID can
+		be found in the admin by showing the details for an
+		entry. It will be labeled <strong>Entry ID:</strong></p>
 	
-	<pre>
-	<code>[connections_list id='2,12,37']</code>
-	</pre>
+		<p><code>[connections_list id=2]</code></p>
+		<p><code>[connections_list id='2,12,37']</code></p>
+		
+	</fieldset>
 	
-	<p><a name="cn_attr_category"></a>The <em>category</em> option allows you to show entries within a specific category
-	and all children categories. The category ID can be found on the Category page in the admin. 
-	the default is to show all available categories.</p>
+	<a name="cn_attr_category"></a>
+	<fieldset>
+		<legend>category</legend>
+		
+		<p>The <em>category</em> option allows you to show entries within a specific category
+		and all children categories. The category ID can be found on the Category page in the admin. 
+		the default is to show all available categories.</p>
+		
+		<p><code>[connections_list category=12]</code></p>
+		
+		<p>To show entries in multiple specific categories and their children, list the categories by id
+		seperated by commas as show in the following example.</p>
+		
+		<p><code>[connections_list category='1,3,9']</code></p>
+		
+		<p><strong>NOTE:</strong> This attribute is an operational OR function. An entry will be shown if it is in any one of the specified categories
+		or one of their children categories.</p>
+	</fieldset>
 	
-	<pre>
-	<code>[connections_list category=12]</code>
-	</pre>
-	
-	<p><a name="cn_attr_wp_current_category"></a>If the shortcode is used on a post and <em>wp_current_category</em>  is set to TRUE, the only 
-	   entries that will be shown are those that have the same exact name as the categories that are assigned to the post.</p>
- 
-	<pre>
-	<code>[connections_list wp_current_category='true']</code>
-	</pre>
-	
+	<a name="cn_attr_wp_current_category"></a>
+	<fieldset>
+		<legend>wp_current_category</legend>
+		
+		<p>If the shortcode is used on a post and <em>wp_current_category</em> is set to TRUE, the only 
+		   entries that will be shown are those that have the same exact name as the categories that are assigned to the post.</p>
+	 
+		<p><code>[connections_list wp_current_category='true']</code></p>
+		
+		<p><strong>NOTE:</strong> In order for this attribute to function, the shortcode must be used on a post and the categories names of both the entry 
+		and the post must be exactly identical.</p>
+	</fieldset>
 	
 	<p><a name="cn_attr_private_override"></a>The <em>private_override</em> option allows you to
 	show the a contact list including all private entries
@@ -281,87 +284,108 @@ function connectionsShowHelpPage()
 	<code>[connections_list template_name='my-template']</code>
 	</pre>
 	
+	<a name="cn_attr_order_by"></a>
+	<fieldset>
+		<legend>order_by</legend>
 		
-	<p><a name="cn_attr_order_by"></a>The <em>order_by</em> attribute can be used to apply a custom sort to the list.
-	Here are the available sort fields and attributes.</p>
-	<p><strong>Sort fields:</strong>
+		<p>The <em>order_by</em> attribute can be used to apply a custom sort to the list.
+		Here are the available sort fields and attributes.</p>
+		<p><strong>Sort fields:</strong>
+			<ul>
+				<li>id</li>
+				<li>first_name</li>
+				<li>last_name</li>
+				<li>organization</li>
+				<li>department</li>
+				<li>city</li>
+				<li>state</li>
+				<li>zipcode</li>
+				<li>country</li>
+				<li>birthday</li>
+				<li>anniversary</li>
+			</ul>
+		</p>
+		<p><strong>Order Flags:</strong>
+			<ul>
+				<li>SORT_ACS</li>
+				<li>SORT_DESC</li>
+				<li>SPECIFIC**</li>
+				<li>RANDOM**</li>
+			</ul>
+		</p>
+		<p><strong>Sort Types:</strong>
+			<ul>
+				<li>SORT_REGULAR</li>
+				<li>SORT_NUMERIC</li>
+				<li>SORT_STRING</li>
+			</ul>
+		</p>
+		
+		<p><strong>**NOTE:</strong> The SPECIFIC and RANDOM Order Flags can only 
+		 be used with the id sort field. The SPECIFIC flag must be used in conjuction
+		 with the id shortcode attribute which must be a comma delimited of entry IDs. 
+		 If this is set, other sort fields/flags are ignored.</p>
+		
+		<p>You can put your fields in order to be sorted separated by commas. You can also add the flag to tell it to be sorted ascending or descending like so:</p>
+		
+		<pre>
+		<code>order_by='state|SORT_ACS,zipcode|SORT_DESC'</code>
+		</pre>
+		
+		<p>Notice that the flag is right after the field separated by a 'pipe' | . This character is usually placed above the backslash key.</p>
+		<p>It will automatically try to figure the type of field that is being sorted. For example, last_name will be sorted as a string and zipcode as numeric. Lets say for some reason you want to force the zipcode to sort as a string:</p>
+		
+		<pre>
+		<code>order_by='state|SORT_ACS|SORT_STRING,zipcode|SORT_DESC'</code>
+		</pre>
+		
+		<p>You would add another pipe and add the sort type. This can be mixed and match for each field you wish to sort by.</p>
+	</fieldset>
+	
+	<a name="cn_attr_filters"></a>
+	<fieldset>
+		<legend>filters</legend>
+		
+		<p>The filter attributes can be used one at a time per
+		list or in combinations per list and are case
+		sensitive. See the following examples.</p>
+		
 		<ul>
-			<li>id</li>
-			<li>first_name</li>
 			<li>last_name</li>
+			<li>group_name</li>
+			<li>title</li>
 			<li>organization</li>
 			<li>department</li>
 			<li>city</li>
 			<li>state</li>
-			<li>zipcode</li>
+			<li>zip_code</li>
 			<li>country</li>
-			<li>birthday</li>
-			<li>anniversary</li>
 		</ul>
-	</p>
-	<p><strong>Order Flags:</strong>
-		<ul>
-			<li>SORT_ACS</li>
-			<li>SORT_DESC</li>
-			<li>SPECIFIC**</li>
-			<li>RANDOM**</li>
-		</ul>
-	</p>
-	<p><strong>Sort Types:</strong>
-		<ul>
-			<li>SORT_REGULAR</li>
-			<li>SORT_NUMERIC</li>
-			<li>SORT_STRING</li>
-		</ul>
-	</p>
+		
+		<pre>
+		<code>[connections_list last_name='Zahm']</code>
+		</pre>
+		
+		<p>This will only output a list where the last name is
+		"Zahm". Remember, filters are case sensitive.</p>
 	
-	<p><strong>**NOTE:</strong> The SPECIFIC and RANDOM Order Flags can only 
-	 be used with the id sort field. The SPECIFIC flag must be used in conjuction
-	 with the id shortcode attribute which must be a comma delimited of entry IDs. 
-	 If this is set, other sort fields/flags are ignored.</p>
-	
-	<p>You can put your fields in order to be sorted separated by commas. You can also add the flag to tell it to be sorted ascending or descending like so:</p>
-	
-	<pre>
-	<code>order_by='state|SORT_ACS,zipcode|SORT_DESC'</code>
-	</pre>
-	
-	<p>Notice that the flag is right after the field separated by a 'pipe' | . This character is usually placed above the backslash key.</p>
-	<p>It will automatically try to figure the type of field that is being sorted. For example, last_name will be sorted as a string and zipcode as numeric. Lets say for some reason you want to force the zipcode to sort as a string:</p>
-	
-	<pre>
-	<code>order_by='state|SORT_ACS|SORT_STRING,zipcode|SORT_DESC'</code>
-	</pre>
-	
-	<p>You would add another pipe and add the sort type. This can be mixed and match for each field you wish to sort by.</p>
-	
-	<p><a name="cn_attr_filters"></a>The filter attributes can be used one at a time per
-	list or in combinations per list and are case
-	sensitive. See the examples below.</p>
-
-	<pre>
-	<code>[connections_list last_name='Zahm']</code>
-	</pre>
-	
-	<p>This will only output a list where the last name is
-	"Zahm". Remember, filters are case sensitive.</p>
-
-	<pre>
-	<code>[connections_list organization='ACME' department='Accounting']</code>
-	</pre>
-	
-	<p>This will only output a list where the organization
-	is "ACME" AND where the department is "Accounting".
-	Remember, filters are case sensitive.</p>
-				
-	<p>The rest of the filters function identically.</p>
-	
-	<p><strong>NOTE:</strong> If you
-	have multiple addresses assigned to an entry, the address filters will
-	search all addresses and will disply the entry if a match is found.</p>
-	
-	<p><strong>NOTE:</strong> If you
-	want to filter names with with apostrophes quote the filter using the double quote.</p>
+		<pre>
+		<code>[connections_list organization='ACME' department='Accounting']</code>
+		</pre>
+		
+		<p>This will only output a list where the organization
+		is "ACME" AND where the department is "Accounting".
+		Remember, filters are case sensitive.</p>
+					
+		<p>The rest of the filters function identically.</p>
+		
+		<p><strong>NOTE:</strong> If you
+		have multiple addresses assigned to an entry, the address filters will
+		search all addresses and will display the entry if a match is found.</p>
+		
+		<p><strong>NOTE:</strong> If you
+		want to filter names with with apostrophes quote the filter using the double quote.</p>
+		</fieldset>
 	
 	<p><a name="tocIdCelebrateList"></a>There is a second shortcode that can be use for
 	displaying a list of upcoming birthdays and/or

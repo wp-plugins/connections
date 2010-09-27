@@ -1214,7 +1214,40 @@ class cnEntry
     {
         $this->notes = $notes;
     }
-
+	
+	/**
+	 * Create excerpt from the supplied text.
+	 * 
+	 * Filters:
+	 * 		cn_excerpt_length	=> change the default excerpt length of 55 words.
+	 * 		cn_excerpt_more		=> change the default more string of [...]
+	 * 		cn_trim_excerpt		=> change returned string
+	 * 
+	 * @param object $text
+	 * @return 
+	 */
+	public function getExcerpt($text)
+	{
+		$text = $this->format->sanitizeString($text, FALSE);
+		$excerptLength = apply_filters('cn_excerpt_length', 55);
+		$excerptMore = apply_filters('cn_excerpt_more', ' ' . '[...]');
+		
+		$words = preg_split("/[\n\r\t ]+/", $text, $excerptLength + 1, PREG_SPLIT_NO_EMPTY);
+		
+		if ( count($words) > $excerptLength )
+		{
+		  array_pop($words);
+		  $text = implode(' ', $words);
+		  $text = $text . $excerptMore;
+		}
+		else
+		{
+		  $text = implode(' ', $words);
+		}
+		
+		return apply_filters('cn_trim_excerpt', $text);
+	}
+	
     /**
      * Returns $visibility.
      * @see entry::$visibility
