@@ -214,7 +214,7 @@ function connectionsShowViewPage()
 									foreach ($results as $row)
 									{
 										$entry = new cnEntry($row);
-										$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
+										$currentLetter = strtoupper(mb_substr($entry->getFullLastFirstName(), 0, 1));
 										if ($currentLetter != $previousLetter)
 										{
 											$setAnchor .= '<a href="#' . $currentLetter . '">' . $currentLetter . '</a> ';

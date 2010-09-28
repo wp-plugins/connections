@@ -211,7 +211,7 @@ function _connections_list($atts, $content=null) {
 			 * 
 			 * If the alpha head set to true it will append the alpha head to the anchor.
 			 */
-			$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
+			$currentLetter = strtoupper(mb_substr($entry->getFullLastFirstName(), 0, 1));
 			if ($currentLetter != $previousLetter && $atts['id'] == null) {
 				if ($atts['show_alphaindex']) $setAnchor = '<a name="' . $currentLetter . '"></a>';
 				
