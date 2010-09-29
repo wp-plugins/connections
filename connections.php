@@ -256,7 +256,7 @@ if (!class_exists('connectionsLoad'))
 			
 			if (strpos ($session_save_path, ";") !== FALSE)
 			{
-				$session_save_path = substr ( $session_save_path, strpos ($session_save_path, ";")+1 );
+				$session_save_path = mb_substr ( $session_save_path, strpos ($session_save_path, ";")+1 );
 			}
 			
 			if(is_dir($session_save_path))

@@ -262,7 +262,7 @@ function connectionsShowViewPage()
 									$entry = new cnvCard($row);
 									$vCard =& $entry;
 									
-									$currentLetter = strtoupper(substr($entry->getFullLastFirstName(), 0, 1));
+									$currentLetter = strtoupper(mb_substr($entry->getFullLastFirstName(), 0, 1));
 									if ($currentLetter != $previousLetter) {
 										$setAnchor = "<a name='$currentLetter'></a>";
 										$previousLetter = $currentLetter;

@@ -1070,7 +1070,7 @@ class cnEntry
 					break;
 					
 					default:
-						if ( substr($socialNetwork['id'], 0, 7) != 'http://' )
+						if ( mb_substr($socialNetwork['id'], 0, 7) != 'http://' )
 						{
 							$socialMedia[$key]['id'] = 'http://' . $socialNetwork['id'];
 						}
@@ -1357,7 +1357,7 @@ class cnEntry
 					break;
 					
 					default:
-						if ( substr($website['address'], 0, 7) != 'http://' )
+						if ( mb_substr($website['address'], 0, 7) != 'http://' )
 						{
 							$websites[$key]['address'] = 'http://' . $website['address'];
 							$websites[$key]['url'] = $websites[$key]['address'];
