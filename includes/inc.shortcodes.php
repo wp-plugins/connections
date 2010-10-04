@@ -57,10 +57,9 @@ function _connections_list($atts, $content=null) {
 	$convert->toBoolean(&$atts['show_alphahead']);
 	$convert->toBoolean(&$atts['wp_current_category']);
 	
-	$atts = apply_filters('cn_shortcode_attributes', $atts);
-	
 	$results = $connections->retrieve->entries($atts);
 	$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
+	
 	
 	if ( !empty($results) )
 	{
@@ -117,7 +116,11 @@ function _connections_list($atts, $content=null) {
 			}
 		}
 		
-		$out = '';
+		$atts = apply_filters('cn_list_atts', $atts);
+		$out = apply_filters('cn_list_before', $out, $results);
+		$results = apply_filters('cn_list_results', $results);
+		
+		//$out = '';
 		
 		// Order the results as specified by the shortcode attribute.
 		if (!empty($atts['order_by']))
@@ -133,11 +136,16 @@ function _connections_list($atts, $content=null) {
 		
 		
 		$out .= '<a name="connections-list-head" style="display: block; height: 1px;"></a>' . "\n";
+		
 		/*
 		 * The alpha index is only displayed if set set to true and not set to repeat using the shortcode attributes.
 		 * If a alpha index is set to repeat, that is handled down separately.
 		 */
-		if ($atts['show_alphaindex'] && !$atts['repeat_alphaindex']) $out .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex(). "</div>";
+		if ($atts['show_alphaindex'] && !$atts['repeat_alphaindex'])
+		{
+			$index = "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex(). "</div>";
+			$out .= apply_filters('cn_list_index', $index, $results);
+		}
 		
 		$out .=  "<div class='connections-list'>\n";
 		

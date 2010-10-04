@@ -1216,18 +1216,20 @@ class cnEntry
     }
 	
 	/**
-	 * Create excerpt from the supplied text.
+	 * Create excerpt from the supplied text. Default is the bio.
 	 * 
 	 * Filters:
 	 * 		cn_excerpt_length	=> change the default excerpt length of 55 words.
 	 * 		cn_excerpt_more		=> change the default more string of [...]
 	 * 		cn_trim_excerpt		=> change returned string
 	 * 
-	 * @param object $text
+	 * @param string $text [optional]
 	 * @return 
 	 */
-	public function getExcerpt($text)
+	public function getExcerpt($text = NULL)
 	{
+		if ( !isset($text) ) $text = $this->getBio();
+		
 		$text = $this->format->sanitizeString($text, FALSE);
 		$excerptLength = apply_filters('cn_excerpt_length', 55);
 		$excerptMore = apply_filters('cn_excerpt_more', ' ' . '[...]');

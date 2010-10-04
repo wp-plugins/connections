@@ -775,8 +775,19 @@ function connectionsShowHelpPage()
 		
 		<p>Shortcode:</p>
 		<dl>
-			<dt>cn_shortcode_attributes</dt>
+			<dt>cn_list_atts</dt>
 				<dd>applied before the shortcode attributes are used</dd>
+				
+			<dt>cn_list_results</dt>
+				<dd>Filter the returned results before being processed for display.</dd>
+				
+			<dt>cn_list_before</dt>
+				<dd>Can be used to add content before the output of the list. The entry list
+				results are passed.</dd>
+			
+			<dt>cn_list_index</dt>
+				<dd>Can be used to modify the index before the output of the list. The entry list
+				results are passed.</dd>
 		</dl>
 		
 		
@@ -793,6 +804,15 @@ function connectionsShowHelpPage()
 				
 			<dt>cn_phone_numbers</dt>
 				<dd>applied to indexed array of phone number objects</dd>
+			
+			<dt>cn_excerpt_length</dt>
+				<dd>Change the Excerpt length.</dd>
+			
+			<dt>cn_excerpt_more</dt>
+				<dd>Change the default more string of the excerpt.</dd>
+				
+			<dt>cn_trim_excerpt</dt>
+				<dd>Filter the final excerpt string before being returned.</dd>
 		</dl>
 		
 		
