@@ -1,27 +1,63 @@
 <?php
-add_filter('cn_list_atts', 'cnSearch');
-add_filter('cn_list_results', 'cnLimitList');
-add_filter('cn_list_before', 'cnListBefore', 10, 2);
+add_filter('cn_list_results', 'cnSearch', 9);
+add_filter('cn_list_results', 'cnLimitList', 10);
+add_filter('cn_list_before', 'cnListPages', 10, 2);
 add_filter('cn_list_before', 'cnListSearch', 9, 2);
 add_filter('cn_list_index', 'cnListIndex', 10, 2);
 
-function cnSearch($atts)
+function cnSearch($results)
 {
 	if ( isset($_GET['cn-s']) )
 	{
-		$atts['last_name'] = esc_attr( $_GET['cn-s'] );
-		return $atts;
+		$found = array();
+		
+		// Get search terms
+		$searchTerms = esc_attr( $_GET['cn-s'] );
+		// Remove line breaks and trim white space.
+		$searchTerms = preg_replace('/[\r\n\t ]+/', ' ', $searchTerms);
+		// Create an array from the search terms.
+		$searchTerms = explode(' ', $searchTerms);
+		
+		// Search for each of the terms.
+		foreach ( (array) $searchTerms as $searchTerm)
+		{
+			foreach ($results as $key => $row)
+			{
+				foreach ( (array) $row as $data )
+				{
+					if ( mb_stristr($data, $searchTerm) !== FALSE )
+					{
+						$found[$key] = $row;
+					}
+				}
+			}
+		}
+		
+		if ( !empty($found) )
+		{
+			global $connections;
+			
+			$connections->resultCount = count($found);
+			
+			return $found;
+		}
+		else
+		{
+			return array();
+		}
+	}
+	else
+	{
+		return $results;
 	}
 }
 
 function cnLimitList($results)
 {
 	$limit = 20; // Page Limit
-	//print_r(( $_GET['cn-page'] - 1 ) * $limit);
 	
-	( !isset($_GET['cn-page']) ) ? $offset = 0 : $offset = ( $_GET['cn-page'] - 1 ) * $limit;
+	( !isset($_GET['cn-pg']) ) ? $offset = 0 : $offset = ( $_GET['cn-pg'] - 1 ) * $limit;
 	
-	//print_r( count( array_slice($results, $offset, $limit, TRUE) ) );
 	return array_slice($results, $offset, $limit, TRUE);
 }
 
@@ -36,22 +72,26 @@ function cnListSearch($out, $results = NULL)
 	return $out;
 }
 
-function cnListBefore($out, $results = NULL)
+function cnListPages($out, $results = NULL)
 {
+	global $connections;
+	$i = 1;
+	
 	$limit = 20; // Page Limit
-	$pageCount = ceil( count($results) / $limit );
+	$pageCount = ceil( $connections->resultCount / $limit );
 	$baseURL = get_permalink();
-	//print_r(count($results));
+	
 	$out .= '<ul>';
-		while ($i < $pageCount)
+		while ($i <= $pageCount)
 		{
-			$i++;
+			$_GET['cn-pg'] = $i;
+			$queryString = http_build_query($_GET);
 			
-			$out .= '<li><a href="' . esc_url( $baseURL . '?cn-page=' . $i ) . '">' . $i . '</a></li>';
+			$out .= '<li><a href="' . esc_url( $baseURL . '?' . $queryString ) . '">' . $i . '</a></li>';
+			$i++;
 		}
 	$out .= '</ul';
 	
-	//$out .= '<p>BEFORE LIST FILTER: results = ' . $pageCount . '</p>';
 	return $out;
 }
 
