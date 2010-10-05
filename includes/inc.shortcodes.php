@@ -117,8 +117,9 @@ function _connections_list($atts, $content=null) {
 		}
 		
 		$atts = apply_filters('cn_list_atts', $atts);
-		$out = apply_filters('cn_list_before', $out, $results);
+		
 		$results = apply_filters('cn_list_results', $results);
+		$out = apply_filters('cn_list_before', $out, $results);
 		
 		//$out = '';
 		

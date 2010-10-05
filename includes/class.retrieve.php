@@ -175,6 +175,7 @@ class cnRetrieve
 		$connections->lastQuery = $wpdb->last_query;
 		$connections->lastQueryError = $wpdb->last_error;
 		$connections->lastInsertID = $wpdb->insert_id;
+		$connections->resultCount = count($results);
 		
 		return $results;
 		
