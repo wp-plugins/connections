@@ -5,6 +5,12 @@ add_filter('cn_list_before', 'cnListPages', 10, 2);
 add_filter('cn_list_before', 'cnListSearch', 9, 2);
 add_filter('cn_list_index', 'cnListIndex', 10, 2);
 add_filter('cn_phone_number', 'cnPhoneLables');
+add_filter('cn_website', 'cnWebsite');
+
+function cnWebsite($data)
+{
+	
+}
 
 function cnPhoneLables($data)
 {

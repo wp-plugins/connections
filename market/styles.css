@@ -1,0 +1,18 @@
+div.vcard div.cn-entry { -moz-border-radius:4px;
+						 background-color: #FFFFFF;
+						 border:1px solid #D3D3D3;
+						 margin:8px 0px;
+						 padding: 12px 12px 7px;
+						 position: relative;
+						 width: 100%;
+						}
+div.vcard div.cn-entry table { width: 100%; }
+div.vcard div.cn-entry table td { font-size: 12px; padding-bottom: 5px; vertical-align: top; }
+
+div.vcard div.cn-entry table h3.cn-name { color: #1E6D8C; font-size: 16px; margin: 0; }
+div.vcard div.cn-entry table p { font-size: 12px; margin: 0 0 12px; }
+div.vcard div.cn-entry span.cn-label { font-weight: bold; }
+
+div.vcard div.cn-entry ul li { list-style-type: none; margin: 0; padding: 0; }
+div.vcard div.cn-entry ul.cn-phone-number-block { margin: 0; padding: 0; }
+div.vcard div.cn-entry ul.cn-website-block { margin: 0 0 8px; padding: 0; }
