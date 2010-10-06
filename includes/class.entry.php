@@ -1315,9 +1315,13 @@ class cnEntry
 				
 				if ( empty($websiteRow->url) ) $websiteRow->url = $websiteRow->address;
 				
+				$websiteRow = apply_filters('cn_website', $websiteRow);
+				
 				$out[] = $websiteRow;
 				unset($websiteRow);
 			}
+			
+			$out = apply_filters('cn_websites', $out);
 			
 			if ( !empty($out) ) return $out;
 		}

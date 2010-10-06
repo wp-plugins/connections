@@ -805,6 +805,12 @@ function connectionsShowHelpPage()
 			<dt>cn_phone_numbers</dt>
 				<dd>applied to indexed array of phone number objects</dd>
 			
+			<dt>cn_website</dt>
+				<dd>applied to each website object</dd>
+				
+			<dt>cn_websites</dt>
+				<dd>applied to indexed array of website objects</dd>
+			
 			<dt>cn_excerpt_length</dt>
 				<dd>Change the Excerpt length.</dd>
 			
