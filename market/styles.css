@@ -1,4 +1,4 @@
-form#cn-search { margin: 0 0 10px }
+form#cn-search { margin: 0 0 10px; text-align: right; }
 div.cn-alphaindex { text-align: right; width: 100%; }
 div.cn-alphaindex a {
 	-moz-border-radius: 5px 5px 5px 5px;
@@ -8,6 +8,8 @@ div.cn-alphaindex a {
 	padding: 3px 6px;
 	text-decoration: none;
 }
+div.cn-alphaindex a:hover { border: 1px solid #D3D3D3; }
+div.cn-alphaindex a:visited { border: 1px solid #D3D3D3; }
 
 ul#cn-pages { list-style: none; padding: 0; margin: 0; }
 ul#cn-pages li {
@@ -17,9 +19,11 @@ ul#cn-pages li {
 	float: left;
 	font-weight: bolder;
 	margin: 0 3px 6px 0;
-	padding: 3px 6px;
+	padding: 1px 3px;
 	text-decoration: none;
 }
+div.connections-list { clear: both; }
+div.connections-list a { display: block; height: 1px; }
 
 div.vcard div.cn-entry { -moz-border-radius:4px;
 						 background-color: #FFFFFF;
@@ -31,7 +35,7 @@ div.vcard div.cn-entry { -moz-border-radius:4px;
 div.vcard div.cn-entry table { width: 100%; }
 div.vcard div.cn-entry table td { font-size: 12px; padding-bottom: 5px; vertical-align: top; }
 
-div.vcard div.cn-entry table h3.cn-name { color: #1E6D8C; font-size: 16px; margin: 0; }
+div.vcard div.cn-entry table h3.cn-name { border: none; color: #1E6D8C; font-size: 16px; margin: 0; }
 div.vcard div.cn-entry table p { font-size: 12px; margin: 0 0 12px; }
 div.vcard div.cn-entry span.cn-label { font-weight: bold; }
 
@@ -40,6 +44,7 @@ div.vcard div.cn-entry ul.cn-phone-number-block { margin: 0; padding: 0; }
 div.vcard div.cn-entry ul.cn-website-block { margin: 0 0 8px; padding: 0; }
 
 div.vcard div.cn-entry p.cn-buttons { height: 22px; margin: 0; overflow: hidden; position: relative; width: 80px; }
+div.vcard div.cn-entry p img { max-width: 180px }
 div.vcard div.cn-entry p img.cn-viewsite-on { margin: 0; position: absolute; top: 0; left: 0; }
 div.vcard div.cn-entry p img.cn-viewsite-off { margin: 0; position: absolute; top: -22px; left: 0; }
 div.vcard div.cn-entry p img.cn-viewad-on { margin: 0; position: absolute; top: 0; left: -80px; }

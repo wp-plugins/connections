@@ -37,4 +37,4 @@
 	
 </div>
 
-<?php unset($websiteButton, $adButton); ?>
+<?php unset($website, $websiteButton, $adButton); ?>
