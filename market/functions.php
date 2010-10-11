@@ -52,6 +52,8 @@ function cnSearch($results)
 {
 	if ( isset($_GET['cn-s']) )
 	{
+		if ( empty($_GET['cn-s']) ) return $results;
+		
 		$found = array();
 		
 		// Get search terms
@@ -124,7 +126,8 @@ function cnListPages($out, $results = NULL)
 	$pageCount = ceil( $connections->resultCount / $limit );
 	$baseURL = get_permalink();
 	
-	$out .= '<ul>';
+	$out .= '<ul id="cn-pages">';
+		$out .= '<li>Pages: </li>';
 		while ($i <= $pageCount)
 		{
 			$_GET['cn-pg'] = $i;
@@ -157,6 +160,6 @@ function cnListIndex($index, $results = NULL)
 		}
 	}
 	
-	return '<div class="cn-alphaindex" style="text-align:right;font-size:larger;font-weight:bold">' . $setAnchor . '</div>';
+	return '<div class="cn-alphaindex">' . $setAnchor . '</div>';
 }
 ?>
