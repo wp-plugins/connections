@@ -119,8 +119,7 @@ function _connections_list($atts, $content=null) {
 		$atts = apply_filters('cn_list_atts', $atts);
 		
 		$results = apply_filters('cn_list_results', $results);
-		$out = apply_filters('cn_list_before', $out, $results);
-		
+				
 		//$out = '';
 		
 		// Order the results as specified by the shortcode attribute.
@@ -135,6 +134,7 @@ function _connections_list($atts, $content=null) {
 		// Prints the javascript tag in the footer if $template->js path is set
 		if ( method_exists($template, 'printJS') ) $template->printJS();
 		
+		$out = apply_filters('cn_list_before', $out, $results);
 		
 		$out .= '<a name="connections-list-head" style="display: block; height: 1px;"></a>' . "\n";
 		
