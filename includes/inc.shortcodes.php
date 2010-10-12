@@ -136,7 +136,7 @@ function _connections_list($atts, $content=null) {
 		
 		$out = apply_filters('cn_list_before', $out, $results);
 		
-		$out .= '<a name="connections-list-head" style="display: block; height: 1px;"></a>' . "\n";
+		$out .= '<a name="connections-list-head" style="float: left;"></a>' . "\n";
 		
 		/*
 		 * The alpha index is only displayed if set set to true and not set to repeat using the shortcode attributes.
@@ -222,7 +222,7 @@ function _connections_list($atts, $content=null) {
 			 */
 			$currentLetter = strtoupper(mb_substr($entry->getFullLastFirstName(), 0, 1));
 			if ($currentLetter != $previousLetter && $atts['id'] == null) {
-				if ($atts['show_alphaindex']) $setAnchor = '<a name="' . $currentLetter . '"></a>';
+				if ($atts['show_alphaindex']) $setAnchor = '<a class="cn-index-head" name="' . $currentLetter . '"></a>';
 				
 				if ($atts['show_alphaindex'] && $atts['repeat_alphaindex']) $setAnchor .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex() . "</div>";
 				
