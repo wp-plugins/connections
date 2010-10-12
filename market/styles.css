@@ -1,4 +1,13 @@
 form#cn-search { margin: 0 0 10px; text-align: right; }
+div#cn-clr-search { -moz-border-radius: 5px 5px 5px 5px;
+					background-color: #FFFFFF;
+					border: 1px solid #D3D3D3;
+					font-weight: bolder;
+					margin: 0 0 10px;
+					padding: 3px 6px;
+					text-align: center;
+					text-decoration: none; }
+div#cn-clr-search a { color: #FF0000; }
 div.cn-alphaindex { text-align: right; width: 100%; }
 div.cn-alphaindex a {
 	-moz-border-radius: 5px 5px 5px 5px;
@@ -23,7 +32,7 @@ ul#cn-pages li {
 	text-decoration: none;
 }
 div.connections-list { clear: both; }
-div.connections-list a { display: block; height: 1px; }
+div.connections-list a.cn-index-head { float: left; }
 
 div.vcard div.cn-entry { -moz-border-radius:4px;
 						 background-color: #FFFFFF;

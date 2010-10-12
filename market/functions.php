@@ -5,11 +5,12 @@ add_filter('cn_list_before', 'cnListPages', 10, 2);
 add_filter('cn_list_before', 'cnListSearch', 9, 2);
 add_filter('cn_list_index', 'cnListIndex', 10, 2);
 add_filter('cn_phone_number', 'cnPhoneLables');
-//add_filter('cn_website', 'cnWebsite');
+add_filter('cn_website', 'cnWebsite');
 
-function cnWebsite($data)
+function cnWebsite($website)
 {
-	
+	if ( $website->url === 'http://NONE' ) $website->url = NULL;
+	return $website;
 }
 
 function cnPhoneLables($data)
@@ -88,6 +89,10 @@ function cnSearch($results)
 		}
 		else
 		{
+			global $connections;
+			
+			$connections->resultCount = 0;
+			
 			return array();
 		}
 	}
@@ -115,6 +120,12 @@ function cnListSearch($out, $results = NULL)
 				<input type="text" value="" name="cn-s" id="cn-search-input" />
 				<input type="submit" id="cn-searchsubmit" value="Search" />
 			</form>';
+	
+	if ( isset($_GET['cn-s']) )
+	{
+		if ( !empty($_GET['cn-s']) ) $out .= '<div id="cn-clr-search"><a href="' . $baseURL .'">Clear Search Results</a></div>';
+	}
+	
 	return $out;
 }
 
@@ -126,6 +137,8 @@ function cnListPages($out, $results = NULL)
 	$limit = 20; // Page Limit
 	$pageCount = ceil( $connections->resultCount / $limit );
 	$baseURL = get_permalink();
+	
+	if ( $pageCount <= 0 ) return $out;
 	
 	$out .= '<ul id="cn-pages">';
 		$out .= '<li>Pages: </li>';
