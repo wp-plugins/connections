@@ -47,6 +47,8 @@ class cnFilters
 	 * 
 	 * Available order_by fields:
 	 * 	id
+	 *  date_added
+	 *  date_modified
 	 *  first_name
 	 * 	last_name
 	 * 	organization
@@ -84,6 +86,8 @@ class cnFilters
 	{
 		$orderFields = array(
 							'id',
+							'date_added',
+							'date_modified',
 							'first_name',
 							'last_name',
 							'organization',
@@ -140,6 +144,14 @@ class cnFilters
 				{
 					case 'id':
 						${$field[0]}[$key] = $entry->getId();
+					break;
+					
+					case 'date_added':
+						${$field[0]}[$key] = $entry->getDateAdded('U');
+					break;
+					
+					case 'date_modified':
+						${$field[0]}[$key] = $entry->getUnixTimeStamp();
 					break;
 					
 					case 'first_name':

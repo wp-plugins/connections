@@ -293,6 +293,8 @@ function connectionsShowHelpPage()
 		<p><strong>Sort fields:</strong>
 			<ul>
 				<li>id</li>
+				<li>date_added</li>
+				<li>date_modified</li>
 				<li>first_name</li>
 				<li>last_name</li>
 				<li>organization</li>
@@ -695,7 +697,7 @@ function connectionsShowHelpPage()
 	<pre><code>getCategoryBlock( array( 'list' =>  'ordered' ) )</code></pre>
 	<p>This will output an ordered list.</p>
 	
-	<pre><code>getCategoryBlock( array( 'string' => ', ', 'before' => '<span>', 'after' => '</span>' ) )</code></pre>
+	<pre><code>getCategoryBlock( array( 'separator' => ', ', 'before' => '<span>', 'after' => '</span>' ) )</code></pre>
 	<p>This will output the categories within a span element separated by a comma space.</p>
 	
 	<p><strong>Accepted Values</strong>
