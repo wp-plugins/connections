@@ -109,7 +109,8 @@ class cnOptions
 										'aim'=>'AIM',
 										'yahoo'=>'Yahoo IM',
 										'jabber'=>'Jabber / Google Talk',
-										'messenger'=>'Messenger'
+										'messenger'=>'Messenger',
+										'skype' => 'Skype'
 									);
 	
 	private $defaultEmailValues  =   array
