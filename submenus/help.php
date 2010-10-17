@@ -778,18 +778,18 @@ function connectionsShowHelpPage()
 		<p>Shortcode:</p>
 		<dl>
 			<dt>cn_list_atts</dt>
-				<dd>applied before the shortcode attributes are used</dd>
+				<dd>Alter the shortcode attributes before use. Return associative array.</dd>
 				
 			<dt>cn_list_results</dt>
-				<dd>Filter the returned results before being processed for display.</dd>
+				<dd>Filter the returned results before being processed for display. Return indexed array of entry objects.</dd>
 				
 			<dt>cn_list_before</dt>
 				<dd>Can be used to add content before the output of the list. The entry list
-				results are passed.</dd>
+				results are passed. Return string.</dd>
 			
 			<dt>cn_list_index</dt>
 				<dd>Can be used to modify the index before the output of the list. The entry list
-				results are passed.</dd>
+				results are passed. Return string.</dd>
 		</dl>
 		
 		

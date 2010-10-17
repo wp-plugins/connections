@@ -14,6 +14,15 @@ function connectionsEntryList($atts)
 	echo _connections_list($atts);
 }
 
+/**
+ * Register the [connections_list] shortcode
+ * 
+ * Filters:
+ * 		cn_list_atts		=> Alter the shortcode attributes before use. Return associative array.
+ * 		cn_list_results		=> Filter the returned results before being processed for display. Return indexed array of entry objects.
+ * 		cn_list_before		=> Can be used to add content before the output of the list. The entry list results are passed. Return string.
+ * 		cn_list_index		=> Can be used to modify the index before the output of the list. The entry list results are passed. Return string.
+ */
 add_shortcode('connections_list', '_connections_list');
 function _connections_list($atts, $content=null) {
 	global $wpdb, $connections, $current_user;
@@ -33,6 +42,8 @@ function _connections_list($atts, $content=null) {
 				'repeat_alphaindex' => 'false',
 				'show_alphahead' => 'false',
 				'list_type' => 'all',
+				'limit' => NULL,
+				'offset' => NULL,
 				'order_by' => NULL,
 				'group_name' => NULL,
 				'last_name' => NULL,
@@ -118,6 +129,7 @@ function _connections_list($atts, $content=null) {
 		
 		$atts = apply_filters('cn_list_atts', $atts);
 		
+		$results = array_slice($results, $atts['offest'], $atts['limit'], TRUE);
 		$results = apply_filters('cn_list_results', $results);
 				
 		//$out = '';
