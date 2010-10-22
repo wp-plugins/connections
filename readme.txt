@@ -97,6 +97,7 @@ Connections is a simple to use versatile directory manager. You can use it for a
 * FEATURE: Improved the rich text editor by using the bundled tinyMCE.
 * FEATURE: Added two additional order_by attributes; date_added and date_modified.
 * FEATURE: Added Skype option under the messenger IDs.
+* FEATURE: Added the option to upload a logo in addition to an image.
 * BUG: Fixed PHP Warning: Call-time pass-by-reference has been deprecated error in the admin.
 * BUG: The last updated time and date now function correctly.
 * BUG: Fix MySpace spelling typo. Any entries saved with a MySpace link will need to be updated.
