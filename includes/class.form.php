@@ -455,19 +455,34 @@ class cnEntryForm
 			<div class="form-field connectionsform">';
 					
 					if ($entry->getImageLinked()) {
-						if ($entry->getImageDisplay()) $selected = "show"; else $selected = "hidden";
+						if ( $entry->getImageDisplay() ) $selected = 'show'; else $selected = 'hidden';
 						
-						$imgOptions = $form->buildRadio("imgOptions", "imgOptionID_", array("Display"=>"show", "Not Displayed"=>"hidden", "Remove"=>"remove"), $selected);
-						$out .= "<div style='text-align:center'> <img src='" . CN_IMAGE_BASE_URL . $entry->getImageNameProfile() . "' /> <br /> <span class='radio_group'>" . $imgOptions . "</span></div> <br />"; 
+						$imgOptions = $form->buildRadio('imgOptions', 'imgOptionID_', array('Display'=>'show', 'Not Displayed'=>'hidden', 'Remove'=>'remove'), $selected);
+						$out .= '<div style="text-align: center;"> <img src="' . CN_IMAGE_BASE_URL . $entry->getImageNameProfile() . '" /> <br /> <span class="radio_group">' . $imgOptions . '</span></div> <br />'; 
 					}
 					
 					$out .= '<div class="clear"></div>';
-					$out .= "<label for='original_image'>Select Image:
-					<input type='file' value='' name='original_image' size='25' /></label>
+					$out .= '<label for="original_image">Select Image:
+					<input type="file" value="" name="original_image" size="25" /></label>
 					
-			</div>";
+			</div>';
 			
+			$out .= '<div class="form-field connectionsform">';
+					
+					if ($entry->getLogoLinked())
+					{
+						( $entry->getLogoDisplay() ) ? $selected = 'show' : $selected = 'hidden';
 						
+						$logoOptions = $form->buildRadio('logoOptions', 'logoOptionID_', array('Display'=>'show', 'Not Displayed'=>'hidden', 'Remove'=>'remove'), $selected);
+						$out .= '<div style="text-align: center;"> <img src="' . CN_IMAGE_BASE_URL . $entry->getLogoName() . '" /> <br /> <span class="radio_group">' . $logoOptions . '</span></div> <br />'; 
+					}
+					
+					$out .= '<div class="clear"></div>';
+					$out .= '<label for="original_logo">Select Logo:
+					<input type="file" value="" name="original_logo" size="25" /></label>
+					
+			</div>';
+					
 			//$out .= '<div class="form-field connectionsform addresses">';
 				$out .= '<div id="addresses">';
 					

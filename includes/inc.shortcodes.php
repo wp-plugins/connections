@@ -4,7 +4,7 @@
  * associative array. The options are identical to those available to the
  * shortcode.
  * 
- * EXAMPLE:   connectionsEntryList(array('id' => 325));
+ * EXAMPLE:   connectionsEntryList( array('id' => 325) );
  * 
  * @param array $atts
  * @return string

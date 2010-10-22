@@ -1,4 +1,7 @@
 <?php
+/*
+ * This file belong to the Connections plugin.
+ */
 	if (empty($wp)) {
 		require_once('wp-load.php');
 		

@@ -130,6 +130,9 @@ class cnEntry
 	private $imageNameCard;
 	private $imageNameProfile;
 	private $imageNameOriginal;
+	private $logoLinked;
+	private $logoDisplay;
+	private $logoName;
 	private $entryType;
 	private $connectionGroup;
 	
@@ -183,6 +186,13 @@ class cnEntry
 					$this->imageNameCard = $this->options['image']['name']['entry'];
 					$this->imageNameProfile = $this->options['image']['name']['profile'];
 					$this->imageNameOriginal = $this->options['image']['name']['original'];
+				}
+				
+				if ( isset($this->options['logo']) )
+				{
+					$this->logoLinked = $this->options['logo']['linked'];
+					$this->logoDisplay = $this->options['logo']['display'];
+					$this->logoName =$this->options['logo']['name'];
 				}
 				
 				if ( isset($this->options['entry']['type']) ) $this->entryType = $this->options['entry']['type'];
@@ -1448,6 +1458,43 @@ class cnEntry
 		$this->options['connection_group'] = $array;
     }
     
+	
+	
+	
+	public function getLogoDisplay()
+    {
+        return $this->logoDisplay;
+    }
+    
+    public function setLogoDisplay($logoDisplay)
+    {
+        $this->options['logo']['display'] = $logoDisplay;
+    }
+    
+    public function getLogoLinked()
+    {
+        return $this->logoLinked;
+    }
+    
+    public function setLogoLinked($logoLinked)
+    {
+        $this->options['logo']['linked'] = $logoLinked;
+    }
+	
+	public function getLogoName()
+    {
+        if ( empty( $this->options['logo']['name'] ) ) return NULL;
+		return $this->options['logo']['name'];
+    }
+    
+    public function setLogoName($logoName)
+    {
+        $this->options['logo']['name'] = $logoName;
+    }
+	
+	
+	
+	
     /**
      * Returns $imageDisplay.
      * @see entry::$imageDisplay

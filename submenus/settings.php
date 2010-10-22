@@ -201,7 +201,7 @@ function connectionsShowSettingsPage()
 										Crop
 									</th>
 									<td>
-										<?php echo $form->buildRadio('settings[image][entry][crop]', 'image_entry_crop', array('Enlarge (maintain aspect ratio)' => 'crop', 'Shrink (maintain aspect ratio)' => 'fill', 'None' => 'none'), $connections->options->getImgEntryCrop()); ?>
+										<?php echo $form->buildRadio('settings[image][entry][crop]', 'image_entry_crop', array('Crop (maintain aspect ratio)' => 'crop', 'Shrink (maintain aspect ratio)' => 'fill', 'None' => 'none'), $connections->options->getImgEntryCrop()); ?>
 									</td>
 								</tr>
 								
@@ -255,13 +255,71 @@ function connectionsShowSettingsPage()
 										Crop
 									</th>
 									<td>
-										<?php echo $form->buildRadio('settings[image][profile][crop]', 'image_profile_crop', array('Enlarge (maintain aspect ratio)' => 'crop', 'Shrink (maintain aspect ratio)' => 'fill', 'None' => 'none'), $connections->options->getImgProfileCrop()); ?>
+										<?php echo $form->buildRadio('settings[image][profile][crop]', 'image_profile_crop', array('Crop (maintain aspect ratio)' => 'crop', 'Shrink (maintain aspect ratio)' => 'fill', 'None' => 'none'), $connections->options->getImgProfileCrop()); ?>
 									</td>
 								</tr>
 							
 							</tbody>
 						</table>
 					</div>
+					
+					
+					<div class="form-field connectionsform">
+						<h3>Logo Image Settings</h3>
+						<table class="form-table">
+							<tbody>
+								
+								<tr valign="top">
+									<th scope="row">
+										<label for="logo_thumbnail_quality">JPEG Quality</label>
+									</th>
+									<td>
+										<input type="text" class="small-text" value="<?php echo $connections->options->getImgLogoQuality() ?>" id="logo_thumbnail_quality" name="settings[image][logo][quality]"/>%
+									</td>
+									<td rowspan="4" width="50%">
+										<p>Changing the Quality setting will affect the image quality as well the file size. If you require smaller file sizes and can accept lower image quality, reduce the value.</p>
+										<p>The values entered for the width and height will be the final size of the image. If the image is smaller, white space will be added to the image with the image centered. If the image is larger in either dimension it will be scaled down. The crop setting defines how the image will be scaled down.</p>
+										<p>Crop will use the image's smaller dimension and scale it to fit and then crop the excess image from both sides or top and bottom equally of the larger dimension.</p>
+										<p>Shrink will use the image's larger dimension and scale it to fit and then add white space equally to both sides or top and bottom equally to the smaller dimension.</p>
+										<p>None will scale both image dimensions to fit the entered values un-proportionally.</p>
+										<p><strong>NOTE: </strong>Although these options are available they are not recommended to be changed.</p>
+										<p><strong>NOTE: </strong>Changes will only be applied to images uploaded after the change was saved. This will not affect images uploaded previously.</p>
+										<p><strong>Default Values: </strong>Quality: 80%; Width: 225px; Height: 150px; Crop</p>
+									</td>
+								</tr>
+								
+								<tr valign="top">
+									<th scope="row">
+										<label for="logo_x">Width</label>
+									</th>
+									<td>
+										<input type="text" class="small-text" value="<?php echo $connections->options->getImgLogoX() ?>" id="logo_x" name="settings[image][logo][x]"/>px
+									</td>
+								</tr>				
+								
+								<tr valign="top">
+									<th scope="row">
+										<label for="logo_y">Height</label>
+									</th>
+									<td>
+										<input type="text" class="small-text" value="<?php echo $connections->options->getImgLogoY() ?>" id="logo_y" name="settings[image][logo][y]"/>px
+									</td>
+								</tr>
+								
+								<tr valign="top">
+									<th scope="row">
+										Crop
+									</th>
+									<td>
+										<?php echo $form->buildRadio('settings[image][logo][crop]', 'logo_crop', array('Crop (maintain aspect ratio)' => 'crop', 'Shrink (maintain aspect ratio)' => 'fill', 'None' => 'none'), $connections->options->getImgLogoCrop()); ?>
+									</td>
+								</tr>
+								
+							</tbody>
+						</table>
+					</div>
+					
+					
 				</div>
 			
 			<p class="submit"><input class="button-primary" type="submit" value="Save Changes" name="save" /></p>

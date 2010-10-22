@@ -145,6 +145,13 @@ class cnOptions
 	private $imgProfileRatioCrop;
 	private $imgProfileRatioFill;
 	
+	private $imgLogoQuality;
+	private $imgLogoX;
+	private $imgLogoY;
+	private $imgLogoCrop;
+	private $imgLogoRatioCrop;
+	private $imgLogoRatioFill;
+	
 	private $defaultTemplatesSet;
 	private $activeTemplates;
 	
@@ -186,6 +193,13 @@ class cnOptions
 		$this->imgProfileRatioCrop = $this->options['settings']['image']['profile']['ratio_crop'];
 		$this->imgProfileRatioFill = $this->options['settings']['image']['profile']['ratio_fill'];
 		
+		$this->imgLogoQuality = $this->options['settings']['image']['logo']['quality'];
+		$this->imgLogoX = $this->options['settings']['image']['logo']['x'];
+		$this->imgLogoY = $this->options['settings']['image']['logo']['y'];
+		$this->imgLogoCrop = $this->options['settings']['image']['logo']['crop'];
+		$this->imgLogoRatioCrop = $this->options['settings']['image']['logo']['ratio_crop'];
+		$this->imgLogoRatioFill = $this->options['settings']['image']['logo']['ratio_fill'];
+		
 		$this->defaultTemplatesSet = $this->options['settings']['template']['defaults_set'];
 		$this->activeTemplates = (array) $this->options['settings']['template']['active'];
 	}
@@ -226,6 +240,13 @@ class cnOptions
 		$this->options['settings']['image']['profile']['crop'] = $this->imgProfileCrop;
 		$this->options['settings']['image']['profile']['ratio_crop'] = $this->imgProfileRatioCrop;
 		$this->options['settings']['image']['profile']['ratio_fill'] = $this->imgProfileRatioFill;
+		
+		$this->options['settings']['image']['logo']['quality'] = $this->imgLogoQuality;
+		$this->options['settings']['image']['logo']['x'] = $this->imgLogoX;
+		$this->options['settings']['image']['logo']['y'] = $this->imgLogoY;
+		$this->options['settings']['image']['logo']['crop'] = $this->imgLogoCrop;
+		$this->options['settings']['image']['logo']['ratio_crop'] = $this->imgLogoRatioCrop;
+		$this->options['settings']['image']['logo']['ratio_fill'] = $this->imgLogoRatioFill;
 		
 		$this->options['settings']['template']['defaults_set'] = $this->defaultTemplatesSet;
 		$this->options['settings']['template']['active'] = $this->activeTemplates;
@@ -866,6 +887,86 @@ class cnOptions
         return $this->imgThumbRatioFill;
     }
     
+	
+	
+	public function getImgLogoQuality()
+    {
+        return $this->imgLogoQuality;
+    }
+    
+    public function setImgLogoQuality($imgLogoQuality)
+    {
+        $this->imgLogoQuality = (integer) $imgLogoQuality;
+    }
+    
+    public function getImgLogoX()
+    {
+        return $this->imgLogoX;
+    }
+    
+    public function setImgLogoX($imgLogoX)
+    {
+        $this->imgLogoX = (integer) $imgLogoX;
+    }
+    
+    public function getImgLogoY()
+    {
+        return $this->imgLogoY;
+    }
+    
+    public function setImgLogoY($imgLogoY)
+    {
+        $this->imgLogoY = (integer) $imgLogoY;
+    }
+	
+	public function getImgLogoCrop()
+    {
+        return $this->imgLogoCrop;
+    }
+    
+    public function setImgLogoCrop($imgLogoCrop)
+    {
+        switch ($imgLogoCrop)
+		{
+        	case 'none':
+        		$this->imgLogoRatioCrop = false;
+				$this->imgLogoRatioFill = false;
+				$this->imgLogoCrop = 'none';
+        		break;
+			
+			case 'crop':
+        		$this->imgLogoRatioCrop = true;
+				$this->imgLogoRatioFill = false;
+				$this->imgLogoCrop = 'crop';
+        		break;
+				
+			case 'fill':
+        		$this->imgLogoRatioCrop = false;
+				$this->imgLogoRatioFill = true;
+				$this->imgLogoCrop = 'fill';
+        		break;
+        	
+        	default:
+        		$this->imgLogoRatioCrop = true;
+				$this->imgLogoRatioFill = false;
+				$this->imgLogoCrop = 'crop';
+        		break;
+        }
+		
+    }
+
+    public function getImgLogoRatioCrop()
+    {
+        return $this->imgLogoRatioCrop;
+    }
+    
+    public function getImgLogoRatioFill()
+    {
+        return $this->imgLogoRatioFill;
+    }
+	
+	
+	
     /**
      * Returns $defaultTemplatesSet.
      *

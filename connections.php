@@ -233,6 +233,11 @@ if (!class_exists('connectionsLoad'))
 			if ($this->options->getImgProfileY() === NULL) $this->options->setImgProfileY(225);
 			if ($this->options->getImgProfileCrop() === NULL) $this->options->setImgProfileCrop('crop');
 			
+			if ($this->options->getImgLogoQuality() === NULL) $this->options->setImgLogoQuality(80);
+			if ($this->options->getImgLogoX() === NULL) $this->options->setImgLogoX(225);
+			if ($this->options->getImgLogoY() === NULL) $this->options->setImgLogoY(150);
+			if ($this->options->getImgLogoCrop() === NULL) $this->options->setImgLogoCrop('crop');
+			
 			$this->options->saveOptions();
 		}
 		
