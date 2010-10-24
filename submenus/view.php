@@ -181,19 +181,28 @@ function connectionsShowViewPage()
 								echo '<div class="alignleft actions">';
 									echo '<select name="action">';
 										echo '<option value="" SELECTED>Bulk Actions</option>';
-										
+											
+											$bulkActions = array();
+											
 											if (current_user_can('connections_edit_entry'))
 											{
-												echo '<option value="public">Set Public</option>';
-												echo '<option value="private">Set Private</option>';
-												echo '<option value="unlisted">Set Unlisted</option>';
+												$bulkActions['public'] = 'Set Public';
+												$bulkActions['private'] = 'Set Private';
+												$bulkActions['unlisted'] = 'Set Unlisted';
 											}
 											
 											if (current_user_can('connections_delete_entry'))
 											{
-												echo '<option value="delete">Delete</option>';
+												$bulkActions['delete'] = 'Delete';
 											}
-																					
+											
+											$bulkActions = apply_filters('cn_view_bulk_actions', $bulkActions);	
+											
+											foreach ( $bulkActions as $action => $string )
+											{
+												echo '<option value="', $action, '">', $string, '</option>';
+											}
+																	
 									echo '</select>';
 									echo '<input id="doaction" class="button-secondary action" type="submit" name="doaction" value="Apply" />';
 								echo '</div>';
