@@ -43,6 +43,23 @@ function cnCategorySelect($out, $results = NULL)
 	
 	foreach ( $categories as $key => $category )
 	{
+		if ( isset($connections->limitCategoryTree) )
+		{
+			if ( $connections->limitCategoryTree === TRUE )
+			{
+				if ( !is_array($connections->categoryTreeIDs) )
+				{
+					// Trim the space characters if present.
+					$connections->categoryTreeIDs = str_replace(' ', '', $connections->categoryTreeIDs);
+					
+					// Convert to array.
+					$connections->categoryTreeIDs = explode(',', $connections->categoryTreeIDs);
+				}
+				
+				if ( !in_array($category->term_id, $connections->categoryTreeIDs) ) continue;
+			}
+		}
+		
 		$out .= cnbuildOptionRowHTML($category, $level, $selected);
 	}
 	
@@ -55,6 +72,9 @@ function cnCategorySelect($out, $results = NULL)
 function cnSetCategory($atts)
 {
 	global $connections;
+	
+	$connections->limitCategoryTree = TRUE;
+	$connections->categoryTreeIDs = esc_attr( $atts['category'] );
 	
 	if ( isset($_GET['cn-cat']) ) $atts['category'] = $_GET['cn-cat'];
 	
