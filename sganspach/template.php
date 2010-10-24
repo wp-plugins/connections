@@ -1,10 +1,10 @@
 <div class="cn-entry">
 <table width="100%" border="0px" cellspacing="0px" cellpadding="0px">
     <tr>
-        <td align="left" width="50%" valign="top">
+        <td align="left" class="left" width="50%" valign="top">
         	<div style="clear:both; margin: 0 5px;">
-				<div style="margin-bottom: 10px;">
-					<h3><span style="text-transform: capitalize;"><?php echo $entry->getFullFirstLastNameBlock() ?></span></h3>
+				<div style="margin-bottom: 6px;">
+					<h3 class="cn-name"><span style="text-transform: capitalize;"><?php echo $entry->getFullFirstLastNameBlock() ?></span></h3>
 					
 					<?php echo $entry->getTitleBlock() ?>
 					<?php echo $entry->getOrgUnitBlock() ?>
@@ -13,7 +13,7 @@
 			</div>
 			
         </td>
-        <td align="right" valign="top">
+        <td class="right" align="right" valign="top">
         	<div style="clear:both; margin: 5px 5px;">
 				<?php
 				if ($entry->getAddresses())
@@ -57,8 +57,10 @@
     </tr>
     
     <tr>
-        <td align="right" colspan="2" valign="bottom">
-			<?php echo $entry->returnToTopAnchor() ?>
+        <td class="right" align="right" colspan="2" valign="bottom">
+			<span class="cn-return-to-top">
+				<a href="#connections-list-head" title="Zurück zum Anfang"><img src="<?php echo WP_PLUGIN_URL . '/connections/images/uparrow.gif' ?>" alt="Zurück zum Anfang"/></a>
+			</span>
         </td>
     </tr>
 </table>

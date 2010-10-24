@@ -9,7 +9,7 @@ function cnTranslatePhone($phone)
 			$phone->name = 'Telefon';
 			break;
 		case 'homephone':
-			$phone->name = 'Telefoon';
+			$phone->name = 'Telefon';
 			break;
 		case 'cell':
 			$phone->name = 'Mobil';
