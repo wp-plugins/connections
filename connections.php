@@ -843,6 +843,8 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function showPage()
 		{
+			//do_action('admin_notices');
+			
 			if ($this->options->getVersion() != CN_CURRENT_VERSION)
 			{
 				echo '<div id="message" class="error"><p><strong>ERROR: </strong>The version of Connections installed is newer than the version last activated. Please deactive and then reactivate Connections.</p></div>';
@@ -990,6 +992,7 @@ if (!class_exists('connectionsLoad'))
 										{
 											check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
 											processDeleteEntries();
+											wp_redirect('admin.php?page=connections&display_messages=true');
 										}
 										else
 										{
@@ -1007,6 +1010,7 @@ if (!class_exists('connectionsLoad'))
 										{
 											check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
 											processSetEntryVisibility();
+											wp_redirect('admin.php?page=connections&display_messages=true');
 										}
 										else
 										{
@@ -1019,9 +1023,9 @@ if (!class_exists('connectionsLoad'))
 								{
 									check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
 									processSetUserFilter();
+									wp_redirect('admin.php?page=connections&display_messages=true');
 								}
 								
-								wp_redirect('admin.php?page=connections&display_messages=true');
 							break;
 						}
 					}
