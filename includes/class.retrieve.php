@@ -222,7 +222,7 @@ class cnRetrieve
 	 * @param object $b
 	 * @return integer
 	 */
-	private function sorTermsByID($a, $b)
+	private function sortTermsByID($a, $b)
 	{
 		if ( $a->term_id > $b->term_id )
 		{
