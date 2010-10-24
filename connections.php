@@ -92,6 +92,8 @@ if (!class_exists('connectionsLoad'))
 			$connections->sqlCurrentTime = strtotime($mySQLTimeStamp[0]->timestamp);
 			$connections->sqlTimeOffset = time() - $connections->sqlCurrentTime;
 			
+			// Register all valid query variables.
+			add_filter('query_vars', array(&$this, 'registerQueryVariables') );
 			
 			if (is_admin())
 			{
@@ -123,6 +125,9 @@ if (!class_exists('connectionsLoad'))
 				
 				// Add a version number to the header
 				add_action('wp_head', create_function('', 'echo "\n<meta name=\'Connections\' content=\'' . $this->options->getVersion() . '\' />\n";') );
+				
+				// Parse front end queryies.
+				//add_action('parse_request', '');
 			}
 		}
 		
@@ -239,6 +244,12 @@ if (!class_exists('connectionsLoad'))
 			if ($this->options->getImgLogoCrop() === NULL) $this->options->setImgLogoCrop('crop');
 			
 			$this->options->saveOptions();
+		}
+		
+		public function registerQueryVariables($query)
+		{
+			$query[] = 'cn-cat';
+			return $query;
 		}
 		
 		private function sessionCheck()

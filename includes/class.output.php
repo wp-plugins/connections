@@ -41,7 +41,111 @@ class cnOutput extends cnEntry
 		if ( $atts['return'] ) return $out;
 		echo $out;
 	}
-	    
+	
+	/**
+	 * Echo the logo if associated in a HTML hCard compliant string.
+	 * 
+	 * Accepted option for the $atts property are:
+	 * 		tag == string -- HTML tag.
+	 * 		id == string -- The tag id.
+	 * 		class == string -- The tag class.
+	 * 		alt == string -- The tag alt text.
+	 * 		title == string -- The tag title text.
+	 * 		src == string -- The image source.
+	 * 		longdesc == string -- URL to  document containing text for image long description.
+	 * 		style == associative array -- Customize an inline stlye tag. Array format key == attribute; value == value.
+	 * 		display == string -- Display place holder area or default image or logo. Permitted values are logo, place_holder, default, blank.
+	 * 		return == TRUE || FALSE -- Return string if set to TRUE instead of echo string.
+	 * 
+	 * @param array $atts [optional]
+	 * @return string
+	 */
+	public function getLogoImage( $atts = NULL )
+	{
+		global $connections;
+		
+		$defaultAtts = array( 'tag' => array(),
+							  'id' => NULL,
+							  'class' => NULL,
+							  'alt' => NULL,
+							  'title' => NULL,
+							  'src' => NULL,
+							  'longdesc' => NULL,
+							  'style' => NULL,
+							  'display' => 'logo',
+							  'return' => FALSE
+							);
+		
+		$atts = $this->validate->attributesArray($defaultAtts, (array) $atts);
+		$nonAtts = array('default', 'display', 'return', 'tag');
+		
+		$displayValues = array('logo', 'default', 'place_holder', 'blank');
+		if ( !in_array($atts['display'], $displayValues) ) return NULL;
+		
+		$imageDimesion['height'] = $connections->options->getImgLogoX() . 'px';
+		$imageDimesion['width'] = $connections->options->getImgLogoY() . 'px';
+		
+		switch ( $atts['display'] )
+		{
+			case 'logo':
+				if ( $this->getLogoLinked() && $this->getLogoDisplay() )
+				{
+					if ( empty($atts['tag']) ) $atts['tag'] = 'img';
+					if ( empty($atts['class']) ) $atts['class'] = 'logo';
+					if ( empty($atts['alt']) ) $atts['alt'] = 'Logo for ' . $this->getFirstName() . ' ' . $this->getLastName();
+					if ( empty($atts['title']) ) $atts['title'] = 'Logo for ' . $this->getFirstName() . ' ' . $this->getLastName();
+					if ( empty($atts['style']) ) $atts['style'] = array('-moz-border-radius' => '4px', 'background-color' => '#FFFFFF', 'border' => '1px solid #E3E3E3', 'margin-bottom' => '10px', 'padding' => '5px');
+					
+					$atts['src'] = CN_IMAGE_BASE_URL . $this->getLogoName();
+					$atts['height'] = $imageDimesion['height'];
+					$atts['width'] = $imageDimesion['width'];
+				}
+				else
+				{
+					return NULL;
+				}
+			break;
+			
+			case 'place_holder':
+				if ( empty($atts['tag']) ) $atts['tag'] = 'div';
+				if ( empty($atts['class']) ) $atts['class'] = 'cn_logo_place_holder';
+				
+				$atts['style'] = array_merge( (array) $atts['style'], $imageDimesion);
+			break;
+			
+			case 'default':
+			break;
+			
+			case 'blank':
+				return NULL;
+			break;
+			
+			default:
+				return NULL;
+			break;
+		}
+		
+		
+		foreach ( (array) $atts['style'] as $attr => $value )
+		{
+			if ( !empty($value) ) $style[] = "$attr: $value;";
+		}
+		
+		if ( !empty($style) ) $atts['style'] = implode(' ', $style);
+		
+			
+		foreach ( $atts as $attr => $value)
+		{
+			if ( !empty($value) && !in_array($attr, $nonAtts) ) $tag[] = "$attr=\"$value\"";
+		}
+		
+		$out = '<' . $atts['tag'] . ' ' . implode(' ', $tag) . '></' . $atts['tag'] . '>';
+		
+		if ( $atts['return'] ) return $out;
+		echo $out;
+	}
+	
+	
     /**
      * The entries full name if the entry type is an individual.
      * If entry type is set to organization the method will return the organization name.

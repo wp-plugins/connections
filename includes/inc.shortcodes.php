@@ -68,67 +68,68 @@ function _connections_list($atts, $content=null) {
 	$convert->toBoolean(&$atts['show_alphahead']);
 	$convert->toBoolean(&$atts['wp_current_category']);
 	
+	
+	/*
+	 * As of version 0.7.0.5 the $atts['template_name'] is deprecated.
+	 */
+	if ( isset($atts['template_name']) )
+	{
+		// First check to see if the template is in the custom template folder.
+		if ( is_dir(CN_CUSTOM_TEMPLATE_PATH) && is_readable(CN_CUSTOM_TEMPLATE_PATH) )
+		{
+			if (file_exists(CN_CUSTOM_TEMPLATE_PATH . '/' .  $atts['template_name'] . '.php'))
+			{
+				$template->file = CN_CUSTOM_TEMPLATE_PATH . '/' .  $atts['template_name'] . '.php';
+			}
+		}
+		
+		// If the template is not in the custom template folder, check for it in the default template folder.
+		if ( !isset($template->file) )
+		{
+			if (file_exists(CN_BASE_PATH . '/templates/' .  $atts['template_name'] . '.php'))
+			{
+				$template->file = CN_BASE_PATH . '/templates/' .  $atts['template_name'] . '.php';
+			}
+			
+		}
+	}
+	else
+	{
+		$template = new cnTemplate();
+		
+		// Change the list type to family from connection_group to maintain compatibility with versions .0.7.0.4 and earlier.
+		if ( $atts['list_type'] === 'connection_group' ) $atts['list_type'] = 'family';
+		
+		/*
+		 * $atts['template'] can be either a string or an object. It is a string when set
+		 * with the shortcode attribute. If it is a string, the template will be loaded
+		 * via the cnTemplate class.
+		 * 
+		 * If the attribute is not set, it will be the object returned from the
+		 * cnOptions::getActiveTemplate() method which stores the default template
+		 * per list style.
+		 */
+		if ( isset($atts['template']) && !is_object($atts['template']) )
+		{
+			$template->load($atts['template']);
+			$template->includeFunctions();
+		}
+		else
+		{
+			$template->init( $connections->options->getActiveTemplate( $atts['list_type'] ) );
+			$template->includeFunctions();
+		}
+	}
+	
+	
+	$atts = apply_filters('cn_list_atts', $atts);
+	
 	$results = $connections->retrieve->entries($atts);
 	$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
 	
 	
 	if ( !empty($results) )
 	{
-		
-		/*
-		 * As of version 0.7.0.5 the $atts['template_name'] is deprecated.
-		 */
-		if ( isset($atts['template_name']) )
-		{
-			// First check to see if the template is in the custom template folder.
-			if ( is_dir(CN_CUSTOM_TEMPLATE_PATH) && is_readable(CN_CUSTOM_TEMPLATE_PATH) )
-			{
-				if (file_exists(CN_CUSTOM_TEMPLATE_PATH . '/' .  $atts['template_name'] . '.php'))
-				{
-					$template->file = CN_CUSTOM_TEMPLATE_PATH . '/' .  $atts['template_name'] . '.php';
-				}
-			}
-			
-			// If the template is not in the custom template folder, check for it in the default template folder.
-			if ( !isset($template->file) )
-			{
-				if (file_exists(CN_BASE_PATH . '/templates/' .  $atts['template_name'] . '.php'))
-				{
-					$template->file = CN_BASE_PATH . '/templates/' .  $atts['template_name'] . '.php';
-				}
-				
-			}
-		}
-		else
-		{
-			$template = new cnTemplate();
-			
-			// Change the list type to family from connection_group to maintain compatibility with versions .0.7.0.4 and earlier.
-			if ( $atts['list_type'] === 'connection_group' ) $atts['list_type'] = 'family';
-			
-			/*
-			 * $atts['template'] can be either a string or an object. It is a string when set
-			 * with the shortcode attribute. If it is a string, the template will be loaded
-			 * via the cnTemplate class.
-			 * 
-			 * If the attribute is not set, it will be the object returned from the
-			 * cnOptions::getActiveTemplate() method which stores the default template
-			 * per list style.
-			 */
-			if ( isset($atts['template']) && !is_object($atts['template']) )
-			{
-				$template->load($atts['template']);
-				$template->includeFunctions();
-			}
-			else
-			{
-				$template->init( $connections->options->getActiveTemplate( $atts['list_type'] ) );
-				$template->includeFunctions();
-			}
-		}
-		
-		$atts = apply_filters('cn_list_atts', $atts);
-		
 		$results = array_slice($results, $atts['offest'], $atts['limit'], TRUE);
 		$results = apply_filters('cn_list_results', $results);
 				
