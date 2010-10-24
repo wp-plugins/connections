@@ -1,0 +1,25 @@
+div.connections-list a.cn-index-head { float: left; }
+
+div.vcard div.cn-entry { -moz-border-radius: 4px;
+						 background-color: #CEDAD0; border:1px solid #B4CBB8;
+						 margin: 8px 0px;
+						 padding: 12px;
+						 position: relative;
+						 width: 550px;
+						}
+div.vcard div.cn-entry table h3 { border: none; color: #000000; font-size: 16px; margin: 0; }
+div.vcard div.cn-entry div.adr { margin-bottom: 10px; }
+div.vcard div.cn-entry div.adr span.street-address { display: block; }
+div.vcard div.cn-entry div.adr span.extended-address { display: block; }
+div.vcard div.cn-entry div.email-address-block { margin-bottom: 10px; }
+div.vcard div.cn-entry div.email-address-block span.email { display: block; }
+div.vcard div.cn-entry .vevent abbr{border:0}
+
+div.vcard div.cn-entry img { -moz-border-radius: 4px;
+							 border-radius: 4px;
+							 background-color: #FFFFFF;
+							 border: 1px solid #E3E3E3;
+							 margin: 10px 0 10px 0;
+							 padding:5px;
+							}
+div.vcard div.cn-entry span.cn-return-to-top img { margin: 0 0 -6px; }
