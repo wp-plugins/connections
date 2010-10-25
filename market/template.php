@@ -3,7 +3,7 @@
 	<?php
 		$website = $entry->getWebsites();
 		
-		( !empty($website[0]->url) ) ? $websiteButton = "<p class=\"cn-buttons\"><a href=\"{$website[0]->url}\"><img class=\"cn-viewsite-on\" src=\"{$template->url}/buttons.gif\" /></a></p>" :
+		( !empty($website[0]->url) ) ? $websiteButton = "<p class=\"cn-buttons\"><a href=\"{$website[0]->url}\" target=\"_blank\"><img class=\"cn-viewsite-on\" src=\"{$template->url}/buttons.gif\" /></a></p>" :
 									   $websiteButton = "<p class=\"cn-buttons\"><img class=\"cn-viewsite-off\" src=\"{$template->url}/buttons.gif\" /></p>";
 									   
 		( !empty($website[1]->url) ) ? $adButton = "<p class=\"cn-buttons\"><a href=\"{$website[1]->url}\"><img class=\"cn-viewad-on\" src=\"{$template->url}/buttons.gif\" /></a></p>" :
@@ -25,7 +25,25 @@
 	    
 	    <tr>
 	        <td colspan="2" width="30%">
-	        	<?php echo $entry->getAddressBlock() ?>
+	        	<?php
+				if ($entry->getAddresses())
+				{
+					foreach ($entry->getAddresses() as $address)
+					{
+						echo '<div class="adr" style="margin-bottom: 10px;">' . "\n";
+							if ($address->name != NULL || $address->type != NULL) echo '<span class="address_name"><strong>' . $address->name . '</strong></span><br />' . "\n"; //The OR is for compatiblity for 0.2.24 and under
+							if ($address->line_one != NULL) echo '<div class="street-address">' . $address->line_one . '</div>' . "\n";
+							if ($address->line_two != NULL) echo '<div class="extended-address">' . $address->line_two . '</div>' . "\n";
+							if ($address->city != NULL) echo '<span class="locality">' . $address->city . '</span>&nbsp;' . "\n";
+							if ($address->state != NULL) echo '<span class="region">' . $address->state . '</span>&nbsp;' . "\n";
+							if ($address->zipcode != NULL) echo '<span class="postal-code">' . $address->zipcode . '</span>' . "\n";
+							if ($address->country != NULL) echo '<span class="country-name">' . $address->country . '</span>' . "\n";
+							echo $entry->gethCardAdrType($address->type);
+						echo '</div>' . "\n\n";
+																	
+					}
+				}
+				?>
 				<?php echo $entry->getPhoneNumberBlock() ?>
 	        </td>
 			<td colspan="4" width="70%">

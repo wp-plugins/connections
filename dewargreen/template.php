@@ -31,7 +31,14 @@
 			</div>
         </td>
     </tr>
-    
+    <?php
+		if ( $entry->getBio() )
+		{
+			echo '<tr><td colspan="2"><h4>Details</h4>';
+			echo $entry->getBioBlock();
+			echo '</td></tr>';
+		}
+	?>
     <tr>
         <td valign="bottom">
         	<?php echo $vCard->download() ?>

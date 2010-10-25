@@ -58,3 +58,5 @@ div.vcard div.cn-entry p img.cn-viewsite-on { margin: 0; position: absolute; top
 div.vcard div.cn-entry p img.cn-viewsite-off { margin: 0; position: absolute; top: -22px; left: 0; }
 div.vcard div.cn-entry p img.cn-viewad-on { margin: 0; position: absolute; top: 0; left: -80px; }
 div.vcard div.cn-entry p img.cn-viewad-off { margin: 0; position: absolute; top: -22px; left: -80px; }
+div.vcard div.cn-entry span.postal-code { display: block; }
+div.vcard div.cn-entry span.country-name { display: block; }

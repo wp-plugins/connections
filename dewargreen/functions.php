@@ -1,6 +1,40 @@
 <?php
 add_filter('cn_list_before', 'cnCategorySelect', 10, 2);
 add_filter('cn_list_atts', 'cnSetCategory');
+add_filter('cn_phone_number', 'cnTranslatePhone');
+
+function cnTranslatePhone($phone)
+{
+	switch ( $phone->type )
+	{
+		case 'home':
+			$phone->name = 'Home Phone';
+			break;
+		case 'homephone':
+			$phone->name = 'Home Phone';
+			break;
+		case 'cell':
+			$phone->name = 'Mobile Phone';
+			break;
+		case 'cellphone':
+			$phone->name = 'Mobile Phone';
+			break;
+		case 'work':
+			$phone->name = 'Work Phone';
+			break;
+		case 'workphone':
+			$phone->name = 'Work Phone';
+			break;
+		case 'workfax':
+			$phone->name = 'Work Fax';
+			break;
+		case 'fax':
+			$phone->name = 'Work Fax';
+			break;
+	}
+	
+	return $phone;
+}
 
 function cnbuildOptionRowHTML($category, $level, $selected)
 {
