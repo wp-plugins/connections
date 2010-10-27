@@ -3,12 +3,6 @@
     <tr>
         <td align="left" class="left" width="50%" valign="top">
         	<div style="clear:both; margin: 0 5px;">
-				<div style="margin-bottom: 6px;">
-					<h3 class="cn-name"><span style="text-transform: capitalize;"><?php echo $entry->getFullFirstLastNameBlock() ?></span></h3>
-					
-					<?php echo $entry->getTitleBlock() ?>
-					<?php echo $entry->getOrgUnitBlock() ?>
-				</div>
 				<?php
 				if ( $entry->getImageLinked() && $entry->getImageDisplay() )
 				{
@@ -19,6 +13,13 @@
 			
         </td>
         <td class="right" align="right" valign="top">
+        	<div style="margin-bottom: 6px;">
+				<h3 class="cn-name"><span style="text-transform: capitalize;"><?php echo $entry->getFullFirstLastNameBlock() ?></span></h3>
+				
+				<?php echo $entry->getTitleBlock() ?>
+				<?php echo $entry->getOrgUnitBlock() ?>
+			</div>
+			
         	<div style="clear:both; margin: 5px 5px;">
 				<?php
 				if ($entry->getAddresses())
