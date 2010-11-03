@@ -106,6 +106,7 @@ Connections is a simple to use versatile directory manager. You can use it for a
 * BUG: Fix birthday/anniversary with date of January 1st not being saved.
 * BUG: Fix Upgrade notice to be compatible with WordPress => 3.0.
 * BUG: Fix entry drop down when creating a family. Drop downs would only show entries based on the current filter setting for the current user in the admin. The drop down will now show all permitted entries.
+* BUG: Fixed public entries "Allow unregistered vistors and users..." setting not being saved.
 * OTHER: Entry human time difference in now based the current blog time.
 * OTHER: The local timestamp will be used when adding/updating an entry rather than the server timestamp.
 * OTHER: The last updated time will be adjusted to the local timestamp.
