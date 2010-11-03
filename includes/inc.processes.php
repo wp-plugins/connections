@@ -622,41 +622,22 @@ function updateSettings()
 	global $connections;
 	$format = new cnFormatting();
 	
-	if ( isset($_POST['settings']['allow_public']) )
+	( isset($_POST['settings']['allow_public']) && $_POST['settings']['allow_public'] === 'true' ) ? $connections->options->setAllowPublic(TRUE) : $connections->options->setAllowPublic(FALSE);
+	
+	
+	
+	if ( isset($_POST['settings']['allow_public_override']) && $_POST['settings']['allow_public_override'] === 'true' && !$connections->options->getAllowPublic() )
 	{
-		if ( $_POST['settings']['allow_public'] === 'true' )
-		{
-			$connections->options->setAllowPublic(TRUE);
-		}
-		else
-		{
-			$connections->options->setAllowPublic(FALSE);
-		}
+		$connections->options->setAllowPublicOverride(TRUE);
+	}
+	else
+	{
+		$connections->options->setAllowPublicOverride(FALSE);
 	}
 	
-	if ( isset($_POST['settings']['allow_public_override']) )
-	{
-		if ($_POST['settings']['allow_public_override'] === 'true' && !$connections->options->getAllowPublic())
-		{
-			$connections->options->setAllowPublicOverride(TRUE);
-		}
-		else
-		{
-			$connections->options->setAllowPublicOverride(FALSE);
-		}
-	}
 	
-	if ( isset($_POST['settings']['allow_private_override']) )
-	{
-		if ($_POST['settings']['allow_private_override'] === 'true')
-		{
-			$connections->options->setAllowPrivateOverride(TRUE);
-		}
-		else
-		{
-			$connections->options->setAllowPrivateOverride(FALSE);
-		}
-	}
+	( isset($_POST['settings']['allow_private_override']) && $_POST['settings']['allow_private_override'] === 'true' ) ? $connections->options->setAllowPrivateOverride(TRUE) : $connections->options->setAllowPrivateOverride(FALSE);
+	
 	
 	if ( isset($_POST['settings']['image']['thumbnail']['quality']) )
 	{
