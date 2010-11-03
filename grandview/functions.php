@@ -1,19 +1,13 @@
 <?php
 add_filter('cn_list_results', 'cnSearch', 9);
 //add_filter('cn_list_results', 'cnLimitList', 10);
-add_filter('cn_list_results', 'cnReturnEmpty', 10);
 //add_filter('cn_list_before', 'cnListPages', 10, 2);
 add_filter('cn_list_before', 'cnListSearch', 9, 2);
-//add_filter('cn_list_index', 'cnListIndex', 10, 2);
+add_filter('cn_list_index', 'cnListIndex', 10, 2);
 add_filter('cn_phone_number', 'cnPhoneLables');
 add_filter('cn_list_before', 'cnCategorySelect', 10, 2);
 add_filter('cn_list_atts', 'cnSetCategory');
 
-function cnReturnEmpty($results)
-{
-	if ( empty($results) ) $results = array( array(), array() );
-	return $results;
-}
 
 function cnPhoneLables($data)
 {
