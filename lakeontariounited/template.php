@@ -1,4 +1,5 @@
-<div id="entry_id_<?php echo $entry->getId(); ?>" class="cn-entry">
+<?php $uuid = uniqid($entry->getId(),FALSE); ?>
+<div id="entry_id_<?php echo $uuid; ?>" class="cn-entry">
 	<table border="0px" bordercolor="#E3E3E3" cellspacing="0px" cellpadding="0px">
 	    <tr>
 	        <td align="left" width="55%" valign="top">
@@ -75,6 +76,7 @@
 					<?php echo $entry->getAddressBlock() ?>
 					
 					<?php
+						
 						// Build the address query for Google.
 						if ($entry->getAddresses())
 						{
@@ -115,7 +117,7 @@
 							// Add the parms to the map link.
 				            $iframe_google_map = $map_link . $map_parms;
 							
-							$data = '<div id="map_' . $entry->getId() . '" style="background-color: #E3E3E3; display: none; margin-top: 10px;"><iframe width="580" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="' . $iframe_google_map . '"></iframe></div>';
+							$data = '<div id="map_' . $uuid . '" style="background-color: #E3E3E3; display: none; margin-top: 10px;"><iframe width="580" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="' . $iframe_google_map . '"></iframe></div>';
 						}
 						
 						
@@ -153,16 +155,16 @@
 				
 				<?php if ($entry->getBio() != '') { ?>
 				
-				<a href="#" id="close_bio_link_<?php echo $entry->getId(); ?>" onclick='jQuery("a#close_bio_link_<?php echo $entry->getId(); ?>").live("click", function(e){
-				jQuery("a#close_bio_link_<?php echo $entry->getId(); ?>").hide();
-				jQuery("#bio_block_<?php echo $entry->getId(); ?>").fadeOut();
-				jQuery("a#bio_link_<?php echo $entry->getId(); ?>").fadeIn();
+				<a href="#" id="close_bio_link_<?php echo $uuid; ?>" onclick='jQuery("a#close_bio_link_<?php echo $uuid; ?>").live("click", function(e){
+				jQuery("a#close_bio_link_<?php echo $uuid; ?>").hide();
+				jQuery("#bio_block_<?php echo $uuid; ?>").fadeOut();
+				jQuery("a#bio_link_<?php echo $uuid; ?>").fadeIn();
 				}); return false' style="display: none;">Close Description</a>
 				
-				<a href="#" id="bio_link_<?php echo $entry->getId(); ?>" onclick='jQuery("a#bio_link_<?php echo $entry->getId(); ?>").live("click", function(e){
-				jQuery("a#bio_link_<?php echo $entry->getId(); ?>").hide();
-				jQuery("#bio_block_<?php echo $entry->getId(); ?>").fadeIn();
-				jQuery("a#close_bio_link_<?php echo $entry->getId(); ?>").fadeIn();
+				<a href="#" id="bio_link_<?php echo $uuid; ?>" onclick='jQuery("a#bio_link_<?php echo $uuid; ?>").live("click", function(e){
+				jQuery("a#bio_link_<?php echo $uuid; ?>").hide();
+				jQuery("#bio_block_<?php echo $uuid; ?>").fadeIn();
+				jQuery("a#close_bio_link_<?php echo $uuid; ?>").fadeIn();
 				}); return false'>Business Description</a>
 				
 				<?php } ?>
@@ -170,24 +172,24 @@
 				
 				<?php if ($data != '') { ?>
 				
-				<a href="#" id="close_map_link_<?php echo $entry->getId(); ?>" class="close_map_link" onclick='jQuery("a#close_map_link_<?php echo $entry->getId(); ?>").live("click", function(e){
-				var divH = jQuery("#entry_id_<?php echo $entry->getId(); ?>").height() - 400;
-				jQuery("#map_<?php echo $entry->getId(); ?>").fadeOut();
-				//jQuery("#entry_id_<?php echo $entry->getId(); ?>").animate({height: divH}, 500);
-				jQuery("a#close_map_link_<?php echo $entry->getId(); ?>").hide();
-				jQuery("a#map_link_<?php echo $entry->getId(); ?>").fadeIn();
-				jQuery("#map_<?php echo $entry->getId(); ?>").remove();
+				<a href="#" id="close_map_link_<?php echo $uuid; ?>" class="close_map_link" onclick='jQuery("a#close_map_link_<?php echo $uuid; ?>").live("click", function(e){
+				var divH = jQuery("#entry_id_<?php echo $uuid; ?>").height() - 400;
+				jQuery("#map_<?php echo $uuid; ?>").fadeOut();
+				//jQuery("#entry_id_<?php echo $uuid; ?>").animate({height: divH}, 500);
+				jQuery("a#close_map_link_<?php echo $uuid; ?>").hide();
+				jQuery("a#map_link_<?php echo $uuid; ?>").fadeIn();
+				jQuery("#map_<?php echo $uuid; ?>").remove();
 				}); return false' style="display: none;">Close Map</a>
 				
-				<a href="#" id="map_link_<?php echo $entry->getId(); ?>" class="open_map_link" onclick='jQuery("a#map_link_<?php echo $entry->getId(); ?>").live("click", function(e){
+				<a href="#" id="map_link_<?php echo $uuid; ?>" class="open_map_link" onclick='jQuery("a#map_link_<?php echo $uuid; ?>").live("click", function(e){
         		var $this = jQuery(this);
 				var data = $this.attr("data");
-				var divH = jQuery("#entry_id_<?php echo $entry->getId(); ?>").height() + 400;
-				//jQuery("#entry_id_<?php echo $entry->getId(); ?>").animate({height: divH}, 1000);
-				jQuery(data).appendTo(jQuery("#entry_id_<?php echo $entry->getId(); ?>"));
-				jQuery("#map_<?php echo $entry->getId(); ?>").fadeIn(2000);
-				jQuery("a#map_link_<?php echo $entry->getId(); ?>").hide();
-				jQuery("a#close_map_link_<?php echo $entry->getId(); ?>").fadeIn();
+				var divH = jQuery("#entry_id_<?php echo $uuid; ?>").height() + 400;
+				//jQuery("#entry_id_<?php $uuid; ?>").animate({height: divH}, 1000);
+				jQuery(data).appendTo(jQuery("#entry_id_<?php echo $uuid; ?>"));
+				jQuery("#map_<?php echo $uuid; ?>").fadeIn(2000);
+				jQuery("a#map_link_<?php echo $uuid; ?>").hide();
+				jQuery("a#close_map_link_<?php echo $uuid; ?>").fadeIn();
 				}); return false' data='<?php echo $data; ?>'>Show Map</a>
 				
 				<?php echo ' | '; ?>
@@ -203,7 +205,7 @@
 				<?php 
 					if ($entry->getBio() != '')
 					{
-						echo '<div id="bio_block_' . $entry->getId() . '" style="display: none; margin: 10px 0 0 0;"><strong>Business Description</strong><br />' . $entry->getBioBlock() . '</div>';
+						echo '<div id="bio_block_' . $uuid . '" style="display: none; margin: 10px 0 0 0;"><strong>Business Description</strong><br />' . $entry->getBioBlock() . '</div>';
 					}
 				?>
 			</td>
