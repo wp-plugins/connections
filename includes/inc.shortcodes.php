@@ -21,6 +21,7 @@ function connectionsEntryList($atts)
  * 		cn_list_atts		=> Alter the shortcode attributes before use. Return associative array.
  * 		cn_list_results		=> Filter the returned results before being processed for display. Return indexed array of entry objects.
  * 		cn_list_before		=> Can be used to add content before the output of the list. The entry list results are passed. Return string.
+ * 		cn_no_result_message=> Change the no results message.
  * 		cn_list_index		=> Can be used to modify the index before the output of the list. The entry list results are passed. Return string.
  */
 add_shortcode('connections_list', '_connections_list');
@@ -121,6 +122,9 @@ function _connections_list($atts, $content=null) {
 		}
 	}
 	
+	// If no template is found, return an error message.
+	if ( !isset($template->file) ) return '<p style="color:red; font-weight:bold; text-align:center;">ERROR: Template "' . $atts['template_name'] . $atts['template'] . '" not found.</p>';
+	
 	
 	$atts = apply_filters('cn_list_atts', $atts);
 	
@@ -128,15 +132,13 @@ function _connections_list($atts, $content=null) {
 	$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
 	
 	
-	if ( !empty($results) )
-	{
-		$results = array_slice($results, $atts['offest'], $atts['limit'], TRUE);
-		$results = apply_filters('cn_list_results', $results);
+	//if ( !empty($results) )
+	//{
+		//$results = array_slice($results, $atts['offest'], $atts['limit'], TRUE);
+		if ( !empty($results) ) $results = apply_filters('cn_list_results', $results);
 				
-		//$out = '';
-		
 		// Order the results as specified by the shortcode attribute.
-		if (!empty($atts['order_by']))
+		if ( isset($atts['order_by']) && !empty($results) )
 		{
 			$connections->filter->orderBy($results, $atts['order_by'], $atts['id']);
 		}
@@ -148,6 +150,14 @@ function _connections_list($atts, $content=null) {
 		if ( method_exists($template, 'printJS') ) $template->printJS();
 		
 		$out = apply_filters('cn_list_before', $out, $results);
+		
+		// If there are no results no need to proceed and output message.
+		if ( empty($results) )
+		{
+			$noResultMessage = 'No results';
+			$noResultMessage = apply_filters('cn_no_result_message', $noResultMessage);
+			return $out . '<p class="cn-no-results">' . $noResultMessage . '</p>';
+		}
 		
 		$out .= '<a name="connections-list-head" style="float: left;"></a>' . "\n";
 		
@@ -161,9 +171,9 @@ function _connections_list($atts, $content=null) {
 			$out .= apply_filters('cn_list_index', $index, $results);
 		}
 		
-		$out .=  "<div class='connections-list'>\n";
+		$out .=  '<div class="connections-list">' . "\n";
 		
-		foreach ($results as $row)
+		foreach ( (array) $results as $row)
 		{
 			//$entry = new cnOutput($row);
 			$entry = new cnvCard($row);
@@ -252,25 +262,18 @@ function _connections_list($atts, $content=null) {
 			
 			$alternate == '' ? $alternate = '-alternate' : $alternate = '';
 			
-			if (isset($template->file))
-			{
-				$out .= '<div class="cn-list-row' . $alternate . ' vcard ' . $entry->getCategoryClass(TRUE) . '">' . "\n";
-					ob_start();
-					include($template->file);
-				    $out .= ob_get_contents();
-				    ob_end_clean();
-				$out .= '</div>' . "\n";
-			}
-			else
-			{
-				// If no template is found, return an error message.
-				return '<p style="color:red; font-weight:bold; text-align:center;">ERROR: Template "' . $atts['template_name'] . '" not found.</p>';
-			}
+			
+			$out .= '<div class="cn-list-row' . $alternate . ' vcard ' . $entry->getCategoryClass(TRUE) . '">' . "\n";
+				ob_start();
+				include($template->file);
+			    $out .= ob_get_contents();
+			    ob_end_clean();
+			$out .= '</div>' . "\n";
 						
 		}
 		$out .= '<div class="clear"></div>' . "\n";
-		$out .= "</div>\n";
-	}
+		$out .= '</div>' . "\n";
+	//}
 	return $out;
 	
 }

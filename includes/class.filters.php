@@ -63,7 +63,7 @@ class cnFilters
 	 * Order Flags:
 	 * 	SORT_ACS
 	 * 	SORT_DESC
-	 *  SPECIFIC**
+	 *  SPECIFIED**
 	 * 	RANDOM**
 	 * 
 	 * Sort Types:
@@ -71,8 +71,8 @@ class cnFilters
 	 * 	SORT_NUMERIC
 	 * 	SORT_STRING
 	 * 
-	 * **NOTE: The SPECIFIC and RANDOM Order Flags can only be used
-	 * with the id field. The SPECIFIC flag must be used in conjuction
+	 * **NOTE: The SPECIFIED and RANDOM Order Flags can only be used
+	 * with the id field. The SPECIFIED flag must be used in conjuction
 	 * with $suppliedIDs which can be either a comma delimited sting or
 	 * an indexed array of entry IDs. If this is set, other sort fields/flags
 	 * are ignored.

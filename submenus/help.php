@@ -311,7 +311,7 @@ function connectionsShowHelpPage()
 			<ul>
 				<li>SORT_ACS</li>
 				<li>SORT_DESC</li>
-				<li>SPECIFIC**</li>
+				<li>SPECIFIED**</li>
 				<li>RANDOM**</li>
 			</ul>
 		</p>
@@ -323,8 +323,8 @@ function connectionsShowHelpPage()
 			</ul>
 		</p>
 		
-		<p><strong>**NOTE:</strong> The SPECIFIC and RANDOM Order Flags can only 
-		 be used with the id sort field. The SPECIFIC flag must be used in conjuction
+		<p><strong>**NOTE:</strong> The SPECIFIED and RANDOM Order Flags can only 
+		 be used with the id sort field. The SPECIFIED flag must be used in conjuction
 		 with the id shortcode attribute which must be a comma delimited of entry IDs. 
 		 If this is set, other sort fields/flags are ignored.</p>
 		
