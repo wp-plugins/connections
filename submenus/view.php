@@ -212,7 +212,7 @@ function connectionsShowViewPage()
 							<div class="tablenav-pages">
 								<?php
 									
-									echo '<span class="displaying-num">Displaying ' , count($results) , ' records.</span>';
+									echo '<span class="displaying-num">Displaying ' , $connections->resultCount , ' of ' , $connections->recordCount , ' records.</span>';
 									
 									/*
 									 * Dynamically builds the alpha index based on the available entries.
