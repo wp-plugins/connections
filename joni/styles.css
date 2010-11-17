@@ -1,8 +1,0 @@
-div.connections-list { margin: 16px 0 0; }
-div.connections-list hr { background-color: #CACACA; border: thin solid #CACACA; color: #CACACA; height: 1px; margin: 10px auto; width: 400px; }
-
-div.connections-list td { vertical-align: top; }
-table.cn-entry { font-size: 12px; margin: 8px 0 0; width: 100%; }
-table td.cn-photo { width: 160px; }
-table td.cn-info { padding: 0 0 0 10px; }
-table.cn-entry span.cn-name { color: #000000; display: block; font-size: 14px; font-weight: bold; }
