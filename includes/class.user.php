@@ -96,6 +96,11 @@ class cnUser
 		}
     }
 	
+	/**
+	 * Returns the cached visibility filter setting as string or FALSE depending if the current user has sufficient permission.
+	 * 
+	 * @return string || bool
+	 */
 	public function getFilterVisibility()
     {
         /*
@@ -121,7 +126,7 @@ class cnUser
 				case 'public':
 					if (!current_user_can('connections_view_public'))
 					{
-						return 'all';
+						return FALSE;
 					}
 					else
 					{
@@ -132,7 +137,7 @@ class cnUser
 				case 'private':
 					if (!current_user_can('connections_view_private'))
 					{
-						return 'all';
+						return FALSE;
 					}
 					else
 					{
@@ -143,7 +148,7 @@ class cnUser
 				case 'unlisted':
 					if (!current_user_can('connections_view_unlisted'))
 					{
-						return 'all';
+						return FALSE;
 					}
 					else
 					{
@@ -152,13 +157,13 @@ class cnUser
 				break;
 				
 				default:
-					return 'all';
+					return FALSE;
 				break;
 			}
 		}
 		else
 		{
-			return '';
+			return FALSE;
 		}
     }
     

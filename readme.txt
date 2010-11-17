@@ -112,6 +112,7 @@ Connections is a simple to use versatile directory manager. You can use it for a
 * OTHER: The last updated time will be adjusted to the local timestamp.
 * OTHER: Connections Groups entry type renamed to Families.
 * OTHER: Change substr to mb_substr for better support of multibyte character sets.
+* OTHER: Added total record count based on current user permissions.
 
 = 0.7.0.4 7/26/2010 =
 * FEATURE: Add the option to display the front end list in a specified order.

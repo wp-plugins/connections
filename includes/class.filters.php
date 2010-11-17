@@ -289,7 +289,7 @@ class cnFilters
 		return $entries;
 	}
 	
-	public function permitted($entries, $publicOverride = false, $privateOverride = false)
+	/*public function permitted($entries, $publicOverride = false, $privateOverride = false)
 	{
 		global $connections;
 		
@@ -398,6 +398,6 @@ class cnFilters
 		}
 		
 		return $entries;
-	}
+	}*/
 }
 ?>

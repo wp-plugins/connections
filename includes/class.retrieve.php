@@ -3,10 +3,9 @@
 class cnRetrieve
 {
 	/**
-	 * @param array $id [optional]
-	 * @return object
+	 * @return array
 	 */
-	public function entries($suppliedAttr = NULL)
+	public function entries( $suppliedAttr = array() )
 	{
 		global $wpdb, $connections;
 		
@@ -19,34 +18,34 @@ class cnRetrieve
 		$termIDs = NULL;
 		$termNames = NULL;
 		$entryType = NULL;
-		$visibility = NULL;
 		
 		$permittedEntryTypes = array('individual', 'organization', 'family', 'connection_group');
-		$permittedVisibilities = array('unlisted', 'private', 'public');
 		
 		/*
-		 * // START -- Set the default attributes array if not supplied. \\
+		 * // START -- Set the default attributes array. \\
 		 */
 			
-			// Common defaults whether in the admin or frontend.
+			// Common defaults whether user is logged in or not.
 			$defaultAttr['id'] = NULL;
 			$defaultAttr['wp_current_category'] = FALSE;
+			$defaultAttr['allow_public_override'] = FALSE;
+			$defaultAttr['private_override'] = FALSE;
 			
-			if ( !is_admin() )
+			if ( !is_user_logged_in() )
 			{
-				// Frontend defaults.
 				$defaultAttr['list_type'] = 'all';
 				$defaultAttr['category'] = NULL;
+				$defaultAttr['limit'] = NULL;
+				$defaultAttr['offset'] = NULL;
 			}
 			else
 			{
-				// Admin defaults.
 				$defaultAttr['list_type'] = $connections->currentUser->getFilterEntryType();
 				$defaultAttr['category'] = $connections->currentUser->getFilterCategory();
+				$defaultAttr['limit'] = NULL;
+				$defaultAttr['offset'] = NULL;
 				$defaultAttr['visibility'] = $connections->currentUser->getFilterVisibility();
 			}
-			
-			if ( !isset($suppliedAttr) ) $suppliedAttr = array();
 			
 			$atts = $validate->attributesArray($defaultAttr, $suppliedAttr);
 			
@@ -136,18 +135,37 @@ class cnRetrieve
 			$entryIDs = " AND `id` IN ('" . $atts['id'] . "') ";
 		}
 		
-				
+		$where[] = 'WHERE 1=1';
+		
 		// Set query string for visibility.
-		if ( $atts['visibility'] !== 'all' && in_array($atts['visibility'], $permittedVisibilities, TRUE) )
+		if ( is_user_logged_in() )
 		{
-			$visibility = " AND `visibility` = '" . $atts['visibility'] . "' ";
+			if ( !$atts['visibility'] )
+			{
+				if ( current_user_can('connections_view_public') ) $visibility[] = 'public';
+				if ( current_user_can('connections_view_private') ) $visibility[] = 'private';
+				if ( current_user_can('connections_view_unlisted') && is_admin() ) $visibility[] = 'unlisted';
+			}
+			else
+			{
+				$visibility[] = $atts['visibility'];
+			}
 		}
+		else
+		{
+			if ( $connections->options->getAllowPublic() ) $visibility[] = 'public';
+			if ( $atts['allow_public_override'] == TRUE && $connections->options->getAllowPublicOverride() ) $visibility[] = 'public';
+			if ( $atts['private_override'] == TRUE && $connections->options->getAllowPrivateOverride() ) $visibility[] = 'private';
+		}
+		
+		$where[] =  'AND `visibility` IN (\'' . implode("', '", (array) $visibility) . '\')';
+		
 		
 		// Set query string for entry type.
 		if ( $atts['list_type'] !== 'all' && in_array($atts['list_type'], $permittedEntryTypes, TRUE) )
 		{
 			/*
-			 * @TODO: Temporary for capatibility util the code is completely cleaned up, removing the connection group entry type.
+			 * @TODO: Temporary for capatibility code until the code is completely cleaned up, removing the connection group entry type.
 			 */
 			if ( $atts['list_type'] === 'family' ) $atts['list_type'] = 'connection_group';
 			
@@ -162,9 +180,9 @@ class cnRetrieve
 				  WHEN 'connection_group' THEN `group_name`
 				END AS `sort_column`
 				 
-				FROM " . CN_ENTRY_TABLE . $joinTermRelationships . $joinTermTaxonomy . $joinTerm . "
+				FROM " . CN_ENTRY_TABLE . $joinTermRelationships . $joinTermTaxonomy . $joinTerm . " " .
 				
-				WHERE 1=1 " . $visibility . $entryType . $taxonomy . $termIDs . $termNames . $entryIDs . "
+				implode(' ', $where) . " " . $entryType . $taxonomy . $termIDs . $termNames . $entryIDs . "
 				
 				ORDER BY `sort_column`, `last_name`, `first_name`";
 		
@@ -176,11 +194,9 @@ class cnRetrieve
 		$connections->lastQueryError = $wpdb->last_error;
 		$connections->lastInsertID = $wpdb->insert_id;
 		$connections->resultCount = $wpdb->num_rows;
-		
-		$connections->recordCount = $wpdb->get_var( $wpdb->prepare("SELECT COUNT(`id`) FROM " . CN_ENTRY_TABLE) );
+		$connections->recordCount = $this->recordCount($atts['allow_public_override'], $atts['private_override']);
 		
 		return $results;
-		
 	}
 	
 	public function entry($id)
@@ -238,6 +254,37 @@ class cnRetrieve
 		{
 			return 0;
 		}
+	}
+	
+	/**
+	 * Total record count based on current user permissions.
+	 * 
+	 * @param bool $allowPublicOverride
+	 * @param bool $allowPrivateOverride
+	 * @return integer
+	 */
+	private function recordCount($allowPublicOverride, $allowPrivateOverride)
+	{
+		global $wpdb, $connections;
+		
+		$where[] = 'WHERE 1=1';
+		
+		if ( is_user_logged_in() )
+		{
+			if ( current_user_can('connections_view_public') ) $visibility[] = 'public';
+			if ( current_user_can('connections_view_private') ) $visibility[] = 'private';
+			if ( current_user_can('connections_view_unlisted') && is_admin() ) $visibility[] = 'unlisted';
+		}
+		else
+		{
+			if ( $connections->options->getAllowPublic() ) $visibility[] = 'public';
+			if ( $allowPublicOverride == TRUE && $connections->options->getAllowPublicOverride() ) $visibility[] = 'public';
+			if ( $allowPrivateOverride == TRUE && $connections->options->getAllowPrivateOverride() ) $visibility[] = 'private';
+		}
+		
+		$where[] =  'AND `visibility` IN (\'' . implode("', '", (array) $visibility) . '\')';
+		
+		return $wpdb->get_var( 'SELECT COUNT(`id`) FROM ' . CN_ENTRY_TABLE . ' ' . implode(' ', $where) );
 	}
 	
 	/**

@@ -129,7 +129,7 @@ function _connections_list($atts, $content=null) {
 	$atts = apply_filters('cn_list_atts', $atts);
 	
 	$results = $connections->retrieve->entries($atts);
-	$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
+	//$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
 	
 	
 	//if ( !empty($results) )

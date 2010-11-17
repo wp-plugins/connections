@@ -120,8 +120,11 @@ function connectionsShowViewPage()
 					
 					<?php
 						$results = $connections->retrieve->entries();
-						$connections->filter->permitted($results);
+						//$connections->filter->permitted($results);
+						
+						//print_r($connections->lastQuery);
 					?>
+					
 						
 						<form action="admin.php?page=connections&action=do" method="post">
 						
