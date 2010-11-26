@@ -41,7 +41,6 @@ if (!class_exists('connectionsLoad'))
 		public $currentUser;
 		public $options;
 		public $retrieve;
-		public $filter;
 		public $term;
 		
 		public $errorMessages;
@@ -52,19 +51,22 @@ if (!class_exists('connectionsLoad'))
 			$this->loadConstants();
 			$this->loadDependencies();
 			$this->initDependencies();
-			$this->initOptions();
-			$this->initErrorMessages();
-			$this->initSuccessMessages();
 			
-			// Calls the method to load the admin menus.
-			add_action('admin_menu', array (&$this, 'loadAdminMenus'));
+			if ( is_admin() )
+			{
+				// Calls the method to load the admin menus.
+				add_action('admin_menu', array (&$this, 'loadAdminMenus'));
+				
+				// Activation/Deactivation hooks
+				register_activation_hook( dirname(__FILE__) . '/connections.php', array(&$this, 'activate') );
+				register_deactivation_hook( dirname(__FILE__) . '/connections.php', array(&$this, 'deactivate') );
+				
+				// Initiate admin messages.
+				$this->initErrorMessages();
+				$this->initSuccessMessages();
+			}
 			
-			register_activation_hook( dirname(__FILE__) . '/connections.php', array(&$this, 'activate') );
-			register_deactivation_hook( dirname(__FILE__) . '/connections.php', array(&$this, 'deactivate') );
-			
-			/**
-			 * @TODO: Create uninstall method to remove options and tables.
-			 */
+			//@TODO: Create uninstall method to remove options and tables.
 			// register_uninstall_hook( dirname(__FILE__) . '/connections.php', array('connectionsLoad', 'uninstall') );
 			
 			// Start this plug-in once all other plugins are fully loaded
@@ -84,7 +86,7 @@ if (!class_exists('connectionsLoad'))
 			/*
 			 * Because MySQL FROM_UNIXTIME returns timestamps adjusted to the local
 			 * timezone it is handy to have the offset so it can be compensated for.
-			 * One example is when using FROM_UNIXTIME the timestamp returned will
+			 * One example is when using FROM_UNIXTIME, the timestamp returned will
 			 * not be the actual stored timestamp, it will be the timestamp adjusted
 			 * to the timezone set in MySQL.
 			 */
@@ -92,10 +94,8 @@ if (!class_exists('connectionsLoad'))
 			$connections->sqlCurrentTime = strtotime($mySQLTimeStamp[0]->timestamp);
 			$connections->sqlTimeOffset = time() - $connections->sqlCurrentTime;
 			
-			// Register all valid query variables.
-			add_filter('query_vars', array(&$this, 'registerQueryVariables') );
 			
-			if (is_admin())
+			if ( is_admin() )
 			{
 				// Calls the methods to load the admin scripts and CSS.
 				add_action('admin_print_scripts', array(&$this, 'loadAdminScripts') );
@@ -119,6 +119,9 @@ if (!class_exists('connectionsLoad'))
 			}
 			else
 			{
+				// Register all valid query variables.
+				add_filter('query_vars', array(&$this, 'registerQueryVariables') );
+				
 				// Calls the methods to load the frontend scripts and CSS.
 				add_action('wp_print_scripts', array(&$this, 'loadScripts') );
 				add_action('wp_print_styles', array(&$this, 'loadStyles') );
@@ -136,7 +139,7 @@ if (!class_exists('connectionsLoad'))
 			global $wpdb;
 			
 			define('CN_CURRENT_VERSION', '0.7.1.0');
-			define('CN_DB_VERSION', '0.1.2');
+			define('CN_DB_VERSION', '0.1.3');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
 			define('CN_ENTRY_TABLE', $wpdb->prefix . 'connections');
@@ -178,8 +181,6 @@ if (!class_exists('connectionsLoad'))
 			require_once(WP_PLUGIN_DIR . '/connections/includes/class.category.php'); // Required for activation, entry list
 			//Retrieve objects from the db.
 			require_once(WP_PLUGIN_DIR . '/connections/includes/class.retrieve.php'); // Required for activation
-			//Filter objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.filters.php'); // Required for activation
 			//HTML FORM objects
 			require_once(WP_PLUGIN_DIR . '/connections/includes/class.form.php'); // Required for activation
 			//date objects
@@ -204,20 +205,17 @@ if (!class_exists('connectionsLoad'))
 		
 		private function initDependencies()
 		{
+			$this->options = new cnOptions();
 			$this->currentUser = new cnUser();
 			$this->retrieve = new cnRetrieve();
-			$this->filter = new cnFilters();
 			$this->term = new cnTerms();
 		}
 		
 		/**
-		 * During install this will initiate the options. During upgrades, previously set options
-		 * will be left intact but will set any new options not available in previous versions.
-		 * @return 
-		 */private function initOptions()
+		 * During install this will initiate the options.
+		 */
+		private function initOptions()
 		{
-			$this->options = new cnOptions();
-			
 			if ($this->options->getAllowPublic() === NULL) $this->options->setAllowPublic(TRUE);
 			if ($this->options->getAllowPublicOverride() === NULL) $this->options->setAllowPublicOverride(FALSE);
 			
@@ -243,6 +241,12 @@ if (!class_exists('connectionsLoad'))
 			if ($this->options->getImgLogoY() === NULL) $this->options->setImgLogoY(150);
 			if ($this->options->getImgLogoCrop() === NULL) $this->options->setImgLogoCrop('crop');
 			
+			if ($this->options->getDefaultTemplatesSet() === NULL) $this->options->setDefaultTemplates();
+			
+			$this->options->setDefaultCapabilities();
+			$this->options->setVersion(CN_CURRENT_VERSION);
+			$this->options->setDBVersion(CN_DB_VERSION);
+			
 			$this->options->saveOptions();
 		}
 		
@@ -250,44 +254,6 @@ if (!class_exists('connectionsLoad'))
 		{
 			$query[] = 'cn-cat';
 			return $query;
-		}
-		
-		private function sessionCheck()
-		{
-			/*
-			 * Run a quick check to see if the $_SESSION is started and verify that Connections data isn't being
-			 * overwritten and notify the user of errors.
-			 */
-			/*if (!isset($_SESSION))
-			{
-				add_action('admin_notices', create_function('', 'echo \'<div id="message" class="error"><p><strong>ERROR: </strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in or the webserver configuration is preventing it from being used.</p></div>\';') );
-			}
-			
-			if (!$_SESSION['cn_session']['active'] == true)
-			{
-				add_action('admin_notices', create_function('', 'echo \'<div id="message" class="error"><p><strong>ERROR: </strong>Connections requires the use of the <em>$_SESSION</em> super global; another plug-in seems to be resetting the values needed for Connections.</p></div>\';') );
-			}*/
-			
-			$session_save_path = session_save_path();
-			
-			if (strpos ($session_save_path, ";") !== FALSE)
-			{
-				$session_save_path = mb_substr ( $session_save_path, strpos ($session_save_path, ";")+1 );
-			}
-			
-			if(is_dir($session_save_path))
-			{
-				if(!is_writable($session_save_path))
-				{
-					echo '<div id="message" class="error"><p><strong>ERROR: </strong>' . $this->errorMessages->get_error_message('session_path_not_writable') . '</p></div>';
-				}
-			}
-			else
-			{
-				echo '<div id="message" class="error"><p><strong>ERROR: </strong>' . $this->errorMessages->get_error_message('session_path_does_not_exist') . '</p></div>';
-			}
-			
-
 		}
 		
 		public function displayMessages()
@@ -553,25 +519,11 @@ if (!class_exists('connectionsLoad'))
 			    dbDelta($termTermRelationshipTable);
 			}
 			
-			/**
-			 * @TODO: Verify that the table did create.
-			 */
-			
-			/**
-			 * @TODO: Shouldn't setVersion here. Do it in the showPage method
-			 * as part of the upgade check.
-			 */
-			
-			if ($this->options->getDefaultTemplatesSet() === NULL) $this->options->setDefaultTemplates();
-			
-			$this->options->setDefaultCapabilities();
-			$this->options->setVersion(CN_CURRENT_VERSION);
-			$this->options->setDBVersion(CN_DB_VERSION);
 			
 			// Check if the Uncategorized term exists and if it doesn't create it.
 			$term = $connections->term->getTermBy('slug', 'uncategorized', 'category');
 			
-			if (empty($term))
+			if ( empty($term) )
 			{
 				$attributes['slug'] = '';
 				$attributes['parent'] = 0;
@@ -585,7 +537,9 @@ if (!class_exists('connectionsLoad'))
 				copy(WP_PLUGIN_DIR . '/connections/includes/download.vCard.php', ABSPATH . 'download.vCard.php');
 			}
 			
-			update_option('connections_installed', 'The Connections plug-in version ' . $this->options->getVersion() . ' has been installed or upgraded.');
+			$this->initOptions();
+			
+			//update_option('connections_activated', 'The Connections plug-in version ' . $this->options->getVersion() . ' has been activated.');
 		}
 		
 		/**
@@ -598,7 +552,6 @@ if (!class_exists('connectionsLoad'))
 			/* This should be occur in the unistall hook
 			$this->options->removeDefaultCapabilities();
 			*/
-			$this->options->saveOptions();
 			
 			//  DROP TABLE `cnpfresh_connections`, `cnpfresh_connections_terms`, `cnpfresh_connections_term_relationships`, `cnpfresh_connections_term_taxonomy`;
 			//  DELETE FROM `nhonline_freshcnpro`.`cnpfresh_options` WHERE `cnpfresh_options`.`option_name` = 'connections_options'
@@ -607,7 +560,7 @@ if (!class_exists('connectionsLoad'))
 		public function loadAdminMenus()
 		{
 			// If the Connections CSV plugin is activate load the object
-			if (class_exists('connectionsCSVLoad')) global $connectionsCSV;
+			if ( class_exists('connectionsCSVLoad') ) global $connectionsCSV;
 			
 			//Adds Connections to the top level menu.
 			add_menu_page('Connections : Administration', 'Connections', 'connections_view_entry_list', CN_BASE_NAME, array (&$this, 'showPage'), WP_PLUGIN_URL . '/connections/images/menu.png');
@@ -649,8 +602,9 @@ if (!class_exists('connectionsLoad'))
 			/*
 			 * TinyMCE in WordPress Plugins
 			 * http://www.keighl.com/2010/01/tinymce-in-wordpress-plugins/
-			 */ 
-			// Only Load the tinyMCE scripts on these pages.
+			 * 
+			 * Load the tinyMCE scripts on these pages.
+			 */
 			$editorPages = array( 'connections', 'connections_add' );
 			
 			if ( in_array( $_GET['page'],  $editorPages ) )
@@ -789,8 +743,6 @@ if (!class_exists('connectionsLoad'))
 		/**
 		 * Add the changelog as a table row on the Manage Plugin admin screen.
 		 * Code based on Changelogger.
-		 * 
-		 * @return 
 		 */
 		public function displayUpgradeNotice()
 		{
@@ -843,30 +795,25 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function showPage()
 		{
-			//do_action('admin_notices');
-			
-			if ($this->options->getVersion() != CN_CURRENT_VERSION)
+			if ($this->options->getVersion() < CN_CURRENT_VERSION)
 			{
 				echo '<div id="message" class="error"><p><strong>ERROR: </strong>The version of Connections installed is newer than the version last activated. Please deactive and then reactivate Connections.</p></div>';
 				return;
 			}
 			
-			if ($this->options->getDBVersion() != NULL)
+			if ($this->options->getDBVersion() < CN_DB_VERSION)
 			{
-				if ($this->options->getDBVersion() != CN_DB_VERSION)
-				{
-					include_once ( dirname (__FILE__) . '/includes/inc.upgrade.php' );
-					connectionsShowUpgradePage();
-					return;
-				}
+				include_once ( dirname (__FILE__) . '/includes/inc.upgrade.php' );
+				connectionsShowUpgradePage();
+				return;
 			}
 			
-			if (get_option('connections_installed'))
-			{
-				echo '<div id="message" class="updated fade"><p><strong>' . get_option('connections_installed') . '</strong></p></div>';
+			//if ( get_option('connections_activated') )
+			//{
+				//echo '<div id="message" class="updated fade"><p><strong>' . get_option('connections_activated') . '</strong></p></div>';
 				// Remove the admin install message set during activation.
-				delete_option('connections_installed');
-			}
+				//delete_option('connections_installed');
+			//}
 			
 			
 			switch ($_GET['page'])

@@ -52,8 +52,10 @@ class cnOutput extends cnEntry
 	 * 		alt == string -- The tag alt text.
 	 * 		title == string -- The tag title text.
 	 * 		src == string -- The image source.
-	 * 		longdesc == string -- URL to  document containing text for image long description.
+	 * 		longdesc == string -- URL to document containing text for image long description.
 	 * 		style == associative array -- Customize an inline stlye tag. Array format key == attribute; value == value.
+	 * 		before == string -- HTML to output before the logo.
+	 *  	after == string -- HTML to output after the logo.
 	 * 		display == string -- Display place holder area or default image or logo. Permitted values are logo, place_holder, default, blank.
 	 * 		return == TRUE || FALSE -- Return string if set to TRUE instead of echo string.
 	 * 
@@ -72,6 +74,8 @@ class cnOutput extends cnEntry
 							  'src' => NULL,
 							  'longdesc' => NULL,
 							  'style' => NULL,
+							  'before' => NULL,
+							  'after' => NULL,
 							  'display' => 'logo',
 							  'return' => FALSE
 							);
@@ -139,7 +143,11 @@ class cnOutput extends cnEntry
 			if ( !empty($value) && !in_array($attr, $nonAtts) ) $tag[] = "$attr=\"$value\"";
 		}
 		
-		$out = '<' . $atts['tag'] . ' ' . implode(' ', $tag) . '></' . $atts['tag'] . '>';
+		if ( !empty($atts['before']) ) $out = $atts['before'];
+		
+		$out .= '<' . $atts['tag'] . ' ' . implode(' ', $tag) . '></' . $atts['tag'] . '>';
+		
+		if ( !empty($atts['after']) ) $out .= $atts['after'];
 		
 		if ( $atts['return'] ) return $out;
 		echo $out;
@@ -165,8 +173,8 @@ class cnOutput extends cnEntry
 				return '<span class="fn org">' . $this->getOrganization() . '</span>';
 			break;
 			
-			case 'connection_group':
-				return '<span class="fn n"><span class="family-name">' . $this->getGroupName() . '</span></span>';
+			case 'family':
+				return '<span class="fn n"><span class="family-name">' . $this->getFamilyName() . '</span></span>';
 			break;
 			
 			default:
@@ -195,8 +203,8 @@ class cnOutput extends cnEntry
 				return '<span class="fn org">' . $this->getOrganization() . '</span>';
 			break;
 			
-			case 'connection_group':
-				return '<span class="fn n"><span class="family-name">' . $this->getGroupName() . '</span></span>';
+			case 'family':
+				return '<span class="fn n"><span class="family-name">' . $this->getFamilyName() . '</span></span>';
 			break;
 			
 			default:
@@ -455,9 +463,16 @@ class cnOutput extends cnEntry
 	 * 
 	 * @TODO: Implement $parents.
 	 * 
-	 * @param string $separator [optional] Default is an empty string. Separator for between the categories.
-	 * @param string $parents [optional] How to display the parent categories.
-	 * @param bool $return [optional] Return instead of echo.
+	 * Accepted option for the $atts property are:
+	 * 		list == string -- The list type to output. Accepted values are ordered || unordered.
+	 * 		separator == string -- The category separator.
+	 * 		before == string -- HTML to output before the category list.
+	 *  	after == string -- HTML to output after the category list.
+	 * 		label == string -- String to display after the before attribute but before the category list.
+	 * 		parents == bool -- Display the parents
+	 * 		return == TRUE || FALSE -- Return string if set to TRUE instead of echo string.
+	 * 
+	 * @param array $atts [optional]
 	 * @return string
 	 */
 	public function getCategoryBlock($atts = NULL)
@@ -527,15 +542,12 @@ class cnOutput extends cnEntry
 		
 		foreach ($categories as $category)
 		{
-			$out .= $category->slug;
-			
-			$i++;
-			if ( $i < count($categories) ) $out .= ' ';
+			$out[] = $category->slug;
 		}
 		
-		if ($return) return $out;
+		if ($return) return implode(' ', $out);
 		
-		echo $out;
+		echo implode(' ', $out);
 		
 	}
 	

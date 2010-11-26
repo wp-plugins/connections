@@ -42,7 +42,7 @@ function _connections_list($atts, $content=null) {
 				'show_alphaindex' => 'false',
 				'repeat_alphaindex' => 'false',
 				'show_alphahead' => 'false',
-				'list_type' => 'all',
+				'list_type' => NULL,
 				'limit' => NULL,
 				'offset' => NULL,
 				'order_by' => NULL,
@@ -69,6 +69,23 @@ function _connections_list($atts, $content=null) {
 	$convert->toBoolean(&$atts['show_alphahead']);
 	$convert->toBoolean(&$atts['wp_current_category']);
 	
+	$permittedListTypes = array('individual', 'organization', 'family', 'connection_group');
+	
+	// Convert the supplied entry types $atts['list_type'] to an array.
+	if ( !empty($atts['list_type']) )
+	{
+		// Trim the space characters if present.
+		$atts['list_type'] = str_replace(' ', '', $atts['list_type']);
+		
+		// Convert to array.
+		$atts['list_type'] = explode(',', $atts['list_type']);
+	}
+	
+	// Set the template type to the first in the entry type from the supplied if multiple list types are provided.
+	if ( !empty($atts['list_type']) && (bool) array_intersect( (array) $atts['list_type'], $permittedListTypes) )
+	{
+		$templateType = $atts['list_type'][0];
+	}
 	
 	/*
 	 * As of version 0.7.0.5 the $atts['template_name'] is deprecated.
@@ -117,7 +134,9 @@ function _connections_list($atts, $content=null) {
 		}
 		else
 		{
-			$template->init( $connections->options->getActiveTemplate( $atts['list_type'] ) );
+			if ( empty($templateType) ) $templateType = 'all'; // If no list type was specified, set the default ALL template.
+			
+			$template->init( $connections->options->getActiveTemplate( $templateType ) );
 			$template->includeFunctions();
 		}
 	}
@@ -129,19 +148,13 @@ function _connections_list($atts, $content=null) {
 	$atts = apply_filters('cn_list_atts', $atts);
 	
 	$results = $connections->retrieve->entries($atts);
-	//$connections->filter->permitted(&$results, $atts['allow_public_override'], $atts['private_override']);
 	
+	print_r($connections->lastQuery);
 	
 	//if ( !empty($results) )
 	//{
 		//$results = array_slice($results, $atts['offest'], $atts['limit'], TRUE);
 		if ( !empty($results) ) $results = apply_filters('cn_list_results', $results);
-				
-		// Order the results as specified by the shortcode attribute.
-		if ( isset($atts['order_by']) && !empty($results) )
-		{
-			$connections->filter->orderBy($results, $atts['order_by'], $atts['id']);
-		}
 		
 		// Prints the template's CSS file.
 		if ( method_exists($template, 'printCSS') ) $out .= $template->printCSS();
@@ -220,7 +233,7 @@ function _connections_list($atts, $content=null) {
 			$atts['department'] = esc_attr($atts['department']);
 			
 			//if ($atts['list_type'] != 'all' && $atts['list_type'] != $entry->getEntryType())			$continue = true;
-			if ($entry->getGroupName() != $atts['group_name'] && $atts['group_name'] != null)			$continue = true;
+			if ($entry->getFamilyName() != $atts['group_name'] && $atts['group_name'] != null)			$continue = true;
 			if ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != null)				$continue = true;
 			if ($entry->getTitle() != $atts['title'] && $atts['title'] != null)							$continue = true;
 			if ($entry->getOrganization() != $atts['organization'] && $atts['organization'] != null) 	$continue = true;
@@ -243,7 +256,7 @@ function _connections_list($atts, $content=null) {
 			 * 
 			 * If the alpha head set to true it will append the alpha head to the anchor.
 			 */
-			$currentLetter = strtoupper(mb_substr($entry->getFullLastFirstName(), 0, 1));
+			$currentLetter = strtoupper(mb_substr($entry->getSortColumn(), 0, 1));
 			if ($currentLetter != $previousLetter && $atts['id'] == null) {
 				if ($atts['show_alphaindex']) $setAnchor = '<a class="cn-index-head" name="' . $currentLetter . '"></a>';
 				

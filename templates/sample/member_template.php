@@ -23,7 +23,7 @@ if (sizeof($entry->getConnectionGroup()) > 0) {
     $member_group = new cnEntry();
     
     // Create the popup container
-    //$member_popup_info = '<div id="popup-group-name"><span>' . $entry->getGroupName() . '</span></div>';
+    //$member_popup_info = '<div id="popup-group-name"><span>' . $entry->getFamilyName() . '</span></div>';
     
     // Set a counter
     $counter = 0;
@@ -43,7 +43,7 @@ if (sizeof($entry->getConnectionGroup()) > 0) {
     }
     
     $member_popup_info = '<div id="popup-group-members"><span>'.$member_list_first_names.'</span></div>';
-    $member_popup_info .= '<div id="popup-group-name"><span>'.$entry->getGroupName().'</span></div>';
+    $member_popup_info .= '<div id="popup-group-name"><span>'.$entry->getFamilyName().'</span></div>';
     
     // Get Home phone number
     foreach ($entry->getPhoneNumbers() as $key_homephone=>$value_homephone) {
@@ -210,8 +210,8 @@ if ($member_list_first_names != '') {
 }
 
 // Add group name
-$member_listing .= "<a class='contact' id='".$entry->getId()."' title='".$member_popup_info."'>".$entry->getGroupName().$member_list_first_names."</a>";
-$mobile_member_info = "<span class='m-contact' id='".$entry->getId()."'><b>".$entry->getGroupName().$member_list_first_names."</b></span><br />".$mobile_member_listing;
+$member_listing .= "<a class='contact' id='".$entry->getId()."' title='".$member_popup_info."'>".$entry->getFamilyName().$member_list_first_names."</a>";
+$mobile_member_info = "<span class='m-contact' id='".$entry->getId()."'><b>".$entry->getFamilyName().$member_list_first_names."</b></span><br />".$mobile_member_listing;
 
 // Close the Info Div header
 $member_listing .= '</strong></span><br />';

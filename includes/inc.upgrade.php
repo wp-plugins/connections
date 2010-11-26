@@ -130,7 +130,7 @@ function cnRunDBUpgrade()
 				$connections->term->setTermRelationships($entryID, $termID, 'category');
 			}
 			
-			$connections->options->setDBVersion(CN_DB_VERSION);
+			$connections->options->setDBVersion('0.1.0');
 		}
 		
 		if (version_compare($dbVersion, '0.1.1', '<'))
@@ -146,7 +146,7 @@ function cnRunDBUpgrade()
 				$entry->update();
 			}
 			
-			$connections->options->setDBVersion(CN_DB_VERSION);
+			$connections->options->setDBVersion('0.1.1');
 		}
 		
 		if (version_compare($dbVersion, '0.1.2', '<'))
@@ -162,7 +162,30 @@ function cnRunDBUpgrade()
 				$entry->update();
 			}
 			
-			$connections->options->setDBVersion(CN_DB_VERSION);
+			$connections->options->setDBVersion('0.1.2');
+		}
+		
+		if (version_compare($dbVersion, '0.1.3', '<'))
+		{
+			echo '<h4>Upgrade from database version ' . $connections->options->getDBVersion() . ' to database version ' . CN_DB_VERSION . ".</h4>\n";
+			echo '<h4>Changing .' . "</h4>\n";
+			
+			echo '<ul>';
+			echo '<li>Changing column name from group_name to family_name...' . "</li>\n";
+			if (cnAlterTable(CN_ENTRY_TABLE, 'CHANGE COLUMN group_name family_name tinytext NOT NULL')) echo '<ul><li>SUCCESS</li></ul>';
+			
+			echo '<li>Changing entry type connections_group to entry type family...' . "</li>\n";
+			$results = $connections->retrieve->entries();
+			
+			foreach ($results as $result)
+			{
+				$entry = new cnEntry($result);
+				$entry->update();
+			}
+			
+			echo '</ul>';
+			
+			$connections->options->setDBVersion('0.1.3');
 		}
 		
 		echo '<h4>Upgrade completed.' . "</h4>\n";
@@ -170,6 +193,19 @@ function cnRunDBUpgrade()
 		$wpdb->hide_errors();
 		
 	}
+}
+
+function cnAlterTable($tableName, $sql)
+{
+	global $wpdb;
+	
+	foreach ($wpdb->get_col("SHOW COLUMNS FROM $tableName") as $column )
+	{
+		if ($column == $columnName) return TRUE;
+	}
+	
+	// didn't find it try to create it.
+	return $wpdb->query('ALTER TABLE ' . $tableName . ' ' . $sql);
 }
 
 /**

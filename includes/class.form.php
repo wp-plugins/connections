@@ -291,7 +291,7 @@ class cnEntryForm
 				$out .= '<div class="inside">';
 					$out .= '<div id="minor-publishing">';
 						$out .= '<div id="entry-type">';
-							$out .= $form->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Family"=>"connection_group"), $defaultEntryType);
+							$out .= $form->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Family"=>"family"), $defaultEntryType);
 						$out .= '</div>';
 						$out .= '<div id="visibility">';
 							$out .= '<span class="radio_group">' . $form->buildRadio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$defaultVisibility) . '</span>';
@@ -346,30 +346,30 @@ class cnEntryForm
 		$out .= '</div>';
 		
 		$out .= '<div id="post-body-content">';
-			$out .= '<div id="connection_group" class="form-field connectionsform">';
+			$out .= '<div id="family" class="form-field connectionsform">';
 				
-					$out .= '<label for="connection_group_name">Family Name:</label>';
-					$out .= '<input type="text" name="connection_group_name" value="' . $entry->getGroupName() . '" />';
+					$out .= '<label for="family_name">Family Name:</label>';
+					$out .= '<input type="text" name="family_name" value="' . $entry->getFamilyName() . '" />';
 					$out .= '<div id="relations">';
 							
 						// --> Start template for Connection Group <-- \\
 						$out .= '<textarea id="relation_row_base" style="display: none">';
-							$out .= $this->getEntrySelect('connection_group[::FIELD::][entry_id]');
-							$out .= $form->buildSelect('connection_group[::FIELD::][relation]', $connections->options->getDefaultConnectionGroupValues());
+							$out .= $this->getEntrySelect('family_member[::FIELD::][entry_id]');
+							$out .= $form->buildSelect('family_member[::FIELD::][relation]', $connections->options->getDefaultConnectionGroupValues());
 						$out .= '</textarea>';
 						// --> End template for Connection Group <-- \\
 						
-						if ($entry->getConnectionGroup())
+						if ($entry->getFamilyMembers())
 						{
-							foreach ($entry->getConnectionGroup() as $key => $value)
+							foreach ($entry->getFamilyMembers() as $key => $value)
 							{
 								$relation = new cnEntry();
 								$relation->set($key);
 								$token = $form->token($relation->getId());
 								
 								$out .= '<div id="relation_row_' . $token . '" class="relation_row">';
-									$out .= $this->getEntrySelect('connection_group[' . $token . '][entry_id]', $key);
-									$out .= $form->buildSelect('connection_group[' . $token . '][relation]', $connections->options->getDefaultConnectionGroupValues(), $value);
+									$out .= $this->getEntrySelect('family_member[' . $token . '][entry_id]', $key);
+									$out .= $form->buildSelect('family_member[' . $token . '][relation]', $connections->options->getDefaultConnectionGroupValues(), $value);
 									$out .= '<a href="#" id="remove_button_' . $token . '" class="button button-warning" onClick="removeEntryRow(\'#relation_row_' . $token . '\'); return false;">Remove</a>';
 								$out .= '</div>';
 								
@@ -515,6 +515,15 @@ class cnEntryForm
 								$out .= '<label for="address">Country</label>';
 								$out .= '<input type="text" name="address[::FIELD::][country]" value="" />';
 								
+								$out .= '<div class="input" style="width:50%">';
+									$out .= '<label for="latitude">Latitude</label>';
+									$out .= '<input type="text" name="address[::FIELD::][latitude]" value="" />';
+								$out .= '</div>';
+								$out .= '<div class="input" style="width:50%">';
+									$out .= '<label for="longitude">Longitude</label>';
+									$out .= '<input type="text" name="address[::FIELD::][longitude]" value="" />';
+								$out .= '</div>';
+								
 								$out .= '<input type="hidden" name="address[::FIELD::][visibility]" value="public" />';
 							
 								$out .= '<div class="clear"></div>';
@@ -562,6 +571,15 @@ class cnEntryForm
 									
 									$out .= '<label for="address">Country</label>';
 									$out .= '<input type="text" name="address[' . $token . '][country]" value="' . $address->country . '" />';
+									
+									$out .= '<div class="input" style="width:50%">';
+										$out .= '<label for="latitude">Latitude</label>';
+										$out .= '<input type="text" name="address[' . $token . '][latitude]" value="' . $address->latitude . '" />';
+									$out .= '</div>';
+									$out .= '<div class="input" style="width:50%">';
+										$out .= '<label for="longitude">Longitude</label>';
+										$out .= '<input type="text" name="address[' . $token . '][longitude]" value="' . $address->longitude . '" />';
+									$out .= '</div>';
 									
 									$out .= '<input type="hidden" name="address[' . $token . '][visibility]" value="' . $address->visibility . '" />';
 								
@@ -817,12 +835,11 @@ class cnEntryForm
 	{
 		global $wpdb, $connections;
 		
-		$atts['list_type'] = 'all';
+		$atts['list_type'] = 'individual';
 		$atts['category'] = NULL;
-		$atts['visibility'] = 'all';
+		$atts['visibility'] = NULL;
 		
 		$results = $connections->retrieve->entries($atts);
-		$connections->filter->permitted(&$results);
 		
 	    $out = '<select name="' . $name . '">';
 			$out .= '<option value="">Select Entry</option>';

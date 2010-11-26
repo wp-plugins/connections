@@ -122,7 +122,7 @@ function connectionsShowViewPage()
 						$results = $connections->retrieve->entries();
 						//$connections->filter->permitted($results);
 						
-						//print_r($connections->lastQuery);
+						print_r($connections->lastQuery);
 					?>
 					
 						
@@ -132,14 +132,6 @@ function connectionsShowViewPage()
 						
 						<div class="tablenav">
 							
-							<?php
-								if (isset($connectionsPro))
-								{
-									echo '<div class="alignleft actions">' . $connectionsPro->displayFilters($results) . '</div>';
-									$results = $connectionsPro->applyFilters($results);
-								}
-							?>
-							
 							<div class="alignleft actions">
 								<?php
 									echo '<select class="postform" id="category" name="category">';
@@ -147,8 +139,7 @@ function connectionsShowViewPage()
 										echo $categoryObjects->buildCategoryRow('option', $connections->retrieve->categories(), $level, $connections->currentUser->getFilterCategory());
 									echo '</select>';
 									
-									echo $form->buildSelect('entry_type', array('all'=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'connection_group'=>'Show Families'), $connections->currentUser->getFilterEntryType());
-									
+									echo $form->buildSelect('entry_type', array('all'=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'family'=>'Show Families'), $connections->currentUser->getFilterEntryType());
 								?>
 								
 								<?php
@@ -226,7 +217,7 @@ function connectionsShowViewPage()
 									foreach ($results as $row)
 									{
 										$entry = new cnEntry($row);
-										$currentLetter = strtoupper(mb_substr($entry->getFullLastFirstName(), 0, 1));
+										$currentLetter = strtoupper(mb_substr($entry->getSortColumn(), 0, 1));
 										if ($currentLetter != $previousLetter)
 										{
 											$setAnchor .= '<a href="#' . $currentLetter . '">' . $currentLetter . '</a> ';
@@ -264,17 +255,13 @@ function connectionsShowViewPage()
 								<?php
 								
 								foreach ($results as $row) {
-									//$entry = new cnEntry($row);
-									//$vCard = new cnvCard($row);
-									
 									/**
 									 * @TODO: Use the Output class to show entry details.
 									 */								
-									//$entry = new cnOutput($row);
 									$entry = new cnvCard($row);
 									$vCard =& $entry;
 									
-									$currentLetter = strtoupper(mb_substr($entry->getFullLastFirstName(), 0, 1));
+									$currentLetter = strtoupper(mb_substr($entry->getSortColumn(), 0, 1));
 									if ($currentLetter != $previousLetter) {
 										$setAnchor = "<a name='$currentLetter'></a>";
 										$previousLetter = $currentLetter;
@@ -293,7 +280,6 @@ function connectionsShowViewPage()
 									echo "<tr id='row-" . $entry->getId() . "' class='parent-row'>";
 										echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
 											echo '<td>';
-												//$thumbAtts = array( 'place_holder' => TRUE );
 												echo $entry->getThumbnailImage( array( 'place_holder' => TRUE ) );
 											echo '</td>';
 											echo '<td  colspan="2">';
@@ -361,12 +347,12 @@ function connectionsShowViewPage()
 											 * the only the relation will be shown. After all relations have been output insert a <br>
 											 * for spacing [@TODO: NOTE: this should be done with styles].
 											 */
-											if ($entry->getConnectionGroup())
+											if ($entry->getFamilyMembers())
 											{
-												$count = count($entry->getConnectionGroup());
+												$count = count($entry->getFamilyMembers());
 												$i = 0;
 												
-												foreach ($entry->getConnectionGroup() as $key => $value)
+												foreach ($entry->getFamilyMembers() as $key => $value)
 												{
 													$relation = new cnEntry();
 													$relation->set($key);

@@ -25,8 +25,8 @@ function processEntry($data, $action)
 	}
 						
 	if ( isset($data['entry_type']) ) $entry->setEntryType($data['entry_type']);
-	if ( isset($data['connection_group_name']) ) $entry->setGroupName($data['connection_group_name']);
-	if ( isset($data['connection_group']) ) $entry->setConnectionGroup($data['connection_group']);
+	if ( isset($data['family_name']) ) $entry->setFamilyName($data['family_name']);
+	if ( isset($data['family_member']) ) $entry->setFamilyMembers($data['family_member']);
 	if ( isset($data['first_name']) ) $entry->setFirstName($data['first_name']);
 	if ( isset($data['middle_name']) ) $entry->setMiddleName($data['middle_name']);
 	if ( isset($data['last_name']) ) $entry->setLastName($data['last_name']);

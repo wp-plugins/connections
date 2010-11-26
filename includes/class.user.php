@@ -62,7 +62,7 @@ class cnUser
     
     public function setFilterEntryType($entryType)
     {
-		$permittedEntryTypes = array('all', 'individual', 'organization', 'connection_group');
+		$permittedEntryTypes = array('all', 'individual', 'organization', 'family');
 		$entryType = esc_attr($entryType);
 		
 		if (!in_array($entryType, $permittedEntryTypes)) return FALSE;

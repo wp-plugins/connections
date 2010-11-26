@@ -476,13 +476,10 @@ class cnOptions
      */
     public function getDBVersion()
     {
-        /*
-		 * The db version wasn't in plug-in versions prior to 0.5.48 so we'll return the 0.0.9
-		 * for the database upgrade method.
-		 */
-		if (empty($this->dbVersion))
+        // The db version wasn't in plug-in versions prior to 0.5.48 so return 0.0.9.
+		if ( empty($this->dbVersion) )
 		{
-			return NULL;
+			return '0.0.9';
 		}
 		else
 		{

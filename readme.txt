@@ -87,7 +87,6 @@ Connections is a simple to use versatile directory manager. You can use it for a
 
 = 0.7.1.X XX/XX/2010 =
 * FEATURE: Added Contact First and Last name fields the the Organization entry type.
-* FEATURE: Enhanced the template loader to allow the use of style sheets.
 * FEATURE: Added a template manager to the admin.
 * FEATURE: Templates now support stylesheets.
 * FEATURE: Templates now support javascript.
@@ -95,9 +94,10 @@ Connections is a simple to use versatile directory manager. You can use it for a
 * FEATURE: Added Podcast option under social media.
 * FEATURE: Added SoundCloud option under social media.
 * FEATURE: Improved the rich text editor by using the bundled tinyMCE.
-* FEATURE: Added two additional order_by attributes; date_added and date_modified.
+* FEATURE: Added three additional order_by attributes; date_added, date_modified and title.
 * FEATURE: Added Skype option under the messenger IDs.
 * FEATURE: Added the option to upload a logo in addition to an image.
+* FEATURE: Latitude and longitude can now be set with each address.
 * BUG: Fixed PHP Warning: Call-time pass-by-reference has been deprecated error in the admin.
 * BUG: The last updated time and date now function correctly.
 * BUG: Fix MySpace spelling typo. Any entries saved with a MySpace link will need to be updated.
@@ -106,13 +106,16 @@ Connections is a simple to use versatile directory manager. You can use it for a
 * BUG: Fix birthday/anniversary with date of January 1st not being saved.
 * BUG: Fix Upgrade notice to be compatible with WordPress => 3.0.
 * BUG: Fix entry drop down when creating a family. Drop downs would only show entries based on the current filter setting for the current user in the admin. The drop down will now show all permitted entries.
-* BUG: Fixed public entries "Allow unregistered vistors and users..." setting not being saved.
+* BUG: Fix public entries "Allow unregistered vistors and users..." setting not being saved.
+* BUG: Fix DB upgrade method logic.
 * OTHER: Entry human time difference in now based the current blog time.
 * OTHER: The local timestamp will be used when adding/updating an entry rather than the server timestamp.
 * OTHER: The last updated time will be adjusted to the local timestamp.
 * OTHER: Connections Groups entry type renamed to Families.
 * OTHER: Change substr to mb_substr for better support of multibyte character sets.
 * OTHER: Added total record count based on current user permissions.
+* OTHER: Further reduced memory requirements.
+* OTHER: Initiate plugin settings only on activation.
 
 = 0.7.0.4 7/26/2010 =
 * FEATURE: Add the option to display the front end list in a specified order.

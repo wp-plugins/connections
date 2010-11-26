@@ -56,10 +56,10 @@ class cnEntry
 	private $contactLastName;
 	
 	/**
-	 * String: Connection Group Name
+	 * String: Family Name
 	 * @var string
 	 */
-	private $groupName;
+	private $familyName;
 	
 	/**
 	 * Associative array of addresses
@@ -134,7 +134,7 @@ class cnEntry
 	private $logoDisplay;
 	private $logoName;
 	private $entryType;
-	private $connectionGroup;
+	private $familyMembers;
 	
 	private $categories;
 	
@@ -143,6 +143,8 @@ class cnEntry
 	
 	private $format;
 	public $validate;
+	
+	private $sortColumn;
 	
 	function __construct($entry = NULL)
 	{
@@ -161,7 +163,7 @@ class cnEntry
 			if ( isset($entry->contact_first_name) ) $this->contactFirstName = $entry->contact_first_name;
 			if ( isset($entry->contact_last_name) ) $this->contactLastName = $entry->contact_last_name;
 			if ( isset($entry->department) ) $this->department = $entry->department;
-			if ( isset($entry->group_name) ) $this->groupName = $entry->group_name;
+			if ( isset($entry->family_name) ) $this->familyName = $entry->family_name;
 			if ( isset($entry->addresses) ) $this->addresses = $entry->addresses;
 			if ( isset($entry->phone_numbers) ) $this->phoneNumbers = $entry->phone_numbers;
 			if ( isset($entry->email) ) $this->emailAddresses = $entry->email;
@@ -173,6 +175,7 @@ class cnEntry
 			if ( isset($entry->bio) ) $this->bio = $entry->bio;
 			if ( isset($entry->notes) ) $this->notes = $entry->notes;
 			if ( isset($entry->visibility) ) $this->visibility = $entry->visibility;
+			if ( isset($entry->sort_column) ) $this->sortColumn = $entry->sort_column;
 			
 			if ( isset($entry->options) )
 			{
@@ -196,7 +199,8 @@ class cnEntry
 				}
 				
 				if ( isset($this->options['entry']['type']) ) $this->entryType = $this->options['entry']['type'];
-				if ( isset($this->options['connection_group']) ) $this->connectionGroup = $this->options['connection_group'];
+				if ( isset($this->options['connection_group']) ) $this->familyMembers = $this->options['connection_group']; // For compatibility with versions <= 0.7.0.4
+				if ( isset($this->options['group']['family']) ) $this->familyMembers = $this->options['group']['family'];
 			}
 			
 			if ( isset($entry->id) ) $this->categories = $connections->retrieve->entryCategories($this->getId());
@@ -327,8 +331,8 @@ class cnEntry
 				return $this->getOrganization();;
 			break;
 			
-			case 'connection_group':
-				return $this->getGroupName();
+			case 'family':
+				return $this->getFamilyName();
 			break;
 			
 			default:
@@ -366,8 +370,8 @@ class cnEntry
 				return $this->getOrganization();
 			break;
 			
-			case 'connection_group':
-				return $this->getGroupName();
+			case 'family':
+				return $this->getFamilyName();
 			break;
 			
 			default:
@@ -395,8 +399,8 @@ class cnEntry
 				return $this->getOrganization();;
 			break;
 			
-			case 'connection_group':
-				return $this->getGroupName();
+			case 'family':
+				return $this->getFamilyName();
 			break;
 			
 			default:
@@ -486,24 +490,66 @@ class cnEntry
 	}
 	
     /**
-     * Returns $groupName.
-     * @see entry::$groupName
+     * Returns $familyName.
+     * 
+     * @see entry::$familyName
      */
-    public function getGroupName()
+    public function getFamilyName()
     {
-        return $this->format->sanitizeString($this->groupName);
+        return $this->format->sanitizeString($this->familyName);
     }
     
     /**
-     * Sets $groupName.
-     * @param object $groupName
-     * @see entry::$groupName
+     * Sets $familyName.
+     * 
+     * @param object $familyName
+     * @see entry::$familyName
      */
-    public function setGroupName($groupName)
+    public function setFamilyName($familyName)
     {
-        $this->groupName = $groupName;
+        $this->familyName = $familyName;
     }
-
+	
+	/**
+     * Returns family member member entry ID and relation.
+     */
+    public function getFamilyMembers()
+    {
+        if ( !empty($this->familyMembers) )
+		{
+			return $this->familyMembers;
+		}
+		else
+		{
+			return array();
+		}
+    }
+    
+    /**
+     * Sets $familyMembers.
+     */
+    public function setFamilyMembers($familyMembers)
+    {
+		/* 
+		 * The form to capture the user IDs and relationship stores the data
+		 * in a two-dementional array as follows:
+		 * 		array[0]
+		 * 			array[entry_id]
+		 * 				 [relation]
+		 * 
+		 * This loop re-writes the data into an associative array entry_id => relation.
+		 */
+		if ($familyMembers)
+		{
+			foreach($familyMembers as $relation)
+			{
+				$family[$relation['entry_id']] .= $relation['relation'];
+			}
+		}
+		//$this->options['connection_group'] = $family;
+		$this->options['group']['family'] = $family;
+    }
+	
     /**
      * Returns $addresses.
      * @see entry::$addresses
@@ -524,6 +570,8 @@ class cnEntry
 				$row->state = $this->format->sanitizeString($address['state']);
 				$row->zipcode = $this->format->sanitizeString($address['zipcode']);
 				$row->country = $this->format->sanitizeString($address['country']);
+				$row->latitude = $this->format->sanitizeString($address['latitude']);
+				$row->longitude = $this->format->sanitizeString($address['longitude']);
 				$row->visibility = $this->format->sanitizeString($address['visibility']);
 				
 				// Start compatibility for versions 0.2.24 and older. \\
@@ -574,7 +622,7 @@ class cnEntry
     {
         global $connections;
 		
-		$validFields = array('name' => NULL, 'type' => NULL, 'address_line1' => NULL, 'address_line2' => NULL, 'city' => NULL, 'state' => NULL, 'zipcode' => NULL, 'country' => NULL, 'visibility' => NULL);
+		$validFields = array('name' => NULL, 'type' => NULL, 'address_line1' => NULL, 'address_line2' => NULL, 'city' => NULL, 'state' => NULL, 'zipcode' => NULL, 'country' => NULL, 'latitude' => NULL, 'longitude' => NULL, 'visibility' => NULL);
 		
 		if ( !empty($addresses) )
 		{
@@ -1381,8 +1429,6 @@ class cnEntry
 					break;
 				}
 				
-				//if ( array_key_exists($key, $websites) ) $websites[$key]['url'] = $website['address'];
-				
 			}
 			
 			$this->websites = serialize($websites);
@@ -1396,12 +1442,18 @@ class cnEntry
     }
 
     /**
-     * Returns $entryType.
-     * @see entry::$entryType
+     * Returns the entry type.
+     * 
+     * Valid type are individual, organization and family.
+     * 
+     * @return string
      */
     public function getEntryType()
     {
-        return $this->entryType;
+        // This is to provide compatibility for versions >= 0.7.0.4
+		if ( $this->entryType == 'connection_group' ) $this->entryType = 'family';
+		
+		return $this->entryType;
     }
     
     /**
@@ -1415,52 +1467,7 @@ class cnEntry
 		$this->entryType = $entryType;
     }
 
-    /**
-     * Returns $connectionGroup.
-     * @see entry::$connectionGroup
-     */
-    public function getConnectionGroup()
-    {
-        if ( !empty($this->options['connection_group']) )
-		{
-			return $this->options['connection_group'];
-		}
-		else
-		{
-			return array();
-		}
-    }
     
-    /**
-     * Sets $connectionGroup.
-     * @param object $connectionGroup
-     * @see entry::$connectionGroup
-     */
-    public function setConnectionGroup($connectionGroup)
-    {
-		/* 
-		 * The form to capture the user IDs and relationship stores the data
-		 * in a two-dementional array as follows:
-		 * 		array[0]
-		 * 			array[entry_id]
-		 * 				 [relation]
-		 * 
-		 * This loop re-writes the data into a sine associative array entry_id => relation.
-		 * That makes it easy to use a foreach as $key => $value.
-		 */
-		if ($connectionGroup)
-		{
-			foreach($connectionGroup as $connection)
-			{
-				$array[$connection['entry_id']] .= $connection['relation'];
-			}
-		}
-		$this->options['connection_group'] = $array;
-    }
-    
-	
-	
-	
 	public function getLogoDisplay()
     {
         return $this->logoDisplay;
@@ -1491,9 +1498,6 @@ class cnEntry
     {
         $this->options['logo']['name'] = $logoName;
     }
-	
-	
-	
 	
     /**
      * Returns $imageDisplay.
@@ -1638,6 +1642,11 @@ class cnEntry
 		
 	}
 	
+	public function getSortColumn()
+	{
+		return $this->sortColumn;
+	}
+	
 	public function getEditedBy()
 	{
 		$editedBy = get_userdata($this->editedBy);
@@ -1676,7 +1685,7 @@ class cnEntry
      * @param object $options
      * @see entry::$options
      */
-    private function setOptions()
+    private function serializeOptions()
     {
         $this->options = serialize($this->options);
     }
@@ -1698,34 +1707,28 @@ class cnEntry
 	{
 		global $wpdb, $connections;
 		
-		//$this->addresses = serialize($this->addresses);
-		//$this->phoneNumbers = serialize($this->phoneNumbers);
-		//$this->emailAddresses = serialize($this->emailAddresses);
-		//$this->im = serialize($this->im);
-		//$this->socialMedia = serialize($this->socialMedia);
-		//$this->websites = serialize($this->websites);
-		$this->setOptions();
+		$this->serializeOptions();
 		
 		// Ensure fields that should be empty depending on the entry type.
 		switch ($this->getEntryType())
 		{
 			case 'individual':
-				$this->groupName = '';
-				$this->connectionGroup = '';
+				$this->familyName = '';
+				$this->familyMembers = '';
 			break;
 			
 			case 'organization':
-				$this->groupName = '';
+				$this->familyName = '';
 				$this->firstName = '';
 				$this->middleName = '';
 				$this->lastName = '';
 				$this->title = '';
-				$this->connectionGroup = '';
+				$this->familyMembers = '';
 				$this->birthday = '';
 				$this->anniversary = '';
 			break;
 			
-			case 'connection_group':
+			case 'family':
 				$this->firstName = '';
 				$this->middleName = '';
 				$this->lastName = '';
@@ -1736,7 +1739,7 @@ class cnEntry
 			
 			default:
 				$this->entryType = 'individual';
-				$this->groupName = '';
+				$this->familyName = '';
 			break;
 		}
 		
@@ -1753,7 +1756,7 @@ class cnEntry
 											department			= "%s",
 											contact_first_name	= "%s",
 											contact_last_name	= "%s",
-											group_name			= "%s",
+											family_name			= "%s",
 											visibility			= "%s",
 											birthday			= "%s",
 											anniversary			= "%s",
@@ -1779,7 +1782,7 @@ class cnEntry
 											$this->department,
 											$this->contactFirstName,
 											$this->contactLastName,
-											$this->groupName,
+											$this->familyName,
 											$this->visibility,
 											$this->birthday,
 											$this->anniversary,
@@ -1802,34 +1805,28 @@ class cnEntry
 	{
 		global $wpdb, $connections;
 		
-		//$this->addresses = serialize($this->addresses);
-		//$this->phoneNumbers = serialize($this->phoneNumbers);
-		//$this->emailAddresses = serialize($this->emailAddresses);
-		//$this->im = serialize($this->im);
-		//$this->socialMedia = serialize($this->socialMedia);
-		//$this->websites = serialize($this->websites);
-		$this->setOptions();
+		$this->serializeOptions();
 		
 		// Ensure fields that should be empty depending on the entry type.
 		switch ($this->getEntryType())
 		{
 			case 'individual':
-				$this->groupName = '';
-				$this->connectionGroup = '';
+				$this->familyName = '';
+				$this->familyMembers = '';
 			break;
 			
 			case 'organization':
-				$this->groupName = '';
+				$this->familyName = '';
 				$this->firstName = '';
 				$this->middleName = '';
 				$this->lastName = '';
 				$this->title = '';
-				$this->connectionGroup = '';
+				$this->familyMembers = '';
 				$this->birthday = '';
 				$this->anniversary = '';
 			break;
 			
-			case 'connection_group':
+			case 'family':
 				$this->firstName = '';
 				$this->middleName = '';
 				$this->lastName = '';
@@ -1840,7 +1837,7 @@ class cnEntry
 			
 			default:
 				$this->entryType = 'individual';
-				$this->groupName = '';
+				$this->familyName = '';
 			break;
 		}
 		
@@ -1851,7 +1848,7 @@ class cnEntry
 											date_added   		= "%d",
 											entry_type  		= "%s",
 											visibility  		= "%s",
-											group_name			= "%s",
+											family_name			= "%s",
 											honorable_prefix	= "%s",
 											first_name			= "%s",
 											middle_name 		= "%s",
@@ -1881,7 +1878,7 @@ class cnEntry
 											current_time('timestamp'),
 											$this->entryType,
 											$this->visibility,
-											$this->groupName,
+											$this->familyName,
 											'',
 											$this->firstName,
 											$this->middleName,

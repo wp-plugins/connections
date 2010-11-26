@@ -87,7 +87,7 @@ function connectionsShowHelpPage()
 		In the first column of drop downs select each family member and in the second column of 
 		drop downs select their relationships.</p>
 		
-		<p>Finally, just add a the following attribute to the shortcode like such; [connections_list list_type='connection_group']</p>
+		<p>Finally, just add a the following attribute to the shortcode like such; [connections_list list_type='family']</p>
 		
 	<h3><a name="tocIdShortCodeInstructions"></a>Shortcode Instructions:</h3>
 	
@@ -227,12 +227,14 @@ function connectionsShowHelpPage()
 	</pre>
 	
 	<p><a name="cn_attr_list_type"></a>The <em>list_type</em> option allows you to show all
-	entries or you can choose to show only individuals,
-	organizations and connection groups.</p>
+	entries or you can choose to show only individuals, organizations and families. You can also show multiple entry types
+	by listing the types you wish to display separated by commas. Setting the list_type option will also display the active
+	template assigned to the entry type set in the template manager. If multiple entry types are specified, the template for
+	the entry type listed first will be used to display the entry list.</p>
 	
 	<p>Use to show all entry types.</p>
 	<pre>
-	<code>[connections_list list_type='all']</code>
+	<code>[connections_list]</code>
 	</pre>
 	
 	
@@ -248,11 +250,15 @@ function connectionsShowHelpPage()
 	</pre>
 	
 	
-	<p>Use to show only entries set as famlies.</p>
+	<p>Use to show only entries set as families.</p>
 	<pre>
 	<code>[connections_list list_type='family']</code>
 	</pre>
 	
+	<p>Use to show only entries set as individual and family.</p>
+	<pre>
+	<code>[connections_list list_type='individuals,family']</code>
+	</pre>
 	
 
 	<p><a name="cn_attr_template_name"></a>
@@ -297,6 +303,7 @@ function connectionsShowHelpPage()
 				<li>date_modified</li>
 				<li>first_name</li>
 				<li>last_name</li>
+				<li>title</li>
 				<li>organization</li>
 				<li>department</li>
 				<li>city</li>
@@ -537,7 +544,7 @@ function connectionsShowHelpPage()
 	if the entry type in an Organization or Connection Group
 	this will return the Organization/Connection Group name instead.</p>
 	
-	<pre><code>$entry-&gt;getGroupName()</code></pre>
+	<pre><code>$entry-&gt;getFamilyName()</code></pre>
 	<p>Returns the Connection Group name.</p>
 	
 	<pre><code>$entry-&gt;getConnectionGroup()</code></pre>
