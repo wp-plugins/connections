@@ -244,8 +244,6 @@ if (!class_exists('connectionsLoad'))
 			if ($this->options->getDefaultTemplatesSet() === NULL) $this->options->setDefaultTemplates();
 			
 			$this->options->setDefaultCapabilities();
-			$this->options->setVersion(CN_CURRENT_VERSION);
-			$this->options->setDBVersion(CN_DB_VERSION);
 			
 			$this->options->saveOptions();
 		}
@@ -795,13 +793,21 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function showPage()
 		{
-			if ($this->options->getVersion() < CN_CURRENT_VERSION)
+			if ( $this->options->getVersion() == NULL )
+			{
+				$this->options->setVersion(CN_CURRENT_VERSION);
+			}
+			elseif  ( $this->options->getVersion() < CN_CURRENT_VERSION )
 			{
 				echo '<div id="message" class="error"><p><strong>ERROR: </strong>The version of Connections installed is newer than the version last activated. Please deactive and then reactivate Connections.</p></div>';
 				return;
 			}
 			
-			if ($this->options->getDBVersion() < CN_DB_VERSION)
+			if ( $this->options->getDBVersion() == NULL )
+			{
+				$this->options->setDBVersion(CN_DB_VERSION);
+			}
+			elseif ($this->options->getDBVersion() < CN_DB_VERSION)
 			{
 				include_once ( dirname (__FILE__) . '/includes/inc.upgrade.php' );
 				connectionsShowUpgradePage();

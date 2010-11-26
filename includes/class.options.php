@@ -456,7 +456,14 @@ class cnOptions
      */
     public function getVersion()
     {
-        return $this->version;
+        if ( empty($this->version) )
+		{
+			return NULL;
+		}
+		else
+		{
+			return $this->version;
+		}
     }
     
     /**
@@ -476,10 +483,9 @@ class cnOptions
      */
     public function getDBVersion()
     {
-        // The db version wasn't in plug-in versions prior to 0.5.48 so return 0.0.9.
-		if ( empty($this->dbVersion) )
+        if ( empty($this->dbVersion) )
 		{
-			return '0.0.9';
+			return NULL;
 		}
 		else
 		{
