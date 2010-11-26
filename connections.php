@@ -442,7 +442,7 @@ if (!class_exists('connectionsLoad'))
 					date_added tinytext NOT NULL,
 			        entry_type tinytext NOT NULL,
 					visibility tinytext NOT NULL,
-					group_name tinytext NOT NULL,
+					family_name tinytext NOT NULL,
 					honorable_prefix tinytext NOT NULL,
 					first_name tinytext NOT NULL,
 					middle_name tinytext NOT NULL,

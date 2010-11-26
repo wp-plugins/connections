@@ -90,7 +90,23 @@ function connectionsShowTemplatesPage()
 						
 						<td class="template_instructions" colspan="2">
 							<p><strong>Instructions:</strong></p>
-							<p>blah blah blah</p>
+							<p>
+								By default the <code>[connections_list]</code> shortcode will show all entries types. To change the template
+								used when displaying all entry types, select the "All" tab and activate the template. When the <code>list_type</code>
+								shortcode attribute is used to filter the entries based on the entry type, the template for that entry type will be used.
+								To change the template used for specific entry type, select the appropriate tab and then activate the template. If multiple
+								entry types are specified in the <code>list_type</code> shortcode attribute, the template for the entry type listed first
+								will be used to display the entry list.
+							</p>
+							
+							<p>
+								The <code>[upcoming_list]</code> shortcode which displays the upcoming anniversaries and birthdays will be displayed with the template
+								that is activated under their respective tabs.
+							</p>
+							
+							<p>
+								The current active template for each template type can be overridden by using the the <code>template</code> shortcode attribute.
+							</p>
 						</td>
 					</tr>
 					
