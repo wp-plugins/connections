@@ -149,7 +149,7 @@ function _connections_list($atts, $content=null) {
 	
 	$results = $connections->retrieve->entries($atts);
 	
-	print_r($connections->lastQuery);
+	//print_r($connections->lastQuery);
 	
 	//if ( !empty($results) )
 	//{

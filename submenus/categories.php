@@ -57,7 +57,7 @@ function connectionsShowCategoriesPage()
 						$categoryObjects->showForm($connections->retrieve->category($id));
 					?>
 					
-					<p class="submit"><input class="button-primary" type="submit" value="Update Category" name="update" class="button"/></p>
+					<p class="submit"><a class="button button-warning" href="admin.php?page=connections_categories">Cancel</a> <input class="button-primary" type="submit" value="Update Category" name="update" class="button"/></p>
 					
 					<?php $form->close(); ?>
 			
@@ -128,6 +128,21 @@ function connectionsShowCategoriesPage()
 										</tbody>
 									</table>
 								<?php $form->close(); ?>
+								
+								<script type="text/javascript">
+									/* <![CDATA[ */
+									(function($){
+										$(document).ready(function(){
+											$('#doaction, #doaction2').click(function(){
+												if ( $('select[name^="action"]').val() == 'delete' ) {
+													var m = 'You are about to delete the selected category(ies).\n  \'Cancel\' to stop, \'OK\' to delete.';
+													return showNotice.warn(m);
+												}
+											});
+										});
+									})(jQuery);
+									/* ]]> */
+								</script>
 								
 								<div class="form-wrap">
 								<p><strong>Note:</strong><br/>Deleting a category which has been assigned to an entry will reassign that entry as <strong>Uncategorized</strong>.</p>

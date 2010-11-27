@@ -909,7 +909,7 @@ class cnCategoryObjects
 			$out .= '<td class="name column-name"><a class="row-title" href="' . $editToken . '">' . $pad . $category->getName() . '</a><br />';
 				$out .= '<div class="row-actions">';
 					$out .= '<span class="edit"><a href="' . $editToken . '">Edit</a> | </span>';
-					$out .= '<span class="delete"><a href="' . $deleteToken . '">Delete</a></span>';
+					$out .= '<span class="delete"><a onclick="return confirm(\'You are about to delete this category. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="' . $deleteToken . '">Delete</a></span>';
 				$out .= '</div>';
 			$out .= '</td>';
 			$out .= '<td class="description column-description">' . $category->getDescription() . '</td>';
