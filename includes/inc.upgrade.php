@@ -73,7 +73,7 @@ function cnRunDBUpgrade()
 		
 		if (version_compare($dbVersion, '0.1.0', '<'))
 		{
-			echo '<h4>Upgrade from database version ' . $connections->options->getDBVersion() . ' to database version ' . CN_DB_VERSION . ".</h4>\n";
+			echo '<h4>Upgrade from database version ' . $connections->options->getDBVersion() . ' to database version 0.1.0 ' . ".</h4>\n";
 			echo '<ul>';
 			
 			echo '<li>Changing "id" type-length/values to BIGINT(20)' . "</li>\n";
@@ -135,32 +135,32 @@ function cnRunDBUpgrade()
 		
 		if (version_compare($dbVersion, '0.1.1', '<'))
 		{
-			echo '<h4>Upgrade from database version ' . $connections->options->getDBVersion() . ' to database version ' . CN_DB_VERSION . ".</h4>\n";
-			echo '<h4>Setting all current entries to the "approved" status.' . "</h4>\n";
+			echo '<h4>Upgrade from database version ' . $connections->options->getDBVersion() . ' to database version 0.1.1 ' . ".</h4>\n";
 			
-			$results = $connections->retrieve->entries();
+			//echo '<h4>Setting all current entries to the "approved" status.' . "</h4>\n";
+			/*$results = $connections->retrieve->entries();
 			
 			foreach ($results as $result)
 			{
 				$entry = new cnEntry($result);
 				$entry->update();
-			}
+			}*/
 			
 			$connections->options->setDBVersion('0.1.1');
 		}
 		
 		if (version_compare($dbVersion, '0.1.2', '<'))
 		{
-			echo '<h4>Upgrade from database version ' . $connections->options->getDBVersion() . ' to database version ' . CN_DB_VERSION . ".</h4>\n";
-			echo '<h4>Setting all current entries `entry_type` column.' . "</h4>\n";
+			echo '<h4>Upgrade from database version ' . $connections->options->getDBVersion() . ' to database version 0.1.2 ' . ".</h4>\n";
 			
-			$results = $connections->retrieve->entries();
+			//echo '<h4>Setting all current entries `entry_type` column.' . "</h4>\n";
+			/*$results = $connections->retrieve->entries();
 			
 			foreach ($results as $result)
 			{
 				$entry = new cnEntry($result);
 				$entry->update();
-			}
+			}*/
 			
 			$connections->options->setDBVersion('0.1.2');
 		}
@@ -168,30 +168,40 @@ function cnRunDBUpgrade()
 		if (version_compare($dbVersion, '0.1.3', '<'))
 		{
 			echo '<h4>Upgrade from database version ' . $connections->options->getDBVersion() . ' to database version ' . CN_DB_VERSION . ".</h4>\n";
-			echo '<h4>Changing .' . "</h4>\n";
+			//echo '<h4>Changing .' . "</h4>\n";
 			
 			echo '<ul>';
 			echo '<li>Changing column name from group_name to family_name...' . "</li>\n";
 			if (cnAlterTable(CN_ENTRY_TABLE, 'CHANGE COLUMN group_name family_name tinytext NOT NULL')) echo '<ul><li>SUCCESS</li></ul>';
 			
-			echo '<li>Changing entry type connections_group to entry type family...' . "</li>\n";
-			$results = $connections->retrieve->entries();
+			//echo '<li>Changing entry type connections_group to entry type family...' . "</li>\n";
+			/*$results = $connections->retrieve->entries();
 			
 			foreach ($results as $result)
 			{
 				$entry = new cnEntry($result);
 				$entry->update();
-			}
+			}*/
 			
 			echo '</ul>';
 			
 			$connections->options->setDBVersion('0.1.3');
 		}
 		
+		echo '<h4>Updating entries to the new database stucture.' . "</h4>\n";
+		
+		$results = $connections->retrieve->entries();
+		
+		foreach ($results as $result)
+		{
+			$entry = new cnEntry($result);
+			$entry->update();
+		}
+		
 		echo '<h4>Upgrade completed.' . "</h4>\n";
 		echo '<h4><a href="' . $urlPath . '">Continue</a></h4>';
-		$wpdb->hide_errors();
 		
+		$wpdb->hide_errors();
 	}
 }
 

@@ -469,7 +469,7 @@ function connectionsShowViewPage()
 							</tbody>
 				        </table>
 						</form>
-						<p style="font-size:smaller; text-align:center">This is version <?php echo $connections->options->getVersion(); ?> of Connections.</p>
+						<p style="font-size:smaller; text-align:center">This is version <?php echo $connections->options->getVersion(), '-', $connections->options->getDBVersion(); ?> of Connections.</p>
 						
 						
 						<form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="text-align:center">

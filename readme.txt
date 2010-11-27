@@ -2,14 +2,19 @@
 Contributors: shazahm1@hotmail.com
 Donate link: http://connections-pro.com/
 Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, business directory, business-directory, church, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, staff, user, users, vcard
-Requires at least: 2.8
+Requires at least: 3.0
 Tested up to: 3.0
 Stable tag: 0.7.0.4
 Connections is a simple to use directory manager for an addressbook, business, staff or church directory.
 
 == Description ==
 
-Connections is a simple to use versatile directory manager. You can use it for an address book, create a church directory, business directory, staff directory and even profiles pages using templates. If none of the default templates suit your needs, you can easily create your own custom template. Want to show a list of upcoming birthdays and anniversaries, no problem, you can do that too. Take a look at the screen shots and the samples to see all Connections can do.
+Connections is a simple to use and versatile directory manager. You can use it for an address book, create a church directory, business directory, staff directory and even profiles pages by using templates. If none of the default templates suit your needs, you can easily create your own custom template. Want to show a list of upcoming birthdays and anniversaries, no problem, you can do that too. Take a look at the screen shots and the samples to see all Connections can do.
+
+= Requirements =
+* **WordPress version:** 3.0
+* **PHP version:** >= 5.1.0
+* Upgrading from version 0.6.1 and newer is supported. Previous version must upgrade to 0.6.1 before upgrading to the current version.
 
 = Admin Features =
 * Built-in help page
