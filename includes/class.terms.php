@@ -109,7 +109,7 @@ class cnTerms
 		
 		if ( !$term )
 		{
-			return false;
+			return FALSE;
 		}
 		else
 		{
@@ -212,6 +212,53 @@ class cnTerms
 		return $termChildrenIDs;
 		//return $_CNpreviousIDs;
 		//return $this->termChildrenIDs;
+	}
+	
+	/**
+	 * Returns all the children terms of the parent term recursively by 'term_id', 'name' or 'slug'.
+	 * 
+	 * @param string $field
+	 * @param string $value
+	 * @param string $taxonomy
+	 * @param object $_previousResults [optional]
+	 * 
+	 * @return array
+	 */
+	public function getTermChildrenBy($field, $value, $taxonomy, $_previousResults = NULL)
+	{
+		global $wpdb;
+		
+		// Only run this query if the field is not term_id.
+		if ( $field !== 'term_id')
+		{
+			$queryTermID = $wpdb->prepare( "SELECT DISTINCT tt.term_id from " . CN_TERMS_TABLE . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE . " AS tt ON t.term_id = tt.term_id WHERE $field = %s ", $value);
+			//print_r($queryTermID . '<br /><br />');
+			
+			$termID = $wpdb->get_var($queryTermID);
+			//print_r($termID . '<br /><br />');
+		}
+		else
+		{
+			$termID = $value;
+		}
+		
+		
+		$queryChildrenIDs = $wpdb->prepare( "SELECT DISTINCT * from " . CN_TERMS_TABLE . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE . " AS tt ON t.term_id = tt.term_id WHERE parent = %d ", $termID);
+		//print_r($queryChildrenIDs . '<br /><br />');
+		
+		$terms = $wpdb->get_results($queryChildrenIDs);
+		
+		foreach ( (array) $terms as $term)
+		{
+			// If the term is a root parent, skip continue.
+			if ( $term->parent == 0 ) continue;
+			
+			$result = $this->getTermChildrenBy('term_id', $term->term_id, $taxonomy, $_previousResults);
+			
+			$termChildren = array_merge( (array) $terms, (array) $result);
+		}
+		
+		return $termChildren;
 	}
 	
 	/**

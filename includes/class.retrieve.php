@@ -21,6 +21,7 @@ class cnRetrieve
 			
 			// Common defaults whether user is logged in or not.
 			$defaultAttr['id'] = NULL;
+			$defaultAttr['category_name'] = NULL;
 			$defaultAttr['wp_current_category'] = FALSE;
 			$defaultAttr['allow_public_override'] = FALSE;
 			$defaultAttr['private_override'] = FALSE;
@@ -57,30 +58,59 @@ class cnRetrieve
 			{
 				$wpCategoryNames[] = $wpCategory->cat_name;
 			}
-			
-			$catNameString = implode("', '", $wpCategoryNames);
-			
-			unset( $wpCategoryNames );
 		}
+		
+		if ( !empty($atts['category_name']) )
+		{
+			// If value is a string convert to an array.
+			if ( !is_array($atts['category_name']) )
+			{
+				//$atts['category_name'] = str_replace(' ', '', $atts['category_name']);
 				
+				$atts['category_name'] = explode(',', $atts['category_name']);
+			}
+			
+			foreach ( $atts['category_name'] as $categoryName )
+			{
+				// Add the parent category to the array.
+				$categoryNames[] = $categoryName;
+				
+				// Retrieve the children categories
+				$results = $this->categoryChildren('name', $categoryName);
+				
+				foreach ( (array) $results as $term )
+				{
+					$categoryNames[] = $term->name;
+				}
+			}
+		}
+		
+		// Create the query string to query of the category names.
+		$catNameString = implode("', '", array_merge( (array) $wpCategoryNames, (array) $categoryNames ) );
+		unset( $wpCategoryNames );
+		unset( $categoryNames );
+		
 		if ( !empty($atts['category']) )
 		{
-			// Trim the space characters if present.
-			$atts['category'] = str_replace(' ', '', $atts['category']);
-			
-			// Convert to array.
-			$atts['category'] = explode(',', $atts['category']);
+			// If value is a string, string the white space and covert to an array.
+			if ( !is_array($atts['category']) )
+			{
+				$atts['category'] = str_replace(' ', '', $atts['category']);
+				
+				$atts['category'] = explode(',', $atts['category']);
+			}
 			
 			foreach ($atts['category'] as $categoryID)
 			{
-				// Retrieve the children category IDs
-				$results = $this->categoryChildrenIDs($categoryID);
-				
 				// Add the parent category ID to the array.
 				$categoryIDs[] = $categoryID;
-				if (!empty($results))
+				
+				// Retrieve the children categories
+				$results = $this->categoryChildren('term_id', $categoryID);
+				
+				foreach ( (array) $results as $term )
 				{
-					$categoryIDs = array_merge($results, $categoryIDs);
+					$categoryIDs[] = $term->term_id;
 				}
 			}
 			
@@ -574,16 +604,16 @@ class cnRetrieve
 	}
 	
 	/**
-	 * Retrieve the children IDs of the supplied parent ID.
+	 * Retrieve the children of the supplied parent.
 	 * 
 	 * @param interger $id
 	 * @return array
 	 */
-	public function categoryChildrenIDs($id)
+	public function categoryChildren($field, $value)
 	{
 		global $connections;
 		
-		return $connections->term->getTermChildrenIDs($id, 'category');
+		return $connections->term->getTermChildrenBy($field, $value, 'category');
 	}
 	
 }

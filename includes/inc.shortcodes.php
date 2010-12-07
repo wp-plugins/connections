@@ -34,8 +34,9 @@ function _connections_list($atts, $content=null) {
 	$template = new stdClass();
 	
 	$atts = shortcode_atts( array(
-				'id' => null,
-				'category' => null,
+				'id' => NULL,
+				'category' => NULL,
+				'category_name' => NULL,
 				'wp_current_category' => 'false',
 				'allow_public_override' => 'false',
 				'private_override' => 'false',
@@ -149,7 +150,7 @@ function _connections_list($atts, $content=null) {
 	
 	$results = $connections->retrieve->entries($atts);
 	
-	//print_r($connections->lastQuery);
+	print_r($connections->lastQuery);
 	
 	//if ( !empty($results) )
 	//{
