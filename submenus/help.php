@@ -62,7 +62,7 @@ function connectionsShowHelpPage()
 		
 		<h4><a name="tocIdDisplay"></a>Display</h4>
 		<p>To display the directory in a page or post you must use a shortcode. 
-		The shortcode is <code>[connections_list]</code>. You can also display a list of upcoming anniversaries and birthdays using 
+		The shortcode is <code>[connections]</code>. You can also display a list of upcoming anniversaries and birthdays using 
 		<code>[upcoming_list]</code>. Both shortcodes have many options to customize the display
 		of both lists. See the <a href="#tocIdShortCodeInstructions">Shortcode Instructions</a> section for additonal instructions.</p>
 		
@@ -87,7 +87,7 @@ function connectionsShowHelpPage()
 		In the first column of drop downs select each family member and in the second column of 
 		drop downs select their relationships.</p>
 		
-		<p>Finally, just add a the following attribute to the shortcode like such; [connections_list list_type='family']</p>
+		<p>Finally, just add a the following attribute to the shortcode like such; [connections list_type='family']</p>
 		
 	<h3><a name="tocIdShortCodeInstructions"></a>Shortcode Instructions:</h3>
 	
@@ -95,7 +95,7 @@ function connectionsShowHelpPage()
 	shortcode text and any of the options outlined below in
 	the page/post content area.</p>
 	<pre>
-	<code>[connections_list]</code>
+	<code>[connections]</code>
 	</pre>
 	
 	<p>This shortcode has many options to customize the content and display of the list.
@@ -105,6 +105,10 @@ function connectionsShowHelpPage()
 		<li><a href="#cn_attr_id">id</a></li>
 			
 		<li><a href="#cn_attr_category">category</a></li>
+		
+		<li><a href="#cn_attr_exclude_category">exclude_category</a></li>
+		
+		<li><a href="#cn_attr_category_name">category_name</a></li>
 		
 		<li><a href="#cn_attr_wp_current_category">wp_current_category</a></li>
 	
@@ -140,8 +144,8 @@ function connectionsShowHelpPage()
 		be found in the admin by showing the details for an
 		entry. It will be labeled <strong>Entry ID:</strong></p>
 	
-		<p><code>[connections_list id=2]</code></p>
-		<p><code>[connections_list id='2,12,37']</code></p>
+		<p><code>[connections id=2]</code></p>
+		<p><code>[connections id='2,12,37']</code></p>
 		
 	</fieldset>
 	
@@ -153,12 +157,46 @@ function connectionsShowHelpPage()
 		and all children categories. The category ID can be found on the Category page in the admin. 
 		the default is to show all available categories.</p>
 		
-		<p><code>[connections_list category=12]</code></p>
+		<p><code>[connections category=12]</code></p>
 		
 		<p>To show entries in multiple specific categories and their children, list the categories by id
-		seperated by commas as show in the following example.</p>
+		seperated by commas as shown in the following example.</p>
 		
-		<p><code>[connections_list category='1,3,9']</code></p>
+		<p><code>[connections category='1,3,9']</code></p>
+		
+		<p><strong>NOTE:</strong> This attribute is an operational OR function. An entry will be shown if it is in any one of the specified categories
+		or one of their children categories.</p>
+	</fieldset>
+	
+	<a name="cn_attr_exclude_category"></a>
+	<fieldset>
+		<legend>exclude_category</legend>
+		
+		<p>The <em>exclude_category</em> option allows you to exclude specific categories from the entry list.</p>
+		
+		<p><code>[connections exclude_category='12']</code></p>
+		
+		<p>To exclude entries in multiple specific categories.</p>
+		
+		<p><code>[connections exclude_category='1,3,9']</code></p>
+		
+		<p><strong>NOTE:</strong> This attribute is an operational OR function. If the entry is assigned to multiple
+		categories and one of the categories is not one of those being excluded the entry will still be listed.</p>
+	</fieldset>
+	
+	<a name="cn_attr_category_name"></a>
+	<fieldset>
+		<legend>category_name</legend>
+		
+		<p>The <em>category_name</em> option allows you to show entries within a specific category
+		and all children categories by category name. The category name must be spelled and capitalized 
+		exactly as entered.</p>
+		
+		<p><code>[connections category_name="Category One,Another Category"]</code></p>
+		
+		<p>To show entries in multiple specific categories and their children, list the categories by name
+		seperated by commas. Make sure they is no space before or after the comma but you should include any spaces
+		and other punctuation in the category name</p>
 		
 		<p><strong>NOTE:</strong> This attribute is an operational OR function. An entry will be shown if it is in any one of the specified categories
 		or one of their children categories.</p>
@@ -171,7 +209,7 @@ function connectionsShowHelpPage()
 		<p>If the shortcode is used on a post and <em>wp_current_category</em> is set to TRUE, the only 
 		   entries that will be shown are those that have the same exact name as the categories that are assigned to the post.</p>
 	 
-		<p><code>[connections_list wp_current_category='true']</code></p>
+		<p><code>[connections wp_current_category='true']</code></p>
 		
 		<p><strong>NOTE:</strong> In order for this attribute to function, the shortcode must be used on a post and the categories names of both the entry 
 		and the post must be exactly identical.</p>
@@ -185,10 +223,10 @@ function connectionsShowHelpPage()
 	NOTE: this option can be disabled by the site admin.</p>
 
 	<pre>
-	<code>[connections_list private_override='true']</code>
+	<code>[connections private_override='true']</code>
 	</pre>
 	<pre>
-	<code>[connections_list id=2 private_override='true']</code>
+	<code>[connections id=2 private_override='true']</code>
 	</pre>
 	
 	<p><a name="cn_attr_public_override"></a>The <em>public_override</em> option allows you to
@@ -199,7 +237,7 @@ function connectionsShowHelpPage()
 	a role the is permitted to view public entries. NOTE: this option can be disabled by the site admin.</p>
 
 	<pre>
-	<code>[connections_list public_override='true']</code>
+	<code>[connections public_override='true']</code>
 	</pre>
 	
 	<p><a name="cn_attr_show_alphaindex"></a>The <em>show_alphaindex</em> option inserts an A
@@ -207,7 +245,7 @@ function connectionsShowHelpPage()
 	is useful if you have many entries.</p>
 
 	<pre>
-	<code>[connections_list show_alphaindex='true']</code>
+	<code>[connections show_alphaindex='true']</code>
 	</pre>
 	
 	<p><a name="cn_attr_repeat_alphaindex"></a>The <em>repeat_alphaindex</em> option inserts an A
@@ -216,14 +254,14 @@ function connectionsShowHelpPage()
 	shortcode attribute is set to true</p>
 
 	<pre>
-	<code>[connections_list repeat_alphaindex='true']</code>
+	<code>[connections repeat_alphaindex='true']</code>
 	</pre>
 	
 	<p><a name="cn_attr_show_alphahead"></a>The <em>show_alphahead</em> option inserts the current character
 	at the beginning of each character group.</p>
 
 	<pre>
-	<code>[connections_list show_alphahead='true']</code>
+	<code>[connections show_alphahead='true']</code>
 	</pre>
 	
 	<p><a name="cn_attr_list_type"></a>The <em>list_type</em> option allows you to show all
@@ -234,30 +272,30 @@ function connectionsShowHelpPage()
 	
 	<p>Use to show all entry types.</p>
 	<pre>
-	<code>[connections_list]</code>
+	<code>[connections]</code>
 	</pre>
 	
 	
 	<p>Use to show only entries set as an individual.</p>
 	<pre>
-	<code>[connections_list list_type='individual']</code>
+	<code>[connections list_type='individual']</code>
 	</pre>
 	
 	
 	<p>Use to show only entries set as an organization.</p>
 	<pre>
-	<code>[connections_list list_type='organization']</code>
+	<code>[connections list_type='organization']</code>
 	</pre>
 	
 	
 	<p>Use to show only entries set as families.</p>
 	<pre>
-	<code>[connections_list list_type='family']</code>
+	<code>[connections list_type='family']</code>
 	</pre>
 	
 	<p>Use to show only entries set as individual and family.</p>
 	<pre>
-	<code>[connections_list list_type='individuals,family']</code>
+	<code>[connections list_type='individuals,family']</code>
 	</pre>
 	
 
@@ -267,14 +305,14 @@ function connectionsShowHelpPage()
 
 	<p>This will ouput the list in the profile view.</p>
 	<pre>
-	<code>[connections_list template_name='profile']</code>
+	<code>[connections template_name='profile']</code>
 	</pre>
 	
 	
 	<p>This will ouput entry id 2 using the card-single
 	template.</p>
 	<pre>
-	<code>[connections_list id=2 template_name='card-single']</code>
+	<code>[connections id=2 template_name='card-single']</code>
 	</pre>
 	
 	
@@ -287,7 +325,7 @@ function connectionsShowHelpPage()
 	"my-template", leaving off the ".php".</p>
 
 	<pre>
-	<code>[connections_list template_name='my-template']</code>
+	<code>[connections template_name='my-template']</code>
 	</pre>
 	
 	<a name="cn_attr_order_by"></a>
@@ -372,14 +410,14 @@ function connectionsShowHelpPage()
 		</ul>
 		
 		<pre>
-		<code>[connections_list last_name='Zahm']</code>
+		<code>[connections last_name='Zahm']</code>
 		</pre>
 		
 		<p>This will only output a list where the last name is
 		"Zahm". Remember, filters are case sensitive.</p>
 	
 		<pre>
-		<code>[connections_list organization='ACME' department='Accounting']</code>
+		<code>[connections organization='ACME' department='Accounting']</code>
 		</pre>
 		
 		<p>This will only output a list where the organization

@@ -15,7 +15,7 @@ function connectionsEntryList($atts)
 }
 
 /**
- * Register the [connections_list] shortcode
+ * Register the [connections] shortcode
  * 
  * Filters:
  * 		cn_list_atts		=> Alter the shortcode attributes before use. Return associative array.
@@ -24,7 +24,8 @@ function connectionsEntryList($atts)
  * 		cn_no_result_message=> Change the no results message.
  * 		cn_list_index		=> Can be used to modify the index before the output of the list. The entry list results are passed. Return string.
  */
-add_shortcode('connections_list', '_connections_list');
+add_shortcode('connections_list', '_connections_list'); /** @deprecated since version 0.7.0.4 */
+add_shortcode('connections', '_connections_list'); /** @since version 0.7.1.0 */
 function _connections_list($atts, $content=null) {
 	global $wpdb, $connections, $current_user;
 	
@@ -36,6 +37,7 @@ function _connections_list($atts, $content=null) {
 	$atts = shortcode_atts( array(
 				'id' => NULL,
 				'category' => NULL,
+				'exclude_category' => NULL,
 				'category_name' => NULL,
 				'wp_current_category' => 'false',
 				'allow_public_override' => 'false',
@@ -56,8 +58,8 @@ function _connections_list($atts, $content=null) {
 				'state' => NULL,
 				'zip_code' => NULL,
 				'country' => NULL,
-				'template' => NULL,
-				'template_name' => NULL
+				'template' => NULL, /** @since version 0.7.1.0 */
+				'template_name' => NULL /** @deprecated since version 0.7.0.4 */
 				), $atts ) ;
 				
 	/*
@@ -152,142 +154,138 @@ function _connections_list($atts, $content=null) {
 	
 	//print_r($connections->lastQuery);
 	
-	//if ( !empty($results) )
-	//{
-		//$results = array_slice($results, $atts['offest'], $atts['limit'], TRUE);
-		if ( !empty($results) ) $results = apply_filters('cn_list_results', $results);
+	if ( !empty($results) ) $results = apply_filters('cn_list_results', $results);
+	
+	// Prints the template's CSS file.
+	if ( method_exists($template, 'printCSS') ) $out .= $template->printCSS();
+	
+	// Prints the javascript tag in the footer if $template->js path is set
+	if ( method_exists($template, 'printJS') ) $template->printJS();
+	
+	$out = apply_filters('cn_list_before', $out, $results);
+	
+	// If there are no results no need to proceed and output message.
+	if ( empty($results) )
+	{
+		$noResultMessage = 'No results';
+		$noResultMessage = apply_filters('cn_no_result_message', $noResultMessage);
+		return $out . '<p class="cn-no-results">' . $noResultMessage . '</p>';
+	}
+	
+	$out .= '<a name="connections-list-head" style="float: left;"></a>' . "\n";
+	
+	/*
+	 * The alpha index is only displayed if set set to true and not set to repeat using the shortcode attributes.
+	 * If a alpha index is set to repeat, that is handled down separately.
+	 */
+	if ($atts['show_alphaindex'] && !$atts['repeat_alphaindex'])
+	{
+		$index = "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex(). "</div>";
+		$out .= apply_filters('cn_list_index', $index, $results);
+	}
+	
+	$out .=  '<div class="connections-list">' . "\n";
+	
+	foreach ( (array) $results as $row)
+	{
+		//$entry = new cnOutput($row);
+		$entry = new cnvCard($row);
+		//$vCard = new cnvCard($row);
+		$vCard =& $entry;
 		
-		// Prints the template's CSS file.
-		if ( method_exists($template, 'printCSS') ) $out .= $template->printCSS();
-		
-		// Prints the javascript tag in the footer if $template->js path is set
-		if ( method_exists($template, 'printJS') ) $template->printJS();
-		
-		$out = apply_filters('cn_list_before', $out, $results);
-		
-		// If there are no results no need to proceed and output message.
-		if ( empty($results) )
-		{
-			$noResultMessage = 'No results';
-			$noResultMessage = apply_filters('cn_no_result_message', $noResultMessage);
-			return $out . '<p class="cn-no-results">' . $noResultMessage . '</p>';
-		}
-		
-		$out .= '<a name="connections-list-head" style="float: left;"></a>' . "\n";
+		if (isset($continue)) unset($continue);
+		if (isset($cities)) unset($cities);
+		if (isset($states)) unset($states);
+		if (isset($zipcodes)) unset($zipcodes);
+		if (isset($countries)) unset($countries);
+		if (isset($setAnchor)) unset($setAnchor);
 		
 		/*
-		 * The alpha index is only displayed if set set to true and not set to repeat using the shortcode attributes.
-		 * If a alpha index is set to repeat, that is handled down separately.
+		 * Check to make sure there is data stored in the address array.
+		 * Cycle thru each address, building separate arrays for city, state, zip and country.
 		 */
-		if ($atts['show_alphaindex'] && !$atts['repeat_alphaindex'])
+		if ($entry->getAddresses())
 		{
-			$index = "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex(). "</div>";
-			$out .= apply_filters('cn_list_index', $index, $results);
-		}
-		
-		$out .=  '<div class="connections-list">' . "\n";
-		
-		foreach ( (array) $results as $row)
-		{
-			//$entry = new cnOutput($row);
-			$entry = new cnvCard($row);
-			//$vCard = new cnvCard($row);
-			$vCard =& $entry;
-			
-			if (isset($continue)) unset($continue);
-			if (isset($cities)) unset($cities);
-			if (isset($states)) unset($states);
-			if (isset($zipcodes)) unset($zipcodes);
-			if (isset($countries)) unset($countries);
-			if (isset($setAnchor)) unset($setAnchor);
-			
-			/*
-			 * Check to make sure there is data stored in the address array.
-			 * Cycle thru each address, building separate arrays for city, state, zip and country.
-			 */
-			if ($entry->getAddresses())
+			foreach ($entry->getAddresses() as $address)
 			{
-				foreach ($entry->getAddresses() as $address)
-				{
-					if ($address->city != NULL) $cities[] = $address->city;
-					if ($address->state != NULL) $states[] = $address->state;
-					if ($address->zipcode != NULL) $zipcodes[] = $address->zipcode;
-					if ($address->country != NULL) $countries[] = $address->country;
-				}			
-			}
-			
-			/*
-			 * Filter out the entries that are wanted based on the
-			 * filter attributes that may have been used in the shortcode.
-			 * 
-			 * NOTE: The '@' operator is used to suppress PHP generated errors. This is done
-			 * because not every entry will have addresses to populate the arrays created above.
-			 * 
-			 * NOTE: Since the entry class returns all fields escaped, the shortcode filter
-			 * attribute needs to be escaped as well so the comparason between the two functions
-			 * as expected.
-			 */
-			$atts['group_name'] = esc_attr($atts['group_name']);
-			$atts['last_name'] = esc_attr($atts['last_name']);
-			$atts['title'] = esc_attr($atts['title']);
-			$atts['organization'] = esc_attr($atts['organization']);
-			$atts['department'] = esc_attr($atts['department']);
-			
-			//if ($atts['list_type'] != 'all' && $atts['list_type'] != $entry->getEntryType())			$continue = true;
-			if ($entry->getFamilyName() != $atts['group_name'] && $atts['group_name'] != null)			$continue = true;
-			if ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != null)				$continue = true;
-			if ($entry->getTitle() != $atts['title'] && $atts['title'] != null)							$continue = true;
-			if ($entry->getOrganization() != $atts['organization'] && $atts['organization'] != null) 	$continue = true;
-			if ($entry->getDepartment() != $atts['department'] && $atts['department'] != null) 			$continue = true;
-			if (@!in_array($atts['city'], $cities) && $atts['city'] != null) 							$continue = true;
-			if (@!in_array($atts['state'], $states) && $atts['state'] != null) 							$continue = true;
-			if (@!in_array($atts['zip_code'], $zipcodes) && $atts['zip_code'] != null) 					$continue = true;
-			if (@!in_array($atts['country'], $countries) && $atts['country'] != null) 					$continue = true;
-			
-			/*
-			 * If any of the above filters returned true, the script will continue to the next entry.
-			 */
-			if ($continue == true) continue;
-	
-			/*
-			 * Checks the first letter of the last name to see if it is the next
-			 * letter in the alpha array and sets the anchor.
-			 * 
-			 * If the alpha index is set to repeat it will append to the anchor.
-			 * 
-			 * If the alpha head set to true it will append the alpha head to the anchor.
-			 */
-			$currentLetter = strtoupper(mb_substr($entry->getSortColumn(), 0, 1));
-			if ($currentLetter != $previousLetter && $atts['id'] == null) {
-				if ($atts['show_alphaindex']) $setAnchor = '<a class="cn-index-head" name="' . $currentLetter . '"></a>';
-				
-				if ($atts['show_alphaindex'] && $atts['repeat_alphaindex']) $setAnchor .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex() . "</div>";
-				
-				if ($atts['show_alphahead']) $setAnchor .= '<h4 class="cn-alphahead">' . $currentLetter . '</h4>';
-				$previousLetter = $currentLetter;
-			} else {
-				$setAnchor = null;
-			}
-			
-			/*
-			 * The anchor and/or the alpha head is displayed if set to true using the shortcode attributes.
-			 */
-			if ($atts['show_alphaindex'] || $atts['show_alphahead']) $out .= $setAnchor;
-			
-			$alternate == '' ? $alternate = '-alternate' : $alternate = '';
-			
-			
-			$out .= '<div class="cn-list-row' . $alternate . ' vcard ' . $entry->getCategoryClass(TRUE) . '">' . "\n";
-				ob_start();
-				include($template->file);
-			    $out .= ob_get_contents();
-			    ob_end_clean();
-			$out .= '</div>' . "\n";
-						
+				if ($address->city != NULL) $cities[] = $address->city;
+				if ($address->state != NULL) $states[] = $address->state;
+				if ($address->zipcode != NULL) $zipcodes[] = $address->zipcode;
+				if ($address->country != NULL) $countries[] = $address->country;
+			}			
 		}
-		$out .= '<div class="clear"></div>' . "\n";
+		
+		/*
+		 * Filter out the entries that are wanted based on the
+		 * filter attributes that may have been used in the shortcode.
+		 * 
+		 * NOTE: The '@' operator is used to suppress PHP generated errors. This is done
+		 * because not every entry will have addresses to populate the arrays created above.
+		 * 
+		 * NOTE: Since the entry class returns all fields escaped, the shortcode filter
+		 * attribute needs to be escaped as well so the comparason between the two functions
+		 * as expected.
+		 */
+		$atts['group_name'] = esc_attr($atts['group_name']);
+		$atts['last_name'] = esc_attr($atts['last_name']);
+		$atts['title'] = esc_attr($atts['title']);
+		$atts['organization'] = esc_attr($atts['organization']);
+		$atts['department'] = esc_attr($atts['department']);
+		
+		if ($entry->getFamilyName() != $atts['group_name'] && $atts['group_name'] != null)			$continue = true;
+		if ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != null)				$continue = true;
+		if ($entry->getTitle() != $atts['title'] && $atts['title'] != null)							$continue = true;
+		if ($entry->getOrganization() != $atts['organization'] && $atts['organization'] != null) 	$continue = true;
+		if ($entry->getDepartment() != $atts['department'] && $atts['department'] != null) 			$continue = true;
+		if (@!in_array($atts['city'], $cities) && $atts['city'] != null) 							$continue = true;
+		if (@!in_array($atts['state'], $states) && $atts['state'] != null) 							$continue = true;
+		if (@!in_array($atts['zip_code'], $zipcodes) && $atts['zip_code'] != null) 					$continue = true;
+		if (@!in_array($atts['country'], $countries) && $atts['country'] != null) 					$continue = true;
+		
+		/*
+		 * If any of the above filters returned true, the script will continue to the next entry.
+		 */
+		if ($continue == true) continue;
+
+		/*
+		 * Checks the first letter of the last name to see if it is the next
+		 * letter in the alpha array and sets the anchor.
+		 * 
+		 * If the alpha index is set to repeat it will append to the anchor.
+		 * 
+		 * If the alpha head set to true it will append the alpha head to the anchor.
+		 */
+		$currentLetter = strtoupper(mb_substr($entry->getSortColumn(), 0, 1));
+		if ($currentLetter != $previousLetter && $atts['id'] == null) {
+			if ($atts['show_alphaindex']) $setAnchor = '<a class="cn-index-head" name="' . $currentLetter . '"></a>';
+			
+			if ($atts['show_alphaindex'] && $atts['repeat_alphaindex']) $setAnchor .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex() . "</div>";
+			
+			if ($atts['show_alphahead']) $setAnchor .= '<h4 class="cn-alphahead">' . $currentLetter . '</h4>';
+			$previousLetter = $currentLetter;
+		} else {
+			$setAnchor = null;
+		}
+		
+		/*
+		 * The anchor and/or the alpha head is displayed if set to true using the shortcode attributes.
+		 */
+		if ($atts['show_alphaindex'] || $atts['show_alphahead']) $out .= $setAnchor;
+		
+		$alternate == '' ? $alternate = '-alternate' : $alternate = '';
+		
+		
+		$out .= '<div class="cn-list-row' . $alternate . ' vcard ' . $entry->getCategoryClass(TRUE) . '">' . "\n";
+			ob_start();
+			include($template->file);
+		    $out .= ob_get_contents();
+		    ob_end_clean();
 		$out .= '</div>' . "\n";
-	//}
+					
+	}
+	$out .= '<div class="clear"></div>' . "\n";
+	$out .= '</div>' . "\n";
+	
 	return $out;
 	
 }
@@ -394,20 +392,20 @@ function _upcoming_list($atts, $content=null) {
 	*/
 	
 	// Get the current date from WP which should have the current time zone offset.
-	$wpCurrentDate = date( 'Y-m-d', $connections->wpCurrentTime );
+	$wpCurrentDate = date( 'Y-m-d', $connections->options->wpCurrentTime );
 	
 	/*
 	 * 
 	 */
 	$newSQL = "SELECT * FROM ".CN_ENTRY_TABLE." WHERE"
 		. "  (YEAR(DATE_ADD('$wpCurrentDate', INTERVAL ".$atts['days']." DAY))"
-        . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND)) )"
+        . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->options->sqlTimeOffset." SECOND)) )"
         . " - ( MID(DATE_ADD('$wpCurrentDate', INTERVAL ".$atts['days']." DAY),5,6)"
-        . " < MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND),5,6) )"
+        . " < MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->options->sqlTimeOffset." SECOND),5,6) )"
         . " > ( YEAR('$wpCurrentDate')"
-        . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND)) )"
+        . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->options->sqlTimeOffset." SECOND)) )"
         . " - ( MID('$wpCurrentDate',5,6)"
-        . " <= MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND),5,6) )"
+        . " <= MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->options->sqlTimeOffset." SECOND),5,6) )"
 		. $visibilityfilter;
 	
 	$results = $wpdb->get_results($newSQL);
@@ -420,13 +418,13 @@ function _upcoming_list($atts, $content=null) {
 		After a new list is built, it is resorted based on the date.*/
 		foreach ($results as $key => $row)
 		{
-			if ( mktime(23, 59, 59, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', $connections->wpCurrentTime) ) < $connections->wpCurrentTime )
+			if ( mktime(23, 59, 59, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', $connections->options->wpCurrentTime) ) < $connections->options->wpCurrentTime )
 			{
-				$dateSort[] = $row->$atts['list_type'] = mktime(0, 0, 0, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', $connections->wpCurrentTime) + 1 );
+				$dateSort[] = $row->$atts['list_type'] = mktime(0, 0, 0, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', $connections->options->wpCurrentTime) + 1 );
 			}
 			else
 			{
-				$dateSort[] = $row->$atts['list_type'] = mktime(0, 0, 0, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', $connections->wpCurrentTime) );
+				$dateSort[] = $row->$atts['list_type'] = mktime(0, 0, 0, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', $connections->options->wpCurrentTime) );
 			}
 		}
 		

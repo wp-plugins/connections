@@ -103,6 +103,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * FEATURE: Added Skype option under the messenger IDs.
 * FEATURE: Added the option to upload a logo in addition to an image.
 * FEATURE: Latitude and longitude can now be set with each address.
+* FEATURE: Add exclude_category shortcode attribute.
 * BUG: Fixed PHP Warning: Call-time pass-by-reference has been deprecated error in the admin.
 * BUG: The last updated time and date now function correctly.
 * BUG: Fix MySpace spelling typo. Any entries saved with a MySpace link will need to be updated.
@@ -121,6 +122,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * OTHER: Added total record count based on current user permissions.
 * OTHER: Further reduced memory requirements.
 * OTHER: Initiate plugin settings only on activation.
+* OTHER: Shortcode can now be called as [connections]
 
 = 0.7.0.4 7/26/2010 =
 * FEATURE: Add the option to display the front end list in a specified order.

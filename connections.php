@@ -80,21 +80,6 @@ if (!class_exists('connectionsLoad'))
 			get_currentuserinfo();
 			$connections->currentUser->setID($current_user->ID);
 			
-			$connections->wpCurrentTime = current_time('timestamp');
-			$connections->CurrentTime = date('U');
-			
-			/*
-			 * Because MySQL FROM_UNIXTIME returns timestamps adjusted to the local
-			 * timezone it is handy to have the offset so it can be compensated for.
-			 * One example is when using FROM_UNIXTIME, the timestamp returned will
-			 * not be the actual stored timestamp, it will be the timestamp adjusted
-			 * to the timezone set in MySQL.
-			 */
-			$mySQLTimeStamp = $wpdb->get_results("SELECT NOW() as timestamp");
-			$connections->sqlCurrentTime = strtotime($mySQLTimeStamp[0]->timestamp);
-			$connections->sqlTimeOffset = time() - $connections->sqlCurrentTime;
-			
-			
 			if ( is_admin() )
 			{
 				// Calls the methods to load the admin scripts and CSS.
@@ -147,8 +132,8 @@ if (!class_exists('connectionsLoad'))
 			define('CN_TERM_TAXONOMY_TABLE', $wpdb->prefix . 'connections_term_taxonomy');
 			define('CN_TERM_RELATIONSHIP_TABLE', $wpdb->prefix . 'connections_term_relationships');
 			define('CN_BASE_NAME', plugin_basename( dirname(__FILE__)) );
-			define('CN_BASE_PATH', WP_PLUGIN_DIR . '/' . plugin_basename( dirname(__FILE__)));
-			define('CN_BASE_URL', WP_PLUGIN_URL . '/' . plugin_basename( dirname(__FILE__)));
+			define('CN_BASE_PATH', WP_PLUGIN_DIR . '/' . CN_BASE_NAME);
+			define('CN_BASE_URL', WP_PLUGIN_URL . '/' . CN_BASE_NAME);
 			define('CN_TEMPLATE_PATH', CN_BASE_PATH . '/templates');
 			define('CN_TEMPLATE_URL', CN_BASE_URL . '/templates');
 			define('CN_CUSTOM_TEMPLATE_PATH', WP_CONTENT_DIR . '/connections_templates');
@@ -682,8 +667,8 @@ if (!class_exists('connectionsLoad'))
 			/**
 			 * @TODO: Move this CSS to the templates directory.
 			 */
-			wp_register_style('member_template_styles', WP_PLUGIN_URL . '/connections/templates/member_template.css', array(), CN_CURRENT_VERSION);
-			wp_enqueue_style( 'member_template_styles' );
+			//wp_register_style('member_template_styles', WP_PLUGIN_URL . '/connections/templates/member_template.css', array(), CN_CURRENT_VERSION);
+			//wp_enqueue_style( 'member_template_styles' );
 		}
 		
 		/*

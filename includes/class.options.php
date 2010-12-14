@@ -156,11 +156,41 @@ class cnOptions
 	private $activeTemplates;
 	
 	/**
+	 * Current time as reported by PHP in Unix timestamp format.
+	 * 
+	 * @var integer
+	 */
+	public $currentTime;
+	
+	/**
+	 * Current time as reported by WordPress in Unix timestamp format.
+	 * 
+	 * @var integer
+	 */
+	public $wpCurrentTime;
+	
+	/**
+	 * Current time as reported by MySQL in Unix timestamp format.
+	 * 
+	 * @var integer
+	 */
+	public $sqlCurrentTime;
+	
+	/**
+	 * The time offset difference between the PHP time and the MySQL time in Unix timestamp format.
+	 * 
+	 * @var integer
+	 */
+	public $sqlTimeOffset;
+	
+	/**
 	 * Sets up the plugin option properties. Requires the current WP user ID.
 	 * @param interger $userID
 	 */
 	public function __construct()
 	{
+		global $wpdb;
+		
 		$this->options = get_option('connections_options');
 		$this->version = $this->options['version'];
 		$this->dbVersion = $this->options['db_version'];
@@ -202,6 +232,20 @@ class cnOptions
 		
 		$this->defaultTemplatesSet = $this->options['settings']['template']['defaults_set'];
 		$this->activeTemplates = (array) $this->options['settings']['template']['active'];
+		
+		$this->wpCurrentTime = current_time('timestamp');
+		$this->currentTime = date('U');
+		
+		/*
+		 * Because MySQL FROM_UNIXTIME returns timestamps adjusted to the local
+		 * timezone it is handy to have the offset so it can be compensated for.
+		 * One example is when using FROM_UNIXTIME, the timestamp returned will
+		 * not be the actual stored timestamp, it will be the timestamp adjusted
+		 * to the timezone set in MySQL.
+		 */
+		$mySQLTimeStamp = $wpdb->get_results('SELECT NOW() as timestamp');
+		$this->sqlCurrentTime = strtotime( $mySQLTimeStamp[0]->timestamp );
+		$this->sqlTimeOffset = time() - $this->sqlCurrentTime;
 	}
 	
 	/**

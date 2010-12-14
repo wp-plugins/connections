@@ -17,10 +17,13 @@ class cnRetrieve
 		
 		/*
 		 * // START -- Set the default attributes array. \\
+		 * 
+		 * @TODO: Setup default array in single command then apply filters.
 		 */
 			
 			// Common defaults whether user is logged in or not.
 			$defaultAttr['id'] = NULL;
+			$defaultAttr['exclude_category'] = NULL;
 			$defaultAttr['category_name'] = NULL;
 			$defaultAttr['wp_current_category'] = FALSE;
 			$defaultAttr['allow_public_override'] = FALSE;
@@ -47,7 +50,9 @@ class cnRetrieve
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
 		
-		
+		/*
+		 * If in a post get the category names assigned to the post.
+		 */
 		if ( $atts['wp_current_category'] && !is_page() )
 		{
 			// Get the current post categories.
@@ -60,20 +65,21 @@ class cnRetrieve
 			}
 		}
 		
+		/*
+		 * Build and array of the supplied category names and their children.
+		 */
 		if ( !empty($atts['category_name']) )
 		{
 			// If value is a string convert to an array.
 			if ( !is_array($atts['category_name']) )
 			{
-				//$atts['category_name'] = str_replace(' ', '', $atts['category_name']);
-				
 				$atts['category_name'] = explode(',', $atts['category_name']);
 			}
 			
 			foreach ( $atts['category_name'] as $categoryName )
 			{
-				// Add the parent category to the array.
-				$categoryNames[] = $categoryName;
+				// Add the parent category to the array and remove any whitespace from the begining/end of the name in case the user added it when using the shortcode.
+				$categoryNames[] = trim($categoryName);
 				
 				// Retrieve the children categories
 				$results = $this->categoryChildren('name', $categoryName);
@@ -85,11 +91,19 @@ class cnRetrieve
 			}
 		}
 		
-		// Create the query string to query of the category names.
+		/*
+		 * Create the string to be used to query entries based on category names. This will merge the
+		 * category names from the current post categories and the supplied category names and their
+		 * respective children categories.
+		 */
 		$catNameString = implode("', '", array_merge( (array) $wpCategoryNames, (array) $categoryNames ) );
 		unset( $wpCategoryNames );
 		unset( $categoryNames );
 		
+		
+		/*
+		 * Build an array of all the categories and their children based on the supplied category IDs.
+		 */
 		if ( !empty($atts['category']) )
 		{
 			// If value is a string, string the white space and covert to an array.
@@ -114,6 +128,25 @@ class cnRetrieve
 				}
 			}
 			
+			/*
+			 * Exclude the specified categories by ID.
+			 */
+			if ( !empty($atts['exclude_category']) )
+			{
+				// If value is a string, string the white space and covert to an array.
+				if ( !is_array($atts['exclude_category']) )
+				{
+					$atts['exclude_category'] = str_replace(' ', '', $atts['exclude_category']);
+					
+					$atts['exclude_category'] = explode(',', $atts['exclude_category']);
+				}
+				
+				$categoryIDs = array_diff($categoryIDs, $atts['exclude_category']);
+			}
+			
+			/*
+			 * Create the string to be used to query entries based on category IDs.
+			 */
 			$catIDString = implode("', '", $categoryIDs);
 			
 			unset( $categoryIDs );

@@ -1159,13 +1159,13 @@ class cnEntry
 		{
 			global $connections;
 			
-			if ( mktime(23, 59, 59, date('m', $this->anniversary), date('d', $this->anniversary), date('Y', $connections->wpCurrentTime) ) < $connections->wpCurrentTime )
+			if ( mktime(23, 59, 59, date('m', $this->anniversary), date('d', $this->anniversary), date('Y', $connections->options->wpCurrentTime) ) < $connections->options->wpCurrentTime )
 			{
-				$nextADay = mktime(0, 0, 0, date('m', $this->anniversary), date('d', $this->anniversary), date('Y', $connections->wpCurrentTime) + 1 );
+				$nextADay = mktime(0, 0, 0, date('m', $this->anniversary), date('d', $this->anniversary), date('Y', $connections->options->wpCurrentTime) + 1 );
 			}
 			else
 			{
-				$nextADay = mktime(0, 0, 0, date('m', $this->anniversary), date('d', $this->anniversary), date('Y', $connections->wpCurrentTime) );
+				$nextADay = mktime(0, 0, 0, date('m', $this->anniversary), date('d', $this->anniversary), date('Y', $connections->options->wpCurrentTime) );
 			}
 			
 			return date($format, $nextADay);
@@ -1195,13 +1195,13 @@ class cnEntry
 		{		
 			global $connections;
 			
-			if ( mktime(23, 59, 59, date('m', $this->birthday), date('d', $this->birthday), date('Y', $connections->wpCurrentTime) ) < $connections->wpCurrentTime )
+			if ( mktime(23, 59, 59, date('m', $this->birthday), date('d', $this->birthday), date('Y', $connections->options->wpCurrentTime) ) < $connections->options->wpCurrentTime )
 			{
-				$nextBDay = mktime(0, 0, 0, date('m', $this->birthday), date('d', $this->birthday), date('Y', $connections->wpCurrentTime) + 1 );
+				$nextBDay = mktime(0, 0, 0, date('m', $this->birthday), date('d', $this->birthday), date('Y', $connections->options->wpCurrentTime) + 1 );
 			}
 			else
 			{
-				$nextBDay = mktime(0, 0, 0, date('m', $this->birthday), date('d', $this->birthday), date('Y', $connections->wpCurrentTime) );
+				$nextBDay = mktime(0, 0, 0, date('m', $this->birthday), date('d', $this->birthday), date('Y', $connections->options->wpCurrentTime) );
 			}
 			
 			return date($format, $nextBDay);
@@ -1223,13 +1223,13 @@ class cnEntry
     {
 		global $connections;
 			
-		if ( mktime(23, 59, 59, date('m', $this->$type), date('d', $this->$type), date('Y', $connections->wpCurrentTime) ) < $connections->wpCurrentTime )
+		if ( mktime(23, 59, 59, date('m', $this->$type), date('d', $this->$type), date('Y', $connections->options->wpCurrentTime) ) < $connections->options->wpCurrentTime )
 		{
-			$nextUDay = mktime(0, 0, 0, date('m', $this->$type), date('d', $this->$type), date('Y', $connections->wpCurrentTime) + 1 );
+			$nextUDay = mktime(0, 0, 0, date('m', $this->$type), date('d', $this->$type), date('Y', $connections->options->wpCurrentTime) + 1 );
 		}
 		else
 		{
-			$nextUDay = mktime(0, 0, 0, date('m', $this->$type), date('d', $this->$type), date('Y', $connections->wpCurrentTime) );
+			$nextUDay = mktime(0, 0, 0, date('m', $this->$type), date('d', $this->$type), date('Y', $connections->options->wpCurrentTime) );
 		}
 		
 		return date($format, $nextUDay);
