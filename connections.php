@@ -7,7 +7,7 @@ Version: 0.7.1.0
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 
-Connections is based on Little Black Book  1.1.2 by Gerald S. Fuller which was based on
+Connections is based on Little Black Book  1.1.2 by Gerald S. Fuller
 Little Black Book is based on Addressbook 0.7 by Sam Wilson
 
 Update Notice in plugin admin inspired by Changelogger 1.2.8 by Oliver Schlöbe
@@ -43,6 +43,12 @@ if (!class_exists('connectionsLoad'))
 		public $retrieve;
 		public $term;
 		
+		/**
+		 * Holds the string values returned from the add_menu_page & add_submenu_page functions
+		 * @var object
+		 */
+		public $pageHook;
+		
 		public $errorMessages;
 		public $successMessages;
 		
@@ -54,16 +60,16 @@ if (!class_exists('connectionsLoad'))
 			
 			if ( is_admin() )
 			{
+				// Initiate admin messages.
+				$this->initErrorMessages();
+				$this->initSuccessMessages();
+				
 				// Calls the method to load the admin menus.
 				add_action('admin_menu', array (&$this, 'loadAdminMenus'));
 				
 				// Activation/Deactivation hooks
 				register_activation_hook( dirname(__FILE__) . '/connections.php', array(&$this, 'activate') );
 				register_deactivation_hook( dirname(__FILE__) . '/connections.php', array(&$this, 'deactivate') );
-				
-				// Initiate admin messages.
-				$this->initErrorMessages();
-				$this->initSuccessMessages();
 			}
 			
 			//@TODO: Create uninstall method to remove options and tables.
@@ -543,32 +549,55 @@ if (!class_exists('connectionsLoad'))
 			//  DROP TABLE `cnpfresh_connections`, `cnpfresh_connections_terms`, `cnpfresh_connections_term_relationships`, `cnpfresh_connections_term_taxonomy`;
 			//  DELETE FROM `nhonline_freshcnpro`.`cnpfresh_options` WHERE `cnpfresh_options`.`option_name` = 'connections_options'
 		}
-				
+		
+		/**
+		 * Register the admin menus for Connections
+		 */	
 		public function loadAdminMenus()
 		{
-			// If the Connections CSV plugin is activate load the object
+			global $connections;
+			
+			// If the Connections CSV plugin is activated load the object
 			if ( class_exists('connectionsCSVLoad') ) global $connectionsCSV;
 			
-			//Adds Connections to the top level menu.
-			add_menu_page('Connections : Administration', 'Connections', 'connections_view_entry_list', CN_BASE_NAME, array (&$this, 'showPage'), WP_PLUGIN_URL . '/connections/images/menu.png');
+			// Register the top level menu item.
+			$pageHook->topLevel = add_menu_page('Connections : Administration', 'Connections', 'connections_manage', CN_BASE_NAME, array (&$this, 'showPage'), WP_PLUGIN_URL . '/connections/images/menu.png');
 			
-			//Adds the Connections sub-menus.
-			add_submenu_page(CN_BASE_NAME, 'Connections : Entry List', 'Entry List', 'connections_view_entry_list', CN_BASE_NAME, array (&$this, 'showPage'));
-			add_submenu_page(CN_BASE_NAME, 'Connections : Add Entry','Add Entry', 'connections_add_entry', 'connections_add', array (&$this, 'showPage'));
-			add_submenu_page(CN_BASE_NAME, 'Connections : Categories','Categories', 'connections_edit_categories', 'connections_categories', array (&$this, 'showPage'));
+			// Register the sub menu items.
+			$pageHook->manage = add_submenu_page(CN_BASE_NAME, 'Connections : Manage', 'Manage', 'connections_manage', CN_BASE_NAME, array (&$this, 'showPage'));
+			$pageHook->add = add_submenu_page(CN_BASE_NAME, 'Connections : Add Entry','Add Entry', 'connections_add_entry', 'connections&action=add_new', array (&$this, 'showPage'));
+			$pageHook->categories = add_submenu_page(CN_BASE_NAME, 'Connections : Categories','Categories', 'connections_edit_categories', 'connections_categories', array (&$this, 'showPage'));
 			
 			// Show the Connections Import CSV menu item
-			if (isset($connectionsCSV))
-			{
-				global $connectionsCSV;
-				
-				add_submenu_page(CN_BASE_NAME, 'Connections : Import CSV','Import CSV', 'connections_add_entry', 'connections_csv', array ($connectionsCSV, 'showPage'));
-			}
+			if ( isset($connectionsCSV) ) $pageHook->csv = add_submenu_page(CN_BASE_NAME, 'Connections : Import CSV','Import CSV', 'connections_add_entry', 'connections_csv', array ($connectionsCSV, 'showPage'));
 			
-			add_submenu_page(CN_BASE_NAME, 'Connections : Templates','Templates', 'connections_manage_template', 'connections_templates', array (&$this, 'showPage'));
-			add_submenu_page(CN_BASE_NAME, 'Connections : Settings','Settings', 'connections_change_settings', 'connections_settings', array (&$this, 'showPage'));
-			add_submenu_page(CN_BASE_NAME, 'Connections : Roles &amp; Capabilites','Roles', 'connections_change_roles', 'connections_roles', array (&$this, 'showPage'));
-			add_submenu_page(CN_BASE_NAME, 'Connections : Help','Help', 'connections_view_help', 'connections_help', array (&$this, 'showPage'));
+			$pageHook->templates = add_submenu_page(CN_BASE_NAME, 'Connections : Templates','Templates', 'connections_manage_template', 'connections_templates', array (&$this, 'showPage'));
+			$pageHook->settings = add_submenu_page(CN_BASE_NAME, 'Connections : Settings','Settings', 'connections_change_settings', 'connections_settings', array (&$this, 'showPage'));
+			$pageHook->roles = add_submenu_page(CN_BASE_NAME, 'Connections : Roles &amp; Capabilites','Roles', 'connections_change_roles', 'connections_roles', array (&$this, 'showPage'));
+			$pageHook->help = add_submenu_page(CN_BASE_NAME, 'Connections : Help','Help', 'connections_view_help', 'connections_help', array (&$this, 'showPage'));
+			
+			// Register the edit metaboxes.
+			if ( isset($_GET['action']) && !empty($_GET['action']) ) add_action('load-' . $pageHook->manage, array(&$this, 'registerEditMetaboxes'));
+			
+			$connections->pageHook = $pageHook;
+		}
+		
+		/**
+		 * Register the metaboxes.
+		 */
+		public function registerEditMetaboxes()
+		{
+			$form = new cnFormObjects();
+			$form->registerEditMetaboxes();
+			
+			add_filter('screen_layout_columns', array(&$this, 'screenLayout'), 10, 2);
+		}
+		
+		public function screenLayout($columns, $screen)
+		{
+			$columns['toplevel_page_connections'] = 2;
+			
+			return $columns;
 		}
 		
 		/**
@@ -583,7 +612,7 @@ if (!class_exists('connectionsLoad'))
 			
 			if ( in_array($_GET['page'], $allPages) )
 			{
-				wp_enqueue_script('load_ui_js', WP_PLUGIN_URL . '/connections/js/ui.js', array('jquery'), CN_CURRENT_VERSION);
+				wp_enqueue_script('load_ui_js', WP_PLUGIN_URL . '/connections/js/ui.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
 			}
 			
 			/*
@@ -592,9 +621,9 @@ if (!class_exists('connectionsLoad'))
 			 * 
 			 * Load the tinyMCE scripts on these pages.
 			 */
-			$editorPages = array( 'connections', 'connections_add' );
+			$editorPages = array( 'connections' );
 			
-			if ( in_array( $_GET['page'],  $editorPages ) )
+			if ( in_array( $_GET['page'], $editorPages ) )
 			{
 				wp_tiny_mce( 	FALSE , // true makes the editor "teeny"
 								array
@@ -607,6 +636,15 @@ if (!class_exists('connectionsLoad'))
 							);
 			}
 			
+			// Load the core JavaScripts required for meta boxe UI.
+			$metaBoxPages = array( 'connections' );
+			
+			if ( in_array( $_GET['page'], $metaBoxPages ) )
+			{
+				wp_enqueue_script('common');
+				wp_enqueue_script('wp-lists');
+				wp_enqueue_script('postbox');
+			}
 		}
 		
 		/**
@@ -687,7 +725,7 @@ if (!class_exists('connectionsLoad'))
 				break;
 				
 				case 'connections_categories':
-					$cnActions = array( 'admin.php?page=connections_add' => array('Add Entry', 'connections_add_entry') );
+					$cnActions = array( 'admin.php?page=connections&action=add_new' => array('Add Entry', 'connections_add_entry') );
 				break;
 				
 				case 'connections_templates':
@@ -696,7 +734,7 @@ if (!class_exists('connectionsLoad'))
 				case 'connections_csv':
 				case 'connections_help':
 				case 'connections':
-					$cnActions = array( 'admin.php?page=connections_add' => array('Add Entry', 'connections_add_entry'),
+					$cnActions = array( 'admin.php?page=connections&action=add_new' => array('Add Entry', 'connections_add_entry'),
 										'admin.php?page=connections_categories' => array('Add Category<div class="favorite-action"><hr /></div>', 'connections_edit_categories')
 									   );
 				break;
@@ -812,10 +850,11 @@ if (!class_exists('connectionsLoad'))
 					connectionsShowViewPage();
 				break;
 				
-				case 'connections_add':
-					include_once ( dirname (__FILE__) . '/submenus/add.php' );
-					connectionsShowAddPage();
-				break;
+				//case 'connections&action=add_new':
+					//include_once ( dirname (__FILE__) . '/submenus/view.php' );
+					//connectionsShowAddPage();
+					//connectionsShowViewPage();
+				//break;
 				
 				case 'connections_categories':
 					include_once ( dirname (__FILE__) . '/submenus/categories.php' );
@@ -873,7 +912,7 @@ if (!class_exists('connectionsLoad'))
 								{
 									check_admin_referer($form->getNonce('add_entry'), '_cn_wpnonce');
 									processEntry($_POST, 'add');
-									wp_redirect('admin.php?page=connections&display_messages=true');
+									wp_redirect('admin.php?page=connections&action=add_new&display_messages=true');
 								}
 								else
 								{

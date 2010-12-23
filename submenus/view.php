@@ -3,53 +3,151 @@ function connectionsShowViewPage()
 {
 	global $wpdb, $connections;
 	
-	if (class_exists('connectionsProLoad')) global $connectionsPro;
-		
 	if ( isset($_GET['action']) )
-		{
-			$action = $_GET['action'];
-		}
-		else
-		{
-			$action = NULL;
-		}
+	{
+		$action = $_GET['action'];
+	}
+	else
+	{
+		$action = NULL;
+	}
+	?>
+	
+	<div class="wrap">
+		<div class="icon32" id="icon-connections"><br/></div>
+		<h2>Connections</h2>
+	
+	<?php
+	$connections->displayMessages();
 	
 	switch ($action)
 	{
+		case 'add_new':
+			/*
+			 * Check whether current user can add an entry.
+			 */
+			if (current_user_can('connections_add_entry'))
+			{
+				add_meta_box('metabox-name', 'Name', array(&$form, 'metaboxName'), $connections->pageHook->manage, 'normal', 'high');
+				
+				$form = new cnFormObjects();
+				$entry = new cnEntry();
+				
+				echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
+					echo '<h2><a name="new"></a>Add Entry</h2>';
+					
+						$attr = array(
+									 'action' => 'admin.php?page=connections&action=add',
+									 'method' => 'post',
+									 'enctype' => 'multipart/form-data',
+									 );
+						
+						$form->open($attr);
+						
+						$form->tokenField('add_entry');
+						wp_nonce_field('howto-metaboxes-general');
+						wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false );
+						wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false );
+						
+						echo '<input type="hidden" name="action" value="save_howto_metaboxes_general" />';
+						
+						echo '<div id="side-info-column" class="inner-sidebar">';
+							do_meta_boxes($connections->pageHook->manage, 'side', $entry);
+						echo '</div>';
+						
+						
+						echo '<div id="post-body" class="has-sidebar">';
+							echo '<div id="post-body-content" class="has-sidebar-content">';
+								do_meta_boxes($connections->pageHook->manage, 'normal', $entry);
+							echo '</div>';
+						echo '</div>';
+						
+						$form->close();
+						
+				echo '</div>';
+				?>
+				
+				<script type="text/javascript">
+				//<![CDATA[
+				jQuery(document).ready( function($) {
+					// close postboxes that should be closed
+					$('.if-js-closed').removeClass('if-js-closed').addClass('closed');
+					// postboxes setup
+					postboxes.add_postbox_toggles('<?php echo $connections->pageHook->manage ?>');
+				});
+				//]]>
+				</script>
+				
+				<?php
+			
+				unset($entry);
+			}
+			else
+			{
+				$connections->setErrorMessage('capability_add');
+			}
+		break;
+		
 		case 'copy':
 			/*
 			 * Check whether current user can add an entry.
 			 */
 			if (current_user_can('connections_add_entry'))
 			{
-				global $connections;
 				$id = esc_attr($_GET['id']);
 				check_admin_referer('entry_copy_' . $id);
 				
-				$entryForm = new cnEntryForm();
-				$form = new cnFormObjects();
-				$entry = $connections->retrieve->entry($id);
+				add_meta_box('metabox-name', 'Name', array(&$form, 'metaboxName'), $connections->pageHook->manage, 'normal', 'high');
 				
-				echo '<div class="wrap">';
-					echo '<div class="form-wrap" style="width:880px; margin: 0 auto;">';
-						echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
-							echo '<h2><a name="new"></a>Add Entry</h2>';
-							
-								$attr = array(
-											 'action' => 'admin.php?page=connections&action=add&id=' . $id,
-											 'method' => 'post',
-											 'enctype' => 'multipart/form-data',
-											 );
-								
-								$form->open($attr);
-								$form->tokenField('add_entry');
-								
-								$entryForm->displayForm($entry);
-								$form->close();
-								
+				$form = new cnFormObjects();
+				$entry = new cnEntry( $connections->retrieve->entry($id) );
+				
+				echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
+					echo '<h2><a name="new"></a>Add Entry</h2>';
+					
+						$attr = array(
+									 'action' => 'admin.php?page=connections&action=add&id=' . $id,
+									 'method' => 'post',
+									 'enctype' => 'multipart/form-data',
+									 );
+						
+						$form->open($attr);
+						
+						$form->tokenField('add_entry');
+						wp_nonce_field('howto-metaboxes-general');
+						wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false );
+						wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false );
+						
+						echo '<input type="hidden" name="action" value="save_howto_metaboxes_general" />';
+						
+						echo '<div id="side-info-column" class="inner-sidebar">';
+							do_meta_boxes($connections->pageHook->manage, 'side', $entry);
 						echo '</div>';
-					echo '</div>';
+						
+						
+						echo '<div id="post-body" class="has-sidebar">';
+							echo '<div id="post-body-content" class="has-sidebar-content">';
+								do_meta_boxes($connections->pageHook->manage, 'normal', $entry);
+							echo '</div>';
+						echo '</div>';
+						
+						$form->close();
+						
 				echo '</div>';
+				?>
+				
+				<script type="text/javascript">
+				//<![CDATA[
+				jQuery(document).ready( function($) {
+					// close postboxes that should be closed
+					$('.if-js-closed').removeClass('if-js-closed').addClass('closed');
+					// postboxes setup
+					postboxes.add_postbox_toggles('<?php echo $connections->pageHook->manage ?>');
+				});
+				//]]>
+				</script>
+				
+				<?php
 			
 				unset($entry);
 			}
@@ -65,33 +163,60 @@ function connectionsShowViewPage()
 			 */
 			if (current_user_can('connections_edit_entry'))
 			{
-				$form = new cnFormObjects();
 				$id = esc_attr($_GET['id']);
 				check_admin_referer('entry_edit_' . $id);
 				
-				$entryForm = new cnEntryForm();
-				$entry = $connections->retrieve->entry($id);
+				add_meta_box('metabox-name', 'Name', array(&$form, 'metaboxName'), $connections->pageHook->manage, 'normal', 'high');
 				
-				echo '<div class="wrap">';
-					echo '<div class="form-wrap" style="width:880px; margin: 0 auto;">';
-						echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
-							echo '<h2><a name="new"></a>Edit Entry</h2>';
-							
-								$attr = array(
-											 'action' => 'admin.php?page=connections&action=update&id=' . $id,
-											 'method' => 'post',
-											 'enctype' => 'multipart/form-data',
-											 );
-								
-								$form->open($attr);
-								$form->tokenField('update_entry');
-								
-								$entryForm->displayForm($entry);
-								$form->close();
-								
+				$form = new cnFormObjects();
+				$entry = new cnEntry( $connections->retrieve->entry($id) );
+				
+				echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
+					echo '<h2><a name="new"></a>Edit Entry</h2>';
+					
+						$attr = array(
+									 'action' => 'admin.php?page=connections&action=update&id=' . $id,
+									 'method' => 'post',
+									 'enctype' => 'multipart/form-data',
+									 );
+						
+						$form->open($attr);
+						
+						$form->tokenField('update_entry');
+						wp_nonce_field('howto-metaboxes-general');
+						wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false );
+						wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false );
+						
+						echo '<input type="hidden" name="action" value="save_howto_metaboxes_general" />';
+						
+						echo '<div id="side-info-column" class="inner-sidebar">';
+							do_meta_boxes($connections->pageHook->manage, 'side', $entry);
 						echo '</div>';
-					echo '</div>';
+						
+						
+						echo '<div id="post-body" class="has-sidebar">';
+							echo '<div id="post-body-content" class="has-sidebar-content">';
+								do_meta_boxes($connections->pageHook->manage, 'normal', $entry);
+							echo '</div>';
+						echo '</div>';
+						
+						$form->close();
+						
 				echo '</div>';
+				?>
+				
+				<script type="text/javascript">
+				//<![CDATA[
+				jQuery(document).ready( function($) {
+					// close postboxes that should be closed
+					$('.if-js-closed').removeClass('if-js-closed').addClass('closed');
+					// postboxes setup
+					postboxes.add_postbox_toggles('<?php echo $connections->pageHook->manage ?>');
+				});
+				//]]>
+				</script>
+				
+				<?php
 				
 				unset($entry);
 			}
@@ -105,8 +230,6 @@ function connectionsShowViewPage()
 			$form = new cnFormObjects();
 			$categoryObjects = new cnCategoryObjects();
 			
-			$connections->displayMessages();
-			
 			/*
 			 * Check whether user can view the entry list
 			 */
@@ -114,14 +237,10 @@ function connectionsShowViewPage()
 			{
 				?>
 			
-				<div class="wrap">
-					<div class="icon32" id="icon-connections"><br/></div>
-					<h2>Connections : Entry List</h2>
+				
 					
 					<?php
 						$results = $connections->retrieve->entries();
-						//$connections->filter->permitted($results);
-						
 						//print_r($connections->lastQuery);
 					?>
 					
@@ -479,7 +598,7 @@ function connectionsShowViewPage()
 							<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
 						</form>
 					
-				</div>
+				
 				
 				<script type="text/javascript">
 					/* <![CDATA[ */
@@ -504,5 +623,8 @@ function connectionsShowViewPage()
 			
 		break;
 	}
+	?>
+	</div>
+<?php
 }
 ?>

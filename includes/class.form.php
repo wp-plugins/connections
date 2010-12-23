@@ -7,13 +7,17 @@ class cnFormObjects
 {
 	private $nonceBase = 'connections';
 	
+	public function __construct()
+	{
+		//if ( is_admin() ) $this->registerMetaboxes();
+	}
+	
 	/**
-	 * @todo
-	 * Finish adding form tag attributes.
-	 */
-	/**
-	 * @return string HTML form open tag
-	 * @param array $attr
+	 * The form open tag.
+	 * 
+	 * @todo Finish adding form tag attributes.
+	 * @param array
+	 * @return string
 	 */
 	 public function open($attr)
 	{
@@ -24,7 +28,6 @@ class cnFormObjects
 		if ( isset($attr['enctype']) ) $attr['enctype'] = 'enctype="' . $attr['enctype'] . '" ';
 		if ( isset($attr['method']) ) $attr['method'] = 'method="' . $attr['method'] . '" ';
 				
-		//echo '<form ' . $action . $method . $enctype . '>';
 		$out = '<form ';
 		
 		foreach ($attr as $key => $value)
@@ -46,20 +49,15 @@ class cnFormObjects
 	//Function inspired from:
 	//http://www.melbournechapter.net/wordpress/programming-languages/php/cman/2006/06/16/php-form-input-and-cross-site-attacks/
 	/**
-	 * Adds a random token and timestamp to the $_SESSION variable
+	 * Creates a random token.
 	 * 
-	 * @return array
 	 * @param string $formId The form ID
 	 * 
-	 * @return string Random generated token string
+	 * @return string
 	 */
 	public function token($formId)
 	{
 		$token = md5(uniqid(rand(), true));
-		//@session_start();
-		//$_SESSION['cn_session']['formTokens'][$formId]['token'] = $token;
-		//$_SESSION['cn_session']['formTokens'][$formId]['token_timestamp'] = time();
-		//@session_write_close();
 		
 		return $token;
 	}
@@ -103,66 +101,67 @@ class cnFormObjects
 	}
 	
 	/**
-		 * Retrieves or displays the nonce field for forms using wp_nonce_field.
-		 * 
-		 * @param string $action Action name.
-		 * @param string $item [optional] Item name. Use when protecting multiple items on the same page.
-		 * @param string $name [optional] Nonce name.
-		 * @param bool $referer [optional] Whether to set and display the refer field for validation.
-		 * @param bool $echo [optional] Whether to display or return the hidden form field.
-		 * @return string Nonce field.
-		 */
-		public function tokenField($action, $item = FALSE, $name = '_cn_wpnonce', $referer = TRUE, $echo = TRUE)
+	 * Retrieves or displays the nonce field for forms using wp_nonce_field.
+	 * 
+	 * @param string $action Action name.
+	 * @param string $item [optional] Item name. Use when protecting multiple items on the same page.
+	 * @param string $name [optional] Nonce name.
+	 * @param bool $referer [optional] Whether to set and display the refer field for validation.
+	 * @param bool $echo [optional] Whether to display or return the hidden form field.
+	 * 
+	 * @return string
+	 */
+	public function tokenField($action, $item = FALSE, $name = '_cn_wpnonce', $referer = TRUE, $echo = TRUE)
+	{
+		$name = esc_attr($name);
+		
+		if ($item == FALSE)
 		{
-			$name = esc_attr($name);
-			
-			if ($item == FALSE)
-			{
-				$token = wp_nonce_field($this->nonceBase . '_' . $action, $name, TRUE, FALSE);
-			}
-			else
-			{
-				$token = wp_nonce_field($this->nonceBase . '_' . $action . '_' . $item, $name, TRUE, FALSE);
-			}
-			
-			if ($echo) echo $token;
-			if ($referer) wp_referer_field($echo, 'previous');
-			
-			return $token;
+			$token = wp_nonce_field($this->nonceBase . '_' . $action, $name, TRUE, FALSE);
+		}
+		else
+		{
+			$token = wp_nonce_field($this->nonceBase . '_' . $action . '_' . $item, $name, TRUE, FALSE);
 		}
 		
-		/**
-		 * Retrieves URL with nonce added to the query string.
-		 * 
-		 * @param string $actionURL URL to add the nonce to.
-		 * @param string $item Nonce action name.
-		 * @return string URL string with nonce added to the query string.
-		 */
-		public function tokenURL($actionURL, $item)
+		if ($echo) echo $token;
+		if ($referer) wp_referer_field($echo, 'previous');
+		
+		return $token;
+	}
+	
+	/**
+	 * Retrieves URL with nonce added to the query string.
+	 * 
+	 * @param string $actionURL URL to add the nonce to.
+	 * @param string $item Nonce action name.
+	 * @return string
+	 */
+	public function tokenURL($actionURL, $item)
+	{
+		return wp_nonce_url($actionURL, $item);
+	}
+	
+	/**
+	 * Generate the complete nonce string, from the nonce base, the action and an item.
+	 * 
+	 * @param string $action Action name.
+	 * @param string $item [optional] Item name. Use when protecting multiple items on the same page.
+	 * @return string
+	 */
+	public function getNonce($action, $item = FALSE)
+	{
+		if ($item == FALSE)
 		{
-			return wp_nonce_url($actionURL, $item);
+			$nonce = $this->nonceBase . '_' . $action;
+		}
+		else
+		{
+			$nonce = $this->nonceBase . '_' . $action . '_' . $item;
 		}
 		
-		/**
-		 * Generate the complete nonce string, from the nonce base, the action and an item.
-		 * 
-		 * @param string $action Action name.
-		 * @param string $item [optional] Item name. Use when protecting multiple items on the same page.
-		 * @return string Nonce string.
-		 */
-		public function getNonce($action, $item = FALSE)
-		{
-			if ($item == FALSE)
-			{
-				$nonce = $this->nonceBase . '_' . $action;
-			}
-			else
-			{
-				$nonce = $this->nonceBase . '_' . $action . '_' . $item;
-			}
-			
-			return $nonce;
-		}
+		return $nonce;
+	}
 	
 	/**
 	 * Builds an alpha index.
@@ -212,12 +211,14 @@ class cnFormObjects
 	}
 	
 	/**
-	 * Builds radio groups. 
-	 * @return HTML form radio group
+	 * Builds and returns radio groups. 
+	 * 
 	 * @param object $name
 	 * @param object $id
 	 * @param object $value_labels associative string array label name [key] and value [value]
 	 * @param object $checked[optional] value to be selected by default
+	 * 
+	 * @return string
 	 */
 	public function buildRadio($name, $id, $value_labels, $checked=null)
 	{
@@ -243,24 +244,49 @@ class cnFormObjects
 		return $radio;
 	}
 	
-}
-
-class cnEntryForm
-{
 	/**
-	 * Builds the input/edit entry form.
-	 * @return HTML form
-	 * @param object $data[optional]
+	 * Registers the entry edit form meta boxes
 	 */
-	function displayForm($data = NULL)
+	public function registerEditMetaboxes()
 	{
-		global $wpdb, $connections;
+		global $connections;
 		
-		$entry = new cnEntry($data);
-		$form = new cnFormObjects();
-		$categoryObjects = new cnCategoryObjects();
-		$date = new cnDate();
+		/*
+		 * Interestingly if either 'submitdiv' or 'linksubmitdiv' is used as 
+		 * the $id in the add_meta_box function it will show up as a meta box 
+		 * that can not be hidden when the Screen Options tab is output via the 
+		 * meta_box_prefs function
+		 */
 		
+		add_meta_box('submitdiv', 'Publish', array(&$this, 'metaboxPublish'), $connections->pageHook->manage, 'side', 'core');
+		//add_meta_box('metabox-fields', 'Fields', array(&$this, 'metaboxFields'), $connections->pageHook->manage, 'side', 'core');
+		add_meta_box('categorydiv', 'Categories', array(&$this, 'metaboxCategories'), $connections->pageHook->manage, 'side', 'core');
+		//add_meta_box('metabox-name', 'Name', array(&$this, 'metaboxName'), $connections->pageHook->manage, 'normal', 'core');
+		add_meta_box('metabox-image', 'Image', array(&$this, 'metaboxImage'), $connections->pageHook->manage, 'normal', 'core');
+		add_meta_box('metabox-logo', 'Logo', array(&$this, 'metaboxLogo'), $connections->pageHook->manage, 'normal', 'core');
+		add_meta_box('metabox-address', 'Addresses', array(&$this, 'metaboxAddress'), $connections->pageHook->manage, 'normal', 'core');
+		add_meta_box('metabox-phone', 'Phone Numbers', array(&$this, 'metaboxPhone'), $connections->pageHook->manage, 'normal', 'core');
+		add_meta_box('metabox-email', 'Email Addresses', array(&$this, 'metaboxEmail'), $connections->pageHook->manage, 'normal', 'core');
+		add_meta_box('metabox-messenger', 'Messenger IDs', array(&$this, 'metaboxMessenger'), $connections->pageHook->manage, 'normal', 'core');
+		add_meta_box('metabox-social-media', 'Social Media IDs', array(&$this, 'metaboxSocialMedia'), $connections->pageHook->manage, 'normal', 'core');
+		add_meta_box('metabox-website', 'Websites', array(&$this, 'metaboxWebsite'), $connections->pageHook->manage, 'normal', 'core');
+		add_meta_box('metabox-birthday', 'Birthday', array(&$this, 'metaboxBirthday'), $connections->pageHook->manage, 'normal', 'core');
+		add_meta_box('metabox-anniversary', 'Anniversary', array(&$this, 'metaboxAnniversary'), $connections->pageHook->manage, 'normal', 'core');
+		add_meta_box('metabox-bio', 'Biographical Info', array(&$this, 'metaboxBio'), $connections->pageHook->manage, 'normal', 'core');
+		add_meta_box('metabox-note', 'Notes', array(&$this, 'metaboxNotes'), $connections->pageHook->manage, 'normal', 'core');
+	}
+	
+	/**
+	 * Outputs the publish meta box.
+	 * 
+	 * Array must be an associtive array contain the key names of
+	 * action, type and visibility. These are used to set the default 
+	 * values when building the form bits.
+	 * 
+	 * @param array $data
+	 */
+	public function metaboxPublish($entry = NULL)
+	{
 		if ( isset($_GET['action']) )
 		{
 			$action = esc_attr($_GET['action']);
@@ -270,93 +296,81 @@ class cnEntryForm
 			$action = NULL;
 		}
 		
-		
-		if ( isset($data) )
-		{
-			$data->options = unserialize($data->options);
-			$defaultVisibility = $entry->getVisibility();
-			$defaultEntryType = $entry->getEntryType();
-		}
-		else
-		{
-			$defaultVisibility = 'unlisted';
-			$defaultEntryType = "individual";
-		}
+		( $entry->getVisibility() ) ? $visibility = $entry->getVisibility() : $visibility = 'unlisted';
+		( $entry->getEntryType() ) ? $type = $entry->getEntryType() : $type = 'individual';
 		
 		
-		$out = '<div id="side-info-column" class="inner-sidebar">';
-			
-			$out .= '<div class="postbox" id="submitdiv">';
-				$out .= '<h3>Publish</h3>';
-				$out .= '<div class="inside">';
-					$out .= '<div id="minor-publishing">';
-						$out .= '<div id="entry-type">';
-							$out .= $form->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Family"=>"family"), $defaultEntryType);
-						$out .= '</div>';
-						$out .= '<div id="visibility">';
-							$out .= '<span class="radio_group">' . $form->buildRadio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'),$defaultVisibility) . '</span>';
-							$out .= '<div class="clear"></div>';
-						$out .= '</div>';
-					$out .= '</div>';
-					$out .= '<div id="major-publishing-actions">';
-						
-						switch ($action)
-						{
-							case 'edit':
-								$out .= '<div id="cancel-button"><a href="admin.php?page=connections" class="button button-warning">Cancel</a></div><div id="publishing-action"><input  class="button-primary" type="submit" name="update" value="Update" /></div>';
-							break;
-							
-							case 'copy':
-								$out .= '<div id="cancel-button"><a href="admin.php?page=connections" class="button button-warning">Cancel</a></div><div id="publishing-action"><input class="button-primary" type="submit" name="save" value="Add Entry" /></div>';;
-							break;
-							
-							default:
-								$out .= '<div id="publishing-action"><input class="button-primary" type="submit" name="save" value="Add Entry" /></div>';
-							break;
-						}
-												
-						$out .= '<div class="clear"></div>';
-					$out .= '</div>';
-				$out .= '</div>';
-			$out .= '</div>';
-			
-			$out .= '<div id="fieldsdiv" class="postbox">';
-				$out .= '<h3>Fields</h3>';
-				$out .= '<div class="inside">';
-					$out .= '<p><a id="add_address" class="button">Add Address</a></p>';
-					$out .= '<p><a id="add_phone_number" class="button">Add Phone Number</a></p>';
-					$out .= '<p><a id="add_email_address" class="button">Add Email Address</a></p>';
-					$out .= '<p><a id="add_im_id" class="button">Add Messenger ID</a></p>';
-					$out .= '<p><a id="add_social_media" class="button">Add Social Media ID</a></p>';
-					$out .= '<p><a id="add_website_address" class="button">Add Website Address</a></p>';
-				$out .= '</div>';
-			$out .= '</div>';
-			
-			$out .= '<div id="categorydiv" class="postbox">';
-				$out .= '<h3>Categories</h3>';
-				$out .= '<div class="inside">';
-					$out .= '<div id="categories-all" class="tabs-panel">';
-						$out .= '<ul class="categorychecklist">';
-							$out .= $categoryObjects->buildCategoryRow('checklist', $connections->retrieve->categories(), NULL, $connections->term->getTermRelationships($entry->getId()));
-						$out .= '</ul>';
-					$out .= '</div>';
-				$out .= '</div>';
-			$out .= '</div>';
-			
-		$out .= '</div>';
+		echo '<div id="minor-publishing">';
+			echo '<div id="entry-type">';
+				echo $this->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Family"=>"family"), $type);
+			echo '</div>';
+			echo '<div id="visibility">';
+				echo '<span class="radio_group">' . $this->buildRadio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'), $visibility) . '</span>';
+				echo '<div class="clear"></div>';
+			echo '</div>';
+		echo '</div>';
 		
-		$out .= '<div id="post-body-content">';
-			$out .= '<div id="family" class="form-field connectionsform">';
+		echo '<div id="major-publishing-actions">';
+			
+			switch ($action)
+			{
+				case 'edit':
+					echo '<div id="cancel-button"><a href="admin.php?page=connections" class="button button-warning">Cancel</a></div><div id="publishing-action"><input  class="button-primary" type="submit" name="update" value="Update" /></div>';
+				break;
 				
-					$out .= '<label for="family_name">Family Name:</label>';
-					$out .= '<input type="text" name="family_name" value="' . $entry->getFamilyName() . '" />';
-					$out .= '<div id="relations">';
+				case 'copy':
+					echo '<div id="cancel-button"><a href="admin.php?page=connections" class="button button-warning">Cancel</a></div><div id="publishing-action"><input class="button-primary" type="submit" name="save" value="Add Entry" /></div>';;
+				break;
+				
+				default:
+					echo '<div id="publishing-action"><input class="button-primary" type="submit" name="save" value="Add Entry" /></div>';
+				break;
+			}
+									
+			echo '<div class="clear"></div>';
+		echo '</div>';
+	}
+	
+	public function metaboxFields()
+	{
+		echo '<p><a id="add_address" class="button">Add Address</a></p>';
+		echo '<p><a id="add_phone_number" class="button">Add Phone Number</a></p>';
+		echo '<p><a id="add_email_address" class="button">Add Email Address</a></p>';
+		echo '<p><a id="add_im_id" class="button">Add Messenger ID</a></p>';
+		echo '<p><a id="add_social_media" class="button">Add Social Media ID</a></p>';
+		echo '<p><a id="add_website_address" class="button">Add Website Address</a></p>';
+	}
+	
+	public function metaboxCategories($entry = NULL)
+	{
+		global $connections;
+		
+		$categoryObjects = new cnCategoryObjects();
+		
+		echo '<div class="categorydiv" id="taxonomy-category">';
+			echo '<div id="category-all" class="tabs-panel">';
+				echo '<ul id="categorychecklist">';
+					echo $categoryObjects->buildCategoryRow('checklist', $connections->retrieve->categories(), NULL, $connections->term->getTermRelationships($entry->getId()));
+				echo '</ul>';
+			echo '</div>';
+		echo '</div>';
+	}
+	
+	public function metaboxName($entry = NULL)
+	{
+		global $connections;
+		
+		echo '<div id="family" class="form-field">';
+				
+					echo '<label for="family_name">Family Name:</label>';
+					echo '<input type="text" name="family_name" value="' . $entry->getFamilyName() . '" />';
+					echo '<div id="relations">';
 							
 						// --> Start template for Connection Group <-- \\
-						$out .= '<textarea id="relation_row_base" style="display: none">';
-							$out .= $this->getEntrySelect('family_member[::FIELD::][entry_id]');
-							$out .= $form->buildSelect('family_member[::FIELD::][relation]', $connections->options->getDefaultConnectionGroupValues());
-						$out .= '</textarea>';
+						echo '<textarea id="relation_row_base" style="display: none">';
+							echo $this->getEntrySelect('family_member[::FIELD::][entry_id]');
+							echo $this->buildSelect('family_member[::FIELD::][relation]', $connections->options->getDefaultConnectionGroupValues());
+						echo '</textarea>';
 						// --> End template for Connection Group <-- \\
 						
 						if ($entry->getFamilyMembers())
@@ -365,31 +379,28 @@ class cnEntryForm
 							{
 								$relation = new cnEntry();
 								$relation->set($key);
-								$token = $form->token($relation->getId());
+								$token = $this->token($relation->getId());
 								
-								$out .= '<div id="relation_row_' . $token . '" class="relation_row">';
-									$out .= $this->getEntrySelect('family_member[' . $token . '][entry_id]', $key);
-									$out .= $form->buildSelect('family_member[' . $token . '][relation]', $connections->options->getDefaultConnectionGroupValues(), $value);
-									$out .= '<a href="#" id="remove_button_' . $token . '" class="button button-warning" onClick="removeEntryRow(\'#relation_row_' . $token . '\'); return false;">Remove</a>';
-								$out .= '</div>';
+								echo '<div id="relation_row_' . $token . '" class="relation_row">';
+									echo $this->getEntrySelect('family_member[' . $token . '][entry_id]', $key);
+									echo $this->buildSelect('family_member[' . $token . '][relation]', $connections->options->getDefaultConnectionGroupValues(), $value);
+									echo '<a href="#" id="remove_button_' . $token . '" class="button button-warning" onClick="removeEntryRow(\'#relation_row_' . $token . '\'); return false;">Remove</a>';
+								echo '</div>';
 								
 								unset($relation);
 							}
 						}						
 						
-					$out .= '</div>';
-					$out .= '<p class="add"><a id="add_relation" class="button">Add Relation</a></p>';
+					echo '</div>';
+					echo '<p class="add"><a id="add_relation" class="button">Add Relation</a></p>';
 					
-					/**
-					 * @TODO: Move the inline style to the stylesheet.
-					 */
-				$out .= '
+				echo '
 			</div>
 			
-			<div class="form-field connectionsform namefield">
+			<div class="form-field namefield">
 					<div class="">';
 						
-						/*$out .= '
+						/*echo '
 						<label for="honorable_prefix">Prefix:
 							<select name="honorable_prefix">
 								<option>Mr.</option>
@@ -397,7 +408,7 @@ class cnEntryForm
 							</select>
 						</label>';*/
 					
-						$out .= '
+						echo '
 						<div style="float: left; width: 35%">
 							<label for="first_name">First Name:</label>
 							<input type="text" name="first_name" value="' . $entry->getFirstName() . '" />
@@ -413,7 +424,7 @@ class cnEntryForm
 							<input type="text" name="last_name" value="' . $entry->getLastName() . '" />
 						</div>';
 					
-						/*$out .= '
+						/*echo '
 						<label for="honorable_suffix" style="clear: both;">Suffix:
 							<select name="honorable_suffix">
 								<option>Jr.</option>
@@ -421,13 +432,13 @@ class cnEntryForm
 							</select>
 						</label>';*/
 						
-						$out .= '
+						echo '
 						<label for="title">Title:</label>
 						<input type="text" name="title" value="' . $entry->getTitle() . '" />
 					</div>
 				</div>
 				
-				<div class="form-field connectionsform">
+				<div class="form-field">
 					<div class="organization">
 						<label for="organization">Organization:</label>
 						<input type="text" name="organization" value="' . $entry->getOrganization() . '" />
@@ -435,7 +446,7 @@ class cnEntryForm
 						<label for="department">Department:</label>
 						<input type="text" name="department" value="' . $entry->getDepartment() . '" />';
 						
-						$out .= '
+						echo '
 						<div id="contact_name">
 							<div class="input inputhalfwidth">
 								<label for="contact_first_name">Contact First Name:</label>
@@ -448,390 +459,440 @@ class cnEntryForm
 							
 							<div class="clear"></div>
 						</div>';
-					$out .= '
+					echo '
 					</div>
-			</div>
-			
-			<div class="form-field connectionsform">';
-					
-					if ($entry->getImageLinked()) {
-						if ( $entry->getImageDisplay() ) $selected = 'show'; else $selected = 'hidden';
-						
-						$imgOptions = $form->buildRadio('imgOptions', 'imgOptionID_', array('Display'=>'show', 'Not Displayed'=>'hidden', 'Remove'=>'remove'), $selected);
-						$out .= '<div style="text-align: center;"> <img src="' . CN_IMAGE_BASE_URL . $entry->getImageNameProfile() . '" /> <br /> <span class="radio_group">' . $imgOptions . '</span></div> <br />'; 
-					}
-					
-					$out .= '<div class="clear"></div>';
-					$out .= '<label for="original_image">Select Image:
-					<input type="file" value="" name="original_image" size="25" /></label>
-					
 			</div>';
-			
-			$out .= '<div class="form-field connectionsform">';
-					
-					if ($entry->getLogoLinked())
-					{
-						( $entry->getLogoDisplay() ) ? $selected = 'show' : $selected = 'hidden';
-						
-						$logoOptions = $form->buildRadio('logoOptions', 'logoOptionID_', array('Display'=>'show', 'Not Displayed'=>'hidden', 'Remove'=>'remove'), $selected);
-						$out .= '<div style="text-align: center;"> <img src="' . CN_IMAGE_BASE_URL . $entry->getLogoName() . '" /> <br /> <span class="radio_group">' . $logoOptions . '</span></div> <br />'; 
-					}
-					
-					$out .= '<div class="clear"></div>';
-					$out .= '<label for="original_logo">Select Logo:
-					<input type="file" value="" name="original_logo" size="25" /></label>
-					
-			</div>';
-					
-			//$out .= '<div class="form-field connectionsform addresses">';
-				$out .= '<div id="addresses">';
-					
-					// --> Start template for Addresses <-- \\
-					$out .= '<textarea id="address_row_base" style="display: none">';
-						$out .= '<div class="form-field connectionsform address">';
-						$out .= '<div class="address">';
-							$out .= '<span class="selectbox alignright">Type: ' . $form->buildSelect('address[::FIELD::][type]', $connections->options->getDefaultAddressValues() ) . '</span>';
-							$out .= '<div class="clear"></div>';
-							
-								$out .= '<label for="address">Address Line 1:</label>';
-								$out .= '<input type="text" name="address[::FIELD::][address_line1]" value="" />';
-					
-								$out .= '<label for="address">Address Line 2:</label>';
-								$out .= '<input type="text" name="address[::FIELD::][address_line2]" value="" />';
-					
-								$out .= '<div class="input" style="width:60%">';
-									$out .= '<label for="address">City:</label>';
-									$out .= '<input type="text" name="address[::FIELD::][city]" value="" />';
-								$out .= '</div>';
-								$out .= '<div class="input" style="width:15%">';
-									$out .= '<label for="address">State:</label>';
-									$out .= '<input type="text" name="address[::FIELD::][state]" value="" />';
-								$out .= '</div>';
-								$out .= '<div class="input" style="width:25%">';
-									$out .= '<label for="address">Zipcode:</label>';
-									$out .= '<input type="text" name="address[::FIELD::][zipcode]" value="" />';
-								$out .= '</div>';
-								
-								$out .= '<label for="address">Country</label>';
-								$out .= '<input type="text" name="address[::FIELD::][country]" value="" />';
-								
-								$out .= '<div class="input" style="width:50%">';
-									$out .= '<label for="latitude">Latitude</label>';
-									$out .= '<input type="text" name="address[::FIELD::][latitude]" value="" />';
-								$out .= '</div>';
-								$out .= '<div class="input" style="width:50%">';
-									$out .= '<label for="longitude">Longitude</label>';
-									$out .= '<input type="text" name="address[::FIELD::][longitude]" value="" />';
-								$out .= '</div>';
-								
-								$out .= '<input type="hidden" name="address[::FIELD::][visibility]" value="public" />';
-							
-								$out .= '<div class="clear"></div>';
-								$out .= '<br />';
-								$out .= '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#address_row_::FIELD::\'); return false;">Remove</a>';
-						$out .= '</div>';
-						$out .= '</div>';
-					$out .= '</textarea>';
-					// --> End template for Addresses <-- \\
-					
-					if ( !empty($data->addresses) )
-					{
-						$addressValues = $entry->getAddresses();
-						
-						if ( !empty($addressValues) )
-						{
-							foreach ($addressValues as $address)
-							{
-								$token = $form->token($entry->getId());
-								$out .= '<div class="form-field connectionsform address" id="address_row_'  . $token . '">';
-									
-									$selectName = 'address['  . $token . '][type]';
-								
-									$out .= '<span class="selectbox alignright">Type: ' . $form->buildSelect($selectName, $connections->options->getDefaultAddressValues(), $address->type) . '</span>';
-									$out .= '<div class="clear"></div>';
-									
-									$out .= '<label for="address">Address Line 1:</label>';
-									$out .= '<input type="text" name="address[' . $token . '][address_line1]" value="' . $address->line_one . '" />';
-						
-									$out .= '<label for="address">Address Line 2:</label>';
-									$out .= '<input type="text" name="address[' . $token . '][address_line2]" value="' . $address->line_two . '" />';
-						
-									$out .= '<div class="input" style="width:60%">';
-										$out .= '<label for="address">City:</label>';
-										$out .= '<input type="text" name="address[' . $token . '][city]" value="' . $address->city . '" />';
-									$out .= '</div>';
-									$out .= '<div class="input" style="width:15%">';
-										$out .= '<label for="address">State:</label>';
-										$out .= '<input type="text" name="address[' . $token . '][state]" value="' . $address->state . '" />';
-									$out .= '</div>';
-									$out .= '<div class="input" style="width:25%">';
-										$out .= '<label for="address">Zipcode:</label>';
-										$out .= '<input type="text" name="address[' . $token . '][zipcode]" value="' . $address->zipcode . '" />';
-									$out .= '</div>';
-									
-									$out .= '<label for="address">Country</label>';
-									$out .= '<input type="text" name="address[' . $token . '][country]" value="' . $address->country . '" />';
-									
-									$out .= '<div class="input" style="width:50%">';
-										$out .= '<label for="latitude">Latitude</label>';
-										$out .= '<input type="text" name="address[' . $token . '][latitude]" value="' . $address->latitude . '" />';
-									$out .= '</div>';
-									$out .= '<div class="input" style="width:50%">';
-										$out .= '<label for="longitude">Longitude</label>';
-										$out .= '<input type="text" name="address[' . $token . '][longitude]" value="' . $address->longitude . '" />';
-									$out .= '</div>';
-									
-									$out .= '<input type="hidden" name="address[' . $token . '][visibility]" value="' . $address->visibility . '" />';
-								
-									$out .= '<div class="clear"></div>';
-									$out .= '<br />';
-									$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#address_row_'. $token . '\'); return false;">Remove</a>';
-									
-								$out .= '</div>';
-								
-							}
-						}
-					}
-					
-				$out .= '</div>';
-				//$out .= '<p class="add"><a id="add_address" class="button">Add Address</a></p>';
-			//$out .= '</div>';
-			
-			
-			$out .= '<div id="phone_numbers">';
-				
-				// --> Start template for Phone Numbers <-- \\
-				$out .= '<textarea id="phone_number_row_base" style="display: none">';
-					$out .= '<div class="form-field connectionsform phone_number">';
-					$out .= $form->buildSelect('phone_numbers[::FIELD::][type]', $connections->options->getDefaultPhoneNumberValues());
-					$out .= '<input type="text" name="phone_numbers[::FIELD::][number]" value="" style="width: 30%"/>';
-					$out .= '<input type="hidden" name="phone_numbers[::FIELD::][visibility]" value="public" />';
-					$out .= '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#phone_number_row_::FIELD::\'); return false;">Remove</a>';
-					$out .= '</div>';
-				$out .= '</textarea>';
-				// --> End template for Phone Numbers <-- \\
-				
-				if ( isset($data->phone_numbers) )
-				{
-					$phoneNumberValues = $entry->getPhoneNumbers();
-					
-					if ( !empty($phoneNumberValues) )
-					{
-						foreach ($phoneNumberValues as $phone)
-						{
-							if ($phone->number != NULL)
-							{
-								$token = $form->token($entry->getId());
-								$out .= '<div class="form-field connectionsform phone_number" id="phone_number_row_'  . $token . '">';
-									$out .= '<div class="phone_number_row">';
-										$out .= $form->buildSelect('phone_numbers[' . $token . '][type]', $connections->options->getDefaultPhoneNumberValues(), $phone->type);
-										$out .= '<input type="text" name="phone_numbers[' . $token . '][number]" value="' . $phone->number . '" style="width: 30%"/>';
-										$out .= '<input type="hidden" name="phone_numbers[' . $token . '][visibility]" value="' . $phone->visibility . '" />';
-										$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#phone_number_row_'. $token . '\'); return false;">Remove</a>';
-									$out .= '</div>';
-								$out .= '</div>';
-							}
-						}
-					}
-				}
-				
-			
-			$out .= '</div>';
-			
-						
-			$out .= '<div id="email_addresses">';
-				
-				// --> Start template for Email Addresses <-- \\
-				$out .= '<textarea id="email_address_row_base" style="display: none">';
-				$out .= '<div class="form-field connectionsform email">';
-					$out .= $form->buildSelect('email[::FIELD::][type]', $connections->options->getDefaultEmailValues());
-					$out .= '<input type="text" name="email[::FIELD::][address]" value="" style="width: 30%"/>';
-					$out .= '<input type="hidden" name="email[::FIELD::][visibility]" value="public" />';
-					$out .= '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#email_address_row_::FIELD::\'); return false;">Remove</a>';
-					$out .= '</div>';
-				$out .= '</textarea>';
-				// --> End template for Email Addresses <-- \\
-				
-				if ( !empty($data->email) )
-				{
-					$emailValues = $entry->getEmailAddresses();
-					
-					if ( !empty($emailValues) )
-					{
-						foreach ($emailValues as $emailRow)
-						{
-							if ($emailRow->address != NULL)
-							{
-								$token = $form->token($entry->getId());
-								$out .= '<div class="form-field connectionsform email" id="email_address_row_'  . $token . '">';
-									$out .= '<div class="email_address_row">';
-										$out .= $form->buildSelect('email[' . $token . '][type]', $connections->options->getDefaultEmailValues(), $emailRow->type);
-										$out .= '<input type="text" name="email[' . $token . '][address]" value="' . $emailRow->address . '" style="width: 30%"/>';
-										$out .= '<input type="hidden" name="email[' . $token . '][visibility]" value="' . $emailRow->visibility . '" />';
-										$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#email_address_row_'. $token . '\'); return false;">Remove</a>';
-									$out .= '</div>';
-								$out .= '</div>';
-							}
-						}
-					}
-				}
-				
-			$out .= '</div>';
-						
-			
-			$out .= '<div id="im_ids">';
-				
-				// --> Start template for IM IDs <-- \\
-				$out .= '<textarea id="im_row_base" style="display: none">';
-					$out .= '<div class="form-field connectionsform im">';
-					$out .= $form->buildSelect('im[::FIELD::][type]', $connections->options->getDefaultIMValues());
-					$out .= '<input type="text" name="im[::FIELD::][id]" value="" style="width: 30%"/>';
-					$out .= '<input type="hidden" name="im[::FIELD::][visibility]" value="public" />';
-					$out .= '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#im_row_::FIELD::\'); return false;">Remove</a>';
-					$out .= '</div>';
-				$out .= '</textarea>';
-				// --> End template for IM IDs <-- \\
-				
-				if ( !empty($data->im) )
-				{
-					$imValues = $entry->getIm();
-					
-					if ( !empty($imValues) )
-					{
-						foreach ($imValues as $imRow)
-						{
-							if ($imRow->id != null)
-							{
-								$token = $form->token($entry->getId());
-								$out .= '<div class="form-field connectionsform im" id="im_row_'  . $token . '">';
-									$out .= '<div class="im_row">';
-										$out .= $form->buildSelect('im[' . $token . '][type]', $connections->options->getDefaultIMValues(), $imRow->type);
-										$out .= '<input type="text" name="im[' . $token . '][id]" value="' . $imRow->id . '" style="width: 30%"/>';
-										$out .= '<input type="hidden" name="im[' . $token . '][visibility]" value="' . $imRow->visibility . '" />';
-										$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#im_row_'. $token . '\'); return false;">Remove</a>';
-									$out .= '</div>';
-								$out .= '</div>';
-							}
-						}
-					}
-				}
-				
-			$out .= '</div>';
-			
-			
-			$out .= '<div id="social_media">';
-				
-				// --> Start template for Social Media IDs <-- \\
-				$out .= '<textarea id="social_media_row_base" style="display: none">';
-					$out .= '<div class="form-field connectionsform socialmedia">';
-					$out .= $form->buildSelect('social_media[::FIELD::][type]', $connections->options->getDefaultSocialMediaValues());
-					$out .= '<input type="text" name="social_media[::FIELD::][id]" style="width: 30%" value="http://" />';
-					$out .= '<input type="hidden" name="social_media[::FIELD::][visibility]" value="public"/>';
-					$out .= '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#social_media_row_::FIELD::\'); return false;">Remove</a>';
-					$out .= '</div>';
-				$out .= '</textarea>';
-				// --> End template for Social Media IDs <-- \\
-				
-				if ( !empty($data->social) )
-				{
-					$socialMedia = $entry->getSocialMedia();
-					
-					if ( !empty($socialMedia) )
-					{
-						foreach ($socialMedia as $socialNetwork)
-						{
-							if ($socialNetwork->id != null)
-							{
-								$token = $form->token($entry->getId());
-								$out .= '<div class="form-field connectionsform socialmedia" id="social_media_row_'  . $token . '">';
-									$out .= '<div class="social_media_row">';
-										$out .= $form->buildSelect('social_media[' . $token . '][type]', $connections->options->getDefaultSocialMediaValues(), $socialNetwork->type);
-										$out .= '<input type="text" name="social_media[' . $token . '][id]" value="' . $socialNetwork->id . '" style="width: 30%"/>';
-										$out .= '<input type="hidden" name="social_media[' . $token . '][visibility]" value="' . $socialNetwork->visibility . '" />';
-										$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#social_media_row_'. $token . '\'); return false;">Remove</a>';
-									$out .= '</div>';
-								$out .= '</div>';
-							}
-						}
-					}
-				}
-			
-			$out .= '</div>';
-			
-			
-			$out .= '<div id="website_addresses">';
-				
-				// --> Start template for Website Addresses <-- \\
-				$out .= '<textarea id="website_address_row_base" style="display: none">';
-					$out .= '<div class="form-field connectionsform websites">';
-					$out .= '<label for="websites">Website: <input type="text" name="website[::FIELD::][address]" style="width: 50%" value="http://" /></label>';
-					$out .= '<input type="hidden" name="website[::FIELD::][type]" value="personal" />';
-					$out .= '<input type="hidden" name="website[::FIELD::][name]" value="Personal" />';
-					$out .= '<input type="hidden" name="website[::FIELD::][visibility]" value="public"/>';
-					$out .= '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#website_address_row_::FIELD::\'); return false;">Remove</a>';
-					$out .= '</div>';
-				$out .= '</textarea>';
-				// --> End template for Website Addresses <-- \\
-				
-				$websites = $entry->getWebsites();
-				
-				if ( !empty($websites) )
-				{
-					foreach ($websites as $website)
-					{
-						if ($website->url == NULL) continue;
-						
-						$token = $form->token($entry->getId());
-						
-						$out .= '<div class="form-field connectionsform websites" id="website_address_row_'  . $token . '">';
-							$out .= '<div class="website_address_row">';
-								$out .= '<label for="websites">Website: <input type="text" name="website[' . $token . '][address]" style="width: 50%" value="' . $website->url . '" /></label>';
-								$out .= '<input type="hidden" name="website[' . $token . '][type]" value="personal" />';
-								$out .= '<input type="hidden" name="website[' . $token . '][name]" value="Personal" />';
-								$out .= '<input type="hidden" name="website[' . $token . '][visibility]" value="public" />';
-								$out .= '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#website_address_row_'. $token . '\'); return false;">Remove</a>';
-							$out .= '</div>';
-						$out .= '</div>';
-					}
-				}
-				
-			$out .= '</div>';
-			
-			
-			
-			$out .= "<div class='form-field connectionsform celebrate'>
-					<span class='selectbox'>Birthday: " . $form->buildSelect('birthday_month',$date->months,$date->getMonth($entry->getBirthday())) . "</span>
-					<span class='selectbox'>" . $form->buildSelect('birthday_day',$date->days,$date->getDay($entry->getBirthday())) . "</span>
-					<br />
-					<span class='selectbox'>Anniversary: " . $form->buildSelect('anniversary_month',$date->months,$date->getMonth($entry->getAnniversary())) . "</span>
-					<span class='selectbox'>" . $form->buildSelect('anniversary_day',$date->days,$date->getDay($entry->getAnniversary())) . "</span>
-			</div>
-			
-			<div class='form-field connectionsform'>
-					<label for='bio'>Biographical Info:</label>
-					
-					<a class='button alignright' id='toggleBioEditor'>Toggle Editor</a>
-					
-					<textarea class='tinymce' id='bio' name='bio' rows='15'>" . $entry->getBio() . "</textarea>
-					<p><strong>Permitted tags:</strong> &lt;p&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;span&gt; &lt;a&gt; &lt;b&gt; &lt;strong&gt; &lt;i&gt; &lt;em&gt; &lt;u&gt; &lt;br&gt;</p>
-			</div>
-			
-			<div class='form-field connectionsform'>
-					<label for='notes'>Notes:</label>
-					
-					<a class='button alignright' id='toggleNoteEditor'>Toggle Editor</a>
-					
-					<textarea class='tinymce' id='note' name='notes' rows='15'>" . $entry->getNotes() . "</textarea>
-					<p><strong>Permitted tags:</strong> &lt;p&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;span&gt; &lt;a&gt; &lt;b&gt; &lt;strong&gt; &lt;i&gt; &lt;em&gt; &lt;u&gt; &lt;br&gt;</p>
-			</div>";
-			
-		
-		$out .= '</div>';
-		
-		echo $out;
 	}
 	
-	private function getEntrySelect($name,$selected=null)
+	public function metaboxImage($entry = NULL)
+	{
+		echo '<div class="form-field">';
+					
+			if ( $entry->getImageLinked() )
+			{
+				if ( $entry->getImageDisplay() ) $selected = 'show'; else $selected = 'hidden';
+				
+				$imgOptions = $this->buildRadio('imgOptions', 'imgOptionID_', array('Display'=>'show', 'Not Displayed'=>'hidden', 'Remove'=>'remove'), $selected);
+				echo '<div style="text-align: center;"> <img src="' . CN_IMAGE_BASE_URL . $entry->getImageNameProfile() . '" /> <br /> <span class="radio_group">' . $imgOptions . '</span></div> <br />'; 
+			}
+			
+			echo '<div class="clear"></div>';
+			echo '<label for="original_image">Select Image:
+			<input type="file" value="" name="original_image" size="25" /></label>
+				
+		</div>';
+	}
+	
+	public function metaboxLogo($entry = NULL)
+	{
+		echo '<div class="form-field">';
+					
+			if ( $entry->getLogoLinked() )
+			{
+				( $entry->getLogoDisplay() ) ? $selected = 'show' : $selected = 'hidden';
+				
+				$logoOptions = $this->buildRadio('logoOptions', 'logoOptionID_', array('Display'=>'show', 'Not Displayed'=>'hidden', 'Remove'=>'remove'), $selected);
+				echo '<div style="text-align: center;"> <img src="' . CN_IMAGE_BASE_URL . $entry->getLogoName() . '" /> <br /> <span class="radio_group">' . $logoOptions . '</span></div> <br />'; 
+			}
+			
+			echo '<div class="clear"></div>';
+			echo '<label for="original_logo">Select Logo:
+			<input type="file" value="" name="original_logo" size="25" /></label>
+			
+		</div>';
+	}
+	
+	public function metaboxAddress($entry = NULL)
+	{
+		global $connections;
+		
+		echo  '<div class="form-field addresses">';
+			echo  '<div id="addresses">';
+				
+				// --> Start template for Addresses <-- \\
+				echo  '<textarea id="address_row_base" style="display: none">';
+					echo  '<div class="form-field connectionsform address">';
+					echo  '<div class="address">';
+						echo  '<span class="selectbox alignright">Type: ' . $this->buildSelect('address[::FIELD::][type]', $connections->options->getDefaultAddressValues() ) . '</span>';
+						echo  '<div class="clear"></div>';
+						
+							echo  '<label for="address">Address Line 1:</label>';
+							echo  '<input type="text" name="address[::FIELD::][address_line1]" value="" />';
+				
+							echo  '<label for="address">Address Line 2:</label>';
+							echo  '<input type="text" name="address[::FIELD::][address_line2]" value="" />';
+				
+							echo  '<div class="input" style="width:60%">';
+								echo  '<label for="address">City:</label>';
+								echo  '<input type="text" name="address[::FIELD::][city]" value="" />';
+							echo  '</div>';
+							echo  '<div class="input" style="width:15%">';
+								echo  '<label for="address">State:</label>';
+								echo  '<input type="text" name="address[::FIELD::][state]" value="" />';
+							echo  '</div>';
+							echo  '<div class="input" style="width:25%">';
+								echo  '<label for="address">Zipcode:</label>';
+								echo  '<input type="text" name="address[::FIELD::][zipcode]" value="" />';
+							echo  '</div>';
+							
+							echo  '<label for="address">Country</label>';
+							echo  '<input type="text" name="address[::FIELD::][country]" value="" />';
+							
+							echo  '<div class="input" style="width:50%">';
+								echo  '<label for="latitude">Latitude</label>';
+								echo  '<input type="text" name="address[::FIELD::][latitude]" value="" />';
+							echo  '</div>';
+							echo  '<div class="input" style="width:50%">';
+								echo  '<label for="longitude">Longitude</label>';
+								echo  '<input type="text" name="address[::FIELD::][longitude]" value="" />';
+							echo  '</div>';
+							
+							echo  '<input type="hidden" name="address[::FIELD::][visibility]" value="public" />';
+						
+							echo  '<div class="clear"></div>';
+							echo  '<br />';
+							echo  '<p><a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#address_row_::FIELD::\'); return false;">Remove</a></p>';
+					echo  '</div>';
+					echo  '</div>';
+				echo  '</textarea>';
+				// --> End template for Addresses <-- \\
+				
+				//if ( !empty($data->addresses) )
+				if ( $entry->getAddresses() )
+				{
+					$addressValues = $entry->getAddresses();
+					
+					if ( !empty($addressValues) )
+					{
+						foreach ($addressValues as $address)
+						{
+							$token = $this->token($entry->getId());
+							echo  '<div class="form-field connectionsform address" id="address_row_'  . $token . '">';
+								
+								$selectName = 'address['  . $token . '][type]';
+							
+								echo  '<span class="selectbox alignright">Type: ' . $this->buildSelect($selectName, $connections->options->getDefaultAddressValues(), $address->type) . '</span>';
+								echo  '<div class="clear"></div>';
+								
+								echo  '<label for="address">Address Line 1:</label>';
+								echo  '<input type="text" name="address[' . $token . '][address_line1]" value="' . $address->line_one . '" />';
+					
+								echo  '<label for="address">Address Line 2:</label>';
+								echo  '<input type="text" name="address[' . $token . '][address_line2]" value="' . $address->line_two . '" />';
+					
+								echo  '<div class="input" style="width:60%">';
+									echo  '<label for="address">City:</label>';
+									echo  '<input type="text" name="address[' . $token . '][city]" value="' . $address->city . '" />';
+								echo  '</div>';
+								echo  '<div class="input" style="width:15%">';
+									echo  '<label for="address">State:</label>';
+									echo  '<input type="text" name="address[' . $token . '][state]" value="' . $address->state . '" />';
+								echo  '</div>';
+								echo  '<div class="input" style="width:25%">';
+									echo  '<label for="address">Zipcode:</label>';
+									echo  '<input type="text" name="address[' . $token . '][zipcode]" value="' . $address->zipcode . '" />';
+								echo  '</div>';
+								
+								echo  '<label for="address">Country</label>';
+								echo  '<input type="text" name="address[' . $token . '][country]" value="' . $address->country . '" />';
+								
+								echo  '<div class="input" style="width:50%">';
+									echo  '<label for="latitude">Latitude</label>';
+									echo  '<input type="text" name="address[' . $token . '][latitude]" value="' . $address->latitude . '" />';
+								echo  '</div>';
+								echo  '<div class="input" style="width:50%">';
+									echo  '<label for="longitude">Longitude</label>';
+									echo  '<input type="text" name="address[' . $token . '][longitude]" value="' . $address->longitude . '" />';
+								echo  '</div>';
+								
+								echo  '<input type="hidden" name="address[' . $token . '][visibility]" value="' . $address->visibility . '" />';
+							
+								echo  '<div class="clear"></div>';
+								echo  '<br />';
+								echo  '<p><a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#address_row_'. $token . '\'); return false;">Remove</a></p>';
+								
+							echo  '</div>';
+							
+						}
+					}
+				}
+				
+			echo  '</div>';
+			echo  '<p class="add"><a id="add_address" class="button">Add Address</a></p>';
+		echo  '</div>';
+	}
+	
+	public function metaboxPhone($entry = NULL)
+	{
+		global $connections;
+		
+		echo  '<div id="phone_numbers">';
+			
+			// --> Start template for Phone Numbers <-- \\
+			echo  '<textarea id="phone_number_row_base" style="display: none">';
+				echo  '<div class="form-field connectionsform phone_number">';
+				echo  $this->buildSelect('phone_numbers[::FIELD::][type]', $connections->options->getDefaultPhoneNumberValues());
+				echo  '<input type="text" name="phone_numbers[::FIELD::][number]" value="" style="width: 30%"/>';
+				echo  '<input type="hidden" name="phone_numbers[::FIELD::][visibility]" value="public" />';
+				echo  '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#phone_number_row_::FIELD::\'); return false;">Remove</a>';
+				echo  '</div>';
+			echo  '</textarea>';
+			// --> End template for Phone Numbers <-- \\
+			
+			//if ( isset($data->phone_numbers) )
+			if ( $entry->getPhoneNumbers() )
+			{
+				$phoneNumberValues = $entry->getPhoneNumbers();
+				
+				if ( !empty($phoneNumberValues) )
+				{
+					foreach ($phoneNumberValues as $phone)
+					{
+						if ($phone->number != NULL)
+						{
+							$token = $this->token($entry->getId());
+							echo  '<div class="form-field connectionsform phone_number" id="phone_number_row_'  . $token . '">';
+								echo  '<div class="phone_number_row">';
+									echo  $this->buildSelect('phone_numbers[' . $token . '][type]', $connections->options->getDefaultPhoneNumberValues(), $phone->type);
+									echo  '<input type="text" name="phone_numbers[' . $token . '][number]" value="' . $phone->number . '" style="width: 30%"/>';
+									echo  '<input type="hidden" name="phone_numbers[' . $token . '][visibility]" value="' . $phone->visibility . '" />';
+									echo  '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#phone_number_row_'. $token . '\'); return false;">Remove</a>';
+								echo  '</div>';
+							echo  '</div>';
+						}
+					}
+				}
+			}
+			
+		echo  '</div>';
+		echo  '<p class="add"><a id="add_phone_number" class="button">Add Phone Number</a></p>';
+	}
+	
+	public function metaboxEmail($entry = NULL)
+	{
+		global $connections;
+		
+		echo  '<div id="email_addresses">';
+				
+			// --> Start template for Email Addresses <-- \\
+			echo  '<textarea id="email_address_row_base" style="display: none">';
+			echo  '<div class="form-field connectionsform email">';
+				echo  $this->buildSelect('email[::FIELD::][type]', $connections->options->getDefaultEmailValues());
+				echo  '<input type="text" name="email[::FIELD::][address]" value="" style="width: 30%"/>';
+				echo  '<input type="hidden" name="email[::FIELD::][visibility]" value="public" />';
+				echo  '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#email_address_row_::FIELD::\'); return false;">Remove</a>';
+				echo  '</div>';
+			echo  '</textarea>';
+			// --> End template for Email Addresses <-- \\
+			
+			//if ( !empty($data->email) )
+			if ( $entry->getEmailAddresses() )
+			{
+				$emailValues = $entry->getEmailAddresses();
+				
+				if ( !empty($emailValues) )
+				{
+					foreach ($emailValues as $emailRow)
+					{
+						if ($emailRow->address != NULL)
+						{
+							$token = $this->token($entry->getId());
+							echo  '<div class="form-field connectionsform email" id="email_address_row_'  . $token . '">';
+								echo  '<div class="email_address_row">';
+									echo  $this->buildSelect('email[' . $token . '][type]', $connections->options->getDefaultEmailValues(), $emailRow->type);
+									echo  '<input type="text" name="email[' . $token . '][address]" value="' . $emailRow->address . '" style="width: 30%"/>';
+									echo  '<input type="hidden" name="email[' . $token . '][visibility]" value="' . $emailRow->visibility . '" />';
+									echo  '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#email_address_row_'. $token . '\'); return false;">Remove</a>';
+								echo  '</div>';
+							echo  '</div>';
+						}
+					}
+				}
+			}
+			
+		echo  '</div>';
+		echo  '<p class="add"><a id="add_email_address" class="button">Add Email Address</a></p>';
+	}
+	
+	public function metaboxMessenger($entry = NULL)
+	{
+		global $connections;
+		
+		echo  '<div id="im_ids">';
+				
+			// --> Start template for IM IDs <-- \\
+			echo  '<textarea id="im_row_base" style="display: none">';
+				echo  '<div class="form-field connectionsform im">';
+				echo  $this->buildSelect('im[::FIELD::][type]', $connections->options->getDefaultIMValues());
+				echo  '<input type="text" name="im[::FIELD::][id]" value="" style="width: 30%"/>';
+				echo  '<input type="hidden" name="im[::FIELD::][visibility]" value="public" />';
+				echo  '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#im_row_::FIELD::\'); return false;">Remove</a>';
+				echo  '</div>';
+			echo  '</textarea>';
+			// --> End template for IM IDs <-- \\
+			
+			//if ( !empty($data->im) )
+			if ( $entry->getIm() )
+			{
+				$imValues = $entry->getIm();
+				
+				if ( !empty($imValues) )
+				{
+					foreach ($imValues as $imRow)
+					{
+						if ($imRow->id != null)
+						{
+							$token = $this->token($entry->getId());
+							echo  '<div class="form-field connectionsform im" id="im_row_'  . $token . '">';
+								echo  '<div class="im_row">';
+									echo  $this->buildSelect('im[' . $token . '][type]', $connections->options->getDefaultIMValues(), $imRow->type);
+									echo  '<input type="text" name="im[' . $token . '][id]" value="' . $imRow->id . '" style="width: 30%"/>';
+									echo  '<input type="hidden" name="im[' . $token . '][visibility]" value="' . $imRow->visibility . '" />';
+									echo  '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#im_row_'. $token . '\'); return false;">Remove</a>';
+								echo  '</div>';
+							echo  '</div>';
+						}
+					}
+				}
+			}
+			
+		echo  '</div>';
+		echo  '<p class="add"><a id="add_im_id" class="button">Add Messenger ID</a></p>';
+	}
+	
+	public function metaboxSocialMedia($entry = NULL)
+	{
+		global $connections;
+		
+		echo  '<div id="social_media">';
+				
+			// --> Start template for Social Media IDs <-- \\
+			echo  '<textarea id="social_media_row_base" style="display: none">';
+				echo  '<div class="form-field connectionsform socialmedia">';
+				echo  $this->buildSelect('social_media[::FIELD::][type]', $connections->options->getDefaultSocialMediaValues());
+				echo  '<input type="text" name="social_media[::FIELD::][id]" style="width: 30%" value="http://" />';
+				echo  '<input type="hidden" name="social_media[::FIELD::][visibility]" value="public"/>';
+				echo  '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#social_media_row_::FIELD::\'); return false;">Remove</a>';
+				echo  '</div>';
+			echo  '</textarea>';
+			// --> End template for Social Media IDs <-- \\
+			
+			//if ( !empty($data->social) )
+			if ( $entry->getSocialMedia() )
+			{
+				$socialMedia = $entry->getSocialMedia();
+				
+				if ( !empty($socialMedia) )
+				{
+					foreach ($socialMedia as $socialNetwork)
+					{
+						if ($socialNetwork->id != null)
+						{
+							$token = $this->token($entry->getId());
+							echo  '<div class="form-field connectionsform socialmedia" id="social_media_row_'  . $token . '">';
+								echo  '<div class="social_media_row">';
+									echo  $this->buildSelect('social_media[' . $token . '][type]', $connections->options->getDefaultSocialMediaValues(), $socialNetwork->type);
+									echo  '<input type="text" name="social_media[' . $token . '][id]" value="' . $socialNetwork->id . '" style="width: 30%"/>';
+									echo  '<input type="hidden" name="social_media[' . $token . '][visibility]" value="' . $socialNetwork->visibility . '" />';
+									echo  '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#social_media_row_'. $token . '\'); return false;">Remove</a>';
+								echo  '</div>';
+							echo  '</div>';
+						}
+					}
+				}
+			}
+		
+		echo  '</div>';
+		echo  '<p class="add"><a id="add_social_media" class="button">Add Social Media ID</a></p>';
+	}
+	
+	public function metaboxWebsite($entry = NULL)
+	{
+		global $connections;
+		
+		echo  '<div id="website_addresses">';
+			
+			// --> Start template for Website Addresses <-- \\
+			echo  '<textarea id="website_address_row_base" style="display: none">';
+				echo  '<div class="form-field connectionsform websites">';
+				echo  '<label for="websites">Website: <input type="text" name="website[::FIELD::][address]" style="width: 50%" value="http://" /></label>';
+				echo  '<input type="hidden" name="website[::FIELD::][type]" value="personal" />';
+				echo  '<input type="hidden" name="website[::FIELD::][name]" value="Personal" />';
+				echo  '<input type="hidden" name="website[::FIELD::][visibility]" value="public"/>';
+				echo  '<a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#website_address_row_::FIELD::\'); return false;">Remove</a>';
+				echo  '</div>';
+			echo  '</textarea>';
+			// --> End template for Website Addresses <-- \\
+			
+			$websites = $entry->getWebsites();
+			
+			if ( !empty($websites) )
+			{
+				foreach ($websites as $website)
+				{
+					if ($website->url == NULL) continue;
+					
+					$token = $this->token($entry->getId());
+					
+					echo  '<div class="form-field connectionsform websites" id="website_address_row_'  . $token . '">';
+						echo  '<div class="website_address_row">';
+							echo  '<label for="websites">Website: <input type="text" name="website[' . $token . '][address]" style="width: 50%" value="' . $website->url . '" /></label>';
+							echo  '<input type="hidden" name="website[' . $token . '][type]" value="personal" />';
+							echo  '<input type="hidden" name="website[' . $token . '][name]" value="Personal" />';
+							echo  '<input type="hidden" name="website[' . $token . '][visibility]" value="public" />';
+							echo  '<a href="#" id="remove_button_'. $token . '" class="button button-warning" onClick="removeEntryRow(\'#website_address_row_'. $token . '\'); return false;">Remove</a>';
+						echo  '</div>';
+					echo  '</div>';
+				}
+			}
+			
+		echo  '</div>';
+		echo  '<p class="add"><a id="add_website_address" class="button">Add Website Address</a></p>';
+	}
+	
+	public function metaboxBirthday($entry = NULL)
+	{
+		$date = new cnDate();
+		
+		echo "<div class='form-field celebrate'>
+				<span class='selectbox'>Birthday: " . $this->buildSelect('birthday_month',$date->months,$date->getMonth($entry->getBirthday())) . "</span>
+				<span class='selectbox'>" . $this->buildSelect('birthday_day',$date->days,$date->getDay($entry->getBirthday())) . "</span>
+		</div>";
+	}
+	
+	public function metaboxAnniversary($entry = NULL)
+	{
+		$date = new cnDate();
+		
+		echo "<div class='form-field celebrate'>
+				<span class='selectbox'>Anniversary: " . $this->buildSelect('anniversary_month',$date->months,$date->getMonth($entry->getAnniversary())) . "</span>
+				<span class='selectbox'>" . $this->buildSelect('anniversary_day',$date->days,$date->getDay($entry->getAnniversary())) . "</span>
+		</div>";
+	}
+	
+	public function metaboxBio($entry = NULL)
+	{
+		echo "<div class='form-field'>
+				
+				<a class='button alignright' id='toggleBioEditor'>Toggle Editor</a>
+				
+				<textarea class='tinymce' id='bio' name='bio' rows='15'>" . $entry->getBio() . "</textarea>
+				<p><strong>Permitted tags:</strong> &lt;p&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;span&gt; &lt;a&gt; &lt;b&gt; &lt;strong&gt; &lt;i&gt; &lt;em&gt; &lt;u&gt; &lt;br&gt;</p>
+		</div>";
+	}
+	
+	public function metaboxNotes($entry = NULL)
+	{
+		echo "<div class='form-field'>
+				
+				<a class='button alignright' id='toggleNoteEditor'>Toggle Editor</a>
+				
+				<textarea class='tinymce' id='note' name='notes' rows='15'>" . $entry->getNotes() . "</textarea>
+				<p><strong>Permitted tags:</strong> &lt;p&gt; &lt;ul&gt; &lt;ol&gt; &lt;li&gt; &lt;span&gt; &lt;a&gt; &lt;b&gt; &lt;strong&gt; &lt;i&gt; &lt;em&gt; &lt;u&gt; &lt;br&gt;</p>
+		</div>";
+	}
+	
+	private function getEntrySelect($name, $selected = NULL)
 	{
 		global $wpdb, $connections;
 		
@@ -854,8 +915,8 @@ class cnEntryForm
 		
 		return $out;
 	}
-	
 }
+
 
 class cnCategoryObjects
 {

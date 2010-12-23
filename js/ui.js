@@ -72,7 +72,7 @@ jQuery(document).ready(function(){
 	
 	
 	jQuery(function() {
-		var $entryType = (jQuery('input[@name=entry_type]:checked').val());
+		var $entryType = (jQuery('input[name^=entry_type]:checked').val());
 		
 		switch ($entryType)
 		{

@@ -66,6 +66,11 @@ function connectionsShowAddPage()
 						
 						$form->open($attr);
 						$form->tokenField('add_entry');
+						
+						echo '<div id="side-info-column" class="inner-sidebar">';
+							do_meta_boxes('connections_add', 'side', '');
+						echo '</div>';
+						
 						$entryForm->displayForm($entry);
 						$form->close();
 					?>
