@@ -92,6 +92,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 
 = 0.7.1.X XX/XX/2010 =
 * FEATURE: Added Contact First and Last name fields the the Organization entry type.
+* FEATURE: Added honorable prefix and honorable suffix fields.
 * FEATURE: Added a template manager to the admin.
 * FEATURE: Templates now support stylesheets.
 * FEATURE: Templates now support javascript.

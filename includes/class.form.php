@@ -400,37 +400,33 @@ class cnFormObjects
 			<div class="form-field namefield">
 					<div class="">';
 						
-						/*echo '
-						<label for="honorable_prefix">Prefix:
-							<select name="honorable_prefix">
-								<option>Mr.</option>
-								<option>Ms.</option>
-							</select>
-						</label>';*/
+						echo '
+						<div style="float: left; width: 8%">
+							<label for="honorable_prefix">Prefix:</label>
+							<input type="text" name="honorable_prefix" value="' . $entry->getHonorablePrefix() . '" />
+						</div>';
 					
 						echo '
-						<div style="float: left; width: 35%">
+						<div style="float: left; width: 30%">
 							<label for="first_name">First Name:</label>
 							<input type="text" name="first_name" value="' . $entry->getFirstName() . '" />
 						</div>
 						
-						<div style="float: left; width: 30%">
+						<div style="float: left; width: 24%">
 							<label for="middle_name">Middle Name:</label>
 							<input type="text" name="middle_name" value="' . $entry->getMiddleName() . '" />
 						</div>
 					
-						<div style="float: left; width: 35%">
+						<div style="float: left; width: 30%">
 							<label for="last_name">Last Name:</label>
 							<input type="text" name="last_name" value="' . $entry->getLastName() . '" />
 						</div>';
 					
-						/*echo '
-						<label for="honorable_suffix" style="clear: both;">Suffix:
-							<select name="honorable_suffix">
-								<option>Jr.</option>
-								<option>MD</option>
-							</select>
-						</label>';*/
+						echo '
+						<div style="float: left; width: 8%">
+							<label for="honorable_suffix">Suffix:</label>
+							<input type="text" name="honorable_suffix" value="' . $entry->getHonorableSuffix() . '" />
+						</div>';
 						
 						echo '
 						<label for="title">Title:</label>

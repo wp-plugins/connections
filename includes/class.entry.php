@@ -13,11 +13,21 @@ class cnEntry
 	
 	/**
 	 * Unix timestamp
-	 * @var unix timestamp
+	 * @var integer unix timestamp
 	 */
 	private $timeStamp;
 	
+	/**
+	 * Date added.
+	 * @var integer unix timestamp
+	 */
 	private $dateAdded;
+	
+	/**
+	 * Honorable prefix.
+	 * @var string
+	 */
+	private $honorablePrefix;
 	
 	/**
 	 * String: First Name
@@ -25,6 +35,10 @@ class cnEntry
 	 */
 	private $firstName;
 	
+	/**
+	 * Middle Name
+	 * @var string
+	 */
 	private $middleName;
 	
 	/**
@@ -32,6 +46,12 @@ class cnEntry
 	 * @var string
 	 */
 	private $lastName;
+	
+	/**
+	 * Honorable suffix
+	 * @var string
+	 */
+	private $honorableSuffix;
 	
 	/**
 	 * String: Title
@@ -155,9 +175,11 @@ class cnEntry
 			if ( isset($entry->id) ) $this->id = (integer) $entry->id;
 			if ( isset($entry->ts) ) $this->timeStamp = $entry->ts;
 			if ( isset($entry->date_added) ) $this->dateAdded = (integer) $entry->date_added;
+			if ( isset($entry->honorable_prefix) ) $this->honorablePrefix = $entry->honorable_prefix;
 			if ( isset($entry->first_name) ) $this->firstName = $entry->first_name;
 			if ( isset($entry->middle_name) ) $this->middleName = $entry->middle_name;
 			if ( isset($entry->last_name) ) $this->lastName = $entry->last_name;
+			if ( isset($entry->honorable_suffix) ) $this->honorableSuffix = $entry->honorable_suffix;
 			if ( isset($entry->title) ) $this->title = $entry->title;
 			if ( isset($entry->organization) ) $this->organization = $entry->organization;
 			if ( isset($entry->contact_first_name) ) $this->contactFirstName = $entry->contact_first_name;
@@ -282,6 +304,26 @@ class cnEntry
 			return 'Unknown';
 		}
 	}
+    
+    /**
+     * Returns $honorablePrefix.
+     *
+     * @see cnEntry::$honorablePrefix
+     */
+    public function getHonorablePrefix() {
+        return $this->format->sanitizeString($this->honorablePrefix);
+    }
+    
+    /**
+     * Sets $honorablePrefix.
+     *
+     * @param object $honorablePrefix
+     * @see cnEntry::$honorablePrefix
+     */
+    public function setHonorablePrefix($honorablePrefix) {
+        $this->honorablePrefix = $honorablePrefix;
+    }
+    
 	
     /**
      * Returns the entries first name.
@@ -343,13 +385,35 @@ class cnEntry
     
     /**
      * Sets $lastName.
-     * @param object $lastName
+     * @param string $lastName
      * @see entry::$lastName
      */
     public function setLastName($lastName)
     {
         $this->lastName = $lastName;
     }
+    
+    /**
+     * Returns $honorableSuffix.
+     *
+     * @see cnEntry::$honorableSuffix
+     */
+    public function getHonorableSuffix()
+	{
+        return $this->format->sanitizeString($this->honorableSuffix);
+    }
+    
+    /**
+     * Sets $honorableSuffix.
+     *
+     * @param string $honorableSuffix
+     * @see cnEntry::$honorableSuffix
+     */
+    public function setHonorableSuffix($honorableSuffix)
+	{
+        $this->honorableSuffix = $honorableSuffix;
+    }
+    
     
 	 /**
      * The entries full name if the entry type is an individual.
@@ -1719,9 +1783,11 @@ class cnEntry
 			
 			case 'organization':
 				$this->familyName = '';
+				$this->honorablePrefix = '';
 				$this->firstName = '';
 				$this->middleName = '';
 				$this->lastName = '';
+				$this->honorableSuffix = '';
 				$this->title = '';
 				$this->familyMembers = '';
 				$this->birthday = '';
@@ -1729,9 +1795,11 @@ class cnEntry
 			break;
 			
 			case 'family':
+				$this->honorablePrefix = '';
 				$this->firstName = '';
 				$this->middleName = '';
 				$this->lastName = '';
+				$this->honorableSuffix = '';
 				$this->title = '';
 				$this->birthday = '';
 				$this->anniversary = '';
@@ -1748,9 +1816,11 @@ class cnEntry
 		return $wpdb->query($wpdb->prepare('UPDATE ' . CN_ENTRY_TABLE . ' SET
 											ts			   		= "%s",
 											entry_type			= "%s",
+											honorable_prefix	= "%s",
 											first_name			= "%s",
 											middle_name			= "%s",
 											last_name			= "%s",
+											honorable_suffix	= "%s",
 											title				= "%s",
 											organization		= "%s",
 											department			= "%s",
@@ -1774,9 +1844,11 @@ class cnEntry
 											WHERE id			= "%d"',
 											current_time('mysql'),
 											$this->entryType,
+											$this->honorablePrefix,
 											$this->firstName,
 											$this->middleName,
 											$this->lastName,
+											$this->honorableSuffix,
 											$this->title,
 											$this->organization,
 											$this->department,
@@ -1817,9 +1889,11 @@ class cnEntry
 			
 			case 'organization':
 				$this->familyName = '';
+				$this->honorablePrefix = '';
 				$this->firstName = '';
 				$this->middleName = '';
 				$this->lastName = '';
+				$this->honorableSuffix = '';
 				$this->title = '';
 				$this->familyMembers = '';
 				$this->birthday = '';
@@ -1827,9 +1901,11 @@ class cnEntry
 			break;
 			
 			case 'family':
+				$this->honorablePrefix = '';
 				$this->firstName = '';
 				$this->middleName = '';
 				$this->lastName = '';
+				$this->honorableSuffix = '';
 				$this->title = '';
 				$this->birthday = '';
 				$this->anniversary = '';
@@ -1879,11 +1955,11 @@ class cnEntry
 											$this->entryType,
 											$this->visibility,
 											$this->familyName,
-											'',
+											$this->honorablePrefix,
 											$this->firstName,
 											$this->middleName,
 											$this->lastName,
-											'',
+											$this->honorableSuffix,
 											$this->title,
 											$this->organization,
 											$this->department,
