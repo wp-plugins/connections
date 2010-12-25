@@ -585,9 +585,9 @@ function connectionsShowHelpPage()
 	<pre><code>$entry-&gt;getFamilyName()</code></pre>
 	<p>Returns the Connection Group name.</p>
 	
-	<pre><code>$entry-&gt;getConnectionGroup()</code></pre>
-	<p>Returns an associative array containing the relation's entry id 
-	as the key and the relation</p>
+	<pre><code>$entry-&gt;getFamilyMembers()</code></pre>
+	<p>Returns an associative array containing the family member's entry id 
+	as the key and the relation as the value</p>
 	
 	<pre><code>$entry-&gt;getOrganization()</code></pre>
 	<p>Returns the organization.</p>
@@ -657,8 +657,8 @@ function connectionsShowHelpPage()
 	if the entry type in an Organization or a Connection Group
 	this will return the Organization/Connection Group name instead.</p>
 	
-	<pre><code>$entry-&gt;getConnectionGroupBlock()</code></pre>
-	<p>Returns the Connection Group items in a <code>&lt;span&gt;</code> tag followed by a <code>&lt;br&gt;</code>.</p>
+	<pre><code>$entry-&gt;getFamilyMemberBlock()</code></pre>
+	<p>Returns the family members, each in a <code>&lt;span&gt;</code> tag followed by a <code>&lt;br&gt;</code>.</p>
 	
 	<pre><code>$entry-&gt;getTitleBlock()</code></pre>
 	<p>Returns the title in a <code>&lt;span&gt;</code>tag.</p>

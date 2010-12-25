@@ -39,7 +39,7 @@ class cnOptions
 								'connections_view_help' => 'View Help'
 							);
 							
-	private $defaultConnectionGroupValues = array(
+	private $defaultFamilyRelationValues = array(
 											'' =>"Select Relation",
 											'aunt' =>"Aunt",
 											'brother' =>"Brother",
@@ -1078,15 +1078,16 @@ class cnOptions
 		$this->defaultTemplatesSet = TRUE;
 	}
 
-    /**
-     * Returns $defaultConnectionGroupValues.
-     * @see pluginOptions::$defaultConnectionGroupValues
-     */
-    public function getDefaultConnectionGroupValues()
+    public function getDefaultFamilyRelationValues()
     {
-        return $this->defaultConnectionGroupValues;
+        return $this->defaultFamilyRelationValues;
     }
     
+	public function getFamilyRelation($value)
+    {
+        return $this->defaultFamilyRelationValues[$value];
+    }
+	
     /**
      * Returns $defaultAddressValues.
      *
@@ -1128,13 +1129,6 @@ class cnOptions
      */
     public function getDefaultEmailValues() {
         return $this->defaultEmailValues;
-    }
-    
-    
-	
-    public function getConnectionRelation($value)
-    {
-        return $this->defaultConnectionGroupValues[$value];
     }
     
     /**

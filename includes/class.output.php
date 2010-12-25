@@ -153,78 +153,84 @@ class cnOutput extends cnEntry
 		echo $out;
 	}
 	
-	
-    /**
-     * The entries full name if the entry type is an individual.
-     * If entry type is set to organization the method will return the organization name.
-     * If entry type is set to connection group the method will return the group name.
-     * Returns $fullFirstLastName.
-     * @see entry::$fullFirstLastName
-     */
-    public function getFullFirstLastNameBlock()
-    {
-        switch ($this->getEntryType())
+	public function getNameBlock($atts = NULL)
+	{
+		//global $connections;
+		
+		$defaultAtts = array( 'format' => '%prefix% %first% %middle% %last% %suffix%',
+							  'return' => FALSE
+							);
+		
+		$atts = $this->validate->attributesArray($defaultAtts, (array) $atts);
+		
+		$search = array('%prefix%', '%first%', '%middle%', '%last%', '%suffix%');
+		$replace = array();
+		
+		switch ( $this->getEntryType() )
 		{
 			case 'individual':
-				return '<span class="fn n">' . '<span class="given-name">' . $this->getFirstName() . '</span> ' . '<span class="additional-name">' . $this->getMiddleName() . '</span> ' . '<span class="family-name">' . $this->getLastName() . '</span></span>';
+				
+				( $this->getHonorablePrefix() ) ? $replace[] = '<span class="honorific-prefix">' . $this->getHonorablePrefix() . '</span>' : $replace[] = '';;
+				
+				( $this->getFirstName() ) ? $replace[] = '<span class="given-name">' . $this->getFirstName() . '</span>' : $replace[] = '';
+				
+				( $this->getMiddleName() ) ? $replace[] = '<span class="additional-name">' . $this->getMiddleName() . '</span>' : $replace[] = '';
+				
+				( $this->getLastName() ) ? $replace[] = '<span class="family-name">' . $this->getLastName() . '</span>' : $replace[] = '';
+				
+				( $this->getHonorableSuffix() ) ? $replace[] = '<span class="honorific-suffix">' . $this->getHonorableSuffix() . '</span>' : $replace[] = '';
+				
+				$out = '<span class="fn n">' . str_ireplace( $search, $replace, $atts['format'] ) . '</span>';
 			break;
 			
 			case 'organization':
-				return '<span class="fn org">' . $this->getOrganization() . '</span>';
+				$out = '<span class="fn org">' . $this->getOrganization() . '</span>';
 			break;
 			
 			case 'family':
-				return '<span class="fn n"><span class="family-name">' . $this->getFamilyName() . '</span></span>';
-			break;
-			
-			default:
-				return '<span class="fn n">' . '<span class="given-name">' . $this->getFirstName() . '</span> ' . '<span class="additional-name">' . $this->getMiddleName() . '</span> ' . '<span class="family-name">' . $this->getLastName() . '</span></span>';
+				$out = '<span class="fn n"><span class="family-name">' . $this->getFamilyName() . '</span></span>';
 			break;
 		}
 		
+		
+		if ( $atts['return'] ) return $out;
+		echo $out;
+	}
+	
+    public function getFullFirstLastNameBlock()
+    {
+        return $this->getNameBlock( array('format' => '%prefix% %first% %middle% %last% %suffix%', 'return' => TRUE) );		
     }
         
-    /**
-     * The entries full name; last name first if the entry type is an individual.
-     * If entry type is set to organization the method will return the organization name.
-     * If entry type is set to connection group the method will return the group name.
-     * Returns $fullLastFirstName.
-     * @see entry::$fullLastFirstName
-     */
     public function getFullLastFirstNameBlock()
     {
-    	switch ($this->getEntryType())
-		{
-			case 'individual':
-				return '<span class="fn n">' . '<span class="family-name">' . $this->getLastName() . '</span>' . ', ' . '<span class="given-name">' . $this->getFirstName() . '</span> <span class="additional-name">' . $this->getMiddleName() . '</span></span>';
-			break;
-			
-			case 'organization':
-				return '<span class="fn org">' . $this->getOrganization() . '</span>';
-			break;
-			
-			case 'family':
-				return '<span class="fn n"><span class="family-name">' . $this->getFamilyName() . '</span></span>';
-			break;
-			
-			default:
-				return '<span class="fn n">' . '<span class="family-name">' . $this->getLastName() . '</span>' . ', ' . '<span class="given-name">' . $this->getFirstName() . '</span></span>';
-			break;
-		}
+    	return $this->getNameBlock( array('format' => '%last%, %first% %middle%', 'return' => TRUE) );	
     }
 	
+	/**
+	 * Echos the family members of the family entry type.
+	 * 
+	 * @deprecated since 0.7.1.0
+	 */
 	public function getConnectionGroupBlock()
 	{
-		if ($this->getConnectionGroup())
+		$this->getFamilyMemberBlock();
+	}
+	
+	/**
+	 * Echos the family members of the family entry type.
+	 */
+	public function getFamilyMemberBlock()
+	{
+		if ( $this->getFamilyMembers() )
 		{
-			//$plugin_options = new cnOptions();
 			global $connections;
 			
-			foreach ($this->getConnectionGroup() as $key => $value)
+			foreach ($this->getFamilyMembers() as $key => $value)
 			{
 				$relation = new cnEntry();
 				$relation->set($key);
-				echo '<span><strong>' . $connections->options->getConnectionRelation($value) . ':</strong> ' . $relation->getFullFirstLastName() . '</span><br />' . "\n";
+				echo '<span><strong>' . $connections->options->getFamilyRelation($value) . ':</strong> ' . $relation->getFullFirstLastName() . '</span><br />' . "\n";
 				unset($relation);
 			}
 		}

@@ -481,11 +481,11 @@ function connectionsShowViewPage()
 													{
 														if (current_user_can('connections_edit_entry'))
 														{
-															echo '<strong>' . $connections->options->getConnectionRelation($value) . ':</strong> ' . '<a href="' . $editRelationTokenURL . '" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a><br />' . "\n";
+															echo '<strong>' . $connections->options->getFamilyRelation($value) . ':</strong> ' . '<a href="' . $editRelationTokenURL . '" title="Edit ' . $relation->getFullFirstLastName() . '">' . $relation->getFullFirstLastName() . '</a><br />' . "\n";
 														}
 														else
 														{
-															echo '<strong>' . $connections->options->getConnectionRelation($value) . ':</strong> ' . $relation->getFullFirstLastName() . '<br />' . "\n";
+															echo '<strong>' . $connections->options->getFamilyRelation($value) . ':</strong> ' . $relation->getFullFirstLastName() . '<br />' . "\n";
 														}
 													}
 													
