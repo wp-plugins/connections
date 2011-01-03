@@ -130,7 +130,7 @@ if (!class_exists('connectionsLoad'))
 			global $wpdb;
 			
 			define('CN_CURRENT_VERSION', '0.7.1.0');
-			define('CN_DB_VERSION', '0.1.3');
+			define('CN_DB_VERSION', '0.1.4');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
 			define('CN_ENTRY_TABLE', $wpdb->prefix . 'connections');
@@ -436,11 +436,11 @@ if (!class_exists('connectionsLoad'))
 			        entry_type tinytext NOT NULL,
 					visibility tinytext NOT NULL,
 					family_name tinytext NOT NULL,
-					honorable_prefix tinytext NOT NULL,
+					honorific_prefix tinytext NOT NULL,
 					first_name tinytext NOT NULL,
 					middle_name tinytext NOT NULL,
 			        last_name tinytext NOT NULL,
-					honorable_suffix tinytext NOT NULL,
+					honorific_suffix tinytext NOT NULL,
 					title tinytext NOT NULL,
 					organization tinytext NOT NULL,
 					department tinytext NOT NULL,

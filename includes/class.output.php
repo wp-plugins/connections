@@ -170,7 +170,7 @@ class cnOutput extends cnEntry
 		{
 			case 'individual':
 				
-				( $this->getHonorablePrefix() ) ? $replace[] = '<span class="honorific-prefix">' . $this->getHonorablePrefix() . '</span>' : $replace[] = '';;
+				( $this->getHonorificPrefix() ) ? $replace[] = '<span class="honorific-prefix">' . $this->getHonorificPrefix() . '</span>' : $replace[] = '';;
 				
 				( $this->getFirstName() ) ? $replace[] = '<span class="given-name">' . $this->getFirstName() . '</span>' : $replace[] = '';
 				
@@ -178,7 +178,7 @@ class cnOutput extends cnEntry
 				
 				( $this->getLastName() ) ? $replace[] = '<span class="family-name">' . $this->getLastName() . '</span>' : $replace[] = '';
 				
-				( $this->getHonorableSuffix() ) ? $replace[] = '<span class="honorific-suffix">' . $this->getHonorableSuffix() . '</span>' : $replace[] = '';
+				( $this->getHonorificSuffix() ) ? $replace[] = '<span class="honorific-suffix">' . $this->getHonorificSuffix() . '</span>' : $replace[] = '';
 				
 				$out = '<span class="fn n">' . str_ireplace( $search, $replace, $atts['format'] ) . '</span>';
 			break;

@@ -8,17 +8,26 @@ class cnvCard extends cnOutput
 	private function setvCardData()
 	{
 		$imageName = $this->getImageNameCard();
+		$logoName = $this->getLogoName();
 		
 		if ( !empty($imageName) )
 		{
-			//$imageURL = CN_IMAGE_BASE_URL . $imageName;
-			$imageURL = CN_IMAGE_PATH . $imageName;
+			$imagePath = CN_IMAGE_PATH . $imageName;
 		}
 		else
 		{
-			$imageURL = NULL;
+			$imagePath = NULL;
 		}
 		
+		
+		if ( !empty($logoName) )
+		{
+			$logoPath = CN_IMAGE_PATH . $logoName;
+		}
+		else
+		{
+			$logoPath = NULL;
+		}
 		
 		$this->data = array(
 							'class'=>null,
@@ -26,8 +35,8 @@ class cnvCard extends cnOutput
 							'first_name'=>$this->getFirstName(),
 							'last_name'=>$this->getLastName(),
 							'additional_name'=>$this->getMiddleName(),
-							'name_prefix'=>null,
-							'name_suffix'=>null,
+							'name_prefix'=>$this->getHonorificPrefix(),
+							'name_suffix'=>$this->getHonorificSuffix(),
 							'nickname'=>null,
 							'title'=>$this->getTitle(),
 							'role'=>null,
@@ -54,6 +63,8 @@ class cnvCard extends cnOutput
 							'other_state'=>null,
 							'other_postal_code'=>null,
 							'other_country'=>null,
+							'latitute'=>null,
+							'longitude'=>null,
 							'work_tel'=>null,
 							'home_tel'=>null,
 							'home_fax'=>null,
@@ -67,7 +78,8 @@ class cnvCard extends cnOutput
 							'messenger'=>null,
 							'yim'=>null,
 							'jabber'=>null,
-							'photo'=>$imageURL,
+							'photo'=>$imagePath,
+							'logo'=>$logoPath,
 							'birthday'=>$this->getBirthday('Y-m-d'),
 							'anniversary'=>$this->getAnniversary('Y-m-d'),
 							'spouse'=>null,
@@ -75,10 +87,11 @@ class cnvCard extends cnOutput
 							'revision_date'=>date('Y-m-d H:i:s', strtotime($this->getUnixTimeStamp())),
 							'sort_string'=>null,
 							'categories'=>$this->getCategory(),
-							'note'=>$this->getNotes()
+							'note'=>$this->format->sanitizeString( $this->getNotes() )
 							);
 		
 		$this->setvCardAddresses();
+		$this->setvCardGEO();
 		$this->setvCardPhoneNumbers();
 		$this->setvCardEmailAddresses();
 		$this->setvCardWebAddresses();
@@ -172,6 +185,11 @@ class cnvCard extends cnOutput
 		    . $this->data['other_country']."\r\n";
 		}
 		
+		if ( $this->data['latitude'] && $this->data['longitude'] )
+		{
+			$this->card .= "GEO:".$this->data['latitude'].";".$this->data['longitude']."\r\n";;
+		}
+		
 		if ($this->data['email1']) { $this->card .= "EMAIL;CHARSET=utf-8;TYPE=internet:".$this->data['email1']."\r\n"; }
 		if ($this->data['email2']) { $this->card .= "EMAIL;CHARSET=utf-8;TYPE=internet:".$this->data['email2']."\r\n"; }
 		if ($this->data['work_tel']) { $this->card .= "TEL;CHARSET=utf-8;TYPE=work,voice:".$this->data['work_tel']."\r\n"; }
@@ -212,7 +230,7 @@ class cnvCard extends cnOutput
 								    IMAGETYPE_BMP  => 'BMP'
 								);
 			
-			if ($imageInfo = getimagesize( $this->data['photo'] ) AND isset($imageTypes[$imageInfo[2]]))
+			if ( $imageInfo = getimagesize( $this->data['photo'] ) AND isset($imageTypes[$imageInfo[2]]) )
 			{
 			    $photo = base64_encode( file_get_contents($this->data['photo']) );
 			    $type  = $imageTypes[$imageInfo[2]];
@@ -242,6 +260,44 @@ class cnvCard extends cnOutput
 			//$this->card .= "PHOTO;VALUE=uri:".$this->data['photo']."\r\n";
 		}
 		
+		if ($this->data['logo'])
+		{
+			$imageTypes = array
+								(
+								    IMAGETYPE_JPEG => 'JPEG',
+								    IMAGETYPE_GIF  => 'GIF',
+								    IMAGETYPE_PNG  => 'PNG',
+								    IMAGETYPE_BMP  => 'BMP'
+								);
+			
+			if ( $imageInfo = getimagesize( $this->data['logo'] ) AND isset($imageTypes[$imageInfo[2]]) )
+			{
+			    $photo = base64_encode( file_get_contents($this->data['logo']) );
+			    $type  = $imageTypes[$imageInfo[2]];
+			}
+			
+			$this->card .= sprintf("LOGO;ENCODING=BASE64;TYPE=%s:", $type);
+			
+			$i = 0;
+			$strphoto = sprintf($photo);
+			
+			while($i < strlen($strphoto))
+			{
+				if( $i%75 == 0 )
+				{
+			  		$this->card .= "\r\n " . $strphoto[$i];
+				}
+				else
+				{
+				  	$this->card .= $strphoto[$i];
+				}
+			      
+				$i++;
+			}  
+			
+			$this->card .= "\r\n";
+		}
+		
 		if ($this->data['categories'])
 		{
 			$count = count($this->data['categories']);
@@ -264,6 +320,20 @@ class cnvCard extends cnOutput
 		
 		$this->card .= "TZ:".$this->data['timezone']."\r\n";
 		$this->card .= "END:VCARD\r\n";
+	}
+	
+	/**
+	 * Add the latitude and longitude of the first address to the GEO property
+	 */
+	private function setvCardGEO()
+	{
+		if ( $this->getAddresses() )
+		{
+			$address = $this->getAddresses();
+			
+			$this->data['latitude'] = $address[0]->latitude;
+			$this->data['longitude'] = $address[0]->longitude;
+		}
 	}
 	
 	private function setvCardAddresses()
@@ -422,9 +492,12 @@ class cnvCard extends cnOutput
 	
 	private function setvCardWebAddresses()
 	{
-		if ($this->getWebsites())
+		if ( $this->getWebsites() )
 		{
-			foreach ($this->getWebsites() as $website)
+			$website = $this->getWebsites();
+			$this->data['url'] = $website[0]->url;
+			
+			/*foreach ($this->getWebsites() as $website)
 			{
 				switch ($website->type)
 				{
@@ -438,7 +511,7 @@ class cnvCard extends cnOutput
 				}
 				
 				break; // Only return the first website url.
-			}
+			}*/
 			
 		}
 	}
@@ -502,8 +575,6 @@ class cnvCard extends cnOutput
 	public function download( $atts = array('anchorText' => 'Add to Address Book') )
 	{
 		$token = wp_create_nonce('download_vcard_' . $this->getId());
-		
-		//$filenameEncoded = rawurlencode($filename);
 		
 		echo '<a href="' . get_option('siteurl') . '/download.vCard.php?token=' . $token . '&entry=' . $this->getId() . '" rel="nofollow">' . $atts['anchorText'] . '</a>';
 	}

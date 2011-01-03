@@ -168,24 +168,30 @@ function cnRunDBUpgrade()
 		if (version_compare($dbVersion, '0.1.3', '<'))
 		{
 			echo '<h4>Upgrade from database version ' . $connections->options->getDBVersion() . ' to database version ' . CN_DB_VERSION . ".</h4>\n";
-			//echo '<h4>Changing .' . "</h4>\n";
 			
 			echo '<ul>';
 			echo '<li>Changing column name from group_name to family_name...' . "</li>\n";
 			if (cnAlterTable(CN_ENTRY_TABLE, 'CHANGE COLUMN group_name family_name tinytext NOT NULL')) echo '<ul><li>SUCCESS</li></ul>';
 			
-			//echo '<li>Changing entry type connections_group to entry type family...' . "</li>\n";
-			/*$results = $connections->retrieve->entries();
-			
-			foreach ($results as $result)
-			{
-				$entry = new cnEntry($result);
-				$entry->update();
-			}*/
-			
 			echo '</ul>';
 			
 			$connections->options->setDBVersion('0.1.3');
+		}
+		
+		if (version_compare($dbVersion, '0.1.4', '<'))
+		{
+			echo '<h4>Upgrade from database version ' . $connections->options->getDBVersion() . ' to database version ' . CN_DB_VERSION . ".</h4>\n";
+			
+			echo '<ul>';
+			echo '<li>Changing column name from honorable_prefix to honorific_prefix...' . "</li>\n";
+			if (cnAlterTable(CN_ENTRY_TABLE, 'CHANGE COLUMN honorable_prefix honorific_prefix tinytext NOT NULL')) echo '<ul><li>SUCCESS</li></ul>';
+			
+			echo '<li>Changing column name from honorable_suffix to honorific_suffix...' . "</li>\n";
+			if (cnAlterTable(CN_ENTRY_TABLE, 'CHANGE COLUMN honorable_suffix honorific_suffix tinytext NOT NULL')) echo '<ul><li>SUCCESS</li></ul>';
+			
+			echo '</ul>';
+			
+			$connections->options->setDBVersion('0.1.4');
 		}
 		
 		echo '<h4>Updating entries to the new database stucture.' . "</h4>\n";

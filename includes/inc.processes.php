@@ -27,11 +27,11 @@ function processEntry($data, $action)
 	if ( isset($data['entry_type']) ) $entry->setEntryType($data['entry_type']);
 	if ( isset($data['family_name']) ) $entry->setFamilyName($data['family_name']);
 	if ( isset($data['family_member']) ) $entry->setFamilyMembers($data['family_member']);
-	if ( isset($data['honorable_prefix']) ) $entry->setHonorablePrefix($data['honorable_prefix']);
+	if ( isset($data['honorific_prefix']) ) $entry->setHonorificPrefix($data['honorific_prefix']);
 	if ( isset($data['first_name']) ) $entry->setFirstName($data['first_name']);
 	if ( isset($data['middle_name']) ) $entry->setMiddleName($data['middle_name']);
 	if ( isset($data['last_name']) ) $entry->setLastName($data['last_name']);
-	if ( isset($data['honorable_suffix']) ) $entry->setHonorableSuffix($data['honorable_suffix']);
+	if ( isset($data['honorific_suffix']) ) $entry->setHonorificSuffix($data['honorific_suffix']);
 	if ( isset($data['title']) ) $entry->setTitle($data['title']);
 	if ( isset($data['organization']) ) $entry->setOrganization($data['organization']);
 	if ( isset($data['department']) ) $entry->setDepartment($data['department']);

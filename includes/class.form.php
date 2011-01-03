@@ -369,7 +369,7 @@ class cnFormObjects
 						// --> Start template for Connection Group <-- \\
 						echo '<textarea id="relation_row_base" style="display: none">';
 							echo $this->getEntrySelect('family_member[::FIELD::][entry_id]');
-							echo $this->buildSelect('family_member[::FIELD::][relation]', $connections->options->getDefaultConnectionGroupValues());
+							echo $this->buildSelect('family_member[::FIELD::][relation]', $connections->options->getDefaultFamilyRelationValues());
 						echo '</textarea>';
 						// --> End template for Connection Group <-- \\
 						
@@ -383,7 +383,7 @@ class cnFormObjects
 								
 								echo '<div id="relation_row_' . $token . '" class="relation_row">';
 									echo $this->getEntrySelect('family_member[' . $token . '][entry_id]', $key);
-									echo $this->buildSelect('family_member[' . $token . '][relation]', $connections->options->getDefaultConnectionGroupValues(), $value);
+									echo $this->buildSelect('family_member[' . $token . '][relation]', $connections->options->getDefaultFamilyRelationValues(), $value);
 									echo '<a href="#" id="remove_button_' . $token . '" class="button button-warning" onClick="removeEntryRow(\'#relation_row_' . $token . '\'); return false;">Remove</a>';
 								echo '</div>';
 								
@@ -402,8 +402,8 @@ class cnFormObjects
 						
 						echo '
 						<div style="float: left; width: 8%">
-							<label for="honorable_prefix">Prefix:</label>
-							<input type="text" name="honorable_prefix" value="' . $entry->getHonorablePrefix() . '" />
+							<label for="honorific_prefix">Prefix:</label>
+							<input type="text" name="honorific_prefix" value="' . $entry->getHonorificPrefix() . '" />
 						</div>';
 					
 						echo '
@@ -424,8 +424,8 @@ class cnFormObjects
 					
 						echo '
 						<div style="float: left; width: 8%">
-							<label for="honorable_suffix">Suffix:</label>
-							<input type="text" name="honorable_suffix" value="' . $entry->getHonorableSuffix() . '" />
+							<label for="honorific_suffix">Suffix:</label>
+							<input type="text" name="honorific_suffix" value="' . $entry->getHonorificSuffix() . '" />
 						</div>';
 						
 						echo '

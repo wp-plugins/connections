@@ -116,6 +116,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * BUG: Fix entry drop down when creating a family. Drop downs would only show entries based on the current filter setting for the current user in the admin. The drop down will now show all permitted entries.
 * BUG: Fix public entries "Allow unregistered vistors and users..." setting not being saved.
 * BUG: Fix DB upgrade method logic.
+* BUG: Strip HTML from the Note output for vCard.
 * OTHER: Entry human time difference in now based the current blog time.
 * OTHER: The local timestamp will be used when adding/updating an entry rather than the server timestamp.
 * OTHER: The last updated time will be adjusted to the local timestamp.
