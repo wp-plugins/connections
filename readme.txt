@@ -38,22 +38,26 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * Download the vCard of an individual entry that can be imported into you email application.
 
 = New features this version: =
-* A new shortcode option, wp_current_category. When used on a post, all entries that are assigned to a category with the exact same names as the post categories will be displayed.
-* Multiple categoies can now be specified with the category shortcode attribute.
-* Theme template tags for theme developers.
-* Reduced memory usage.
-* Performance optimizations.
-* See the changelog for more details.
+* Added Contact First and Last name fields the the Organization entry type.
+* Added honorable prefix and honorable suffix fields.
+* Added a template manager to the admin.
+* Templates now support stylesheets.
+* Templates now support javascript.
+* Added RSS option under social media.
+* Added Podcast option under social media.
+* Added SoundCloud option under social media.
+* Improved the rich text editor by using the bundled tinyMCE.
+* Added three additional order_by attributes; date_added, date_modified and title.
+* Added Skype option under the messenger IDs.
+* Added the option to upload a logo in addition to an image.
+* Latitude and longitude can now be set with each address.
+* Add exclude_category shortcode attribute.
+* Convert the add/edit entry form to use the WP metaboxes and 'Screen Options' feature to allow some form customization.
 
 = New features coming in the next version: =
-* Add honorable pre/suffix
-* Contact name for the organization entry type.
 * Add in_category shortcode attribute. Define multiple categories by id that an entry must be assigned in order to be displayed. [Operational AND]
-* Add exclude_category shortcode attribute to allow multiple categories by id to be excluded from the output.
-* Add category_name shortcode attribute to allow multiple categories to be called by name. [Operational OR]
 * Add in_category_name shortcode attribute. Define multiple categories by name that an entry must be assigned in order to be displayed. [Operational AND]
 * Add exclude_category_name shortcode attribute to allow multiple categories by name entries to be excluded from the output.
-* Expand the RTE for the bio and notes fields to allow more styling
 
 = Upcoming features: =
 * Pagination
