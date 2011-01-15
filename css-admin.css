@@ -2,16 +2,18 @@ div#help p {margin: 0 0 1em 0;}
 
 div#help ol  {
 	list-style-type: decimal !important;
-	padding-left: 40px !important;
+	margin-bottom: 10px;
+	padding-left: 30px !important;
 }
 
 div#help ul  {
-	padding-left: 40px !important;
+	padding-left: 30px !important;
+	margin-bottom: 10px;
 }
 
 div#toc ul {
 	list-style-type: disc !important;
-	padding-left: 40px !important;
+	padding-left: 30px !important;
 }
 
 div#help {margin-right:350px;}
@@ -40,9 +42,18 @@ div#help div#toc form {
 	text-align: center;
 }
 
-div#help fieldset { border: 1px solid #DFDFDF; margin: 0; padding: 6px; }
-div#help fieldset legend { padding: 2px 4px; }
+div#help fieldset { -moz-border-radius: 7px; border: 1px solid #DFDFDF; margin: 18px 0 0; padding: 12px; }
+div#help fieldset legend { -moz-border-radius: 4px; background-color: #FFFFFF; border: 1px solid #DFDFDF; font-size: 16px; font-weight: bold; padding: 4px 4px; }
 div#help fieldset label { display: block; }
+
+div#help fieldset fieldset { background-color: #FFFFFF; margin: 0 0 10px; padding: 16px; }
+div#help fieldset fieldset legend { font-size: 14px; }
+
+div#help fieldset fieldset fieldset { background-color: #FDFDFD; }
+div#help fieldset fieldset fieldset legend { font-size: 12px; }
+
+div#help dl { margin-left: 20px; }
+div#help dt { font-weight: bold; }
 
 #icon-connections {
 	-moz-background-clip:border;

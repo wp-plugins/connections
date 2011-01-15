@@ -17,35 +17,21 @@ class cnRetrieve
 		
 		/*
 		 * // START -- Set the default attributes array. \\
-		 * 
-		 * @TODO: Setup default array in single command then apply filters.
 		 */
-			
-			// Common defaults whether user is logged in or not.
+			$defaultAttr['list_type'] = NULL;
 			$defaultAttr['id'] = NULL;
+			$defaultAttr['category'] = NULL;
 			$defaultAttr['exclude_category'] = NULL;
 			$defaultAttr['category_name'] = NULL;
 			$defaultAttr['wp_current_category'] = FALSE;
+			$defaultAttr['visibility'] = NULL;
 			$defaultAttr['allow_public_override'] = FALSE;
 			$defaultAttr['private_override'] = FALSE;
 			$defaultAttr['limit'] = NULL;
 			$defaultAttr['offset'] = NULL;
 			$defaultAttr['order_by'] = NULL;
 			
-			if ( !is_user_logged_in() )
-			{
-				$defaultAttr['list_type'] = NULL;
-				$defaultAttr['category'] = NULL;
-			}
-			else
-			{
-				$defaultAttr['list_type'] = $connections->currentUser->getFilterEntryType();
-				$defaultAttr['category'] = $connections->currentUser->getFilterCategory();
-				$defaultAttr['visibility'] = $connections->currentUser->getFilterVisibility();
-			}
-			
 			$atts = $validate->attributesArray($defaultAttr, $suppliedAttr);
-			
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */

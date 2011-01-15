@@ -236,11 +236,13 @@ function connectionsShowViewPage()
 			if(current_user_can('connections_view_entry_list'))
 			{
 				?>
-			
 				
-					
 					<?php
-						$results = $connections->retrieve->entries();
+						$retrieveAttr['list_type'] = $connections->currentUser->getFilterEntryType();
+						$retrieveAttr['category'] = $connections->currentUser->getFilterCategory();
+						$retrieveAttr['visibility'] = $connections->currentUser->getFilterVisibility();
+						
+						$results = $connections->retrieve->entries($retrieveAttr);
 						//print_r($connections->lastQuery);
 					?>
 					

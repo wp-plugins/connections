@@ -21,6 +21,9 @@ function connectionsEntryList($atts)
  * 		cn_list_atts		=> Alter the shortcode attributes before use. Return associative array.
  * 		cn_list_results		=> Filter the returned results before being processed for display. Return indexed array of entry objects.
  * 		cn_list_before		=> Can be used to add content before the output of the list. The entry list results are passed. Return string.
+ * 		cn_list_after		=> Can be used to add content after the output of the list. The entry list results are passed. Return string.
+ * 		cn_entry_before		=> Can be used to add content before the output of the entry. The entry data is passed. Return string.
+ * 		cn_entry_after		=> Can be used to add content after the output of the entry. The entry data is passed. Return string.
  * 		cn_no_result_message=> Change the no results message.
  * 		cn_list_index		=> Can be used to modify the index before the output of the list. The entry list results are passed. Return string.
  */
@@ -275,19 +278,22 @@ function _connections_list($atts, $content=null) {
 		$alternate == '' ? $alternate = '-alternate' : $alternate = '';
 		
 		
-		$out .= '<div class="cn-list-row' . $alternate . ' vcard ' . $entry->getCategoryClass(TRUE) . '">' . "\n";
+		$out .= '<div class="cn-list-row' . $alternate . ' vcard ' . $template->slug . ' ' . $entry->getCategoryClass(TRUE) . '">' . "\n";
+			$out = apply_filters('cn_entry_before', $out, $entry);
 			ob_start();
 			include($template->file);
 		    $out .= ob_get_contents();
 		    ob_end_clean();
+			$out = apply_filters('cn_entry_after', $out, $entry);
 		$out .= '</div>' . "\n";
 					
 	}
 	$out .= '<div class="clear"></div>' . "\n";
 	$out .= '</div>' . "\n";
 	
-	return $out;
+	$out = apply_filters('cn_list_after', $out, $results);
 	
+	return $out;
 }
 
 /**
@@ -456,7 +462,7 @@ function _upcoming_list($atts, $content=null) {
 			
 			if (isset($template->file))
 			{
-				$out .= '<div class="cn-upcoming-row' . $alternate . ' vcard">' . "\n";
+				$out .= '<div class="cn-upcoming-row' . $alternate . ' vcard ' . $template->slug . '">' . "\n";
 					ob_start();
 					include($template->file);
 				    $out .= ob_get_contents();

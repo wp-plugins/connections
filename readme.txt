@@ -90,7 +90,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 
 == Changelog ==
 
-= 0.7.1.X XX/XX/2010 =
+= 0.7.1.1 01/15/2011 =
 * FEATURE: Added Contact First and Last name fields the the Organization entry type.
 * FEATURE: Added honorable prefix and honorable suffix fields.
 * FEATURE: Added a template manager to the admin.
@@ -330,5 +330,5 @@ Connections is a simple to use and versatile directory manager. You can use it f
 
 == Upgrade Notice ==
 
-= 0.7.0.4 =
-This release fixes a couple non-critical bugs.
+= 0.7.1.1 =
+Please backup your database before upgrading.
