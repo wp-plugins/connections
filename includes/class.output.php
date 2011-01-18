@@ -86,8 +86,8 @@ class cnOutput extends cnEntry
 		$displayValues = array('logo', 'default', 'place_holder', 'blank');
 		if ( !in_array($atts['display'], $displayValues) ) return NULL;
 		
-		$imageDimesion['height'] = $connections->options->getImgLogoX() . 'px';
-		$imageDimesion['width'] = $connections->options->getImgLogoY() . 'px';
+		$imageDimesion['height'] = $connections->options->getImgLogoY() . 'px';
+		$imageDimesion['width'] = $connections->options->getImgLogoX() . 'px';
 		
 		switch ( $atts['display'] )
 		{
