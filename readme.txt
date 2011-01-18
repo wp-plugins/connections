@@ -4,7 +4,7 @@ Donate link: http://connections-pro.com/
 Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, business directory, business-directory, church, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, staff, user, users, vcard
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 0.7.1.2
+Stable tag: 0.7.1.3
 Connections is a simple to use directory manager for an addressbook, business, staff or church directory.
 
 == Description ==
@@ -93,6 +93,9 @@ Connections is a simple to use and versatile directory manager. You can use it f
 [FAQs can be found here](http://connections-pro.com/?page_id=56)
 
 == Changelog ==
+
+= 0.7.1.3 01/17/2011 =
+* OTHER: No Changes. SVN error.
 
 = 0.7.1.2 01/17/2011 =
 * BUG: Fixed the width and height setting being swapped in the getLogoImage() method.
@@ -337,5 +340,5 @@ Connections is a simple to use and versatile directory manager. You can use it f
 
 == Upgrade Notice ==
 
-= 0.7.1.2 =
+= 0.7.1.3 =
 Please backup your database before upgrading.
