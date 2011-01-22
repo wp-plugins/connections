@@ -55,7 +55,6 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * Convert the add/edit entry form to use the WP metaboxes and 'Screen Options' feature to allow some form customization.
 
 = New features coming in the next version: =
-* Add in_category shortcode attribute. Define multiple categories by id that an entry must be assigned in order to be displayed. [Operational AND]
 * Add in_category_name shortcode attribute. Define multiple categories by name that an entry must be assigned in order to be displayed. [Operational AND]
 * Add exclude_category_name shortcode attribute to allow multiple categories by name entries to be excluded from the output.
 
@@ -93,6 +92,15 @@ Connections is a simple to use and versatile directory manager. You can use it f
 [FAQs can be found here](http://connections-pro.com/?page_id=56)
 
 == Changelog ==
+
+= 0.7.1.4 Unreleased =
+* FEATURE: Add in_category shortcode attribute. Define multiple categories by id that an entry must be assigned in order to be displayed. [Operational AND]
+* BUG: Fixed bug with category recursion.
+* BUG: Fixed bug where identicle categoriy names/IDs would be included in the query.
+* OTHER: Moved the shortcode entry filters to be processed right after the results query.
+* OTHER: Removed the copying of the download.vCard.php to the WP root during activation. Instead hooked into parse_request for vCard download. 
+* OTHER: Fixed the template in the sample folder from 0.7.1.1 so it functions and renamed it to Members.
+* OTHER: Registered many query variable that can be processed via the parse_request hook.
 
 = 0.7.1.3 01/17/2011 =
 * OTHER: No Changes. SVN error.

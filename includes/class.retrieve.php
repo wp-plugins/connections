@@ -7,7 +7,9 @@ class cnRetrieve
 	 */
 	public function entries( $suppliedAttr = array() )
 	{
-		global $wpdb, $connections;
+		global $wpdb, $connections, $current_user;
+		
+		get_currentuserinfo();
 		
 		$validate = new cnValidate();
 		$join = array();
@@ -21,6 +23,7 @@ class cnRetrieve
 			$defaultAttr['list_type'] = NULL;
 			$defaultAttr['id'] = NULL;
 			$defaultAttr['category'] = NULL;
+			$defaultAttr['category_in'] = NULL;
 			$defaultAttr['exclude_category'] = NULL;
 			$defaultAttr['category_name'] = NULL;
 			$defaultAttr['wp_current_category'] = FALSE;
@@ -47,7 +50,7 @@ class cnRetrieve
 			// Build an array of the post categories.
 			foreach ($wpCategories as $wpCategory)
 			{
-				$wpCategoryNames[] = $wpCategory->cat_name;
+				$categoryNames[] = $wpCategory->cat_name;
 			}
 		}
 		
@@ -72,20 +75,10 @@ class cnRetrieve
 				
 				foreach ( (array) $results as $term )
 				{
-					$categoryNames[] = $term->name;
+					if ( !in_array($term->name, $categoryNames) ) $categoryNames[] = $term->name;
 				}
 			}
 		}
-		
-		/*
-		 * Create the string to be used to query entries based on category names. This will merge the
-		 * category names from the current post categories and the supplied category names and their
-		 * respective children categories.
-		 */
-		$catNameString = implode("', '", array_merge( (array) $wpCategoryNames, (array) $categoryNames ) );
-		unset( $wpCategoryNames );
-		unset( $categoryNames );
-		
 		
 		/*
 		 * Build an array of all the categories and their children based on the supplied category IDs.
@@ -107,40 +100,74 @@ class cnRetrieve
 				
 				// Retrieve the children categories
 				$results = $this->categoryChildren('term_id', $categoryID);
+				//print_r($results);
 				
 				foreach ( (array) $results as $term )
 				{
-					$categoryIDs[] = $term->term_id;
+					if (!in_array($term->term_id, $categoryIDs) ) $categoryIDs[] = $term->term_id;
 				}
 			}
-			
-			/*
-			 * Exclude the specified categories by ID.
-			 */
-			if ( !empty($atts['exclude_category']) )
-			{
-				// If value is a string, string the white space and covert to an array.
-				if ( !is_array($atts['exclude_category']) )
-				{
-					$atts['exclude_category'] = str_replace(' ', '', $atts['exclude_category']);
-					
-					$atts['exclude_category'] = explode(',', $atts['exclude_category']);
-				}
-				
-				$categoryIDs = array_diff($categoryIDs, $atts['exclude_category']);
-			}
-			
-			/*
-			 * Create the string to be used to query entries based on category IDs.
-			 */
-			$catIDString = implode("', '", $categoryIDs);
-			
-			unset( $categoryIDs );
 		}
 		
+		/*
+		 * Exclude the specified categories by ID.
+		 */
+		if ( !empty($atts['exclude_category']) )
+		{
+			// If value is a string, string the white space and covert to an array.
+			if ( !is_array($atts['exclude_category']) )
+			{
+				$atts['exclude_category'] = str_replace(' ', '', $atts['exclude_category']);
+				
+				$atts['exclude_category'] = explode(',', $atts['exclude_category']);
+			}
+			
+			$categoryIDs = array_diff( (array) $categoryIDs, $atts['exclude_category']);
+		}
 		
+		// Convert the supplied category IDs $atts['category_in'] to an array.
+		if ( !empty($atts['category_in']) )
+		{
+			if ( !is_array($atts['category_in']) )
+			{
+				// Trim the space characters if present.
+				$atts['category_in'] = str_replace(' ', '', $atts['category_in']);
+				
+				// Convert to array.
+				$atts['category_in'] = explode(',', $atts['category_in']);
+			}
+			
+			// Exclude any category IDs that may have been set.
+			$atts['category_in'] = array_diff( $atts['category_in'], (array) $atts['exclude_category'] );
+			
+			// Build the query to retrieve entry IDs that are assigned to all the supplied category IDs; operational AND.
+			$sql = 'SELECT DISTINCT tr.entry_id FROM ' . CN_TERM_RELATIONSHIP_TABLE . ' AS tr 
+					INNER JOIN ' . CN_TERM_TAXONOMY_TABLE . ' AS tt ON (tr.term_taxonomy_id = tt.term_taxonomy_id) 
+					WHERE 1=1 AND tt.term_id IN (\'' . implode("', '", $atts['category_in']) . '\') GROUP BY tr.entry_id HAVING COUNT(*) = ' . count($atts['category_in']) . ' ORDER BY tr.entry_id';
+			
+			// Store the entryIDs that exist on all of the supplied category IDs
+			$results = $wpdb->get_results($sql);
+			//print_r($categoryINResult);
+			
+			if ( !empty($results) )
+			{
+				foreach ( $results as $result )
+				{
+					$entryIDs[] = $result->entry_id;
+				}
+			}
+			
+			/*
+			 * This is the query to use to return entry IDs that are in the same categories. The COUNT value
+			 * shoulf equal the number of category IDs in the IN() statement.
+			 
+			   SELECT DISTINCT tr.entry_id FROM `wp_connections_term_relationships` AS tr 
+			   INNER JOIN `wp_connections_term_taxonomy` AS tt ON (tr.term_taxonomy_id = tt.term_taxonomy_id)
+			   WHERE 1=1 AND tt.term_id IN ('51','73','76') GROUP BY tr.entry_id HAVING COUNT(*) = 3 ORDER BY tr.entry_id
+			 */
+		}
 		
-		if ( !empty($catIDString) || !empty($catNameString) )
+		if ( !empty($categoryIDs) || !empty($categoryNames) )
 		{
 			// Set the query string to INNER JOIN the term relationship and taxonomy tables.
 			$join[] = 'INNER JOIN ' . CN_TERM_RELATIONSHIP_TABLE . ' ON ( ' . CN_ENTRY_TABLE . '.id = ' . CN_TERM_RELATIONSHIP_TABLE . '.entry_id )';
@@ -150,18 +177,20 @@ class cnRetrieve
 			// Set the query string to return entries within the category taxonomy.
 			$where[] = 'AND ' . CN_TERM_TAXONOMY_TABLE . '.taxonomy = \'category\'';
 			
-			if ( !empty($catIDString) )
+			if ( !empty($categoryIDs) )
 			{
-				$where[] = 'AND ' . CN_TERM_TAXONOMY_TABLE . '.term_id IN (\'' . $catIDString . '\')';
+				$where[] = 'AND ' . CN_TERM_TAXONOMY_TABLE . '.term_id IN (\'' . implode("', '", $categoryIDs) . '\')';
+				
+				unset( $categoryIDs );
 			}
 			
-			if ( !empty($catNameString) )
+			if ( !empty($categoryNames) )
 			{
-				$where[] = 'AND ' . CN_TERMS_TABLE . '.name IN (\'' . $catNameString . '\')';
+				$where[] = 'AND ' . CN_TERMS_TABLE . '.name IN (\'' . implode("', '", (array) $categoryNames ) . '\')';
+				
+				unset( $categoryNames );
 			}
 		}
-		
-		
 		
 		// Convert the supplied IDs $atts['id'] to an array.
 		if ( !is_array($atts['id']) && !empty($atts['id']))
@@ -174,7 +203,7 @@ class cnRetrieve
 		}
 		
 		// Set query string to return specific entries.
-		if ( !empty($atts['id']) ) $where[] = 'AND `id` IN (\'' . implode("', '", (array) $atts['id']) . '\')';
+		if ( !empty($atts['id']) || !empty($entryIDs) ) $where[] = 'AND `id` IN (\'' . implode("', '", array_unique( array_merge( (array) $atts['id'], (array) $entryIDs ), SORT_NUMERIC) ) . '\')';
 		
 		
 		// Convert the supplied entry types $atts['list_type'] to an array.
@@ -205,6 +234,7 @@ class cnRetrieve
 				if ( current_user_can('connections_view_public') ) $visibility[] = 'public';
 				if ( current_user_can('connections_view_private') ) $visibility[] = 'private';
 				if ( current_user_can('connections_view_unlisted') && is_admin() ) $visibility[] = 'unlisted';
+				//print_r($current_user);
 			}
 			else
 			{

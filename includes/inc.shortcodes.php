@@ -40,6 +40,7 @@ function _connections_list($atts, $content=null) {
 	$atts = shortcode_atts( array(
 				'id' => NULL,
 				'category' => NULL,
+				'category_in' => NULL,
 				'exclude_category' => NULL,
 				'category_name' => NULL,
 				'wp_current_category' => 'false',
@@ -157,6 +158,67 @@ function _connections_list($atts, $content=null) {
 	
 	//print_r($connections->lastQuery);
 	
+	/*
+	 * Filter out the entries that are not wanted based on the
+	 * filter attributes that may have been used in the shortcode.
+	 */
+	foreach ( (array) $results as $key => $row)
+	{
+		$entry = new cnEntry($row);
+		
+		if (isset($continue)) unset($continue);
+		if (isset($cities)) unset($cities);
+		if (isset($states)) unset($states);
+		if (isset($zipcodes)) unset($zipcodes);
+		if (isset($countries)) unset($countries);
+		if (isset($setAnchor)) unset($setAnchor);
+		
+		/*
+		 * Check to make sure there is data stored in the address array.
+		 * Cycle thru each address, building separate arrays for city, state, zip and country.
+		 */
+		if ($entry->getAddresses())
+		{
+			foreach ($entry->getAddresses() as $address)
+			{
+				if ($address->city != NULL) $cities[] = $address->city;
+				if ($address->state != NULL) $states[] = $address->state;
+				if ($address->zipcode != NULL) $zipcodes[] = $address->zipcode;
+				if ($address->country != NULL) $countries[] = $address->country;
+			}			
+		}
+		
+		/*
+		 * NOTE: The '@' operator is used to suppress PHP generated errors. This is done
+		 * because not every entry will have addresses to populate the arrays created above.
+		 * 
+		 * NOTE: Since the entry class returns all fields escaped, the shortcode filter
+		 * attribute needs to be escaped as well so the comparason between the two functions
+		 * as expected.
+		 */
+		$atts['group_name'] = esc_attr($atts['group_name']);
+		$atts['last_name'] = esc_attr($atts['last_name']);
+		$atts['title'] = esc_attr($atts['title']);
+		$atts['organization'] = esc_attr($atts['organization']);
+		$atts['department'] = esc_attr($atts['department']);
+		
+		if ($entry->getFamilyName() != $atts['group_name'] && $atts['group_name'] != null)			$continue = true;
+		if ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != null)				$continue = true;
+		if ($entry->getTitle() != $atts['title'] && $atts['title'] != null)							$continue = true;
+		if ($entry->getOrganization() != $atts['organization'] && $atts['organization'] != null) 	$continue = true;
+		if ($entry->getDepartment() != $atts['department'] && $atts['department'] != null) 			$continue = true;
+		if (@!in_array($atts['city'], $cities) && $atts['city'] != null) 							$continue = true;
+		if (@!in_array($atts['state'], $states) && $atts['state'] != null) 							$continue = true;
+		if (@!in_array($atts['zip_code'], $zipcodes) && $atts['zip_code'] != null) 					$continue = true;
+		if (@!in_array($atts['country'], $countries) && $atts['country'] != null) 					$continue = true;
+		
+		// If any of the above filters returned true, remove the entry from the results.
+		if ($continue == true) unset($results[$key]);
+		
+		// Update the result count.
+		$connections->resultCount = count($results);
+	}
+	
 	if ( !empty($results) ) $results = apply_filters('cn_list_results', $results);
 	
 	// Prints the template's CSS file.
@@ -196,18 +258,18 @@ function _connections_list($atts, $content=null) {
 		//$vCard = new cnvCard($row);
 		$vCard =& $entry;
 		
-		if (isset($continue)) unset($continue);
+		/*if (isset($continue)) unset($continue);
 		if (isset($cities)) unset($cities);
 		if (isset($states)) unset($states);
 		if (isset($zipcodes)) unset($zipcodes);
-		if (isset($countries)) unset($countries);
+		if (isset($countries)) unset($countries);*/
 		if (isset($setAnchor)) unset($setAnchor);
 		
 		/*
 		 * Check to make sure there is data stored in the address array.
 		 * Cycle thru each address, building separate arrays for city, state, zip and country.
 		 */
-		if ($entry->getAddresses())
+		/*if ($entry->getAddresses())
 		{
 			foreach ($entry->getAddresses() as $address)
 			{
@@ -216,7 +278,7 @@ function _connections_list($atts, $content=null) {
 				if ($address->zipcode != NULL) $zipcodes[] = $address->zipcode;
 				if ($address->country != NULL) $countries[] = $address->country;
 			}			
-		}
+		}*/
 		
 		/*
 		 * Filter out the entries that are wanted based on the
@@ -229,7 +291,7 @@ function _connections_list($atts, $content=null) {
 		 * attribute needs to be escaped as well so the comparason between the two functions
 		 * as expected.
 		 */
-		$atts['group_name'] = esc_attr($atts['group_name']);
+		/*$atts['group_name'] = esc_attr($atts['group_name']);
 		$atts['last_name'] = esc_attr($atts['last_name']);
 		$atts['title'] = esc_attr($atts['title']);
 		$atts['organization'] = esc_attr($atts['organization']);
@@ -243,12 +305,12 @@ function _connections_list($atts, $content=null) {
 		if (@!in_array($atts['city'], $cities) && $atts['city'] != null) 							$continue = true;
 		if (@!in_array($atts['state'], $states) && $atts['state'] != null) 							$continue = true;
 		if (@!in_array($atts['zip_code'], $zipcodes) && $atts['zip_code'] != null) 					$continue = true;
-		if (@!in_array($atts['country'], $countries) && $atts['country'] != null) 					$continue = true;
+		if (@!in_array($atts['country'], $countries) && $atts['country'] != null) 					$continue = true;*/
 		
 		/*
 		 * If any of the above filters returned true, the script will continue to the next entry.
 		 */
-		if ($continue == true) continue;
+		//if ($continue == true) continue;
 
 		/*
 		 * Checks the first letter of the last name to see if it is the next

@@ -236,6 +236,9 @@ class cnTerms
 			
 			$termID = $wpdb->get_var($queryTermID);
 			//print_r($termID . '<br /><br />');
+			
+			// If the term is a root parent, skip continue.
+			if ( empty($termID) ) return;
 		}
 		else
 		{
@@ -247,18 +250,19 @@ class cnTerms
 		//print_r($queryChildrenIDs . '<br /><br />');
 		
 		$terms = $wpdb->get_results($queryChildrenIDs);
+		if ( empty($terms) ) return;
 		
-		foreach ( (array) $terms as $term)
+		foreach ($terms as $term)
 		{
 			// If the term is a root parent, skip continue.
 			if ( $term->parent == 0 ) continue;
 			
-			$result = $this->getTermChildrenBy('term_id', $term->term_id, $taxonomy, $_previousResults);
+			$result = $this->getTermChildrenBy('term_id', $term->term_id, $taxonomy, $terms);
 			
-			$termChildren = array_merge( (array) $terms, (array) $result);
+			$results = array_merge( (array) $results, (array) $result);
 		}
 		
-		return $termChildren;
+		return array_merge( (array) $terms, (array) $results );
 	}
 	
 	/**

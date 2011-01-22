@@ -7,7 +7,7 @@
  *    -Add Link to personal profile in popup for each member displayed, NOT FOR MOBILE VIEWING
  */
  
-if (sizeof($entry->getConnectionGroup()) > 0) {
+if (sizeof($entry->getFamilyMembers()) > 0) {
     // Get the plugins dir URL for the site
     $plugindir = get_bloginfo('wpurl').'/wp-content/plugins';
     
@@ -28,7 +28,7 @@ if (sizeof($entry->getConnectionGroup()) > 0) {
     // Set a counter
     $counter = 0;
     
-    foreach ($entry->getConnectionGroup() as $key_member_group=>$value_member_group) {
+    foreach ($entry->getFamilyMembers() as $key_member_group=>$value_member_group) {
         // Increment
         $counter++;
         
@@ -56,51 +56,51 @@ if (sizeof($entry->getConnectionGroup()) > 0) {
             if ($key_homenumber == 'type' && $value_homenumber == 'homephone') {
             
                 // Find home number in $value_homephone array
-                if ($value_homephone['number'] != '') {
+                if ($value_homephone->number != '') {
                 
                     // Add homephone info
-                    $member_popup_info .= "Home: ".$value_homephone['number']."<br />";
-                    $mobile_member_listing .= "Home: ".$value_homephone['number']."<br />";
+                    $member_popup_info .= "Home: ".$value_homephone->number."<br />";
+                    $mobile_member_listing .= "Home: ".$value_homephone->number."<br />";
                 }
             }
         }
     }
     
     // Get Address for group
-    foreach ($entry->getAddresses() as $key_addresses=>$value_addresses) {
+    foreach ( $entry->getAddresses() as $value_address) {
     
         // List all addresses
-        foreach ($value_addresses as $key_address=>$value_address) {
+        //foreach ( $value_addresses as $value_address) {
         
             // list each address
-            if ($key_address == 'type' && $value_address == 'home') {
+            if ($value_address->type == 'home' ) {
             
                 // Format the address
-                $address = $value_addresses['address_line1']."<br />";
+                $address = $value_address->line_one."<br />";
                 
                 // Check for line2
-                if ($value_addresses['address_line2'] != '') {
-                    $address .= $value_addresses['address_line2']."<br />";
+                if ($value_address->line_two != '') {
+                    $address .= $value_address->line_two."<br />";
                 }
                 
-                $address .= $value_addresses['city'].", ";
-                $address .= $value_addresses['state']." ";
-                $address .= $value_addresses['zipcode'];
+                $address .= $value_address->city.", ";
+                $address .= $value_address->state." ";
+                $address .= $value_address->zipcode;
                 
                 $address_link = "http://maps.google.com/?q=";
-                $address_link .= $value_addresses['address_line1']." ";
+                $address_link .= $value_address->line_one." ";
                 
                 // Check for line2
-                if ($value_addresses['address_line2'] != '') {
-                    $address_link .= $value_addresses['address_line2']." ";
+                if ($value_address->line_two != '') {
+                    $address_link .= $value_address->line_two." ";
                 }
                 
-                $address_link .= $value_addresses['city'].", ";
-                $address_link .= $value_addresses['state']." ";
-                $address_link .= $value_addresses['zipcode'];
+                $address_link .= $value_address->city.", ";
+                $address_link .= $value_address->state." ";
+                $address_link .= $value_address->zipcode;
                 
                 // Add the address
-                $member_popup_info .= $address.'<br /><a class="google-maps-link" href="'.$address_link.'">View Large Map</a><br />';
+                $member_popup_info .= $address.'<br /><a class="google-maps-link" href="'.$address_link.'" target="_blank">View Large Map</a><br />';
                 $mobile_member_listing .= '<br /><a class="google-maps-link" href="'.$address_link.'">View Map</a><br />';
                 
                 // Find all the spaces
@@ -132,11 +132,11 @@ if (sizeof($entry->getConnectionGroup()) > 0) {
                 $member_popup_info .= '</iframe>';
                 $member_popup_info .= '</div>';
             }
-        }
+        //}
     }
     
     // Search for member info
-    foreach ($entry->getConnectionGroup() as $key_member_group=>$value_member_group) {
+    foreach ($entry->getFamilyMembers() as $key_member_group=>$value_member_group) {
     
         // Set family member id
         $member_group->set($key_member_group);
@@ -166,11 +166,11 @@ if (sizeof($entry->getConnectionGroup()) > 0) {
                         if ($key_number == 'type' && $value_number == 'cellphone') {
                         
                             // Find Mobile number(s) in $value_phone array
-                            if ($value_phone['number'] != '') {
+                            if ($value_phone->number != '') {
                             
                                 // Add mobile info
-                                $member_mobile = "Mobile: ".$value_phone['number']."<br />";
-                                $mobile_member_mobile = "Mobile: ".$value_phone['number']."<br />";
+                                $member_mobile = "Mobile: ".$value_phone->number."<br />";
+                                $mobile_member_mobile = "Mobile: ".$value_phone->number."<br />";
                             }
                         }
                     }
@@ -187,8 +187,8 @@ if (sizeof($entry->getConnectionGroup()) > 0) {
                         if ($key_eAddress == 'address' && $value_eAddress != '') {
                         
                             // Add email info
-                            $member_email = "Email: ".$value_email['address']."<br />";
-                            $mobile_member_email = "Email: ".$value_email['address']."<br />";
+                            $member_email = "Email: ".$value_email->address."<br />";
+                            $mobile_member_email = "Email: ".$value_email->address."<br />";
                         }
                     }
                 }
@@ -228,5 +228,5 @@ if ($_SESSION['SESS_MOBILE_ACTIVE'] == TRUE) {
     // Display Family Listing
     echo $member_listing;
 }
-
+unset($member_listing, $mobile_member_info);
 ?>

@@ -115,6 +115,8 @@ function connectionsShowHelpPage()
 					
 				<li><a href="#cn_attr_category">category</a></li>
 				
+				<li><a href="#cn_attr_category_in">category_in</a></li>
+				
 				<li><a href="#cn_attr_exclude_category">exclude_category</a></li>
 				
 				<li><a href="#cn_attr_category_name">category_name</a></li>
@@ -175,6 +177,25 @@ function connectionsShowHelpPage()
 				<p><code>[connections category='1,3,9']</code></p>
 				
 				<p><strong>NOTE:</strong> This attribute is an operational OR function. An entry will be shown if it is in any one of the specified categories
+				or one of their children categories.</p>
+			</fieldset>
+			
+			<a name="cn_attr_category_in"></a>
+			<fieldset>
+				<legend>category_in</legend>
+				
+				<p>The <em>category_in</em> option allows you to show entries within a specific category
+				and all children categories. The category ID can be found on the Category page in the admin. 
+				the default is to show all available categories.</p>
+				
+				<p><code>[connections category_in=12]</code></p>
+				
+				<p>To show entries in multiple specific categories and their children, list the categories by id
+				seperated by commas as shown in the following example.</p>
+				
+				<p><code>[connections category='1,3,9']</code></p>
+				
+				<p><strong>NOTE:</strong> This attribute is an operational AND function. An entry will only be shown if it is in all of the specified categories
 				or one of their children categories.</p>
 			</fieldset>
 			

@@ -102,7 +102,7 @@ if (!class_exists('connectionsLoad'))
 				add_filter('favorite_actions', array(&$this, 'addEntryFavorite') );
 				
 				// Process any action done in the admin.
-				$this->controllers();
+				$this->adminActions();
 				
 				// Add Changelog table row in the Manage Plugins admin page.
 				add_action('after_plugin_row_' . plugin_basename(__FILE__), array(&$this, 'displayUpgradeNotice'), 1, 0);
@@ -118,10 +118,10 @@ if (!class_exists('connectionsLoad'))
 				add_action('wp_print_styles', array(&$this, 'loadStyles') );
 				
 				// Add a version number to the header
-				add_action('wp_head', create_function('', 'echo "\n<meta name=\'Connections\' content=\'' . $this->options->getVersion() . '\' />\n";') );
+				add_action('wp_head', create_function('', 'echo "\n<meta name=\'Connections\' content=\'' . $this->options->getVersion() . '-' . $this->options->getDBVersion() . '\' />\n";') );
 				
-				// Parse front end queryies.
-				//add_action('parse_request', '');
+				// Parse front end queries.
+				add_action('parse_request', array(&$this, 'userActions') );
 			}
 		}
 		
@@ -245,7 +245,19 @@ if (!class_exists('connectionsLoad'))
 		
 		public function registerQueryVariables($query)
 		{
-			$query[] = 'cncatid';
+			$query[] = 'token';		// security token; WP nonce
+			$query[] = 'cntmpl';	// template name
+			$query[] = 'cnid';		// comma delimited entry IDs
+			$query[] = 'cncatid';	// comma delimited category IDs
+			$query[] = 'cnexcatid';	// comma delimited category IDs to exclude
+			$query[] = 'cncatnm';	// comma delimited category names
+			$query[] = 'cnlt';		// list type
+			$query[] = 'cnpg';		// page
+			$query[] = 'cnlm';		// pagination limit
+			$query[] = 'cnoff';		// pagination offset
+			$query[] = 'cnob';		// order by
+			$query[] = 'cnvc';		// download vCard, BOOL 1 or 0
+			
 			return $query;
 		}
 		
@@ -525,10 +537,10 @@ if (!class_exists('connectionsLoad'))
 				$connections->term->addTerm('Uncategorized', 'category', $attributes);
 			}
 			
-			if (!file_exists(ABSPATH . 'download.vCard.php'))
+			/*if (!file_exists(ABSPATH . 'download.vCard.php'))
 			{
 				copy(WP_PLUGIN_DIR . '/connections/includes/download.vCard.php', ABSPATH . 'download.vCard.php');
-			}
+			}*/
 			
 			$this->initOptions();
 			
@@ -885,9 +897,9 @@ if (!class_exists('connectionsLoad'))
 		}
 		
 		/**
-		 * Veryfy and process requested actions in the admin.
+		 * Verify and process requested actions in the admin.
 		 */
-		private function controllers()
+		private function adminActions()
 		{
 			// Exit the method if $_GET['page'] isn't set.
 			if ( !isset($_GET['page']) ) return;
@@ -1143,6 +1155,36 @@ if (!class_exists('connectionsLoad'))
 						$connections->setErrorMessage('capability_roles');
 					}
 				break;
+			}
+		}
+		
+		public function userActions($wp)
+		{
+			if ( array_key_exists('cnvc', $wp->query_vars) && $wp->query_vars['cnvc'] == '1' )
+			{
+				$token = esc_attr($_GET['token']);
+				$id = (integer) esc_attr($_GET['cnid']);
+				
+				if (! wp_verify_nonce($token, 'download_vcard_' . $id) ) wp_die('Invalid vCard Token');
+				
+				global $connections;
+				
+				$entry = $connections->retrieve->entry($id);
+				$vCard = new cnvCard($entry);
+				
+				$filename = sanitize_file_name($vCard->getFullFirstLastName());
+				$data = $vCard->getvCard();
+				
+				header('Content-Type: text/x-vcard; charset=utf-8');
+				header('Content-Disposition: attachment; filename=' . $filename . '.vcf');
+				header('Content-Length: ' . strlen($data) );
+				header('Pragma: public');
+				header("Pragma: no-cache");
+				header("Expires: 0");
+				header('Connection: close');
+				
+				echo $data;
+				exit;
 			}
 		}
 		
