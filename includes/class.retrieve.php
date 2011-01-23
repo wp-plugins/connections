@@ -147,7 +147,7 @@ class cnRetrieve
 			
 			// Store the entryIDs that exist on all of the supplied category IDs
 			$results = $wpdb->get_results($sql);
-			//print_r($categoryINResult);
+			//print_r($results);
 			
 			if ( !empty($results) )
 			{
@@ -155,6 +155,15 @@ class cnRetrieve
 				{
 					$entryIDs[] = $result->entry_id;
 				}
+			}
+			else
+			{
+				/**
+				 * @todo This is hack. This is being set because if no results are returned then this will not pass
+				 * the empty() check for the entry IDs and them the main query will return all entries. Maybe it would
+				 * be best to just return and empty array. Let's sleeps on it.
+				 */
+				$entryIDs = array('NONE');
 			}
 			
 			/*

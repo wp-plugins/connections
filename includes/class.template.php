@@ -310,7 +310,7 @@ class cnTemplate
 	
 	public function includeFunctions()
 	{
-		if (  isset($this->phpPath) )
+		if ( isset($this->phpPath) )
 		{
 			include_once($this->phpPath);
 		}
