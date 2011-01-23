@@ -156,6 +156,15 @@ class cnRetrieve
 					$entryIDs[] = $result->entry_id;
 				}
 			}
+			else
+			{
+				/**
+				 * @todo This is hack. This is being set because if no results are returned then this will not pass
+				 * the empty() check for the entry IDs and them the main query will return all entries. Maybe it would
+				 * be best to just return and empty array. Let's sleeps on it.
+				 */
+				$entryIDs = array('NONE');
+			}
 			
 			/*
 			 * This is the query to use to return entry IDs that are in the same categories. The COUNT value
