@@ -271,7 +271,7 @@ class cnOutput extends cnEntry
 					if ($address->name != NULL || $address->type != NULL) $out .= '<span class="address_name"><strong>' . $address->name . '</strong></span><br />' . "\n"; //The OR is for compatiblity for 0.2.24 and under
 					if ($address->line_one != NULL) $out .= '<div class="street-address">' . $address->line_one . '</div>' . "\n";
 					if ($address->line_two != NULL) $out .= '<div class="extended-address">' . $address->line_two . '</div>' . "\n";
-					if ($address->city != NULL) $out .= '<span class="locality">' . $address->city . '</span>&nbsp;' . "\n";
+					if ($address->city != NULL) $out .= '<span class="locality">' . $address->city . ',</span>&nbsp;' . "\n";
 					if ($address->state != NULL) $out .= '<span class="region">' . $address->state . '</span>&nbsp;' . "\n";
 					if ($address->zipcode != NULL) $out .= '<span class="postal-code">' . $address->zipcode . '</span><br />' . "\n";
 					if ($address->country != NULL) $out .= '<span class="country-name">' . $address->country . '</span>' . "\n";
@@ -291,7 +291,7 @@ class cnOutput extends cnEntry
 			foreach ($this->getPhoneNumbers() as $phone) 
 			{
 				//Type for hCard compatibility. Hidden.
-				if ($phone->number != null) $out .=  '<strong>' . $phone->name . '</strong>: <span class="tel">' . $this->gethCardTelType($phone->type) . '<span class="value">' .  $phone->number . '</span></span><br />' . "\n";
+				if ($phone->number != null) $out .=  '<strong>' . $phone->name . ':</strong> <span class="tel">' . $this->gethCardTelType($phone->type) . '<span class="value">' .  $phone->number . '</span></span><br />' . "\n";
 			}
 			$out .= '</div>' . "\n";
 		}

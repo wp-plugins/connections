@@ -168,4 +168,47 @@ class cnValidate
 		
 	}
 }
+
+class cnURL
+{
+	/**
+	 * Modifies, replaces or removes the url query.
+	 * 
+	 * @author solenoid && jesse
+	 * @link http://us2.php.net/manual/en/function.parse-url.php#100114
+	 * @param array $mod
+	 * @return string
+	 */
+	public function modify($mod)
+	{
+	    $url = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+	    $query = explode("&", $_SERVER['QUERY_STRING']);
+	    if (!$_SERVER['QUERY_STRING']) {$queryStart = "?";} else {$queryStart = "&";}
+	    // modify/delete data
+	    foreach($query as $q)
+	    {
+	        list($key, $value) = explode("=", $q);
+	        if(array_key_exists($key, $mod))
+	        {
+	            if($mod[$key])
+	            {
+	                $url = preg_replace('/'.$key.'='.$value.'/', $key.'='.$mod[$key], $url);
+	            }
+	            else
+	            {
+	                $url = preg_replace('/&?'.$key.'='.$value.'/', '', $url);
+	            }
+	        }
+	    }
+	    // add new data
+	    foreach($mod as $key => $value)
+	    {
+	        if($value && !preg_match('/'.$key.'=/', $url))
+	        {
+	            $url .= $queryStart.$key.'='.$value;
+	        }
+	    }
+	    return $url;
+	}
+}
 ?>

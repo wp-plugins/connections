@@ -93,6 +93,12 @@ Connections is a simple to use and versatile directory manager. You can use it f
 
 == Changelog ==
 
+= 0.7.1.5 xx/xx/2011 =
+* FEATURE: Pagination in the admin.
+* FEATURE: Added YouTube to the social media field.
+* BUG: Use gmdate() instead of date() when working with the birthday and anniversary so dates are output showing the current date.
+* OTHER: Added a comma in the getAddressBlock()
+
 = 0.7.1.4 Unreleased =
 * FEATURE: Add in_category shortcode attribute. Define multiple categories by id that an entry must be assigned in order to be displayed. [Operational AND]
 * BUG: Fixed bug with category recursion.

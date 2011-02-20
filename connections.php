@@ -714,9 +714,6 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function loadStyles()
 		{
-			/**
-			 * @TODO: Move this CSS to the templates directory.
-			 */
 			//wp_register_style('member_template_styles', WP_PLUGIN_URL . '/connections/templates/member_template.css', array(), CN_CURRENT_VERSION);
 			//wp_enqueue_style( 'member_template_styles' );
 		}

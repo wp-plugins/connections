@@ -65,7 +65,20 @@ function _connections_list($atts, $content=null) {
 				'template' => NULL, /** @since version 0.7.1.0 */
 				'template_name' => NULL /** @deprecated since version 0.7.0.4 */
 				), $atts ) ;
-				
+	
+	/**
+	 * @TODO: Fix deprecation errors.
+	 * 
+	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in class.terms.php on line 286
+	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in class.terms.php on line 360
+	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in class.terms.php on line 475
+	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in inc.shortcodes.php on line 71
+	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in inc.shortcodes.php on line 72
+	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in inc.shortcodes.php on line 73
+	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in inc.shortcodes.php on line 74
+	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in inc.shortcodes.php on line 75
+	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in inc.shortcodes.php on line 76.
+	 */		
 	/*
 	 * Convert some of the $atts values in the array to boolean.
 	 */
@@ -181,10 +194,12 @@ function _connections_list($atts, $content=null) {
 		{
 			foreach ($entry->getAddresses() as $address)
 			{
+				//if ($address->city != NULL) $cities[] = trim($address->city, '  \t\n\r\0\x0B');
 				if ($address->city != NULL) $cities[] = $address->city;
 				if ($address->state != NULL) $states[] = $address->state;
 				if ($address->zipcode != NULL) $zipcodes[] = $address->zipcode;
 				if ($address->country != NULL) $countries[] = $address->country;
+				//echo ord(' '); This is character 194, I think used as a fix to trim the character off the city name.
 			}			
 		}
 		

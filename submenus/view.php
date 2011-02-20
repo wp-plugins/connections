@@ -229,6 +229,11 @@ function connectionsShowViewPage()
 		default:
 			$form = new cnFormObjects();
 			$categoryObjects = new cnCategoryObjects();
+			$url = new cnURL();
+			
+			$limit = 200; // Page Limit
+			( !isset($_GET['cn-pg']) ) ? $offset = 0 : $offset = ( $_GET['cn-pg'] - 1 ) * $limit;
+			( !isset($_GET['cn-pg']) ) ? $currentPage = 1 : $currentPage = esc_attr($_GET['cn-pg']);
 			
 			/*
 			 * Check whether user can view the entry list
@@ -241,6 +246,9 @@ function connectionsShowViewPage()
 						$retrieveAttr['list_type'] = $connections->currentUser->getFilterEntryType();
 						$retrieveAttr['category'] = $connections->currentUser->getFilterCategory();
 						$retrieveAttr['visibility'] = $connections->currentUser->getFilterVisibility();
+						
+						$retrieveAttr['limit'] = $limit;
+						$retrieveAttr['offset'] = $offset;
 						
 						$results = $connections->retrieve->entries($retrieveAttr);
 						//print_r($connections->lastQuery);
@@ -347,6 +355,28 @@ function connectionsShowViewPage()
 									}
 									
 									echo $setAnchor;
+									
+									/*
+									 * Pagination
+									 */
+									$pageCount = ceil( $connections->recordCount / $limit );
+									$i = 1;
+									
+									echo 'Pages: ';
+										while ($i <= $pageCount)
+										{
+											if ( $currentPage != $i )
+											{
+												echo '<a class="page-numbers" href="' . $url->modify( array('cn-pg' => $i) ) . '">' . $i . '</a>';
+											}
+											else
+											{
+												echo '<span class="page-numbers current">' , $i , '</span>';
+											}
+											
+											$i++;
+										}
+									
 								?>
 							</div>
 						</div>
