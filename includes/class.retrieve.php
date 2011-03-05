@@ -11,6 +11,7 @@ class cnRetrieve
 		
 		get_currentuserinfo();
 		
+		$entryIDs = array();
 		$validate = new cnValidate();
 		$join = array();
 		$where[] = 'WHERE 1=1';
@@ -161,7 +162,7 @@ class cnRetrieve
 				/**
 				 * @todo This is hack. This is being set because if no results are returned then this will not pass
 				 * the empty() check for the entry IDs and them the main query will return all entries. Maybe it would
-				 * be best to just return and empty array. Let's sleeps on it.
+				 * be best to just return an empty array. Let's sleeps on it.
 				 */
 				$entryIDs = array('NONE');
 			}

@@ -207,17 +207,25 @@ class cnEntry
 				{
 					$this->imageLinked = $this->options['image']['linked'];
 					$this->imageDisplay = $this->options['image']['display'];
-					$this->imageNameThumbnail =$this->options['image']['name']['thumbnail'];
-					$this->imageNameCard = $this->options['image']['name']['entry'];
-					$this->imageNameProfile = $this->options['image']['name']['profile'];
-					$this->imageNameOriginal = $this->options['image']['name']['original'];
+					
+					if ( isset($this->options['image']['name']) )
+					{
+						$this->imageNameThumbnail =$this->options['image']['name']['thumbnail'];
+						$this->imageNameCard = $this->options['image']['name']['entry'];
+						$this->imageNameProfile = $this->options['image']['name']['profile'];
+						$this->imageNameOriginal = $this->options['image']['name']['original'];
+					}
 				}
 				
 				if ( isset($this->options['logo']) )
 				{
 					$this->logoLinked = $this->options['logo']['linked'];
 					$this->logoDisplay = $this->options['logo']['display'];
-					$this->logoName =$this->options['logo']['name'];
+					
+					if ( isset($this->options['logo']['name']) )
+					{
+						$this->logoName =$this->options['logo']['name'];
+					}
 				}
 				
 				if ( isset($this->options['entry']['type']) ) $this->entryType = $this->options['entry']['type'];

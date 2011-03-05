@@ -801,10 +801,12 @@ if (!class_exists('connectionsLoad'))
 			//$api = plugins_api('plugin_information', array('slug' => 'connections', 'fields' => array('tested' => true, 'requires' => false, 'rating' => false, 'downloaded' => false, 'downloadlink' => false, 'last_updated' => false, 'homepage' => false, 'tags' => false, 'sections' => true) ));
 			//print_r($api);
 			
-			if( CLOSMINWP30 )
+			if( version_compare($GLOBALS['wp_version'], '2.9.999', '>') ) // returning bool if at least WP 3.0 is running
 			    $current = get_option( '_site_transient_update_plugins' );
-			elseif( CLOSMINWP28 )
+			
+			elseif( version_compare($GLOBALS['wp_version'], '2.7.999', '>') ) // returning bool if at least WP 2.8 is running
 			    $current = get_transient( 'update_plugins' );
+				
 			else
 			    $current = get_option( 'update_plugins' );
 				

@@ -241,24 +241,25 @@ class cnTemplate
 	/**
 	 * Initialize the class with a template object.
 	 * 
+	 * @TODO If any of the required properties are not supplied this should return FALSE.
 	 * @param object $template
 	 */
 	public function init($template)
 	{
-		$this->name = $template->name;
-		$this->slug = $template->slug;
-		$this->url = $template->url;
-		$this->uri = $template->uri;
-		$this->version = $template->version;
-		$this->author = $template->author;
-		$this->description = $template->description;
-		$this->legacy = $template->legacy;
-		$this->custom = $template->custom;
-		$this->file = $template->file;
-		$this->cssPath = $template->cssPath;
-		$this->jsPath = $template->jsPath;
-		$this->phpPath = $template->phpPath;
-		$this->path = $template->path;
+		$this->name = $template->name; // REQUIRED
+		$this->slug = $template->slug; // REQUIRED
+		$this->url = $template->url; // REQUIRED
+		$this->uri = $template->uri; // REQUIRED
+		if ( isset($template->version) ) $this->version = $template->version;
+		if ( isset($template->author) ) $this->author = $template->author;
+		if ( isset($template->description) ) $this->description = $template->description;
+		if ( isset($template->legacy) ) $this->legacy = $template->legacy;
+		if ( isset($template->custom) ) $this->custom = $template->custom;
+		$this->file = $template->file; // REQUIRED
+		if ( isset($template->cssPath) ) $this->cssPath = $template->cssPath;
+		if ( isset($template->jsPath) ) $this->jsPath = $template->jsPath;
+		if ( isset($template->phpPath) ) $this->phpPath = $template->phpPath;
+		if ( isset($template->path) ) $this->path = $template->path;
 	}
 	
 	/**

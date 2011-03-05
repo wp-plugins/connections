@@ -29,13 +29,17 @@ function connectionsEntryList($atts)
  */
 add_shortcode('connections_list', '_connections_list'); /** @deprecated since version 0.7.0.4 */
 add_shortcode('connections', '_connections_list'); /** @since version 0.7.1.0 */
-function _connections_list($atts, $content=null) {
+function _connections_list($atts, $content = NULL) {
 	global $wpdb, $connections, $current_user;
 	
+	$out = '';
 	$form = new cnFormObjects();
 	$convert = new cnFormatting();
 	$format =& $convert;
 	$template = new stdClass();
+	
+	$previousLetter = '';
+	$alternate = '';
 	
 	$atts = shortcode_atts( array(
 				'id' => NULL,
@@ -179,12 +183,19 @@ function _connections_list($atts, $content=null) {
 	{
 		$entry = new cnEntry($row);
 		
-		if (isset($continue)) unset($continue);
+		/*if (isset($continue)) unset($continue);
 		if (isset($cities)) unset($cities);
 		if (isset($states)) unset($states);
 		if (isset($zipcodes)) unset($zipcodes);
 		if (isset($countries)) unset($countries);
-		if (isset($setAnchor)) unset($setAnchor);
+		if (isset($setAnchor)) unset($setAnchor);*/
+		
+		$continue = FALSE;
+		$cities = array();
+		$states = array();
+		$zipcodes = array();
+		$countries = array();
+		//if (isset($setAnchor)) unset($setAnchor);
 		
 		/*
 		 * Check to make sure there is data stored in the address array.
@@ -217,15 +228,15 @@ function _connections_list($atts, $content=null) {
 		$atts['organization'] = esc_attr($atts['organization']);
 		$atts['department'] = esc_attr($atts['department']);
 		
-		if ($entry->getFamilyName() != $atts['group_name'] && $atts['group_name'] != null)			$continue = true;
-		if ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != null)				$continue = true;
-		if ($entry->getTitle() != $atts['title'] && $atts['title'] != null)							$continue = true;
-		if ($entry->getOrganization() != $atts['organization'] && $atts['organization'] != null) 	$continue = true;
-		if ($entry->getDepartment() != $atts['department'] && $atts['department'] != null) 			$continue = true;
-		if (@!in_array($atts['city'], $cities) && $atts['city'] != null) 							$continue = true;
-		if (@!in_array($atts['state'], $states) && $atts['state'] != null) 							$continue = true;
-		if (@!in_array($atts['zip_code'], $zipcodes) && $atts['zip_code'] != null) 					$continue = true;
-		if (@!in_array($atts['country'], $countries) && $atts['country'] != null) 					$continue = true;
+		if ($entry->getFamilyName() != $atts['group_name'] && $atts['group_name'] != NULL)			$continue = TRUE;
+		if ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != NULL)				$continue = TRUE;
+		if ($entry->getTitle() != $atts['title'] && $atts['title'] != NULL)							$continue = TRUE;
+		if ($entry->getOrganization() != $atts['organization'] && $atts['organization'] != NULL) 	$continue = TRUE;
+		if ($entry->getDepartment() != $atts['department'] && $atts['department'] != NULL) 			$continue = TRUE;
+		if (@!in_array($atts['city'], $cities) && $atts['city'] != NULL) 							$continue = TRUE;
+		if (@!in_array($atts['state'], $states) && $atts['state'] != NULL) 							$continue = TRUE;
+		if (@!in_array($atts['zip_code'], $zipcodes) && $atts['zip_code'] != NULL) 					$continue = TRUE;
+		if (@!in_array($atts['country'], $countries) && $atts['country'] != NULL) 					$continue = TRUE;
 		
 		// If any of the above filters returned true, remove the entry from the results.
 		if ($continue == true) unset($results[$key]);
@@ -242,7 +253,7 @@ function _connections_list($atts, $content=null) {
 	// Prints the javascript tag in the footer if $template->js path is set
 	if ( method_exists($template, 'printJS') ) $template->printJS();
 	
-	$out = apply_filters('cn_list_before', $out, $results);
+	$out .= apply_filters('cn_list_before', $out, $results);
 	
 	// If there are no results no need to proceed and output message.
 	if ( empty($results) )
@@ -278,7 +289,7 @@ function _connections_list($atts, $content=null) {
 		if (isset($states)) unset($states);
 		if (isset($zipcodes)) unset($zipcodes);
 		if (isset($countries)) unset($countries);*/
-		if (isset($setAnchor)) unset($setAnchor);
+		//if (isset($setAnchor)) unset($setAnchor);
 		
 		/*
 		 * Check to make sure there is data stored in the address array.
@@ -336,15 +347,20 @@ function _connections_list($atts, $content=null) {
 		 * If the alpha head set to true it will append the alpha head to the anchor.
 		 */
 		$currentLetter = strtoupper(mb_substr($entry->getSortColumn(), 0, 1));
-		if ($currentLetter != $previousLetter && $atts['id'] == null) {
+		
+		if ($currentLetter != $previousLetter && $atts['id'] == NULL)
+		{
 			if ($atts['show_alphaindex']) $setAnchor = '<a class="cn-index-head" name="' . $currentLetter . '"></a>';
 			
 			if ($atts['show_alphaindex'] && $atts['repeat_alphaindex']) $setAnchor .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex() . "</div>";
 			
 			if ($atts['show_alphahead']) $setAnchor .= '<h4 class="cn-alphahead">' . $currentLetter . '</h4>';
+			
 			$previousLetter = $currentLetter;
-		} else {
-			$setAnchor = null;
+		}
+		else
+		{
+			$setAnchor = '';
 		}
 		
 		/*

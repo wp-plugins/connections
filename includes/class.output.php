@@ -267,7 +267,7 @@ class cnOutput extends cnEntry
 		{
 			foreach ($this->getAddresses() as $address)
 			{
-				$out .= '<div class="adr" style="margin-bottom: 10px;">' . "\n";
+				$out = '<div class="adr" style="margin-bottom: 10px;">' . "\n";
 					if ($address->name != NULL || $address->type != NULL) $out .= '<span class="address_name"><strong>' . $address->name . '</strong></span><br />' . "\n"; //The OR is for compatiblity for 0.2.24 and under
 					if ($address->line_one != NULL) $out .= '<div class="street-address">' . $address->line_one . '</div>' . "\n";
 					if ($address->line_two != NULL) $out .= '<div class="extended-address">' . $address->line_two . '</div>' . "\n";
@@ -287,7 +287,7 @@ class cnOutput extends cnEntry
 	{
 		if ($this->getPhoneNumbers())
 		{
-			$out .= '<div class="phone-number-block" style="margin-bottom: 10px;">' . "\n";
+			$out = '<div class="phone-number-block" style="margin-bottom: 10px;">' . "\n";
 			foreach ($this->getPhoneNumbers() as $phone) 
 			{
 				//Type for hCard compatibility. Hidden.
@@ -376,16 +376,20 @@ class cnOutput extends cnEntry
 	{
 		if ($this->getEmailAddresses())
 		{
-			$out .= '<div class="email-address-block">' . "\n";
+			$out = '<div class="email-address-block">' . "\n";
+			
 			foreach ($this->getEmailAddresses() as $email)
 			{
 				//Type for hCard compatibility. Hidden.
 				if ($email->address != NULL) $out .= '<strong>' . $email->name . ':</strong><br /><span class="email"><span class="type" style="display: none;">INTERNET</span><a class="value" href="mailto:' . $email->address . '">' . $email->address . '</a></span><br /><br />' . "\n";
 			}
+			
 			$out .= '</div>' . "\n";
+			
+			$out = apply_filters('cn_output_email_addresses', $out);
 		}
 		
-		$out = apply_filters('cn_output_email_addresses', $out);
+		if ( !isset($out) || empty($out) ) $out = '';
 		
 		return $out;
 	}
@@ -404,6 +408,9 @@ class cnOutput extends cnEntry
 			}
 			$out .= '</div>' . "\n";
 		}
+		
+		if ( !isset($out) || empty($out) ) $out = '';
+		
 		return $out;
 	}
 	
@@ -418,6 +425,9 @@ class cnOutput extends cnEntry
 			}
 			$out .= '</div>' . "\n";
 		}
+		
+		if ( !isset($out) || empty($out) ) $out = '';
+		
 		echo $out;
 	}
 	
@@ -432,6 +442,9 @@ class cnOutput extends cnEntry
 			}
 			$out .= "</div>" . "\n";
 		}
+		
+		if ( !isset($out) || empty($out) ) $out = '';
+		
 		return $out;
 	}
 	
@@ -443,6 +456,9 @@ class cnOutput extends cnEntry
 		if ($this->getBirthday()) $out = '<span class="vevent"><span class="birthday"><strong>Birthday:</strong> <abbr class="dtstart" title="' . $this->getBirthday('Ymd') .'">' . $this->getBirthday($format) . '</abbr></span>' .
 										 '<span class="bday" style="display:none">' . $this->getBirthday('Y-m-d') . '</span>' .
 										 '<span class="summary" style="display:none">Birthday - ' . $this->getFullFirstLastName() . '</span> <span class="uid" style="display:none">' . $this->getBirthday('YmdHis') . '</span> </span><br />' . "\n";
+		
+		if ( !isset($out) || empty($out) ) $out = '';
+		
 		return $out;
 	}
 	
@@ -451,6 +467,9 @@ class cnOutput extends cnEntry
 		//NOTE: The vevent span is for hCalendar compatibility.
 		if ($this->getAnniversary()) $out = '<span class="vevent"><span class="anniversary"><strong>Anniversary:</strong> <abbr class="dtstart" title="' . $this->getAnniversary('Ymd') . '">' . $this->getAnniversary($format) . '</abbr></span>' .
 											'<span class="summary" style="display:none">Anniversary - ' . $this->getFullFirstLastName() . '</span> <span class="uid" style="display:none">' . $this->getAnniversary('YmdHis') . '</span> </span><br />' . "\n";
+		
+		if ( !isset($out) || empty($out) ) $out = '';
+		
 		return $out;
 	}
 	
@@ -494,11 +513,12 @@ class cnOutput extends cnEntry
 		
 		$atts = $this->validate->attributesArray($defaultAtts, (array) $atts);
 		
+		$out = '';
 		$categories = $this->getCategory();
 		
 		if ( empty($categories) ) return NULL;
 		
-		if ( !empty($atts['before']) ) $out = $atts['before'];
+		if ( !empty($atts['before']) ) $out .= $atts['before'];
 		
 		if ( !empty($atts['label']) ) $out .= '<span class="cn_category_label">' . $atts['label'] . '</span>';
 		
@@ -515,6 +535,8 @@ class cnOutput extends cnEntry
 		}
 		else
 		{
+			$i = 0;
+			
 			foreach ($categories as $category)
 			{
 				$out .= '<span class="cn_category" id="cn_category_' . $category->term_id . '">' . $category->name . '</span>';
@@ -522,16 +544,13 @@ class cnOutput extends cnEntry
 				$i++;
 				if ( count($categories) > $i ) $out .= $atts['separator'];
 			}
-			
-			unset($i);
 		}
 		
 		if ( !empty($atts['after']) ) $out .= $atts['after'];
 		
 		if ( $atts['return'] ) return $out;
 		
-		echo $out;
-		
+		echo $out;	
 	}
 	
 	/**

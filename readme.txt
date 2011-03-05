@@ -98,6 +98,8 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * FEATURE: Added YouTube to the social media field.
 * BUG: Use gmdate() instead of date() when working with the birthday and anniversary so dates are output showing the current date.
 * BUG: Fixed bug where the last address/phone number/email/messenger id/social media id/ website could not be removed.
+* BUG: Fix many/most/all  warning and such reported when WP_DEBUG is TRUE.
+* BUG: Fix WP version check in the displayUpgrade method.
 * OTHER: Added a comma in the getAddressBlock()
 * OTHER: Removed the PayPal Donate buttons from the Manage and Help pages.
 * OTHER: Add Extend and Template to the meta links on the plugins admin page.
