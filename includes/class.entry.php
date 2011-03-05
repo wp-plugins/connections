@@ -841,7 +841,7 @@ class cnEntry
 				$phoneNumberValues = $connections->options->getDefaultPhoneNumberValues();
 				$phoneNumbers[$key]['name'] = $phoneNumberValues[$phoneNumber['type']];
 				
-				// If the number is emty, no need to store it.
+				// If the number is empty, no need to store it.
 				if ( empty($phoneNumber['number']) ) unset($phoneNumbers[$key]);
 			}
 			

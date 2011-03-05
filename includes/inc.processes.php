@@ -37,12 +37,12 @@ function processEntry($data, $action)
 	if ( isset($data['department']) ) $entry->setDepartment($data['department']);
 	if ( isset($data['contact_first_name']) ) $entry->setContactFirstName($data['contact_first_name']);
 	if ( isset($data['contact_last_name']) ) $entry->setContactLastName($data['contact_last_name']);
-	if ( isset($data['address']) ) $entry->setAddresses($data['address']);
-	if ( isset($data['phone_numbers']) ) $entry->setPhoneNumbers($data['phone_numbers']);
-	if ( isset($data['email']) ) $entry->setEmailAddresses($data['email']);
-	if ( isset($data['im']) ) $entry->setIm($data['im']);
-	if ( isset($data['social_media']) ) $entry->setSocialMedia($data['social_media']);
-	if ( isset($data['website']) ) $entry->setWebsites($data['website']);
+	( isset($data['address']) ) ? $entry->setAddresses($data['address']) : $entry->setAddresses( array() );
+	( isset($data['phone_numbers']) ) ? $entry->setPhoneNumbers($data['phone_numbers']) : $entry->setPhoneNumbers( array() );
+	( isset($data['email']) ) ? $entry->setEmailAddresses($data['email']) : $entry->setEmailAddresses( array() );
+	( isset($data['im']) ) ? $entry->setIm($data['im']) : $entry->setIm( array() );
+	( isset($data['social_media']) ) ? $entry->setSocialMedia($data['social_media']) : $entry->setSocialMedia( array() );
+	( isset($data['website']) ) ? $entry->setWebsites($data['website']) : $entry->setWebsites( array() );
 	if ( isset($data['birthday_day']) && isset($data['birthday_month']) ) $entry->setBirthday($data['birthday_day'], $data['birthday_month']);
 	if ( isset($data['anniversary_day']) && isset($data['anniversary_month']) ) $entry->setAnniversary($data['anniversary_day'], $data['anniversary_month']);
 	if ( isset($data['bio']) ) $entry->setBio($data['bio']);

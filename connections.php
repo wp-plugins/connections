@@ -595,7 +595,12 @@ if (!class_exists('connectionsLoad'))
 		}
 		
 		/**
-		 * Register the metaboxes.
+		 * Register the metaboxes used for editing an entry.
+		 * 
+		 * Action added in connectionsLoad::loadAdminMenus
+		 * 
+		 * @author Steven A. Zahm
+		 * @since 0.7.1.3
 		 */
 		public function registerEditMetaboxes()
 		{
@@ -605,6 +610,15 @@ if (!class_exists('connectionsLoad'))
 			add_filter('screen_layout_columns', array(&$this, 'screenLayout'), 10, 2);
 		}
 		
+		/**
+		 * Register the number of columns permitted for metabox use on the edit entry page.
+		 * 
+		 * Filter added in connectionsLoad::registerEditMetaboxes
+		 * 
+		 * @author Steven A. Zahm
+		 * @since 0.7.1.3
+		 * @return array
+		 */
 		public function screenLayout($columns, $screen)
 		{
 			$columns['toplevel_page_connections'] = 2;
@@ -648,7 +662,7 @@ if (!class_exists('connectionsLoad'))
 							);
 			}
 			
-			// Load the core JavaScripts required for meta boxe UI.
+			// Load the core JavaScripts required for meta box UI.
 			$metaBoxPages = array( 'connections' );
 			
 			if ( in_array( $_GET['page'], $metaBoxPages ) )
@@ -766,6 +780,8 @@ if (!class_exists('connectionsLoad'))
 		{
 			if ( $file == plugin_basename(__FILE__) )
 			{
+				$links[] = '<a href="http://connections-pro.com/?page_id=29" target="_blank">Extend</a>';
+				$links[] = '<a href="http://connections-pro.com/?page_id=419" target="_blank">Templates</a>';
 				$links[] = '<a href="admin.php?page=connections_help" target="_blank">Help</a>';
 				$links[] = '<a href="http://connections-pro.com/help-desk" target="_blank">Support</a>';
 				$links[] = '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5070255" target="_blank">Donate</a>';

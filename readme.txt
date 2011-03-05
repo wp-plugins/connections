@@ -97,7 +97,11 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * FEATURE: Pagination in the admin.
 * FEATURE: Added YouTube to the social media field.
 * BUG: Use gmdate() instead of date() when working with the birthday and anniversary so dates are output showing the current date.
+* BUG: Fixed bug where the last address/phone number/email/messenger id/social media id/ website could not be removed.
 * OTHER: Added a comma in the getAddressBlock()
+* OTHER: Removed the PayPal Donate buttons from the Manage and Help pages.
+* OTHER: Add Extend and Template to the meta links on the plugins admin page.
+* OTHER: Add a 'Get More' button to the template admin page.
 
 = 0.7.1.4 Unreleased =
 * FEATURE: Add in_category shortcode attribute. Define multiple categories by id that an entry must be assigned in order to be displayed. [Operational AND]
