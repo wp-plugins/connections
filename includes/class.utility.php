@@ -114,7 +114,7 @@ class cnFormatting
 	 */
 	public function toBoolean($value)
 	{
-		switch ($value) 
+		switch ( strtolower($value) ) 
 		{
 			case 'yes':
 				$value = TRUE;

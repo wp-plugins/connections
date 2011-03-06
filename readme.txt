@@ -95,7 +95,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 
 = 0.7.1.5 xx/xx/2011 =
 * FEATURE: Pagination in the admin.
-* FEATURE: Added YouTube to the social media field.
+* FEATURE: Added YouTube, MixCloud, ReverbNation, iTunes and CD Baby to the social media field.
 * BUG: Use gmdate() instead of date() when working with the birthday and anniversary so dates are output showing the current date.
 * BUG: Fixed bug where the last address/phone number/email/messenger id/social media id/ website could not be removed.
 * BUG: Fix many/most/all  warning and such reported when WP_DEBUG is TRUE.

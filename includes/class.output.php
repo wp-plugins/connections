@@ -106,7 +106,7 @@ class cnOutput extends cnEntry
 				}
 				else
 				{
-					return NULL;
+					return '';
 				}
 			break;
 			
@@ -121,11 +121,11 @@ class cnOutput extends cnEntry
 			break;
 			
 			case 'blank':
-				return NULL;
+				return '';
 			break;
 			
 			default:
-				return NULL;
+				return '';
 			break;
 		}
 		

@@ -94,11 +94,15 @@ class cnOptions
 	
 	private $defaultSocialMediaValues = array(
 											 'delicious' => 'delicious',
+											 'cdbaby' => 'CD Baby',
 											 'facebook' => 'Facebook',
 											 'flickr' => 'Flickr',
+											 'itunes' => 'iTunes',
 											 'linked-in' => 'Linked-in',
+											 'mixcloud' => 'mixcloud',
 											 'myspace' => 'MySpace',
 											 'podcast' => 'Podcast',
+											 'reverbnation' => 'ReverbNation',
 											 'rss' => 'RSS',
 											 'technorati' => 'Technorati',
 											 'twitter' => 'Twitter',
