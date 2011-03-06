@@ -4,7 +4,7 @@ Donate link: http://connections-pro.com/
 Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, business directory, business-directory, church, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, staff, user, users, vcard
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 0.7.1.3
+Stable tag: 0.7.1.5
 Connections is a simple to use directory manager for an addressbook, business, staff or church directory.
 
 == Description ==
@@ -360,5 +360,5 @@ Connections is a simple to use and versatile directory manager. You can use it f
 
 == Upgrade Notice ==
 
-= 0.7.1.3 =
-Please backup your database before upgrading.
+= 0.7.1.5 =
+Primarily bug fixes. See changelog for both 0.7.1.4 and 0.7.1.5.
