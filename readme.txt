@@ -74,10 +74,6 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * Image uploading and processing done by the class.upload.php by [Colin Verot](http://www.verot.net/php_class_upload.htm)
 * Counter class from O'Reilly's [Intro to PHP Objects](http://www.onlamp.com/pub/a/php/2002/07/18/php_foundations.html?page=2)
 
-= Known Issues: =
-
-* None
-
 == Screenshots ==
 [Samples and screenshots can be found here](http://connections-pro.com/?page_id=52)
 
