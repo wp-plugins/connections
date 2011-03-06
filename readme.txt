@@ -12,7 +12,7 @@ Connections is a simple to use directory manager for an addressbook, business, s
 Connections is a simple to use and versatile directory manager. You can use it for an address book, create a church directory, business directory, staff directory and even profiles pages by using templates. If none of the default templates suit your needs, you can easily create your own custom template. Want to show a list of upcoming birthdays and anniversaries, no problem, you can do that too. Take a look at the screen shots and the samples to see all Connections can do.
 
 = Requirements =
-* **WordPress version:** 3.0
+* **WordPress version:** >= 3.0
 * **PHP version:** >= 5.1.0
 * Upgrading from version 0.6.1 and newer is supported. Previous version must upgrade to 0.6.1 before upgrading to the current version.
 
@@ -93,7 +93,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 
 == Changelog ==
 
-= 0.7.1.5 xx/xx/2011 =
+= 0.7.1.5 03/06/2011 =
 * FEATURE: Pagination in the admin.
 * FEATURE: Added YouTube, MixCloud, ReverbNation, iTunes and CD Baby to the social media field.
 * BUG: Use gmdate() instead of date() when working with the birthday and anniversary so dates are output showing the current date.
