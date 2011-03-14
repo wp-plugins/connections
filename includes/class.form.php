@@ -167,7 +167,9 @@ class cnFormObjects
 	 * Builds an alpha index.
 	 * @return string
 	 */
-	public function buildAlphaIndex() {
+	public function buildAlphaIndex()
+	{
+		$linkindex = '';
 		$alphaindex = range("A","Z");
 		
 		foreach ($alphaindex as $letter) {
@@ -277,13 +279,432 @@ class cnFormObjects
 	}
 	
 	/**
-	 * Outputs the publish meta box.
+	 * Registers the Dashboard meta boxes
 	 * 
-	 * Array must be an associtive array contain the key names of
-	 * action, type and visibility. These are used to set the default 
-	 * values when building the form bits.
+	 * @since 0.7.1.6
+	 */
+	public function registerDashboardMetaboxes()
+	{
+		global $connections;
+		
+		add_meta_box('metabox-news', 'News', array(&$this, 'metaboxNews'), $connections->pageHook->dashboard, 'left', 'core', array('feed' => 'http://connections-pro.com/category/connections/feed/') );
+		add_meta_box('metabox-upgrade-modules', 'Pro Modules Update Notices', array(&$this, 'metaboxNews'), $connections->pageHook->dashboard, 'left', 'core', array('feed' => 'http://connections-pro.com/category/upgrade-notices/pro-module/feed/') );
+		add_meta_box('metabox-upgrade-templates', 'Template Update Notices', array(&$this, 'metaboxNews'), $connections->pageHook->dashboard, 'left', 'core', array('feed' => 'http://connections-pro.com/category/upgrade-notices/templates-upgrade-notices/feed/') );
+		
+		add_meta_box('metabox-recent-added', 'Recently Added', array(&$this, 'metaboxRecentAdded'), $connections->pageHook->dashboard, 'left', 'core');
+		add_meta_box('metabox-recent-modified', 'Recently Modified', array(&$this, 'metaboxRecentModified'), $connections->pageHook->dashboard, 'left', 'core');
+		
+		add_meta_box('metabox-quick-links', 'Quick Links', array(&$this, 'metaBoxButtons'), $connections->pageHook->dashboard, 'right', 'core');
+		add_meta_box('metabox-anniversary-today', 'Today\'s Anniversaries', array(&$this, 'metaboxAnniversaryToday'), $connections->pageHook->dashboard, 'right', 'core');
+		add_meta_box('metabox-birthday-today', 'Today\'s Birthdays', array(&$this, 'metaboxBirthdayToday'), $connections->pageHook->dashboard, 'right', 'core');
+		add_meta_box('metabox-anniversary-upcoming', 'Upcoming Anniversaries', array(&$this, 'metaboxAnniversaryUpcoming'), $connections->pageHook->dashboard, 'right', 'core');
+		add_meta_box('metabox-birthday-upcoming', 'Upcoming Birthdays', array(&$this, 'metaboxBirthdayUpcoming'), $connections->pageHook->dashboard, 'right', 'core');
+		
+		add_meta_box('metabox-system', 'System', array(&$this, 'metaboxSystem'), $connections->pageHook->dashboard, 'right', 'core');
+	}
+	
+	public function metaBoxButtons()
+	{
+		?>
+		<div class="one-half">
+			<p class="center">
+				<a class="button large blue full" href="http://connections-pro.com/connections/connections-pro/"><span>Pro Modules</span></a>
+			</p>
+		</div>
+		
+		<div class="one-half last">
+			<p>Extend Connections with the Pro Module Addons.</p>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="one-half">
+			<p class="center">
+				<a class="button large blue full" href="http://connections-pro.com/connections/templates/"><span>Templates</span></a>
+			</p>
+		</div>
+		
+		<div class="one-half last">
+			<p>Connections comes with several templates to get you started, something, something, bla, bla.</p>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="one-half">
+			<p class="center">
+				<a class="button large blue full" href="http://connections-pro.com/trac/?bugcatid=16&amp;bugtypeid=74"><span>Bug Report</span></a>
+			</p>
+		</div>
+		
+		<div class="one-half last">
+			<p>Dig find a bug, please take the time to report it. Thanks.</p>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="one-half">
+			<p class="center">
+				<a class="button large blue full" href="http://connections-pro.com/trac/?bugcatid=16&amp;bugtypeid=75"><span>Feature Request</span></a>
+			</p>
+		</div>
+		
+		<div class="one-half last">
+			<p>Need a feature, request the feature.</p>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="one-half">
+			<p class="center">
+				<a class="button large blue full" href="http://connections-pro.com/connections/faq/"><span>FAQs</span></a>
+			</p>
+		</div>
+		
+		<div class="one-half last">
+			<p>Have a question, maybe someone else had the same question, please check the FAQs.</p>
+		</div>
+		<div class="clearboth"></div>
+		<?php
+	}
+	
+	/**
+	 * Outputs Connections Blog/News Feed.
+	 * 
+	 * @author Alex Rabe (http://alexrabe.de/)
+	 * @since 0.7.1.6
+	 */
+	public function metaboxNews($post, $metabox)
+	{
+		?>
+		<div class="rss-widget">
+		    <?php
+		    $rss = @fetch_feed( $metabox['args']['feed'] );
+		      
+		    if ( is_object($rss) ) {
+		
+		        if ( is_wp_error($rss) )
+				{
+		            echo '<p>' , sprintf(__('Newsfeed could not be loaded.  Check the <a href="%s">blog</a> to check for updates.', 'connections'), $metabox['args']['feed']) , '</p>';
+		    		echo '</div>'; //close out the rss-widget before returning.
+					return;
+		        }
+				elseif ( $rss->get_item_quantity() > 0 	)
+				{
+			        echo '<ul>';
+					foreach ( $rss->get_items(0, 3) as $item )
+					{
+			    		$link = $item->get_link();
+			    		while ( stristr($link, 'http') != $link )
+			    			$link = substr($link, 1);
+			    		$link = esc_url(strip_tags($link));
+			    		$title = esc_attr(strip_tags($item->get_title()));
+			    		if ( empty($title) )
+			    			$title = __('Untitled');
+			    
+			    		$desc = str_replace( array("\n", "\r"), ' ', esc_attr( strip_tags( @html_entity_decode( $item->get_description(), ENT_QUOTES, get_option('blog_charset') ) ) ) );
+			    		$desc = wp_html_excerpt( $desc, 360 );
+			    
+			    		// Append ellipsis. Change existing [...] to [&hellip;].
+			    		/*if ( '[...]' == substr( $desc, -5 ) )
+			    			$desc = substr( $desc, 0, -5 ) . '[&hellip;]';
+			    		elseif ( '[&hellip;]' != substr( $desc, -10 ) )
+			    			$desc .= ' [&hellip;]';*/
+			    
+			    		$desc = esc_html( $desc );
+			            
+						$date = $item->get_date();
+			            $diff = '';
+			            
+						if ( $date ) {
+						    
+			                $diff = human_time_diff( strtotime($date, time()) );
+			                 
+							if ( $date_stamp = strtotime( $date ) )
+								$date = ' <span class="rss-date">' . date_i18n( get_option( 'date_format' ), $date_stamp ) . '</span>';
+							else
+								$date = '';
+						}            
+			        ?>
+			          <li>
+			          	<h4 class="rss-title"><a title="" href='<?php echo $link; ?>'><?php echo $title; ?></a></h4>
+					  	<div class="rss-date"><?php echo $date; ?></div> 
+			          	<div class="rss-summary"><strong><?php echo $diff; ?> ago</strong> - <?php echo $desc; ?></div>
+					  </li>
+			        <?php
+			        }
+			        echo '</ul>';
+				}
+				else
+				{
+					echo '<p>No updates at this time</p>';
+				}
+		      }
+		    ?>
+		</div>
+		<?php
+	}	
+	
+	/**
+	 * Outputs the Dashboard Today's Birthday Widget.
+	 * 
+	 * @since 0.7.1.6
 	 * 
 	 * @param array $data
+	 */
+	public function metaboxBirthdayToday($data = NULL)
+	{
+		$message = create_function('', 'return "No Birthdays Today";');
+		add_filter( 'cn_upcoming_no_result_message', $message );
+		
+		$atts = array(
+				'list_type' => 'birthday',
+				'days' => '0',
+				'private_override' => FALSE,
+				'date_format' => 'F jS',
+				'show_lastname' => TRUE,
+				'list_title' => NULL,
+				'show_title' => FALSE,
+				'template' => 'dashboard-upcoming'
+				);
+		
+		connectionsUpcomingList($atts);
+		
+		remove_filter( 'cn_upcoming_no_result_message', $message );
+	}
+	
+	/**
+	 * Outputs the Dashboard Upcoming Birthdays Widget.
+	 * 
+	 * @since 0.7.1.6
+	 * 
+	 * @param array $data
+	 */
+	public function metaboxBirthdayUpcoming($data = NULL)
+	{
+		$atts = array(
+				'list_type' => 'birthday',
+				'days' => '30',
+				'include_today' => FALSE,
+				'private_override' => FALSE,
+				'date_format' => 'F jS',
+				'show_lastname' => TRUE,
+				'list_title' => NULL,
+				'show_title' => FALSE,
+				'template' => 'dashboard-upcoming'
+				);
+		
+		connectionsUpcomingList($atts);
+	}
+	
+	/**
+	 * Outputs the Dashboard Today's Anniversary Widget.
+	 * 
+	 * @since 0.7.1.6
+	 * 
+	 * @param array $data
+	 */
+	public function metaboxAnniversaryToday($data = NULL)
+	{
+		$message = create_function('', 'return "No Anniversaries Today";');
+		add_filter( 'cn_upcoming_no_result_message', $message );
+		
+		$atts = array(
+				'list_type' => 'anniversary',
+				'days' => '0',
+				'private_override' => FALSE,
+				'date_format' => 'F jS',
+				'show_lastname' => TRUE,
+				'list_title' => NULL,
+				'show_title' => FALSE,
+				'template' => 'dashboard-upcoming'
+				);
+		
+		connectionsUpcomingList($atts);
+		
+		remove_filter( 'cn_upcoming_no_result_message', $message );
+	}
+	
+	/**
+	 * Outputs the Dashboard Upcoming Anniversary Widget.
+	 * 
+	 * @since 0.7.1.6
+	 * 
+	 * @param array $data
+	 */
+	public function metaboxAnniversaryUpcoming($data = NULL)
+	{
+		$atts = array(
+				'list_type' => 'anniversary',
+				'days' => '30',
+				'include_today' => FALSE,
+				'private_override' => FALSE,
+				'date_format' => 'F jS',
+				'show_lastname' => TRUE,
+				'list_title' => NULL,
+				'show_title' => FALSE,
+				'template' => 'dashboard-upcoming'
+				);
+		
+		connectionsUpcomingList($atts);
+	}
+	
+	/**
+	 * Outputs the Dashboard Recently Added Widget.
+	 * 
+	 * @since 0.7.1.6
+	 * 
+	 * @param array $data
+	 */
+	public function metaboxRecentAdded($data = NULL)
+	{
+		global $connections;
+		
+		add_filter( 'cn_list_results', array($connections->retrieve, 'removeUnknownDateAdded'), 9 );
+		add_filter( 'cn_list_results', array($connections->retrieve, 'limitList'), 10 );
+		
+		$atts = array(
+				'order_by' => 'date_added|SORT_DESC',
+				'template' => 'dashboard-recent-added'
+				);
+		
+		connectionsEntryList($atts);
+		
+		remove_filter( 'cn_list_results', array($connections->retrieve, 'removeUnknownDateAdded'), 9 );
+	}
+	
+	/**
+	 * Outputs the Dashboard Recently Modified Widget.
+	 * 
+	 * @since 0.7.1.6
+	 * 
+	 * @param array $data
+	 */
+	public function metaboxRecentModified($data = NULL)
+	{
+		global $connections;
+		
+		add_filter( 'cn_list_results', array($connections->retrieve, 'limitList'), 10 );
+		
+		$atts = array(
+				'order_by' => 'date_modified|SORT_DESC',
+				'template' => 'dashboard-recent-modified'
+				);
+		
+		connectionsEntryList($atts);
+	}
+	
+	/**
+	 * Outputs the Server information.
+	 * 
+	 * @author GamerZ (http://www.lesterchan.net) && Alex Rabe (http://alexrabe.de/)
+	 * @since 0.7.1.6
+	 */
+	public function metaboxSystem()
+	{
+		global $wpdb, $connections;
+		$convert = new cnFormatting();
+		
+		// Get MYSQL Version
+		$sqlversion = $wpdb->get_var("SELECT VERSION() AS version");
+		// GET SQL Mode
+		$mysqlinfo = $wpdb->get_results("SHOW VARIABLES LIKE 'sql_mode'");
+		if (is_array($mysqlinfo)) $sql_mode = $mysqlinfo[0]->Value;
+		if (empty($sql_mode)) $sql_mode = __('Not set', 'connections');
+		// Get PHP Safe Mode
+		if(ini_get('safe_mode')) $safe_mode = __('On', 'connections');
+		else $safe_mode = __('Off', 'connections');
+		// Get PHP allow_url_fopen
+		if(ini_get('allow_url_fopen')) $allow_url_fopen = __('On', 'connections');
+		else $allow_url_fopen = __('Off', 'connections'); 
+		// Get PHP Max Upload Size
+		if(ini_get('upload_max_filesize')) $upload_max = ini_get('upload_max_filesize');	
+		else $upload_max = __('N/A', 'connections');
+		// Get PHP Output buffer Size
+		if(ini_get('pcre.backtrack_limit')) $backtrack_limit = ini_get('pcre.backtrack_limit');	
+		else $backtrack_limit = __('N/A', 'connections');
+		// Get PHP Max Post Size
+		if(ini_get('post_max_size')) $post_max = ini_get('post_max_size');
+		else $post_max = __('N/A', 'connections');
+		// Get PHP Max execution time
+		if(ini_get('max_execution_time')) $max_execute = ini_get('max_execution_time');
+		else $max_execute = __('N/A', 'connections');
+		// Get PHP Memory Limit 
+		if(ini_get('memory_limit')) $memory_limit = $connections->phpMemoryLimit;
+		else $memory_limit = __('N/A', 'connections');
+		// Get actual memory_get_usage
+		if (function_exists('memory_get_usage')) $memory_usage = round(memory_get_usage() / 1024 / 1024, 2) . __(' MByte', 'connections');
+		else $memory_usage = __('N/A', 'connections');
+		// required for EXIF read
+		if (is_callable('exif_read_data')) $exif = __('Yes', 'connections'). " ( V" . substr(phpversion('exif'),0,4) . ")" ;
+		else $exif = __('No', 'connections');
+		// required for meta data
+		if (is_callable('iptcparse')) $iptc = __('Yes', 'connections');
+		else $iptc = __('No', 'connections');
+		// required for meta data
+		if (is_callable('xml_parser_create')) $xml = __('Yes', 'connections');
+		else $xml = __('No', 'connections');
+			
+		?>
+			<h4>Server Configuration</h4>
+			
+			<ul class="settings">
+				<li><?php _e('Operating System', 'connections'); ?> : <span><?php echo PHP_OS; ?>&nbsp;(<?php echo (PHP_INT_SIZE * 8) ?>&nbsp;Bit)</span></li>
+				<li><?php _e('Server', 'connections'); ?> : <span><?php echo $_SERVER["SERVER_SOFTWARE"]; ?></span></li>
+				<li><?php _e('Memory usage', 'connections'); ?> : <span><?php echo $memory_usage; ?></span></li>
+				<li><?php _e('MYSQL Version', 'connections'); ?> : <span><?php echo $sqlversion; ?></span></li>
+				<li><?php _e('SQL Mode', 'connections'); ?> : <span><?php echo $sql_mode; ?></span></li>
+				<li><?php _e('PHP Version', 'connections'); ?> : <span><?php echo PHP_VERSION; ?></span></li>
+				<li><?php _e('PHP Safe Mode', 'connections'); ?> : <span><?php echo $safe_mode; ?></span></li>
+				<li><?php _e('PHP Allow URL fopen', 'connections'); ?> : <span><?php echo $allow_url_fopen; ?></span></li>
+				<li><?php _e('PHP Memory Limit', 'connections'); ?> : <span><?php echo $memory_limit; ?></span></li>
+				<li><?php _e('PHP Max Upload Size', 'connections'); ?> : <span><?php echo $upload_max; ?></span></li>
+				<li><?php _e('PHP Max Post Size', 'connections'); ?> : <span><?php echo $post_max; ?></span></li>
+				<li><?php _e('PCRE Backtracking Limit', 'connections'); ?> : <span><?php echo $backtrack_limit; ?></span></li>
+				<li><?php _e('PHP Max Script Execute Time', 'connections'); ?> : <span><?php echo $max_execute; ?>s</span></li>
+				<li><?php _e('PHP Exif support', 'connections'); ?> : <span><?php echo $exif; ?></span></li>
+				<li><?php _e('PHP IPTC support', 'connections'); ?> : <span><?php echo $iptc; ?></span></li>
+				<li><?php _e('PHP XML support', 'connections'); ?> : <span><?php echo $xml; ?></span></li>
+			</ul>
+			
+			<h4><strong><?php _e('Graphic Library', 'nggallery'); ?></strong></h4>
+            
+		<?php
+		
+		if(function_exists("gd_info"))
+		{
+			$info = gd_info();
+			$keys = array_keys($info);
+			echo '<ul class="settings">';
+			for($i=0; $i<count($keys); $i++)
+			{
+				if(is_bool($info[$keys[$i]]))
+					echo "<li> " . $keys[$i] ." : <span>" . $convert->toYesNo($info[$keys[$i]]) . "</span></li>\n";
+				else
+					echo "<li> " . $keys[$i] ." : <span>" . $info[$keys[$i]] . "</span></li>\n";
+			}
+			echo '</ul>';
+		}
+		else
+		{
+			echo '<h4>'.__('No GD support', 'connections').'!</h4>';
+		}
+		
+		?>
+		
+		<h4>Folder Permissions</h4>
+		
+		<?php
+		
+		echo '<ul class="settings">';
+			echo '<li>Image Path Exists: ' , $convert->toYesNo( is_dir(CN_IMAGE_PATH) ) , '</li>';
+			if ( is_dir(CN_IMAGE_PATH) ) echo '<li>Image Path Writeable: ' , $convert->toYesNo( is_writeable(CN_IMAGE_PATH) ) , '</li>';
+			echo '<li>Template Path Exists: ' , $convert->toYesNo( is_dir(CN_CUSTOM_TEMPLATE_PATH) ) , '</li>';
+			if ( is_dir(CN_CUSTOM_TEMPLATE_PATH) ) echo '<li>Template Path Writeable: ' , $convert->toYesNo( is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) , '</li>';
+		echo '</ul>';
+	}
+	
+	/**
+	 * Outputs the publish meta box.
+	 * 
+	 * @since 0.7.1.6
+	 * 
+	 * @param array $entry
 	 */
 	public function metaboxPublish($entry = NULL)
 	{
@@ -315,11 +736,11 @@ class cnFormObjects
 			switch ($action)
 			{
 				case 'edit':
-					echo '<div id="cancel-button"><a href="admin.php?page=connections" class="button button-warning">Cancel</a></div><div id="publishing-action"><input  class="button-primary" type="submit" name="update" value="Update" /></div>';
+					echo '<div id="cancel-button"><a href="admin.php?page=connections_manage" class="button button-warning">Cancel</a></div><div id="publishing-action"><input  class="button-primary" type="submit" name="update" value="Update" /></div>';
 				break;
 				
 				case 'copy':
-					echo '<div id="cancel-button"><a href="admin.php?page=connections" class="button button-warning">Cancel</a></div><div id="publishing-action"><input class="button-primary" type="submit" name="save" value="Add Entry" /></div>';;
+					echo '<div id="cancel-button"><a href="admin.php?page=connections_manage" class="button button-warning">Cancel</a></div><div id="publishing-action"><input class="button-primary" type="submit" name="save" value="Add Entry" /></div>';;
 				break;
 				
 				default:
@@ -331,6 +752,11 @@ class cnFormObjects
 		echo '</div>';
 	}
 	
+	/**
+	 * Outputs the add field meta box. NOT USED
+	 * 
+	 * @since 0.7.1.5
+	 */
 	public function metaboxFields()
 	{
 		echo '<p><a id="add_address" class="button">Add Address</a></p>';
@@ -341,6 +767,13 @@ class cnFormObjects
 		echo '<p><a id="add_website_address" class="button">Add Website Address</a></p>';
 	}
 	
+	/**
+	 * Outputs the category meta box.
+	 * 
+	 * @since 0.7.1.5
+	 * 
+	 * @param array $entry
+	 */
 	public function metaboxCategories($entry = NULL)
 	{
 		global $connections;
@@ -356,6 +789,13 @@ class cnFormObjects
 		echo '</div>';
 	}
 	
+	/**
+	 * Outputs the name meta box.
+	 * 
+	 * @since 0.7.1.5
+	 * 
+	 * @param array $entry
+	 */
 	public function metaboxName($entry = NULL)
 	{
 		global $connections;
@@ -460,6 +900,13 @@ class cnFormObjects
 			</div>';
 	}
 	
+	/**
+	 * Outputs the image meta box.
+	 * 
+	 * @since 0.7.1.5
+	 * 
+	 * @param array $entry
+	 */
 	public function metaboxImage($entry = NULL)
 	{
 		echo '<div class="form-field">';
@@ -479,6 +926,13 @@ class cnFormObjects
 		</div>';
 	}
 	
+	/**
+	 * Outputs the logo meta box.
+	 * 
+	 * @since 0.7.1.5
+	 * 
+	 * @param array $entry
+	 */
 	public function metaboxLogo($entry = NULL)
 	{
 		echo '<div class="form-field">';
@@ -498,6 +952,13 @@ class cnFormObjects
 		</div>';
 	}
 	
+	/**
+	 * Outputs the address meta box.
+	 * 
+	 * @since 0.7.1.5
+	 * 
+	 * @param array $entry
+	 */
 	public function metaboxAddress($entry = NULL)
 	{
 		global $connections;
@@ -618,6 +1079,13 @@ class cnFormObjects
 		echo  '</div>';
 	}
 	
+	/**
+	 * Outputs the phone meta box.
+	 * 
+	 * @since 0.7.1.5
+	 * 
+	 * @param array $entry
+	 */
 	public function metaboxPhone($entry = NULL)
 	{
 		global $connections;
@@ -664,6 +1132,13 @@ class cnFormObjects
 		echo  '<p class="add"><a id="add_phone_number" class="button">Add Phone Number</a></p>';
 	}
 	
+	/**
+	 * Outputs the email meta box.
+	 * 
+	 * @since 0.7.1.5
+	 * 
+	 * @param array $entry
+	 */
 	public function metaboxEmail($entry = NULL)
 	{
 		global $connections;
@@ -710,6 +1185,13 @@ class cnFormObjects
 		echo  '<p class="add"><a id="add_email_address" class="button">Add Email Address</a></p>';
 	}
 	
+	/**
+	 * Outputs the messenger meta box.
+	 * 
+	 * @since 0.7.1.5
+	 * 
+	 * @param array $entry
+	 */
 	public function metaboxMessenger($entry = NULL)
 	{
 		global $connections;
@@ -756,6 +1238,13 @@ class cnFormObjects
 		echo  '<p class="add"><a id="add_im_id" class="button">Add Messenger ID</a></p>';
 	}
 	
+	/**
+	 * Outputs the social media meta box.
+	 * 
+	 * @since 0.7.1.5
+	 * 
+	 * @param array $entry
+	 */
 	public function metaboxSocialMedia($entry = NULL)
 	{
 		global $connections;
@@ -802,6 +1291,13 @@ class cnFormObjects
 		echo  '<p class="add"><a id="add_social_media" class="button">Add Social Media ID</a></p>';
 	}
 	
+	/**
+	 * Outputs the image website box.
+	 * 
+	 * @since 0.7.1.5
+	 * 
+	 * @param array $entry
+	 */
 	public function metaboxWebsite($entry = NULL)
 	{
 		global $connections;
@@ -846,6 +1342,13 @@ class cnFormObjects
 		echo  '<p class="add"><a id="add_website_address" class="button">Add Website Address</a></p>';
 	}
 	
+	/**
+	 * Outputs the birthday meta box.
+	 * 
+	 * @since 0.7.1.58
+	 * 
+	 * @param array $entry
+	 */
 	public function metaboxBirthday($entry = NULL)
 	{
 		$date = new cnDate();
@@ -856,6 +1359,13 @@ class cnFormObjects
 		</div>";
 	}
 	
+	/**
+	 * Outputs the anniversary meta box.
+	 * 
+	 * @since 0.7.1.5
+	 * 
+	 * @param array $entry
+	 */
 	public function metaboxAnniversary($entry = NULL)
 	{
 		$date = new cnDate();
@@ -866,6 +1376,13 @@ class cnFormObjects
 		</div>";
 	}
 	
+	/**
+	 * Outputs the bio meta box.
+	 * 
+	 * @since 0.7.1.5
+	 * 
+	 * @param array $entry
+	 */
 	public function metaboxBio($entry = NULL)
 	{
 		echo "<div class='form-field'>
@@ -877,6 +1394,13 @@ class cnFormObjects
 		</div>";
 	}
 	
+	/**
+	 * Outputs the notes meta box.
+	 * 
+	 * @since 0.7.1.5
+	 * 
+	 * @param array $entry
+	 */
 	public function metaboxNotes($entry = NULL)
 	{
 		echo "<div class='form-field'>

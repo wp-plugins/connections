@@ -3,12 +3,14 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.1.5
+Version: 0.7.1.6
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 
 Connections is based on Little Black Book  1.1.2 by Gerald S. Fuller
 Little Black Book is based on Addressbook 0.7 by Sam Wilson
+
+Uses a function here and there from NextGEN Gallery by Alex Rabe.
 
 Update Notice in plugin admin inspired by Changelogger 1.2.8 by Oliver Schlöbe
 
@@ -85,9 +87,12 @@ if (!class_exists('connectionsLoad'))
 		
 			get_currentuserinfo();
 			$connections->currentUser->setID($current_user->ID);
-			
+						
 			if ( is_admin() )
 			{
+				// Store the PHP mememory limit
+				$this->phpMemoryLimit = ini_get('memory_limit');
+				
 				// Calls the methods to load the admin scripts and CSS.
 				add_action('admin_print_scripts', array(&$this, 'loadAdminScripts') );
 				add_action('admin_print_styles', array(&$this, 'loadAdminStyles') );
@@ -129,7 +134,7 @@ if (!class_exists('connectionsLoad'))
 		{
 			global $wpdb;
 			
-			define('CN_CURRENT_VERSION', '0.7.1.5');
+			define('CN_CURRENT_VERSION', '0.7.1.6');
 			define('CN_DB_VERSION', '0.1.4');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
@@ -567,31 +572,35 @@ if (!class_exists('connectionsLoad'))
 		 */	
 		public function loadAdminMenus()
 		{
-			global $connections;
+			//global $connections;
 			
 			// If the Connections CSV plugin is activated load the object
 			if ( class_exists('connectionsCSVLoad') ) global $connectionsCSV;
 			
 			// Register the top level menu item.
-			$pageHook->topLevel = add_menu_page('Connections : Administration', 'Connections', 'connections_manage', CN_BASE_NAME, array (&$this, 'showPage'), WP_PLUGIN_URL . '/connections/images/menu.png');
+			$this->pageHook->topLevel = add_menu_page('Connections', 'Connections', 'connections_view_dashboard', 'connections_dashboard', array (&$this, 'showPage'), WP_PLUGIN_URL . '/connections/images/menu.png');
 			
 			// Register the sub menu items.
-			$pageHook->manage = add_submenu_page(CN_BASE_NAME, 'Connections : Manage', 'Manage', 'connections_manage', CN_BASE_NAME, array (&$this, 'showPage'));
-			$pageHook->add = add_submenu_page(CN_BASE_NAME, 'Connections : Add Entry','Add Entry', 'connections_add_entry', 'connections&action=add_new', array (&$this, 'showPage'));
-			$pageHook->categories = add_submenu_page(CN_BASE_NAME, 'Connections : Categories','Categories', 'connections_edit_categories', 'connections_categories', array (&$this, 'showPage'));
+			$this->pageHook->dashboard = add_submenu_page('connections_dashboard', 'Connections : Dashboard', 'Dashboard', 'connections_view_dashboard', 'connections_dashboard', array (&$this, 'showPage'));
+			$this->pageHook->manage = add_submenu_page('connections_dashboard', 'Connections : Manage', 'Manage', 'connections_manage', 'connections_manage', array (&$this, 'showPage'));
+			$this->pageHook->add = add_submenu_page('connections_dashboard', 'Connections : Add Entry','Add Entry', 'connections_add_entry', 'connections_manage&action=add_new', array (&$this, 'showPage'));
+			$this->pageHook->categories = add_submenu_page('connections_dashboard', 'Connections : Categories','Categories', 'connections_edit_categories', 'connections_categories', array (&$this, 'showPage'));
 			
 			// Show the Connections Import CSV menu item
-			if ( isset($connectionsCSV) ) $pageHook->csv = add_submenu_page(CN_BASE_NAME, 'Connections : Import CSV','Import CSV', 'connections_add_entry', 'connections_csv', array ($connectionsCSV, 'showPage'));
+			if ( isset($connectionsCSV) ) $pageHook->csv = add_submenu_page('connections_dashboard', 'Connections : Import CSV','Import CSV', 'connections_add_entry', 'connections_csv', array ($connectionsCSV, 'showPage'));
 			
-			$pageHook->templates = add_submenu_page(CN_BASE_NAME, 'Connections : Templates','Templates', 'connections_manage_template', 'connections_templates', array (&$this, 'showPage'));
-			$pageHook->settings = add_submenu_page(CN_BASE_NAME, 'Connections : Settings','Settings', 'connections_change_settings', 'connections_settings', array (&$this, 'showPage'));
-			$pageHook->roles = add_submenu_page(CN_BASE_NAME, 'Connections : Roles &amp; Capabilites','Roles', 'connections_change_roles', 'connections_roles', array (&$this, 'showPage'));
-			$pageHook->help = add_submenu_page(CN_BASE_NAME, 'Connections : Help','Help', 'connections_view_help', 'connections_help', array (&$this, 'showPage'));
+			$this->pageHook->templates = add_submenu_page('connections_dashboard', 'Connections : Templates','Templates', 'connections_manage_template', 'connections_templates', array (&$this, 'showPage'));
+			$this->pageHook->settings = add_submenu_page('connections_dashboard', 'Connections : Settings','Settings', 'connections_change_settings', 'connections_settings', array (&$this, 'showPage'));
+			$this->pageHook->roles = add_submenu_page('connections_dashboard', 'Connections : Roles &amp; Capabilites','Roles', 'connections_change_roles', 'connections_roles', array (&$this, 'showPage'));
+			$this->pageHook->help = add_submenu_page('connections_dashboard', 'Connections : Help','Help', 'connections_view_help', 'connections_help', array (&$this, 'showPage'));
 			
 			// Register the edit metaboxes.
-			if ( isset($_GET['action']) && !empty($_GET['action']) ) add_action('load-' . $pageHook->manage, array(&$this, 'registerEditMetaboxes'));
+			if ( isset($_GET['action']) && !empty($_GET['action']) )add_action('load-' . $this->pageHook->manage, array(&$this, 'registerEditMetaboxes'));
 			
-			$connections->pageHook = $pageHook;
+			// Register the Dashboard metaboxes.
+			add_action('load-' . $this->pageHook->dashboard, array(&$this, 'registerDashboardMetaboxes'));
+			
+			//$connections->pageHook = $pageHook;
 		}
 		
 		/**
@@ -611,6 +620,22 @@ if (!class_exists('connectionsLoad'))
 		}
 		
 		/**
+		 * Register the metaboxes used for the Dashboard.
+		 * 
+		 * Action added in connectionsLoad::loadAdminMenus
+		 * 
+		 * @author Steven A. Zahm
+		 * @since 0.7.1.6
+		 */
+		public function registerDashboardMetaboxes()
+		{
+			$form = new cnFormObjects();
+			$form->registerDashboardMetaboxes();
+			
+			add_filter('screen_layout_columns', array(&$this, 'screenLayout'), 10, 2);
+		}
+		
+		/**
 		 * Register the number of columns permitted for metabox use on the edit entry page.
 		 * 
 		 * Filter added in connectionsLoad::registerEditMetaboxes
@@ -621,7 +646,8 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function screenLayout($columns, $screen)
 		{
-			$columns['toplevel_page_connections'] = 2;
+			$columns[$this->pageHook->dashboard] = 2;
+			$columns[$this->pageHook->manage] = 2;
 			
 			return $columns;
 		}
@@ -634,7 +660,7 @@ if (!class_exists('connectionsLoad'))
 			// Exit the method if $_GET['page'] isn't set.
 			if ( !isset($_GET['page']) ) return;
 			
-			$allPages = array( 'connections', 'connections_add', 'connections_categories', 'connections_settings', 'connections_templates', 'connections_roles', 'connections_csv', 'connections_help' );
+			$allPages = array( 'connections_dashboard', 'connections_manage', 'connections_categories', 'connections_settings', 'connections_templates', 'connections_roles', 'connections_csv', 'connections_help' );
 			
 			if ( in_array($_GET['page'], $allPages) )
 			{
@@ -647,10 +673,13 @@ if (!class_exists('connectionsLoad'))
 			 * 
 			 * Load the tinyMCE scripts on these pages.
 			 */
-			$editorPages = array( 'connections' );
+			$editorPages = array( 'connections_manage' );
 			
 			if ( in_array( $_GET['page'], $editorPages ) )
 			{
+				global $concatenate_scripts, $compress_scripts, $compress_css;
+				$compress_scripts = FALSE; // If the script are compress the TinyMCE doesn't seem to function.
+				
 				wp_tiny_mce( 	FALSE , // true makes the editor "teeny"
 								array
 								(
@@ -663,7 +692,7 @@ if (!class_exists('connectionsLoad'))
 			}
 			
 			// Load the core JavaScripts required for meta box UI.
-			$metaBoxPages = array( 'connections' );
+			$metaBoxPages = array( 'connections_dashboard', 'connections_manage' );
 			
 			if ( in_array( $_GET['page'], $metaBoxPages ) )
 			{
@@ -707,20 +736,13 @@ if (!class_exists('connectionsLoad'))
 			/*
 			 * Load styles only on the Connections plug-in admin pages.
 			 */
-			switch ($_GET['page'])
+			$adminPages = array('connections_dashboard','connections_manage','connections_categories','connections_settings','connections_templates','connections_roles','connections_csv','connections_help');
+			
+			if (in_array($_GET['page'], $adminPages))
 			{
-				case 'connections':
-				case 'connections_add':
-				case 'connections_categories':
-				case 'connections_settings':
-				case 'connections_templates':
-				case 'connections_roles':
-				case 'connections_csv':
-				case 'connections_help':
-					wp_enqueue_style('load_jwysiwyg_css', WP_PLUGIN_URL . '/connections/js/jwysiwyg/jwysiwyg/jquery.wysiwyg.css', array(), '0.6');
-					wp_enqueue_style('load_admin_css', WP_PLUGIN_URL . '/connections/css-admin.css', array(), CN_CURRENT_VERSION);
-				break;
+				wp_enqueue_style('connections', CN_BASE_URL . '/css/admin.css', array(), CN_CURRENT_VERSION);
 			}
+			
 		}
 		
 		/**
@@ -743,12 +765,14 @@ if (!class_exists('connectionsLoad'))
 			switch ($_GET['page'])
 			{
 				
-				case 'connections_add':
-					$cnActions = array( 'admin.php?page=connections_categories' => array('Add Category', 'connections_edit_categories') );
+				case 'connections_manage':
+					$cnActions = array( 'admin.php?page=connections_manage&action=add_new' => array('Add Entry', 'connections_add_entry'),
+										'admin.php?page=connections_categories' => array('Add Category<div class="favorite-action"><hr /></div>', 'connections_edit_categories')
+										);
 				break;
 				
 				case 'connections_categories':
-					$cnActions = array( 'admin.php?page=connections&action=add_new' => array('Add Entry', 'connections_add_entry') );
+					$cnActions = array( 'admin.php?page=connections_manage&action=add_new' => array('Add Entry', 'connections_add_entry') );
 				break;
 				
 				case 'connections_templates':
@@ -756,8 +780,8 @@ if (!class_exists('connectionsLoad'))
 				case 'connections_roles':
 				case 'connections_csv':
 				case 'connections_help':
-				case 'connections':
-					$cnActions = array( 'admin.php?page=connections&action=add_new' => array('Add Entry', 'connections_add_entry'),
+				case 'connections_dashboard':
+					$cnActions = array( 'admin.php?page=connections_manage&action=add_new' => array('Add Entry', 'connections_add_entry'),
 										'admin.php?page=connections_categories' => array('Add Category<div class="favorite-action"><hr /></div>', 'connections_edit_categories')
 									   );
 				break;
@@ -851,7 +875,8 @@ if (!class_exists('connectionsLoad'))
 			{
 				//echo $this->options->getVersion() . '<div id="message" class="error"><p><strong>ERROR: </strong>The version of Connections installed is newer than the version last activated. Please deactive and then reactivate Connections.</p></div>';
 				//return;
-				$this->initOptions();
+				
+				$this->initOptions(); // @TODO: a version change should not reset the roles and capabilites.
 				$this->options->setVersion(CN_CURRENT_VERSION);
 			}
 			
@@ -872,16 +897,15 @@ if (!class_exists('connectionsLoad'))
 			
 			switch ($_GET['page'])
 			{
-				case 'connections':
-					include_once ( dirname (__FILE__) . '/submenus/view.php' );
-					connectionsShowViewPage();
+				case 'connections_dashboard':
+					include_once ( dirname (__FILE__) . '/submenus/dashboard.php' );
+					connectionsShowDashboardPage();
 				break;
 				
-				//case 'connections&action=add_new':
-					//include_once ( dirname (__FILE__) . '/submenus/view.php' );
-					//connectionsShowAddPage();
-					//connectionsShowViewPage();
-				//break;
+				case 'connections_manage':
+					include_once ( dirname (__FILE__) . '/submenus/manage.php' );
+					connectionsShowViewPage();
+				break;
 				
 				case 'connections_categories':
 					include_once ( dirname (__FILE__) . '/submenus/categories.php' );
@@ -927,7 +951,7 @@ if (!class_exists('connectionsLoad'))
 			
 			switch ($_GET['page'])
 			{
-				case 'connections':
+				case 'connections_manage':
 					if ($_GET['action'])
 					{
 						switch ($_GET['action']) {
@@ -939,7 +963,7 @@ if (!class_exists('connectionsLoad'))
 								{
 									check_admin_referer($form->getNonce('add_entry'), '_cn_wpnonce');
 									processEntry($_POST, 'add');
-									wp_redirect('admin.php?page=connections&action=add_new&display_messages=true');
+									wp_redirect('admin.php?page=connections_manage&action=add_new&display_messages=true');
 								}
 								else
 								{
@@ -955,7 +979,7 @@ if (!class_exists('connectionsLoad'))
 								{
 									check_admin_referer($form->getNonce('update_entry'), '_cn_wpnonce');
 									processEntry($_POST, 'update');;
-									wp_redirect('admin.php?page=connections&display_messages=true');
+									wp_redirect('admin.php?page=connections_manage&display_messages=true');
 								}
 								else
 								{
@@ -970,7 +994,7 @@ if (!class_exists('connectionsLoad'))
 								if (current_user_can('connections_delete_entry'))
 								{
 									processDeleteEntry();
-									wp_redirect('admin.php?page=connections&display_messages=true');
+									wp_redirect('admin.php?page=connections_manage&display_messages=true');
 								}
 								else
 								{
@@ -994,7 +1018,7 @@ if (!class_exists('connectionsLoad'))
 										{
 											check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
 											processDeleteEntries();
-											wp_redirect('admin.php?page=connections&display_messages=true');
+											wp_redirect('admin.php?page=connections_manage&display_messages=true');
 										}
 										else
 										{
@@ -1012,7 +1036,7 @@ if (!class_exists('connectionsLoad'))
 										{
 											check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
 											processSetEntryVisibility();
-											wp_redirect('admin.php?page=connections&display_messages=true');
+											wp_redirect('admin.php?page=connections_manage&display_messages=true');
 										}
 										else
 										{
@@ -1025,7 +1049,7 @@ if (!class_exists('connectionsLoad'))
 								{
 									check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
 									processSetUserFilter();
-									wp_redirect('admin.php?page=connections&display_messages=true');
+									wp_redirect('admin.php?page=connections_manage&display_messages=true');
 								}
 								
 							break;

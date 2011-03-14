@@ -883,7 +883,9 @@ class cnEntry
 			
 			foreach ( (array) $emailAddresses as $key => $email)
 			{
-				$row->name = $this->format->sanitizeString($email['name']);
+				// Earlier versions of Connections did not store the name. The IF statement is simply to prevent PHP warning about undefined index: name.
+				if ( isset($email['name']) || !empty($email['name']) ) $row->name = $this->format->sanitizeString($email['name']);
+				
 				$row->type = $this->format->sanitizeString($email['type']);
 				$row->address = $this->format->sanitizeString($email['address']);
 				$row->visibility = $this->format->sanitizeString($email['visibility']);
@@ -1272,6 +1274,8 @@ class cnEntry
 	
 	public function getUpcoming($type, $format = 'F jS')
     {
+		if ( empty($this->$type) ) return '';
+		
 		global $connections;
 			
 		if ( mktime(23, 59, 59, gmdate('m', $this->$type), gmdate('d', $this->$type), gmdate('Y', $connections->options->wpCurrentTime) ) < $connections->options->wpCurrentTime )

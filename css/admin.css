@@ -133,3 +133,74 @@ table#availablethemes div.center-thumbnail img {display: block; margin: 0 auto;}
 
 /* Upgrade Page Styles */
 div#connections-upgrade ul {padding-left: 20px !important; list-style-type: disc !important;}
+
+/* Dashboard */
+div.postbox div.inside { margin: 10px; }
+
+div.rss-widget li { margin-bottom: 14px; }
+div.rss-widget h4 { font-size: 1.2em; margin: 0; }
+div.rss-widget h4 a { text-decoration: none; }
+div.rss-widget div.rss-date { margin-bottom: 8px; }
+
+div#metabox-system ul { margin-left: 12px; }
+
+div#metabox-quick-links .one-half{ position: relative; margin-right: 4%; float: left; width: 48%; }
+div#metabox-quick-links .last{ margin-right: 0 !important; clear: right; }
+
+div#metabox-quick-links .button {
+  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  -moz-user-select: none;
+  background: -moz-linear-gradient(center top , rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%) repeat scroll 0 0 transparent;
+  border-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.4);
+  border-style: solid;
+  border-width: 1px;
+  cursor: pointer;
+  line-height: 1em;
+  overflow: visible;
+  position: relative;
+  white-space: nowrap;
+}
+div#metabox-quick-links .button:hover, div#metabox-quick-links .button.hover {
+  -moz-background-clip: border;
+  -moz-background-origin: padding;
+  -moz-background-size: auto auto;
+  background-attachment: scroll;
+  background-image: -moz-linear-gradient(center top , rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+  background-position: 0 0;
+  background-repeat: repeat;
+}
+div#metabox-quick-links .button:active, div#metabox-quick-links .button.active {
+  -moz-background-clip: border;
+  -moz-background-origin: padding;
+  -moz-background-size: auto auto;
+  background-attachment: scroll;
+  background-image: -moz-linear-gradient(center top , rgba(0, 0, 0, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%);
+  background-position: 0 0;
+  background-repeat: repeat;
+  top: 1px;
+}
+div#metabox-quick-links .button.blue {
+  background-color: #00ADEE;
+}
+div#metabox-quick-links .button, .button span {
+  -moz-border-radius: 4px 4px 4px 4px;
+}
+div#metabox-quick-links .button span {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  line-height: 1em;
+  padding: 0.6em 1.3em;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+}
+div#metabox-quick-links .button.full, .button.full span {
+  display: block;
+}
+div#metabox-quick-links .button.large span {
+  font-size: 18px;
+}
+
+div.clearboth { clear:both; }

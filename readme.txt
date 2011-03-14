@@ -89,6 +89,22 @@ Connections is a simple to use and versatile directory manager. You can use it f
 
 == Changelog ==
 
+= 0.7.1.6 XX/XX/XX =
+* FEATURE: Added a Dashboard page in the admin.
+* FEATURE: Added a Today's Birthdays admin dashboard widget.
+* FEATURE: Added a Upcoming Birthdays admin dashboard widget.
+* FEATURE: Added a Today's Anniversaries admin dashboard widget.
+* FEATURE: Added a Upcoming Anniversaries admin dashboard widget.
+* FEATURE: Added a Recently Added dashboard widget.
+* FEATURE: Added a Recently Modified admin dashboard widget.
+* FEATURE: Added a Connections News admin dashboard widget.
+* FEATURE: Added a Template Update News admin dashboard widget.
+* FEATURE: Added a Pro Module New admin dashboard widget.
+* FEATURE: Added a System Info / Configuration admin dashboard widget.
+* BUG: Fix many/most/all  warning and such reported when WP_DEBUG is TRUE.
+* BUG: Remove the connections_view_entry_list role as it is no longer needed.
+* OTHER: Disabled JavaScript compression on the Add/Edit Entry page. When enabled the RTE wouldn't load to JS errors.
+
 = 0.7.1.5 03/06/2011 =
 * FEATURE: Pagination in the admin.
 * FEATURE: Added YouTube, MixCloud, ReverbNation, iTunes and CD Baby to the social media field.
@@ -207,7 +223,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * BUG: Fix error caused by empty $results array in the shortcode.
 * BUG: Editing a Connection Group caused it to show up twice in the list and only one was editable while the other gave an error.
 * BUG: Fixing saving the entry type.
-* BUG: The shorcode filter attributes were not escaped. So strings with extended characters would fail to return a match.
+* BUG: The shortcode filter attributes were not escaped. So strings with extended characters would fail to return a match.
 * BUG: Fixed elements left behind after removing fields in the entry form.
 * BUG: Remove entry images from the server when they are removed from the entry.
 * BUG: If an image was manually deleted from the server, the image tag will not be output.
@@ -227,7 +243,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * OTHER: Add place holders in the admin entry list if no image is associated to an entry.
 * OTHER: Add dependecies and versions to all wp_enqueue_script / wp_enqueue_style calls.
 * OTHER: Upgrade the class.php.upload class to .29
-* OTHER: Better documention throughout.
+* OTHER: Better documentation throughout.
 
 = 0.6.2.1 2/3/2010 =
 * BUG: Fixed fatal error when using the shortcode attribute repeat_alphaindex.

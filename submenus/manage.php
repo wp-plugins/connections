@@ -37,7 +37,7 @@ function connectionsShowViewPage()
 					echo '<h2><a name="new"></a>Add Entry</h2>';
 					
 						$attr = array(
-									 'action' => 'admin.php?page=connections&action=add',
+									 'action' => 'admin.php?page=connections_manage&action=add',
 									 'method' => 'post',
 									 'enctype' => 'multipart/form-data',
 									 );
@@ -106,7 +106,7 @@ function connectionsShowViewPage()
 					echo '<h2><a name="new"></a>Add Entry</h2>';
 					
 						$attr = array(
-									 'action' => 'admin.php?page=connections&action=add&id=' . $id,
+									 'action' => 'admin.php?page=connections_manage&action=add&id=' . $id,
 									 'method' => 'post',
 									 'enctype' => 'multipart/form-data',
 									 );
@@ -175,7 +175,7 @@ function connectionsShowViewPage()
 					echo '<h2><a name="new"></a>Edit Entry</h2>';
 					
 						$attr = array(
-									 'action' => 'admin.php?page=connections&action=update&id=' . $id,
+									 'action' => 'admin.php?page=connections_manage&action=update&id=' . $id,
 									 'method' => 'post',
 									 'enctype' => 'multipart/form-data',
 									 );
@@ -238,7 +238,7 @@ function connectionsShowViewPage()
 			/*
 			 * Check whether user can view the entry list
 			 */
-			if(current_user_can('connections_view_entry_list'))
+			if(current_user_can('connections_manage'))
 			{
 				?>
 				
@@ -255,7 +255,7 @@ function connectionsShowViewPage()
 					?>
 					
 						
-						<form action="admin.php?page=connections&action=do" method="post">
+						<form action="admin.php?page=connections_manage&action=do" method="post">
 						
 						<?php $form->tokenField('bulk_action'); ?>
 						
@@ -423,9 +423,9 @@ function connectionsShowViewPage()
 									/*
 									 * Genreate the edit, copy and delete URLs with nonce tokens.
 									 */
-									$editTokenURL = $form->tokenURL('admin.php?page=connections&action=edit&id=' . $entry->getId(), 'entry_edit_' . $entry->getId());
-									$copyTokenURL = $form->tokenURL('admin.php?page=connections&action=copy&id=' . $entry->getId(), 'entry_copy_' . $entry->getId());
-									$deleteTokenURL = $form->tokenURL('admin.php?page=connections&action=delete&id=' . $entry->getId(), 'entry_delete_' . $entry->getId());
+									$editTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=edit&id=' . $entry->getId(), 'entry_edit_' . $entry->getId());
+									$copyTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=copy&id=' . $entry->getId(), 'entry_copy_' . $entry->getId());
+									$deleteTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=delete&id=' . $entry->getId(), 'entry_delete_' . $entry->getId());
 									
 									
 									echo "<tr id='row-" . $entry->getId() . "' class='parent-row'>";
@@ -467,7 +467,7 @@ function connectionsShowViewPage()
 													/*
 													 * Genreate the category link token URL.
 													 */
-													$categoryFilterURL = $form->tokenURL('admin.php?page=connections&action=filter&category_id=' . $category->term_id, 'filter');
+													$categoryFilterURL = $form->tokenURL('admin.php?page=connections_manage&action=filter&category_id=' . $category->term_id, 'filter');
 													
 													echo '<a href="' . $categoryFilterURL . '">' . $category->name . '</a>';
 													

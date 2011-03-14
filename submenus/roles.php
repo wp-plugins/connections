@@ -26,43 +26,7 @@ function connectionsShowRolesPage()
 		$form = new cnFormObjects();
 		
 		$connections->displayMessages();
-							
-		/*if (isset($_POST['submit']))
-		{
-			if (isset($_POST['roles']))
-			{
-				// Cycle thru each role available because checkboxes do not report a value when not checked.
-				foreach ($wp_roles->get_names() as $role => $name)
-				{
-					if (!isset($_POST['roles'][$role])) continue;
-					
-					foreach ($_POST['roles'][$role]['capabilities'] as $capability => $grant)
-					{
-						// the admininistrator should always have all capabilities
-						if ($role == 'administrator') continue;
-						
-						if ($grant == 'true')
-						{
-							$connections->options->addCapability($role, $capability);
-						}
-						else
-						{
-							$connections->options->removeCapability($role, $capability);
-						}
-					}
-				}
-			}
-			
-			if (isset($_POST['reset'])) $connections->options->setDefaultCapabilities($_POST['reset']);
-			
-			if (isset($_POST['reset_all'])) $connections->options->setDefaultCapabilities();
-			
-			echo "<div id='message' class='updated fade'>";
-				echo "<p><strong>Role capabilities have been updated.</strong></p>";
-			echo "</div>";
-			
-		}*/
-	
+		
 	?>
 		<div class="wrap">
 			<div id="icon-connections" class="icon32">

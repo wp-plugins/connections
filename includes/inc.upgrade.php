@@ -4,7 +4,7 @@ function connectionsShowUpgradePage()
 	/*
 	 * Check whether user can access.
 	 */
-	if (!current_user_can('connections_view_entry_list'))
+	if (!current_user_can('connections_manage'))
 	{
 		wp_die('<p id="error-page" style="-moz-background-clip:border;
 				-moz-border-radius:11px;

@@ -259,8 +259,8 @@ function _connections_list($atts, $content = NULL) {
 	if ( empty($results) )
 	{
 		$noResultMessage = 'No results';
-		$noResultMessage = apply_filters('cn_no_result_message', $noResultMessage);
-		return $out . '<p class="cn-no-results">' . $noResultMessage . '</p>';
+		$noResultMessage = apply_filters('cn_list_no_result_message', $noResultMessage);
+		return $out . '<p class="cn-list-no-results">' . $noResultMessage . '</p>';
 	}
 	
 	$out .= '<a name="connections-list-head" style="float: left;"></a>' . "\n";
@@ -275,7 +275,7 @@ function _connections_list($atts, $content = NULL) {
 		$out .= apply_filters('cn_list_index', $index, $results);
 	}
 	
-	$out .=  '<div class="connections-list">' . "\n";
+	$out .=  '<div class="connections-list ' . $template->slug . '">' . "\n";
 	
 	foreach ( (array) $results as $row)
 	{
@@ -284,59 +284,6 @@ function _connections_list($atts, $content = NULL) {
 		//$vCard = new cnvCard($row);
 		$vCard =& $entry;
 		
-		/*if (isset($continue)) unset($continue);
-		if (isset($cities)) unset($cities);
-		if (isset($states)) unset($states);
-		if (isset($zipcodes)) unset($zipcodes);
-		if (isset($countries)) unset($countries);*/
-		//if (isset($setAnchor)) unset($setAnchor);
-		
-		/*
-		 * Check to make sure there is data stored in the address array.
-		 * Cycle thru each address, building separate arrays for city, state, zip and country.
-		 */
-		/*if ($entry->getAddresses())
-		{
-			foreach ($entry->getAddresses() as $address)
-			{
-				if ($address->city != NULL) $cities[] = $address->city;
-				if ($address->state != NULL) $states[] = $address->state;
-				if ($address->zipcode != NULL) $zipcodes[] = $address->zipcode;
-				if ($address->country != NULL) $countries[] = $address->country;
-			}			
-		}*/
-		
-		/*
-		 * Filter out the entries that are wanted based on the
-		 * filter attributes that may have been used in the shortcode.
-		 * 
-		 * NOTE: The '@' operator is used to suppress PHP generated errors. This is done
-		 * because not every entry will have addresses to populate the arrays created above.
-		 * 
-		 * NOTE: Since the entry class returns all fields escaped, the shortcode filter
-		 * attribute needs to be escaped as well so the comparason between the two functions
-		 * as expected.
-		 */
-		/*$atts['group_name'] = esc_attr($atts['group_name']);
-		$atts['last_name'] = esc_attr($atts['last_name']);
-		$atts['title'] = esc_attr($atts['title']);
-		$atts['organization'] = esc_attr($atts['organization']);
-		$atts['department'] = esc_attr($atts['department']);
-		
-		if ($entry->getFamilyName() != $atts['group_name'] && $atts['group_name'] != null)			$continue = true;
-		if ($entry->getLastName() != $atts['last_name'] && $atts['last_name'] != null)				$continue = true;
-		if ($entry->getTitle() != $atts['title'] && $atts['title'] != null)							$continue = true;
-		if ($entry->getOrganization() != $atts['organization'] && $atts['organization'] != null) 	$continue = true;
-		if ($entry->getDepartment() != $atts['department'] && $atts['department'] != null) 			$continue = true;
-		if (@!in_array($atts['city'], $cities) && $atts['city'] != null) 							$continue = true;
-		if (@!in_array($atts['state'], $states) && $atts['state'] != null) 							$continue = true;
-		if (@!in_array($atts['zip_code'], $zipcodes) && $atts['zip_code'] != null) 					$continue = true;
-		if (@!in_array($atts['country'], $countries) && $atts['country'] != null) 					$continue = true;*/
-		
-		/*
-		 * If any of the above filters returned true, the script will continue to the next entry.
-		 */
-		//if ($continue == true) continue;
 
 		/*
 		 * Checks the first letter of the last name to see if it is the next
@@ -371,7 +318,7 @@ function _connections_list($atts, $content = NULL) {
 		$alternate == '' ? $alternate = '-alternate' : $alternate = '';
 		
 		
-		$out .= '<div class="cn-list-row' . $alternate . ' vcard ' . $template->slug . ' ' . $entry->getCategoryClass(TRUE) . '">' . "\n";
+		$out .= '<div class="cn-list-row' . $alternate . ' vcard ' . $entry->getCategoryClass(TRUE) . '">' . "\n";
 			$out = apply_filters('cn_entry_before', $out, $entry);
 			ob_start();
 			include($template->file);
@@ -407,17 +354,30 @@ function connectionsUpcomingList($atts)
 add_shortcode('upcoming_list', '_upcoming_list');
 function _upcoming_list($atts, $content=null) {
     global $connections, $wpdb;
+	
 	$template = new cnTemplate();
+	$convert = new cnFormatting();
 	
 	$atts = shortcode_atts( array(
 			'list_type' => 'birthday',
 			'days' => '30',
+			'include_today' => TRUE,
 			'private_override' => FALSE,
 			'date_format' => 'F jS',
 			'show_lastname' => FALSE,
+			'show_title' => TRUE,
 			'list_title' => NULL,
 			'template' => $connections->options->getActiveTemplate('birthday')
 			), $atts ) ;
+	
+	/*
+	 * Convert some of the $atts values in the array to boolean.
+	 */
+	$convert->toBoolean(&$atts['include_today']);
+	$convert->toBoolean(&$atts['private_override']);
+	$convert->toBoolean(&$atts['show_lastname']);
+	$convert->toBoolean(&$atts['repeat_alphaindex']);
+	$convert->toBoolean(&$atts['show_title']);
 	
 	if (is_user_logged_in() || $atts['private_override'] != FALSE) { 
 		$visibilityfilter = " AND (visibility='private' OR visibility='public') AND (".$atts['list_type']." != '')";
@@ -493,6 +453,8 @@ function _upcoming_list($atts, $content=null) {
 	// Get the current date from WP which should have the current time zone offset.
 	$wpCurrentDate = date( 'Y-m-d', $connections->options->wpCurrentTime );
 	
+	( $atts['include_today'] ) ? $includeToday = '<=' : $includeToday = '<';
+	
 	/*
 	 * 
 	 */
@@ -504,10 +466,18 @@ function _upcoming_list($atts, $content=null) {
         . " > ( YEAR('$wpCurrentDate')"
         . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->options->sqlTimeOffset." SECOND)) )"
         . " - ( MID('$wpCurrentDate',5,6)"
-        . " <= MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->options->sqlTimeOffset." SECOND),5,6) )"
+        . " ".$includeToday." MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->options->sqlTimeOffset." SECOND),5,6) )"
 		. $visibilityfilter;
 	
 	$results = $wpdb->get_results($newSQL);
+	
+	// If there are no results no need to proceed and output message.
+	if ( empty($results) )
+	{
+		$noResultMessage = 'No results';
+		$noResultMessage = apply_filters('cn_upcoming_no_result_message', $noResultMessage);
+		return '<p class="cn-upcoming-no-results">' . $noResultMessage . '</p>';
+	}
 	
 	if ($results != NULL)
 	{
@@ -539,8 +509,8 @@ function _upcoming_list($atts, $content=null) {
 		if ( method_exists($template, 'printJS') ) $template->printJS();
 		
 		
-		$out .= '<div class="connections-list cn-upcoming '. $atts['list_type'] . '">' . "\n";
-		$out .= '<div class="cn-upcoming-title">' . $list_title  . '</div>';
+		$out .= '<div class="connections-list cn-upcoming '. $atts['list_type'] . ' ' . $template->slug . '">' . "\n";
+		if ( $atts['show_title'] ) $out .= '<div class="cn-upcoming-title">' . $list_title  . '</div>';
 				
 		foreach ($results as $row)
 		{
@@ -555,7 +525,7 @@ function _upcoming_list($atts, $content=null) {
 			
 			if (isset($template->file))
 			{
-				$out .= '<div class="cn-upcoming-row' . $alternate . ' vcard ' . $template->slug . '">' . "\n";
+				$out .= '<div class="cn-upcoming-row' . $alternate . ' vcard ' . '">' . "\n";
 					ob_start();
 					include($template->file);
 				    $out .= ob_get_contents();

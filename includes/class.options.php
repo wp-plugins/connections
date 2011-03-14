@@ -24,8 +24,8 @@ class cnOptions
 	private $dbVersion;
 	
 	private $defaultCapabilities = array(
-								'connections_view_entry_list' => 'View Entry List', /** @deprecated since 0.7.1.0 */
-								'connections_manage' => 'Manage',
+								'connections_view_dashboard' => 'View Dashboard',
+								'connections_manage' => 'View List (Manage)',
 								'connections_add_entry' => 'Add Entry',
 								'connections_edit_entry' => 'Edit Entry',
 								'connections_delete_entry' => 'Delete Entry',

@@ -460,6 +460,8 @@ function connectionsShowHelpPage()
 				<li>list_type</li>
 		
 				<li>days</li>
+				
+				<li>include_today</li>
 		
 				<li>private_override</li>
 		
@@ -468,6 +470,8 @@ function connectionsShowHelpPage()
 				<li>show_lastname</li>
 		
 				<li>list_title</li>
+				
+				<li>show_title</li>
 			</ol>
 			
 			<fieldset>
@@ -493,6 +497,17 @@ function connectionsShowHelpPage()
 				<em>private_override</em> to true this list will show all entries whether the user is logged in or not.</p>
 			
 				<p><code>[upcoming_list private_override='true']</code></p>
+				
+			</fieldset>
+			
+			<fieldset>
+				<legend>include_today</legend>
+				
+				<p>The <em>include_today</em> option allows you to to include or exlude the anniversaries and birthdays
+				occurring on today. The default value is TRUE. Setting this to FALSE will exclude any anniversaries and birthdays
+				occurring on today.</p>
+			
+				<p><code>[upcoming_list include_today='false']</code></p>
 				
 			</fieldset>
 			
@@ -526,6 +541,15 @@ function connectionsShowHelpPage()
 				read "Upcoming Birthdays for the next 7 days".</p>
 			
 				<p><code>[upcoming_list list_title='Any Text']</code></p>
+				
+			</fieldset>
+			
+			<fieldset>
+				<legend>show_title</legend>
+				
+				<p>The <em>show_title</em> option allows you to not output the list title.</p>
+			
+				<p><code>[upcoming_list show_title='FALSE']</code></p>
 				
 			</fieldset>
 			
@@ -845,6 +869,12 @@ function connectionsShowHelpPage()
 			<dt>cn_list_index</dt>
 				<dd>Can be used to modify the index before the output of the list. The entry list
 				results are passed. Return string.</dd>
+				
+			<dt>cn_list_no_result_message</dt>
+				<dd>Can be used to modify the entry list No Results message.</dd>
+				
+			<dt>cn_upcoming_no_result_message</dt>
+				<dd>Can be used to modify the upcoming list No Results message.</dd>
 		</dl>
 		
 		

@@ -295,6 +295,9 @@ class cnOutput extends cnEntry
 			}
 			$out .= '</div>' . "\n";
 		}
+		
+		if ( !isset($out) || empty($out) ) $out = '';
+		
 		return $out;
 	}
 	

@@ -211,7 +211,7 @@ class cnRetrieve
 			// Convert to array.
 			$atts['id'] = explode(',', $atts['id']);
 		}
-		
+		/*print_r('Print $atts[\'id\'] = ');print_r($atts['id']);print_r(' Print $entryIDs = ');print_r($entryIDs);print_r(' END');*/
 		// Set query string to return specific entries.
 		if ( !empty($atts['id']) || !empty($entryIDs) ) $where[] = 'AND `id` IN (\'' . implode("', '", array_unique( array_merge( (array) $atts['id'], (array) $entryIDs ), SORT_NUMERIC) ) . '\')';
 		
@@ -635,6 +635,43 @@ class cnRetrieve
 		$where[] =  'AND `visibility` IN (\'' . implode("', '", (array) $visibility) . '\')';
 		
 		return $wpdb->get_var( 'SELECT COUNT(`id`) FROM ' . CN_ENTRY_TABLE . ' ' . implode(' ', $where) );
+	}
+	
+	/**
+	 * Limit the returned results.
+	 * 
+	 * This is more or less a hack until limit is properly implemented in the retrieve query.
+	 * 
+	 * @version 1.0
+	 * @since 0.7.1.6
+	 * @param array $results
+	 * @return array
+	 */
+	public function limitList($results)
+	{
+		$limit = 12;
+		
+		return array_slice($results, $offset, $limit, TRUE);
+	}
+	
+	/**
+	 * Remove the entries from the list where the date added was not recorded.
+	 * 
+	 * This is more or less a hack to remove the entries from the list where the date added was not recorded which would be entries added before 0.7.1.1.
+	 * 
+	 * @version 1.0
+	 * @since 0.7.1.6
+	 * @param array $results
+	 * @return array
+	 */
+	public function removeUnknownDateAdded($results)
+	{
+		foreach ( $results as $key => $entry )
+		{
+			if ( empty($entry->date_added) ) unset( $results[$key] );
+		}
+		
+		return array_slice($results, $offset, $limit, TRUE);
 	}
 	
 	/**
