@@ -1,0 +1,53 @@
+	//Not 100% sure how this SQL statement works, found it here: http://searchoracle.techtarget.com/expert/KnowledgebaseAnswer/0,289625,sid41_cid458485,00.html
+	/*The part about this problem that's the toughest to figure out is what to do about year boundaries.
+	You get into difficulty if you start by reconstructing the person's birthday this year --
+
+			    select DATE_FORMAT(CURRENT_DATE,'%Y')
+			           + DATE_FORMAT(birthdate,'-%m-%d')
+
+	What if today is December 24 and the birthday is January 5? That's certainly within 14 days, but suddenly the comparison is not so straight-forward -- 
+	maybe you have to use the person's birthday next year, not this year, and do you subtract it from CURRENT_DATE or subtract CURRENT_DATE from the birthday?
+
+	Here's a better approach. My age, considered as an integer, does not go up until my next birthday is reached. If I'm 39 today, and in two weeks I'm 40, then my 
+	birthday must have occurred somewhere within those 14 days. Never mind whether we crossed a year boundary. All we need is a convenient formula for age in years.
+	The MySQL docs give a splendid example --
+
+	To determine how many years old each of your pets is, compute the difference in the year part of the current date and the birth date,
+	then subtract one if the current date occurs earlier in the calendar year than the birth date. The following query shows, for each pet,
+	the birth date, the current date, and the age in years.
+
+			    select ( YEAR(CURRENT_DATE) - YEAR(birth) )
+			           - ( RIGHT(CURRENT_DATE,5) < RIGHT(birth,5) )
+			          as age
+
+	Here, YEAR() pulls out the year part of a date and RIGHT() pulls off the rightmost five characters that represent the MM-DD (calendar year) part of the date.
+	The part of the expression that compares the MM-DD values evaluates to 1 or 0, which adjusts the year difference down a year if CURRENT_DATE occurs earlier in the year than birth.
+
+	Now all we have to do is compare the person's age in 14 days with the age today and Bob's your uncle --
+
+			    select lastname, birthdate
+			      from yourtable
+			     where ( YEAR(DATE_ADD(CURRENT_DATE, INTERVAL 14 DAYS))
+			             - YEAR(birthdate) )
+			           - ( RIGHT(DATE_ADD(CURRENT_DATE, INTERVAL 14 DAYS),5)
+			               < RIGHT(birthdate,5) )
+			         > ( YEAR(CURRENT_DATE)
+			             - YEAR(birthdate) )
+			           - ( RIGHT(CURRENT_DATE,5)
+			               < RIGHT(birthdate,5) ) 
+
+	This problem is also discussed on pages 74-76 of Joe Celko's SQL for Smarties (ISBN 1-55860-323-9). */
+	
+	
+	Here's the modified version for my needs:
+	
+	$newSQL = "SELECT id, ".$atts['list_type'].", last_name, first_name FROM ".$wpdb->prefix."connections where (YEAR(DATE_ADD(CURRENT_DATE, INTERVAL ".$atts['days']." DAY))"
+        . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND)) )"
+        . " - ( MID(DATE_ADD(CURRENT_DATE, INTERVAL ".$atts['days']." DAY),5,6)"
+        . " < MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND),5,6) )"
+        . " > ( YEAR(CURRENT_DATE)"
+        . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND)) )"
+        . " - ( MID(CURRENT_DATE,5,6)"
+        . " < MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND),5,6) )"
+		. $visibilityfilter
+		. " ORDER BY DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->sqlTimeOffset." SECOND) ASC";
