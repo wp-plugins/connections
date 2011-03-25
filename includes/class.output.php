@@ -190,6 +190,21 @@ class cnOutput extends cnEntry
 			case 'family':
 				$out = '<span class="fn n"><span class="family-name">' . $this->getFamilyName() . '</span></span>';
 			break;
+			
+			default:
+				
+				( $this->getHonorificPrefix() ) ? $replace[] = '<span class="honorific-prefix">' . $this->getHonorificPrefix() . '</span>' : $replace[] = '';;
+				
+				( $this->getFirstName() ) ? $replace[] = '<span class="given-name">' . $this->getFirstName() . '</span>' : $replace[] = '';
+				
+				( $this->getMiddleName() ) ? $replace[] = '<span class="additional-name">' . $this->getMiddleName() . '</span>' : $replace[] = '';
+				
+				( $this->getLastName() ) ? $replace[] = '<span class="family-name">' . $this->getLastName() . '</span>' : $replace[] = '';
+				
+				( $this->getHonorificSuffix() ) ? $replace[] = '<span class="honorific-suffix">' . $this->getHonorificSuffix() . '</span>' : $replace[] = '';
+				
+				$out = '<span class="fn n">' . str_ireplace( $search, $replace, $atts['format'] ) . '</span>';
+			break;
 		}
 		
 		

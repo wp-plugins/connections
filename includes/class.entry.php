@@ -1234,7 +1234,7 @@ class cnEntry
     public function setAnniversary($day, $month)
     {
         //Create the anniversary with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
-		( !empty($day) && !empty($month) ) ? $this->anniversary = mktime(0, 0, 1, $month, $day, 1970) : $this->anniversary = NULL;
+		( !empty($day) && !empty($month) ) ? $this->anniversary = gmmktime(0, 0, 1, $month, $day, 1970) : $this->anniversary = NULL;
     }
     
     /**
@@ -1269,7 +1269,7 @@ class cnEntry
     public function setBirthday($day, $month)
     {
         //Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
-		( !empty($day) && !empty($month) ) ? $this->birthday = mktime(0, 0, 1, $month, $day, 1970) : $this->birthday = NULL;
+		( !empty($day) && !empty($month) ) ? $this->birthday = gmmktime(0, 0, 1, $month, $day, 1970) : $this->birthday = NULL;
     }
 	
 	public function getUpcoming($type, $format = 'F jS')

@@ -23,6 +23,7 @@ function connectionsShowDashboardPage()
 	{
 		global $connections;
 		
+		$form = new cnFormObjects();
 	?>
 		<div class="wrap">
 			<div id="icon-connections" class="icon32">
@@ -48,6 +49,23 @@ function connectionsShowDashboardPage()
 			</div>
 								
 		</div>
+		
+		<?php
+			$attr = array(
+						 'action' => '',
+						 'method' => 'get'
+						 );
+			
+			$form->open($attr);
+			
+			wp_nonce_field('howto-metaboxes-general');
+			wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false );
+			wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false );
+			
+			$form->close();
+		?>
+		
+		
 		<div class="clear"></div>
 		
 		<script type="text/javascript">

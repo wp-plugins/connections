@@ -687,6 +687,8 @@ if (!class_exists('connectionsLoad'))
 									'theme_advanced_buttons1' => 'bold, italic, underline, |, bullist, numlist, |, justifyleft, justifycenter, justifyright, |, link, unlink, |, pastetext, pasteword, removeformat, |, undo, redo',
 									'theme_advanced_buttons2' => '',
 									'inline_styles' => TRUE,
+									'relative_urls' => FALSE,
+									'plugins' => 'paste'
 								)
 							);
 			}

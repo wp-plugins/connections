@@ -306,57 +306,57 @@ class cnFormObjects
 	public function metaBoxButtons()
 	{
 		?>
-		<div class="one-half">
+		<div class="one-third">
 			<p class="center">
 				<a class="button large blue full" href="http://connections-pro.com/connections/connections-pro/"><span>Pro Modules</span></a>
 			</p>
 		</div>
 		
-		<div class="one-half last">
+		<div class="two-third last">
 			<p>Extend Connections with the Pro Module Addons.</p>
 		</div>
 		<div class="clearboth"></div>
 		
-		<div class="one-half">
+		<div class="one-third">
 			<p class="center">
 				<a class="button large blue full" href="http://connections-pro.com/connections/templates/"><span>Templates</span></a>
 			</p>
 		</div>
 		
-		<div class="one-half last">
+		<div class="two-third last">
 			<p>Connections comes with several templates to get you started, something, something, bla, bla.</p>
 		</div>
 		<div class="clearboth"></div>
 		
-		<div class="one-half">
+		<div class="one-third">
 			<p class="center">
 				<a class="button large blue full" href="http://connections-pro.com/trac/?bugcatid=16&amp;bugtypeid=74"><span>Bug Report</span></a>
 			</p>
 		</div>
 		
-		<div class="one-half last">
+		<div class="two-third last">
 			<p>Dig find a bug, please take the time to report it. Thanks.</p>
 		</div>
 		<div class="clearboth"></div>
 		
-		<div class="one-half">
+		<div class="one-third">
 			<p class="center">
 				<a class="button large blue full" href="http://connections-pro.com/trac/?bugcatid=16&amp;bugtypeid=75"><span>Feature Request</span></a>
 			</p>
 		</div>
 		
-		<div class="one-half last">
+		<div class="two-third last">
 			<p>Need a feature, request the feature.</p>
 		</div>
 		<div class="clearboth"></div>
 		
-		<div class="one-half">
+		<div class="one-third">
 			<p class="center">
 				<a class="button large blue full" href="http://connections-pro.com/connections/faq/"><span>FAQs</span></a>
 			</p>
 		</div>
 		
-		<div class="one-half last">
+		<div class="two-third last">
 			<p>Have a question, maybe someone else had the same question, please check the FAQs.</p>
 		</div>
 		<div class="clearboth"></div>
