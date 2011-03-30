@@ -103,6 +103,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * FEATURE: Added a System Info / Configuration admin dashboard widget.
 * BUG: Fix many/most/all  warning and such reported when WP_DEBUG is TRUE.
 * BUG: Remove the connections_view_entry_list role as it is no longer needed.
+* BUG: Use gmmktime() instead of mktime() when working with the birthday and anniversary so dates are output showing the current date.
 * OTHER: Disabled JavaScript compression on the Add/Edit Entry page. When enabled the RTE wouldn't load to JS errors.
 
 = 0.7.1.5 03/06/2011 =

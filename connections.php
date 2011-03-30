@@ -115,19 +115,23 @@ if (!class_exists('connectionsLoad'))
 			}
 			else
 			{
+				// Add the rewite rules.
+				add_action( 'init', array(&$this, 'addRewriteRules') );
+				
 				// Register all valid query variables.
-				add_filter('query_vars', array(&$this, 'registerQueryVariables') );
+				add_filter( 'query_vars', array(&$this, 'registerQueryVariables' ) );
 				
 				// Calls the methods to load the frontend scripts and CSS.
-				add_action('wp_print_scripts', array(&$this, 'loadScripts') );
-				add_action('wp_print_styles', array(&$this, 'loadStyles') );
+				add_action( 'wp_print_scripts', array(&$this, 'loadScripts' ) );
+				add_action( 'wp_print_styles', array(&$this, 'loadStyles' ) );
 				
 				// Add a version number to the header
-				add_action('wp_head', create_function('', 'echo "\n<meta name=\'Connections\' content=\'' . $this->options->getVersion() . '-' . $this->options->getDBVersion() . '\' />\n";') );
+				add_action( 'wp_head', create_function('', 'echo "\n<meta name=\'Connections\' content=\'' . $this->options->getVersion() . '-' . $this->options->getDBVersion() . '\' />\n";') );
 				
 				// Parse front end queries.
-				add_action('parse_request', array(&$this, 'userActions') );
+				add_action( 'parse_request', array(&$this, 'userActions') );
 			}
+			
 		}
 		
 		private function loadConstants()
@@ -246,24 +250,6 @@ if (!class_exists('connectionsLoad'))
 			
 			
 			$this->options->saveOptions();
-		}
-		
-		public function registerQueryVariables($query)
-		{
-			$query[] = 'token';		// security token; WP nonce
-			$query[] = 'cntmpl';	// template name
-			$query[] = 'cnid';		// comma delimited entry IDs
-			$query[] = 'cncatid';	// comma delimited category IDs
-			$query[] = 'cnexcatid';	// comma delimited category IDs to exclude
-			$query[] = 'cncatnm';	// comma delimited category names
-			$query[] = 'cnlt';		// list type
-			$query[] = 'cnpg';		// page
-			$query[] = 'cnlm';		// pagination limit
-			$query[] = 'cnoff';		// pagination offset
-			$query[] = 'cnob';		// order by
-			$query[] = 'cnvc';		// download vCard, BOOL 1 or 0
-			
-			return $query;
 		}
 		
 		public function displayMessages()
@@ -549,6 +535,10 @@ if (!class_exists('connectionsLoad'))
 			
 			$this->initOptions();
 			
+			// Add the rewite rules and flush so they are rebuilt.
+			$this->addRewriteRules();
+			flush_rewrite_rules();
+			
 			//update_option('connections_activated', 'The Connections plug-in version ' . $this->options->getVersion() . ' has been activated.');
 		}
 		
@@ -557,7 +547,9 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function deactivate()
 		{
-			global $options;
+			flush_rewrite_rules();
+			
+			//global $options;
 			
 			/* This should be occur in the unistall hook
 			$this->options->removeDefaultCapabilities();
@@ -565,6 +557,43 @@ if (!class_exists('connectionsLoad'))
 			
 			//  DROP TABLE `cnpfresh_connections`, `cnpfresh_connections_terms`, `cnpfresh_connections_term_relationships`, `cnpfresh_connections_term_taxonomy`;
 			//  DELETE FROM `nhonline_freshcnpro`.`cnpfresh_options` WHERE `cnpfresh_options`.`option_name` = 'connections_options'
+		}
+		
+		/**
+		 * Add the Rewrite rules.
+		 * 
+		 * @return NULL
+		 */
+		public function addRewriteRules()
+		{
+			add_rewrite_rule( 'directory/?([^/]*)', 'index.php?cncatid=$matches[1]', 'top' );
+			
+			/* For testing only, NEVER leave uncommented in release versions. It'll slow WP down. */
+			//flush_rewrite_rules();
+		}
+		
+		/**
+		 * Register the valid query variables.
+		 * 
+		 * @param object $query
+		 * @return array
+		 */
+		public function registerQueryVariables($query)
+		{
+			$query[] = 'token';		// security token; WP nonce
+			$query[] = 'cntmpl';	// template name
+			$query[] = 'cnid';		// comma delimited entry IDs
+			$query[] = 'cncatid';	// comma delimited category IDs
+			$query[] = 'cnexcatid';	// comma delimited category IDs to exclude
+			$query[] = 'cncatnm';	// comma delimited category names
+			$query[] = 'cnlt';		// list type
+			$query[] = 'cnpg';		// page
+			$query[] = 'cnlm';		// pagination limit
+			$query[] = 'cnoff';		// pagination offset
+			$query[] = 'cnob';		// order by
+			$query[] = 'cnvc';		// download vCard, BOOL 1 or 0
+			
+			return $query;
 		}
 		
 		/**
@@ -1227,8 +1256,163 @@ if (!class_exists('connectionsLoad'))
 				echo $data;
 				exit;
 			}
+			
+			if ( array_key_exists('cncatid', $wp->query_vars) && $wp->query_vars['cncatid'] != '' )
+			{
+				global $template, $wp_query;
+				
+				/*
+				 * Picked up this section from http://wordpress.org/extend/plugins/virtual-pages/
+				 * Learned a bit from http://www.binarymoon.co.uk/2010/02/creating-wordpress-permalink-structure-custom-content/
+				 * 
+				 * Load the $wp_query object with our virtual page data.
+				 * 
+				 * START
+				 */
+				
+				
+				// Pagination -- Will definately need this later.
+				/*if(array_key_exists('paged', $wp->query_vars)) {
+				    $this->paged = $wp->query_vars['paged'];
+				}
+				else {
+				    $this->paged = 1;
+				}*/
+				
+				/*
+				 * Trick wp_query into thinking this is a page (necessary for wp_title() at least)
+				 * Not sure if it's cheating or not to modify global variables in a filter
+				 * but it appears to work and the codex doesn't directly say not to.
+				 */
+				$wp_query->is_page = TRUE;
+				//Not sure if this one is necessary but might as well set it like a true page
+				$wp_query->is_singular = TRUE;
+				$wp_query->is_home = FALSE;
+				$wp_query->is_archive = FALSE;
+				$wp_query->is_category = FALSE;
+				
+				//Longer permalink structures may not match the fake post slug and cause a 404 error so we catch the error here
+				unset( $wp_query->query['error'] );
+				$wp_query->query_vars['error'] = '';
+				$wp_query->is_404 = FALSE;
+				
+				$wp_query->post_count = 1;
+				
+				/*
+				 * Fake post ID to prevent WP from trying to show comments for
+				 * a post that doesn't really exist.
+				 */
+				$wp_query->post->ID = -1;
+				
+				/*
+				 * The author ID for the post.  Usually 1 is the sys admin.
+				 * @TODO Add option to the settings page to allow the defining of the page author.
+				 */
+				$wp_query->post->post_author = 94;
+				
+				/*
+				 * You can pretty much fill these up with anything you want. current date is fine.
+				 */
+				$wp_query->post->post_date = current_time('mysql');
+				$wp_query->post->post_date_gmt = current_time('mysql', 1);
+				
+				/*
+				 * Load the post content via the shortoced function passing the attribute from the query variables.
+				 * @TODO Probebly should check to make sure the function exists first. Just in case.
+				 */
+				$wp_query->post->post_content = _connections_list( array() );
+				
+				/*
+				 * Define the page title.
+				 * @TODO Add option to the settings page to the page title.
+				 */
+				$wp_query->post->post_title = 'Connections Test';
+				
+				$wp_query->post->post_category = 0;
+				
+				$wp_query->post->post_excerpt = '';
+				
+				$wp_query->post->post_status = 'publish';
+				
+				/*
+				 * Turning off comments for the post.
+				 */
+				$wp_query->post->comment_status = 'closed';
+				
+				/*
+				 * Let people ping the post?  Probably doesn't matter since
+				 * comments are turned off, so not sure if WP would even
+				 * show the pings.
+				 */
+				$wp_query->post->ping_status = 'closed';
+				
+				$wp_query->post->post_password = '';
+				
+				/*
+				 * This would be the page slug generated from the post title and used in the permalink.
+				 * @TODO Well gotta set this.
+				 */
+				$wp_query->post->post_name = '';
+				
+				$wp_query->post->to_ping = '';
+				
+				$wp_query->post->pinged = '';
+				
+				/*
+				 * You can pretty much fill these up with anything you want.  The current date is fine.
+				 */
+				$wp_query->post->post_modified = current_time('mysql');
+				$wp_query->post->post_modified_gmt = current_time('mysql', 1);
+				
+				$wp_query->post->post_content_filtered = '';
+				
+				$wp_query->post->parent_post = 0;
+				
+				/*
+				 * Set the permalink. Fill with a dummy link for now
+				 * @TODO Set the proper permalink
+				 */
+				$wp_query->post->guid = get_bloginfo('wpurl') . '/' . $options['permalink'];
+				
+				$wp_query->post->menu_order = 0;
+				
+				$wp_query->post->post_type = 'page';
+				
+				$wp_query->post->post_mime_type = '';
+				
+				$wp_query->post->comment_count = 0;
+				
+				$wp_query->post->restricted = 0;
+				
+				$wp_query->post->ancestors = array();
+				
+				$wp_query->post->filter = '';
+				
+				
+				// Dupe the post data the posts array;
+				$wp_query->posts[] = $wp_query->post;
+				
+				/*
+				 * Picked up this section from http://wordpress.org/extend/plugins/virtual-pages/
+				 * 
+				 * END
+				 */
+				
+				/*
+				 * Grab the path to the theme's page template.
+				 * @TODO Add option to the settings page to allow the selection of custom page templates.
+				 */
+				$template = get_query_template('page');
+				
+				// Include the page template and if the $wp_query object was loaded correctly the page should 'just work'.
+				include ($template);
+				
+				// Exit so WP doesn't continue to try to process the page.
+				exit;
+			}
+			
 		}
-		
+				
 	}
 	
 	/*
