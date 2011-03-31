@@ -562,11 +562,17 @@ if (!class_exists('connectionsLoad'))
 		/**
 		 * Add the Rewrite rules.
 		 * 
+		 * @ TODO Add setting to allow a custom base URI for the permalink.
+		 * 
 		 * @return NULL
 		 */
 		public function addRewriteRules()
 		{
-			add_rewrite_rule( 'directory/?([^/]*)', 'index.php?cncatid=$matches[1]', 'top' );
+			// base URI
+			add_rewrite_rule( '(directory)/?$', 'index.php?cnpagename=$matches[1]', 'top' );
+			
+			// Top level -> List type -> Single		@TODO Update query string to use cnname.
+			add_rewrite_rule( '(directory)/?([^/]*)/?([^/]*)$', 'index.php?cnpagename=$matches[1]&cnlisttype=$matches[2]&cnid=$matches[3]', 'top' );
 			
 			/* For testing only, NEVER leave uncommented in release versions. It'll slow WP down. */
 			//flush_rewrite_rules();
@@ -580,7 +586,10 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function registerQueryVariables($query)
 		{
-			$query[] = 'token';		// security token; WP nonce
+			$query[] = 'cnpagename';// page name
+			$query[] = 'cnlisttype';// list type
+			$query[] = 'cnname';	// entry name
+			$query[] = 'cntoken';	// security token; WP nonce
 			$query[] = 'cntmpl';	// template name
 			$query[] = 'cnid';		// comma delimited entry IDs
 			$query[] = 'cncatid';	// comma delimited category IDs
@@ -1230,9 +1239,11 @@ if (!class_exists('connectionsLoad'))
 		
 		public function userActions($wp)
 		{
+			//print_r('<pre style="background-color: white;">'); print_r($wp->query_vars); print_r('</pre>');
+			
 			if ( array_key_exists('cnvc', $wp->query_vars) && $wp->query_vars['cnvc'] == '1' )
 			{
-				$token = esc_attr($_GET['token']);
+				$token = esc_attr($_GET['cntoken']);
 				$id = (integer) esc_attr($_GET['cnid']);
 				
 				if (! wp_verify_nonce($token, 'download_vcard_' . $id) ) wp_die('Invalid vCard Token');
@@ -1257,9 +1268,20 @@ if (!class_exists('connectionsLoad'))
 				exit;
 			}
 			
-			if ( array_key_exists('cncatid', $wp->query_vars) && $wp->query_vars['cncatid'] != '' )
+			if ( array_key_exists('cnpagename', $wp->query_vars) && $wp->query_vars['cnpagename'] == 'directory' )
 			{
 				global $template, $wp_query;
+				
+				/*
+				 * Don't want WordPress applying these filters. Messes up the template with the auto P and texturize.
+				 */
+				remove_filter('the_content', 'wpautop');
+				remove_filter('the_content', 'wptexturize');
+				
+				$atts = array();
+				
+				if ( array_key_exists('cnlisttype', $wp->query_vars) && $wp->query_vars['cnlisttype'] != '' ) $atts['list_type'] = $wp->query_vars['cnlisttype'];
+				if ( array_key_exists('cnid', $wp->query_vars) && $wp->query_vars['cnid'] != '' ) $atts['id'] = $wp->query_vars['cnid'];
 				
 				/*
 				 * Picked up this section from http://wordpress.org/extend/plugins/virtual-pages/
@@ -1299,8 +1321,8 @@ if (!class_exists('connectionsLoad'))
 				$wp_query->post_count = 1;
 				
 				/*
-				 * Fake post ID to prevent WP from trying to show comments for
-				 * a post that doesn't really exist.
+				 * Fake post ID to prevent WP from trying to show comments or showing the edit link
+				 * for a post that doesn't really exist
 				 */
 				$wp_query->post->ID = -1;
 				
@@ -1320,7 +1342,7 @@ if (!class_exists('connectionsLoad'))
 				 * Load the post content via the shortoced function passing the attribute from the query variables.
 				 * @TODO Probebly should check to make sure the function exists first. Just in case.
 				 */
-				$wp_query->post->post_content = _connections_list( array() );
+				$wp_query->post->post_content = _connections_list( $atts );
 				
 				/*
 				 * Define the page title.

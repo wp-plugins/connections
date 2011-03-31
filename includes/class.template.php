@@ -270,14 +270,14 @@ class cnTemplate
 	 */
 	public function printCSS()
 	{
-		if ( !isset($this->cssPath) ) return NULL;
+		if ( !isset($this->cssPath) ) return '';
 		
 		$contents = file_get_contents( $this->cssPath );
 		
 		// Loads the CSS style in the body, valid HTML5 when set with the 'scoped' attribute.
 		$out = '<style type="text/css" scoped>' . "\n";
 		$out .= str_replace('%%PATH%%', $this->url, $contents);
-		$out .= '</style>' . "\n";
+		$out .= "\n" . '</style>' . "\n";
 		
 		return $out;
 	}

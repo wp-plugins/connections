@@ -253,7 +253,7 @@ function _connections_list($atts, $content = NULL) {
 	// Prints the javascript tag in the footer if $template->js path is set
 	if ( method_exists($template, 'printJS') ) $template->printJS();
 	
-	$out .= apply_filters('cn_list_before', $out, $results);
+	$out = apply_filters('cn_list_before', $out, $results);
 	
 	// If there are no results no need to proceed and output message.
 	if ( empty($results) )
@@ -272,7 +272,7 @@ function _connections_list($atts, $content = NULL) {
 	if ($atts['show_alphaindex'] && !$atts['repeat_alphaindex'])
 	{
 		$index = "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex(). "</div>";
-		$out .= apply_filters('cn_list_index', $index, $results);
+		$out = apply_filters('cn_list_index', $index, $results);
 	}
 	
 	$out .=  '<div class="connections-list ' . $template->slug . '">' . "\n";
