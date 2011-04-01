@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.1.6
+Version: 0.7.1.7
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 
@@ -138,7 +138,7 @@ if (!class_exists('connectionsLoad'))
 		{
 			global $wpdb;
 			
-			define('CN_CURRENT_VERSION', '0.7.1.6');
+			define('CN_CURRENT_VERSION', '0.7.1.7');
 			define('CN_DB_VERSION', '0.1.4');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
@@ -375,7 +375,9 @@ if (!class_exists('connectionsLoad'))
 			$this->successMessages->add('category_added', 'Category has been added.');
 			
 			$this->successMessages->add('entry_added', 'Entry has been added.');
+			$this->successMessages->add('entry_added_moderated', 'Pending review entry will be added.');
 			$this->successMessages->add('entry_updated', 'Entry has been updated.');
+			$this->successMessages->add('entry_updated_moderated', 'Pending review entry will be updated.');
 			
 			$this->successMessages->add('image_uploaded', 'Uploaded image saved.');
 			$this->successMessages->add('image_profile', 'Profile image created and saved.');
@@ -615,13 +617,27 @@ if (!class_exists('connectionsLoad'))
 			// If the Connections CSV plugin is activated load the object
 			if ( class_exists('connectionsCSVLoad') ) global $connectionsCSV;
 			
+			// Set the capability string to be used in the add_sub_menu function per role capability assigned to the current user.		
+			if ( current_user_can('connections_add_entry_moderated') )
+			{
+				$addEntryCapability = 'connections_add_entry_moderated';
+			}
+			elseif ( current_user_can('connections_add_entry') )
+			{
+				$addEntryCapability = 'connections_add_entry';
+			}
+			else
+			{
+				$addEntryCapability = 'connections_add_entry_moderated';
+			}
+			
 			// Register the top level menu item.
 			$this->pageHook->topLevel = add_menu_page('Connections', 'Connections', 'connections_view_dashboard', 'connections_dashboard', array (&$this, 'showPage'), WP_PLUGIN_URL . '/connections/images/menu.png');
 			
 			// Register the sub menu items.
 			$this->pageHook->dashboard = add_submenu_page('connections_dashboard', 'Connections : Dashboard', 'Dashboard', 'connections_view_dashboard', 'connections_dashboard', array (&$this, 'showPage'));
 			$this->pageHook->manage = add_submenu_page('connections_dashboard', 'Connections : Manage', 'Manage', 'connections_manage', 'connections_manage', array (&$this, 'showPage'));
-			$this->pageHook->add = add_submenu_page('connections_dashboard', 'Connections : Add Entry','Add Entry', 'connections_add_entry', 'connections_manage&action=add_new', array (&$this, 'showPage'));
+			$this->pageHook->add = add_submenu_page('connections_dashboard', 'Connections : Add Entry','Add Entry', $addEntryCapability, 'connections_manage&action=add_new', array (&$this, 'showPage'));
 			$this->pageHook->categories = add_submenu_page('connections_dashboard', 'Connections : Categories','Categories', 'connections_edit_categories', 'connections_categories', array (&$this, 'showPage'));
 			
 			// Show the Connections Import CSV menu item
@@ -999,7 +1015,7 @@ if (!class_exists('connectionsLoad'))
 								/*
 								 * Check whether the current user can add an entry.
 								 */
-								if (current_user_can('connections_add_entry'))
+								if ( current_user_can('connections_add_entry') || current_user_can('connections_add_entry_moderated') )
 								{
 									check_admin_referer($form->getNonce('add_entry'), '_cn_wpnonce');
 									processEntry($_POST, 'add');
@@ -1015,7 +1031,7 @@ if (!class_exists('connectionsLoad'))
 								/*
 								 * Check whether the current user can edit an entry.
 								 */
-								if (current_user_can('connections_edit_entry'))
+								if ( current_user_can('connections_edit_entry') || current_user_can('connections_edit_entry_moderated') )
 								{
 									check_admin_referer($form->getNonce('update_entry'), '_cn_wpnonce');
 									processEntry($_POST, 'update');;

@@ -280,6 +280,25 @@ function processEntry($data, $action)
 	switch ($action)
 	{
 		case 'add':
+			
+			// Set moderation status per role capability assigned to the current user.		
+			if ( current_user_can('connections_add_entry_moderated') )
+			{
+				$entry->setStatus('pending');
+				$messageID = 'entry_added_moderated';
+			}
+			elseif ( current_user_can('connections_add_entry') )
+			{
+				$entry->setStatus('approved');
+				$messageID = 'entry_added';
+			}
+			else
+			{
+				$entry->setStatus('pending');
+				$messageID = 'entry_added_moderated';
+			}
+			
+			// Save the entry to the database. On fail store error message.
 			if ($entry->save() == FALSE)
 			{
 				$connections->setErrorMessage('entry_added_failed');
@@ -287,12 +306,31 @@ function processEntry($data, $action)
 			}
 			else
 			{
-				$connections->setSuccessMessage('entry_added');
+				$connections->setSuccessMessage($messageID);
 				$entryID = (int) $connections->lastInsertID;
 			}
 		break;
 		
 		case 'update':
+			
+			// Set moderation status per role capability assigned to the current user.		
+			if ( current_user_can('connections_edit_entry_moderated') )
+			{
+				$entry->setStatus('pending');
+				$messageID = 'entry_updated_moderated';
+			}
+			elseif ( current_user_can('connections_edit_entry') )
+			{
+				$entry->setStatus('approved');
+				$messageID = 'entry_updated';
+			}
+			else
+			{
+				$entry->setStatus('pending');
+				$messageID = 'entry_updated_moderated';
+			}
+			
+			// Update the entry to the database. On fail store error message.
 			if ($entry->update() == FALSE)
 			{
 				$connections->setErrorMessage('entry_updated_failed');
@@ -300,7 +338,7 @@ function processEntry($data, $action)
 			}
 			else
 			{
-				$connections->setSuccessMessage('entry_updated');
+				$connections->setSuccessMessage($messageID);
 				$entryID = (int) $entry->getId();
 			}
 		break;

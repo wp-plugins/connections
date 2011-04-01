@@ -161,6 +161,8 @@ class cnEntry
 	private $addedBy;
 	private $editedBy;
 	
+	private $status;
+	
 	public $format;
 	public $validate;
 	
@@ -1725,6 +1727,26 @@ class cnEntry
 		}*/
 		
 	}
+    
+    /**
+     * Returns $status.
+     *
+     * @see cnEntry::$status
+     */
+    public function getStatus() {
+        return $this->status;
+    }
+    
+    /**
+     * Sets $status.
+     *
+     * @param object $status
+     * @see cnEntry::$status
+     */
+    public function setStatus($status) {
+        $this->status = $status;
+    }
+    
 	
     /**
      * Returns $options.
@@ -1859,7 +1881,7 @@ class cnEntry
 											$this->bio,
 											$this->notes,
 											$connections->currentUser->getID(),
-											'approved',
+											$this->status,
 											$this->id));
 		$wpdb->show_errors = FALSE;
 	}
@@ -1970,7 +1992,7 @@ class cnEntry
 											$connections->currentUser->getID(),
 											$connections->currentUser->getID(),
 											$connections->currentUser->getID(),
-											'approved');
+											$this->status);
 		
 		$result = $wpdb->query($sql);
 		

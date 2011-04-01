@@ -89,7 +89,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 
 == Changelog ==
 
-= 0.7.1.6 XX/XX/XX =
+= 0.7.1.7 XX/XX/XX =
 * FEATURE: Added a Dashboard page in the admin.
 * FEATURE: Added a Today's Birthdays admin dashboard widget.
 * FEATURE: Added a Upcoming Birthdays admin dashboard widget.

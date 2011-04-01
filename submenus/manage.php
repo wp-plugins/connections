@@ -26,7 +26,7 @@ function connectionsShowViewPage()
 			/*
 			 * Check whether current user can add an entry.
 			 */
-			if (current_user_can('connections_add_entry'))
+			if ( current_user_can('connections_add_entry') || current_user_can('connections_add_entry_moderated') )
 			{
 				add_meta_box('metabox-name', 'Name', array(&$form, 'metaboxName'), $connections->pageHook->manage, 'normal', 'high');
 				
@@ -92,7 +92,7 @@ function connectionsShowViewPage()
 			/*
 			 * Check whether current user can add an entry.
 			 */
-			if (current_user_can('connections_add_entry'))
+			if ( current_user_can('connections_add_entry') || current_user_can('connections_add_entry_moderated') )
 			{
 				$id = esc_attr($_GET['id']);
 				check_admin_referer('entry_copy_' . $id);
@@ -161,7 +161,7 @@ function connectionsShowViewPage()
 			/*
 			 * Check whether the current user can edit entries.
 			 */
-			if (current_user_can('connections_edit_entry'))
+			if ( current_user_can('connections_edit_entry') || current_user_can('connections_edit_entry_moderated') )
 			{
 				$id = esc_attr($_GET['id']);
 				check_admin_referer('entry_edit_' . $id);
@@ -299,7 +299,7 @@ function connectionsShowViewPage()
 							
 							<?php
 														
-							if (current_user_can('connections_edit_entry') || current_user_can('connections_delete_entry'))
+							if ( current_user_can('connections_edit_entry') || current_user_can('connections_delete_entry') )
 							{
 								echo '<div class="alignleft actions">';
 									echo '<select name="action">';
@@ -319,7 +319,7 @@ function connectionsShowViewPage()
 												$bulkActions['delete'] = 'Delete';
 											}
 											
-											$bulkActions = apply_filters('cn_view_bulk_actions', $bulkActions);	
+											$bulkActions = apply_filters('cn_manage_bulk_actions', $bulkActions);	
 											
 											foreach ( $bulkActions as $action => $string )
 											{
@@ -437,7 +437,7 @@ function connectionsShowViewPage()
 												if ($setAnchor) echo $setAnchor;
 												echo '<div style="float:right"><a href="#wphead" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" /></a></div>';
 												
-												if (current_user_can('connections_edit_entry'))
+												if ( current_user_can('connections_edit_entry') || current_user_can('connections_edit_entry_moderated') )
 												{
 													echo '<a class="row-title" title="Edit ' . $entry->getFullFirstLastName() . '" href="' . $editTokenURL . '"> ' . $entry->getFullLastFirstName() . '</a><br />';
 												}
@@ -447,11 +447,13 @@ function connectionsShowViewPage()
 												}
 												
 												echo '<div class="row-actions">';
-													echo '<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a> | ';
-													echo $vCard->download( array('anchorText' => 'vCard') ) . ' | ';
-													if (current_user_can('connections_edit_entry')) echo '<a class="editbutton" href="' . $editTokenURL . '" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a> | ';
-													if (current_user_can('connections_add_entry')) echo '<a class="copybutton" href="' . $copyTokenURL . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a> | ';
-													if (current_user_can('connections_delete_entry')) echo '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="' . $deleteTokenURL . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
+													$rowActions = array();
+													$rowActions[] = '<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a>';
+													$rowActions[] = $vCard->download( array('anchorText' => 'vCard', 'return' => TRUE) );
+													if ( current_user_can('connections_edit_entry') || current_user_can('connections_edit_entry_moderated') ) $rowActions[] = '<a class="editbutton" href="' . $editTokenURL . '" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a>';
+													if ( current_user_can('connections_add_entry') || current_user_can('connections_add_entry_moderated') ) $rowActions[] = '<a class="copybutton" href="' . $copyTokenURL . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a>';
+													if ( current_user_can('connections_delete_entry') ) $rowActions[] = '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="' . $deleteTokenURL . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
+													echo implode(' | ', $rowActions);
 												echo '</div>';
 										echo "</td> \n";
 										echo "<td > \n";
