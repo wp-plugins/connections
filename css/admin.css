@@ -59,7 +59,7 @@ div#help dt { font-weight: bold; }
 	-moz-background-clip:border;
 	-moz-background-inline-policy:continuous;
 	-moz-background-origin:padding;
-	background: transparent url(images/icon.png) no-repeat;
+	background: transparent url(../images/icon.png) no-repeat;
 }
 
 .connectionsform {

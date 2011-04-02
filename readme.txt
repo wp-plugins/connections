@@ -101,6 +101,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * FEATURE: Added a Template Update News admin dashboard widget.
 * FEATURE: Added a Pro Module New admin dashboard widget.
 * FEATURE: Added a System Info / Configuration admin dashboard widget.
+* FEATURE: New role capabilities that allow add and edit moderation.
 * BUG: Fix many/most/all  warning and such reported when WP_DEBUG is TRUE.
 * BUG: Remove the connections_view_entry_list role as it is no longer needed.
 * BUG: Use gmmktime() instead of mktime() when working with the birthday and anniversary so dates are output showing the current date.

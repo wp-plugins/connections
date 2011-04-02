@@ -56,26 +56,23 @@ if (!class_exists('connectionsLoad'))
 		
 		public function __construct()
 		{
+			// Activation/Deactivation hooks
+			register_activation_hook( dirname(__FILE__) . '/connections.php', array(&$this, 'activate') );
+			register_deactivation_hook( dirname(__FILE__) . '/connections.php', array(&$this, 'deactivate') );
+			
+			//@TODO: Create uninstall method to remove options and tables.
+			// register_uninstall_hook( dirname(__FILE__) . '/connections.php', array('connectionsLoad', 'uninstall') );
+			
 			$this->loadConstants();
 			$this->loadDependencies();
 			$this->initDependencies();
 			
-			if ( is_admin() )
-			{
-				// Initiate admin messages.
-				$this->initErrorMessages();
-				$this->initSuccessMessages();
-				
-				// Calls the method to load the admin menus.
-				add_action('admin_menu', array (&$this, 'loadAdminMenus'));
-				
-				// Activation/Deactivation hooks
-				register_activation_hook( dirname(__FILE__) . '/connections.php', array(&$this, 'activate') );
-				register_deactivation_hook( dirname(__FILE__) . '/connections.php', array(&$this, 'deactivate') );
-			}
+			// Calls the method to load the admin menus.
+			if ( is_admin() ) add_action('admin_menu', array (&$this, 'loadAdminMenus'));
 			
-			//@TODO: Create uninstall method to remove options and tables.
-			// register_uninstall_hook( dirname(__FILE__) . '/connections.php', array('connectionsLoad', 'uninstall') );
+			// Add the rewrite rules.
+			add_action( 'init', array(&$this, 'addRewriteRules') );
+			
 			
 			// Start this plug-in once all other plugins are fully loaded
 			add_action( 'plugins_loaded', array(&$this, 'start') );
@@ -87,46 +84,28 @@ if (!class_exists('connectionsLoad'))
 		
 			get_currentuserinfo();
 			$connections->currentUser->setID($current_user->ID);
-						
+			
 			if ( is_admin() )
 			{
 				// Store the PHP mememory limit
 				$this->phpMemoryLimit = ini_get('memory_limit');
 				
-				// Calls the methods to load the admin scripts and CSS.
-				add_action('admin_print_scripts', array(&$this, 'loadAdminScripts') );
-				add_action('admin_print_styles', array(&$this, 'loadAdminStyles') );
-				
-				// Add Settings link to the plugin actions
-				add_action('plugin_action_links_' . plugin_basename(__FILE__), array(&$this, 'addActionLinks'));
-				
-				// Add FAQ, Support and Donate links
-				add_filter('plugin_row_meta', array(&$this, 'addMetaLinks'), 10, 2);
-				
-				// Add the Add Entry item to the favorites dropdown.
-				add_filter('favorite_actions', array(&$this, 'addEntryFavorite') );
+				add_action( 'admin_init', array(&$this, 'adminInit') );
 				
 				// Process any action done in the admin.
 				$this->adminActions();
-				
-				// Add Changelog table row in the Manage Plugins admin page.
-				add_action('after_plugin_row_' . plugin_basename(__FILE__), array(&$this, 'displayUpgradeNotice'), 1, 0);
-				// Maybe should use this action hook instead: in_plugin_update_message-{$file}
 			}
 			else
 			{
-				// Add the rewite rules.
-				add_action( 'init', array(&$this, 'addRewriteRules') );
-				
-				// Register all valid query variables.
-				add_filter( 'query_vars', array(&$this, 'registerQueryVariables' ) );
-				
 				// Calls the methods to load the frontend scripts and CSS.
 				add_action( 'wp_print_scripts', array(&$this, 'loadScripts' ) );
 				add_action( 'wp_print_styles', array(&$this, 'loadStyles' ) );
 				
 				// Add a version number to the header
 				add_action( 'wp_head', create_function('', 'echo "\n<meta name=\'Connections\' content=\'' . $this->options->getVersion() . '-' . $this->options->getDBVersion() . '\' />\n";') );
+				
+				// Register all valid query variables.
+				add_filter( 'query_vars', array(&$this, 'registerQueryVariables' ) );
 				
 				// Parse front end queries.
 				add_action( 'parse_request', array(&$this, 'userActions') );
@@ -607,6 +586,36 @@ if (!class_exists('connectionsLoad'))
 			return $query;
 		}
 		
+		public function adminInit()
+		{
+			// Initiate admin messages.
+			$this->initErrorMessages();
+			$this->initSuccessMessages();
+			
+			// Calls the methods to load the admin scripts and CSS.
+			add_action('admin_print_scripts', array(&$this, 'loadAdminScripts') );
+			add_action('admin_print_styles', array(&$this, 'loadAdminStyles') );
+			
+			// Add Settings link to the plugin actions
+			add_action('plugin_action_links_' . plugin_basename(__FILE__), array(&$this, 'addActionLinks'));
+			
+			// Add FAQ, Support and Donate links
+			add_filter('plugin_row_meta', array(&$this, 'addMetaLinks'), 10, 2);
+			
+			// Add the Add Entry item to the favorites dropdown.
+			add_filter('favorite_actions', array(&$this, 'addEntryFavorite') );
+			
+			// Add Changelog table row in the Manage Plugins admin page.
+			add_action('after_plugin_row_' . plugin_basename(__FILE__), array(&$this, 'displayUpgradeNotice'), 1, 0);
+			// Maybe should use this action hook instead: in_plugin_update_message-{$file}
+			
+			// Register the edit metaboxes.
+			add_action('load-' . $this->pageHook->manage, array(&$this, 'registerEditMetaboxes'));
+			
+			// Register the Dashboard metaboxes.
+			add_action('load-' . $this->pageHook->dashboard, array(&$this, 'registerDashboardMetaboxes'));
+		}
+		
 		/**
 		 * Register the admin menus for Connections
 		 */	
@@ -634,27 +643,25 @@ if (!class_exists('connectionsLoad'))
 			// Register the top level menu item.
 			$this->pageHook->topLevel = add_menu_page('Connections', 'Connections', 'connections_view_dashboard', 'connections_dashboard', array (&$this, 'showPage'), WP_PLUGIN_URL . '/connections/images/menu.png');
 			
-			// Register the sub menu items.
-			$this->pageHook->dashboard = add_submenu_page('connections_dashboard', 'Connections : Dashboard', 'Dashboard', 'connections_view_dashboard', 'connections_dashboard', array (&$this, 'showPage'));
-			$this->pageHook->manage = add_submenu_page('connections_dashboard', 'Connections : Manage', 'Manage', 'connections_manage', 'connections_manage', array (&$this, 'showPage'));
-			$this->pageHook->add = add_submenu_page('connections_dashboard', 'Connections : Add Entry','Add Entry', $addEntryCapability, 'connections_manage&action=add_new', array (&$this, 'showPage'));
-			$this->pageHook->categories = add_submenu_page('connections_dashboard', 'Connections : Categories','Categories', 'connections_edit_categories', 'connections_categories', array (&$this, 'showPage'));
+			$submenu[0]   = array( 'hook' => 'dashboard', 'page_title' => 'Connections : Dashboard', 'menu_title' => 'Dashboard', 'capability' => 'connections_view_dashboard', 'menu_slug' => 'connections_dashboard', 'function' => array (&$this, 'showPage') );
+			$submenu[20]  = array( 'hook' => 'manage', 'page_title' => 'Connections : Manage', 'menu_title' => 'Manage', 'capability' => 'connections_manage', 'menu_slug' => 'connections_manage', 'function' => array (&$this, 'showPage') );
+			$submenu[40]  = array( 'hook' => 'add', 'page_title' => 'Connections : Add Entry', 'menu_title' => 'Add Entry', 'capability' => $addEntryCapability, 'menu_slug' => 'connections_manage&action=add_new', 'function' => array (&$this, 'showPage') );
+			$submenu[60]  = array( 'hook' => 'categories', 'page_title' => 'Connections : Categories', 'menu_title' => 'Categories', 'capability' => 'connections_edit_categories', 'menu_slug' => 'connections_categories', 'function' => array (&$this, 'showPage') );
+			$submenu[80]  = array( 'hook' => 'templates', 'page_title' => 'Connections : Templates', 'menu_title' => 'Templates', 'capability' => 'connections_manage_template', 'menu_slug' => 'connections_templates', 'function' => array (&$this, 'showPage') );
+			$submenu[80]  = array( 'hook' => 'settings', 'page_title' => 'Connections : Settings', 'menu_title' => 'Settings', 'capability' => 'connections_change_settings', 'menu_slug' => 'connections_settings', 'function' => array (&$this, 'showPage') );
+			$submenu[100] = array( 'hook' => 'roles', 'page_title' => 'Connections : Roles &amp; Capabilites', 'menu_title' => 'Roles', 'capability' => 'connections_change_roles', 'menu_slug' => 'connections_roles', 'function' => array (&$this, 'showPage') );
+			$submenu[120] = array( 'hook' => 'help', 'page_title' => 'Connections : Help', 'menu_title' => 'Help', 'capability' => 'connections_view_help', 'menu_slug' => 'connections_help', 'function' => array (&$this, 'showPage') );
 			
-			// Show the Connections Import CSV menu item
-			if ( isset($connectionsCSV) ) $pageHook->csv = add_submenu_page('connections_dashboard', 'Connections : Import CSV','Import CSV', 'connections_add_entry', 'connections_csv', array ($connectionsCSV, 'showPage'));
+			$submenu = apply_filters('cn_submenu', $submenu);
 			
-			$this->pageHook->templates = add_submenu_page('connections_dashboard', 'Connections : Templates','Templates', 'connections_manage_template', 'connections_templates', array (&$this, 'showPage'));
-			$this->pageHook->settings = add_submenu_page('connections_dashboard', 'Connections : Settings','Settings', 'connections_change_settings', 'connections_settings', array (&$this, 'showPage'));
-			$this->pageHook->roles = add_submenu_page('connections_dashboard', 'Connections : Roles &amp; Capabilites','Roles', 'connections_change_roles', 'connections_roles', array (&$this, 'showPage'));
-			$this->pageHook->help = add_submenu_page('connections_dashboard', 'Connections : Help','Help', 'connections_view_help', 'connections_help', array (&$this, 'showPage'));
+			ksort($submenu);
 			
-			// Register the edit metaboxes.
-			if ( isset($_GET['action']) && !empty($_GET['action']) )add_action('load-' . $this->pageHook->manage, array(&$this, 'registerEditMetaboxes'));
+			foreach ( $submenu as $menu )
+			{
+				extract($menu);
+				$this->pageHook->{$hook} = add_submenu_page( 'connections_dashboard', $page_title, $menu_title, $capability, $menu_slug, $function );
+			}
 			
-			// Register the Dashboard metaboxes.
-			add_action('load-' . $this->pageHook->dashboard, array(&$this, 'registerDashboardMetaboxes'));
-			
-			//$connections->pageHook = $pageHook;
 		}
 		
 		/**
