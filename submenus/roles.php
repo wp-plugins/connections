@@ -46,7 +46,7 @@ function connectionsShowRolesPage()
 			?>
 						
 				<div class="form-wrap">
-					
+					<div class="metabox-holder" id="dashboard-widgets">
 					<?php
 						$editable_roles = get_editable_roles();
 						
@@ -57,16 +57,24 @@ function connectionsShowRolesPage()
 							// the admininistrator should always have all capabilities
 							if ($role == 'administrator') continue;
 							
-							echo '<div class="form-field connectionsform">';
-								echo '<table class="form-table">';
-									echo '<tbody>';
+							//echo '<div class="form-field connectionsform">';
+								//echo '<table class="form-table">';
+									//echo '<tbody>';
 							
-										echo '<tr valign="top">';
-											echo '<th scope="row">';
-												echo $name;
-											echo '</th>';
-											echo '<td>';
+										//echo '<tr valign="top">';
+											//echo '<th scope="row">';
+												//echo $name;
+											//echo '</th>';
+											//echo '<td>';
 												$capabilies = $connections->options->getDefaultCapabilities();
+												
+												echo '<div class="postbox">';
+												
+												//echo '<div title="Click to toggle" class="handlediv"><br></div>';
+												
+												echo '<h3 class="hndle"><span>' , $name , '</span></h3>';
+												
+												echo '<div class="inside">';
 												
 												foreach ($capabilies as $capability => $capabilityName)
 												{
@@ -87,12 +95,15 @@ function connectionsShowRolesPage()
 												echo '<label for="' . $role . '_reset_capabilities">';
 												echo '<input type="checkbox" id="' . $role . '_reset_capabilities" name="reset[' . $role . ']" value="' . $name . '" ';
 												echo '/> Reset ' . $name . ' Capabilities</label>' . "\n";
-													
-											echo '</td>';
-										echo '</tr>';
-									echo '</tbody>';
-								echo '</table>';
-							echo '</div>';
+												
+												echo '</div>';
+												echo '</div>';
+												
+											//echo '</td>';
+										//echo '</tr>';
+									//echo '</tbody>';
+								//echo '</table>';
+							//echo '</div>';
 						}
 					?>
 								
@@ -120,6 +131,7 @@ function connectionsShowRolesPage()
 			<p class="submit"><input class="button-primary" type="submit" value="Save Changes" name="save" /></p>
 			
 			<?php $form->close(); ?>
+		</div>
 		</div>
 		<div class="clear"></div>
 		

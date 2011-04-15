@@ -15,7 +15,7 @@ function connectionsShowViewPage()
 	
 	<div class="wrap">
 		<div class="icon32" id="icon-connections"><br/></div>
-		<h2>Connections</h2>
+		<h2>Connections : Manage</h2>
 	
 	<?php
 	$connections->displayMessages();

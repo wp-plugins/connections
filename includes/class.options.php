@@ -483,6 +483,9 @@ class cnOptions
 				}
 			}
 		}
+		
+		// Make sure the capability to view public entries is set for the roles based on the previously saved preference.
+		$this->setAllowPublic($this->allowPublic);
 	}
 	
 	public function removeDefaultCapabilities()

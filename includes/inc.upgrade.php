@@ -44,7 +44,7 @@ function connectionsShowUpgradePage()
 								<h3>Upgrade Required!</h3>
 								<p>Your database tables for Connections is out of date and must be upgraded before you can continue.</p>
 								<p>If you would like to downgrade later, please first make a complete backup of your database tables.</p>
-								<h4><a href="<?php echo $urlPath;?>&amp;upgrade-db=do">Start Upgrade</a></h4>
+								<h4><a class="button-primary" href="<?php echo $urlPath;?>&amp;upgrade-db=do">Start Upgrade</a></h4>
 							<?php
 						}
 					
@@ -194,6 +194,34 @@ function cnRunDBUpgrade()
 			$connections->options->setDBVersion('0.1.4');
 		}
 		
+		if (version_compare($dbVersion, '0.1.5', '<'))
+		{
+			echo '<h4>Upgrade from database version ' . $connections->options->getDBVersion() . ' to database version ' . CN_DB_VERSION . ".</h4>\n";
+			
+			echo '<ul>';
+			echo '<li>Add the entry meta table.' , "</li>\n";
+			echo '</ul>';
+			
+			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_ENTRY_TABLE_META . "'") != CN_ENTRY_TABLE_META)
+			{
+				require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+				
+				$entryTableMeta = "CREATE TABLE " . CN_ENTRY_TABLE_META . " (
+			        meta_id bigint(20) unsigned NOT NULL auto_increment,
+					entry_id bigint(20) unsigned NOT NULL default '0',
+					meta_key varchar(255) default NULL,
+					meta_value longtext,
+					PRIMARY KEY  (meta_id),
+					KEY entry_id (entry_id),
+					KEY meta_key (meta_key)
+			    ) $charsetCollate;";
+			    
+			    dbDelta($entryTableMeta);
+			}
+			
+			$connections->options->setDBVersion('0.1.5');
+		}
+		
 		echo '<h4>Updating entries to the new database stucture.' . "</h4>\n";
 		
 		$results = $connections->retrieve->entries();
@@ -205,7 +233,7 @@ function cnRunDBUpgrade()
 		}
 		
 		echo '<h4>Upgrade completed.' . "</h4>\n";
-		echo '<h4><a href="' . $urlPath . '">Continue</a></h4>';
+		echo '<h4><a class="button-primary" href="' . $urlPath . '">Continue</a></h4>';
 		
 		$wpdb->hide_errors();
 	}

@@ -18,7 +18,9 @@ function connectionsEntryList($atts)
  * Register the [connections] shortcode
  * 
  * Filters:
- * 		cn_list_atts		=> Alter the shortcode attributes before use. Return associative array.
+ * 		cn_list_atts_pre_validate		=> Alter the shortcode attributes before validation. Return associative array.
+ * 		cn_list_atts_post_validate		=> Alter the shortcode attributes after validation. Return associative array.
+ * 		cn_list_atts		=> Alter the shortcode attributes after validation but before use in a template. Return associative array.
  * 		cn_list_results		=> Filter the returned results before being processed for display. Return indexed array of entry objects.
  * 		cn_list_before		=> Can be used to add content before the output of the list. The entry list results are passed. Return string.
  * 		cn_list_after		=> Can be used to add content after the output of the list. The entry list results are passed. Return string.
@@ -272,7 +274,9 @@ function _connections_list($atts, $content = NULL) {
 	if ($atts['show_alphaindex'] && !$atts['repeat_alphaindex'])
 	{
 		$index = "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex(). "</div>";
-		$out = apply_filters('cn_list_index', $index, $results);
+		$index = apply_filters('cn_list_index', $index, $results);
+		
+		$out .= $index;
 	}
 	
 	$out .=  '<div class="connections-list ' . $template->slug . '">' . "\n";
@@ -283,7 +287,7 @@ function _connections_list($atts, $content = NULL) {
 		$entry = new cnvCard($row);
 		//$vCard = new cnvCard($row);
 		$vCard =& $entry;
-		
+		$repeatIndex = '';
 
 		/*
 		 * Checks the first letter of the last name to see if it is the next
@@ -299,7 +303,11 @@ function _connections_list($atts, $content = NULL) {
 		{
 			if ($atts['show_alphaindex']) $setAnchor = '<a class="cn-index-head" name="' . $currentLetter . '"></a>';
 			
-			if ($atts['show_alphaindex'] && $atts['repeat_alphaindex']) $setAnchor .= "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex() . "</div>";
+			if ($atts['show_alphaindex'] && $atts['repeat_alphaindex'])
+			{
+				$repeatIndex = "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex() . "</div>";
+				$repeatIndex = apply_filters('cn_list_index', $repeatIndex, $results);
+			}
 			
 			if ($atts['show_alphahead']) $setAnchor .= '<h4 class="cn-alphahead">' . $currentLetter . '</h4>';
 			
@@ -313,7 +321,7 @@ function _connections_list($atts, $content = NULL) {
 		/*
 		 * The anchor and/or the alpha head is displayed if set to true using the shortcode attributes.
 		 */
-		if ($atts['show_alphaindex'] || $atts['show_alphahead']) $out .= $setAnchor;
+		if ($atts['show_alphaindex'] || $atts['show_alphahead']) $out .= $setAnchor . $repeatIndex;
 		
 		$alternate == '' ? $alternate = '-alternate' : $alternate = '';
 		

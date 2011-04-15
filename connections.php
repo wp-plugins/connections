@@ -54,18 +54,30 @@ if (!class_exists('connectionsLoad'))
 		public $errorMessages;
 		public $successMessages;
 		
+		/**
+		 * Stores the lambda function string name for the database upgrade message.
+		 * @var string
+		 */
+		private $dbUpgradeMessage;
+		
+		/**
+		 * Do the database upgrade.
+		 * @var bool
+		 */
+		private $dbUpgrade;
+		
 		public function __construct()
 		{
+			$this->loadConstants();
+			$this->loadDependencies();
+			$this->initDependencies();
+			
 			// Activation/Deactivation hooks
 			register_activation_hook( dirname(__FILE__) . '/connections.php', array(&$this, 'activate') );
 			register_deactivation_hook( dirname(__FILE__) . '/connections.php', array(&$this, 'deactivate') );
 			
 			//@TODO: Create uninstall method to remove options and tables.
 			// register_uninstall_hook( dirname(__FILE__) . '/connections.php', array('connectionsLoad', 'uninstall') );
-			
-			$this->loadConstants();
-			$this->loadDependencies();
-			$this->initDependencies();
 			
 			// Calls the method to load the admin menus.
 			if ( is_admin() ) add_action('admin_menu', array (&$this, 'loadAdminMenus'));
@@ -92,8 +104,10 @@ if (!class_exists('connectionsLoad'))
 				
 				add_action( 'admin_init', array(&$this, 'adminInit') );
 				
-				// Process any action done in the admin.
-				$this->adminActions();
+				// Parse admin queries.
+				add_action( 'admin_init', array(&$this, 'adminActions') );
+				
+				add_action( 'admin_init', array(&$this, 'checkDBUpgrade' ) );
 			}
 			else
 			{
@@ -118,18 +132,20 @@ if (!class_exists('connectionsLoad'))
 			global $wpdb;
 			
 			define('CN_CURRENT_VERSION', '0.7.1.7');
-			define('CN_DB_VERSION', '0.1.4');
+			define('CN_DB_VERSION', '0.1.5');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
 			define('CN_ENTRY_TABLE', $wpdb->prefix . 'connections');
+			define('CN_ENTRY_TABLE_META', $wpdb->prefix . 'connections_meta');
 			define('CN_TERMS_TABLE', $wpdb->prefix . 'connections_terms');
 			define('CN_TERM_TAXONOMY_TABLE', $wpdb->prefix . 'connections_term_taxonomy');
 			define('CN_TERM_RELATIONSHIP_TABLE', $wpdb->prefix . 'connections_term_relationships');
-			define('CN_BASE_NAME', plugin_basename( dirname(__FILE__)) );
-			define('CN_BASE_PATH', WP_PLUGIN_DIR . '/' . CN_BASE_NAME);
-			define('CN_BASE_URL', WP_PLUGIN_URL . '/' . CN_BASE_NAME);
-			define('CN_TEMPLATE_PATH', CN_BASE_PATH . '/templates');
-			define('CN_TEMPLATE_URL', CN_BASE_URL . '/templates');
+			define('CN_DIR_NAME', plugin_basename( dirname(__FILE__) ) );
+			define('CN_BASE_NAME', plugin_basename( __FILE__ ) );
+			define('CN_PATH', WP_PLUGIN_DIR . '/' . CN_DIR_NAME);
+			define('CN_URL', WP_PLUGIN_URL . '/' . CN_DIR_NAME);
+			define('CN_TEMPLATE_PATH', CN_PATH . '/templates');
+			define('CN_TEMPLATE_URL', CN_URL . '/templates');
 			define('CN_CUSTOM_TEMPLATE_PATH', WP_CONTENT_DIR . '/connections_templates');
 			define('CN_CUSTOM_TEMPLATE_URL', WP_CONTENT_URL . '/connections_templates');
 			
@@ -143,7 +159,7 @@ if (!class_exists('connectionsLoad'))
 			 * Defines the URL to the plugin folder setting.
 			 * @author: Ben Klocek
 			 */
-			define('CN_PLUGIN_URL', $siteURL.'/wp-content/plugins/' . CN_BASE_NAME);
+			define('CN_PLUGIN_URL', $siteURL.'/wp-content/plugins/' . CN_DIR_NAME);
 		}
 		
 		private function loadDependencies()
@@ -509,6 +525,23 @@ if (!class_exists('connectionsLoad'))
 				$connections->term->addTerm('Uncategorized', 'category', $attributes);
 			}
 			
+			
+			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_ENTRY_TABLE_META . "'") != CN_ENTRY_TABLE_META)
+			{
+				$entryTableMeta = "CREATE TABLE " . CN_ENTRY_TABLE_META . " (
+			        meta_id bigint(20) unsigned NOT NULL auto_increment,
+					entry_id bigint(20) unsigned NOT NULL default '0',
+					meta_key varchar(255) default NULL,
+					meta_value longtext,
+					PRIMARY KEY  (meta_id),
+					KEY entry_id (entry_id),
+					KEY meta_key (meta_key)
+			    ) $charsetCollate;";
+			    
+			    dbDelta($entryTableMeta);
+			}
+			
+			
 			/*if (!file_exists(ABSPATH . 'download.vCard.php'))
 			{
 				copy(WP_PLUGIN_DIR . '/connections/includes/download.vCard.php', ABSPATH . 'download.vCard.php');
@@ -538,6 +571,27 @@ if (!class_exists('connectionsLoad'))
 			
 			//  DROP TABLE `cnpfresh_connections`, `cnpfresh_connections_terms`, `cnpfresh_connections_term_relationships`, `cnpfresh_connections_term_taxonomy`;
 			//  DELETE FROM `nhonline_freshcnpro`.`cnpfresh_options` WHERE `cnpfresh_options`.`option_name` = 'connections_options'
+		}
+		
+		public function checkDBUpgrade()
+		{
+			/*
+			 * Check if the db requires updating, display message if it does.
+			 */
+			if ($this->options->getDBVersion() < CN_DB_VERSION)
+			{
+				$this->dbUpgradeMessage = create_function('', 'echo \'<div id="message" class="error"><p><strong>Connections database requires updating. <a class="button-highlighted" href="admin.php?page=connections_dashboard">START</a></strong></p></div>\';');
+				$this->dbUpgrade = add_action( 'admin_notices', $this->dbUpgradeMessage );
+			}
+		}
+		
+		/**
+		 * Remove the admin notice since it's confusing to see both the message and upgrade text at the same time.
+		 * Called in action toplevel_page_connections_dashboard from adminInit()
+		 */
+		public function removeDBUpgradeMessage()
+		{
+			remove_action( 'admin_notices', $this->dbUpgradeMessage );
 		}
 		
 		/**
@@ -597,7 +651,7 @@ if (!class_exists('connectionsLoad'))
 			add_action('admin_print_styles', array(&$this, 'loadAdminStyles') );
 			
 			// Add Settings link to the plugin actions
-			add_action('plugin_action_links_' . plugin_basename(__FILE__), array(&$this, 'addActionLinks'));
+			add_action('plugin_action_links_' . CN_BASE_NAME, array(&$this, 'addActionLinks'));
 			
 			// Add FAQ, Support and Donate links
 			add_filter('plugin_row_meta', array(&$this, 'addMetaLinks'), 10, 2);
@@ -606,7 +660,7 @@ if (!class_exists('connectionsLoad'))
 			add_filter('favorite_actions', array(&$this, 'addEntryFavorite') );
 			
 			// Add Changelog table row in the Manage Plugins admin page.
-			add_action('after_plugin_row_' . plugin_basename(__FILE__), array(&$this, 'displayUpgradeNotice'), 1, 0);
+			add_action('after_plugin_row_' . CN_BASE_NAME, array(&$this, 'displayUpgradeNotice'), 1, 0);
 			// Maybe should use this action hook instead: in_plugin_update_message-{$file}
 			
 			// Register the edit metaboxes.
@@ -614,6 +668,9 @@ if (!class_exists('connectionsLoad'))
 			
 			// Register the Dashboard metaboxes.
 			add_action('load-' . $this->pageHook->dashboard, array(&$this, 'registerDashboardMetaboxes'));
+			
+			// Remove the admin database message since it's confusing to see both the message and upgrade text at the same time.
+			add_action('load-' . $this->pageHook->dashboard, array(&$this, 'removeDBUpgradeMessage'));
 		}
 		
 		/**
@@ -621,11 +678,6 @@ if (!class_exists('connectionsLoad'))
 		 */	
 		public function loadAdminMenus()
 		{
-			//global $connections;
-			
-			// If the Connections CSV plugin is activated load the object
-			if ( class_exists('connectionsCSVLoad') ) global $connectionsCSV;
-			
 			// Set the capability string to be used in the add_sub_menu function per role capability assigned to the current user.		
 			if ( current_user_can('connections_add_entry_moderated') )
 			{
@@ -648,9 +700,9 @@ if (!class_exists('connectionsLoad'))
 			$submenu[40]  = array( 'hook' => 'add', 'page_title' => 'Connections : Add Entry', 'menu_title' => 'Add Entry', 'capability' => $addEntryCapability, 'menu_slug' => 'connections_manage&action=add_new', 'function' => array (&$this, 'showPage') );
 			$submenu[60]  = array( 'hook' => 'categories', 'page_title' => 'Connections : Categories', 'menu_title' => 'Categories', 'capability' => 'connections_edit_categories', 'menu_slug' => 'connections_categories', 'function' => array (&$this, 'showPage') );
 			$submenu[80]  = array( 'hook' => 'templates', 'page_title' => 'Connections : Templates', 'menu_title' => 'Templates', 'capability' => 'connections_manage_template', 'menu_slug' => 'connections_templates', 'function' => array (&$this, 'showPage') );
-			$submenu[80]  = array( 'hook' => 'settings', 'page_title' => 'Connections : Settings', 'menu_title' => 'Settings', 'capability' => 'connections_change_settings', 'menu_slug' => 'connections_settings', 'function' => array (&$this, 'showPage') );
-			$submenu[100] = array( 'hook' => 'roles', 'page_title' => 'Connections : Roles &amp; Capabilites', 'menu_title' => 'Roles', 'capability' => 'connections_change_roles', 'menu_slug' => 'connections_roles', 'function' => array (&$this, 'showPage') );
-			$submenu[120] = array( 'hook' => 'help', 'page_title' => 'Connections : Help', 'menu_title' => 'Help', 'capability' => 'connections_view_help', 'menu_slug' => 'connections_help', 'function' => array (&$this, 'showPage') );
+			$submenu[100]  = array( 'hook' => 'settings', 'page_title' => 'Connections : Settings', 'menu_title' => 'Settings', 'capability' => 'connections_change_settings', 'menu_slug' => 'connections_settings', 'function' => array (&$this, 'showPage') );
+			$submenu[120] = array( 'hook' => 'roles', 'page_title' => 'Connections : Roles &amp; Capabilites', 'menu_title' => 'Roles', 'capability' => 'connections_change_roles', 'menu_slug' => 'connections_roles', 'function' => array (&$this, 'showPage') );
+			$submenu[140] = array( 'hook' => 'help', 'page_title' => 'Connections : Help', 'menu_title' => 'Help', 'capability' => 'connections_view_help', 'menu_slug' => 'connections_help', 'function' => array (&$this, 'showPage') );
 			
 			$submenu = apply_filters('cn_submenu', $submenu);
 			
@@ -803,7 +855,7 @@ if (!class_exists('connectionsLoad'))
 			
 			if (in_array($_GET['page'], $adminPages))
 			{
-				wp_enqueue_style('connections', CN_BASE_URL . '/css/admin.css', array(), CN_CURRENT_VERSION);
+				wp_enqueue_style('connections', CN_URL . '/css/admin.css', array(), CN_CURRENT_VERSION);
 			}
 			
 		}
@@ -865,7 +917,7 @@ if (!class_exists('connectionsLoad'))
 		// Add FAQ and support information
 		public function addMetaLinks($links, $file)
 		{
-			if ( $file == plugin_basename(__FILE__) )
+			if ( $file == CN_BASE_NAME )
 			{
 				$links[] = '<a href="http://connections-pro.com/?page_id=29" target="_blank">Extend</a>';
 				$links[] = '<a href="http://connections-pro.com/?page_id=419" target="_blank">Templates</a>';
@@ -899,9 +951,9 @@ if (!class_exists('connectionsLoad'))
 				
 			//print_r($current);
 			
-			if ( !isset($current->response[ plugin_basename(__FILE__) ]) ) return NULL;
+			if ( !isset($current->response[ CN_BASE_NAME ]) ) return NULL;
 			
-			$r = $current->response[ plugin_basename(__FILE__) ]; // response should contain the slug and upgrade_notice within an array.
+			$r = $current->response[ CN_BASE_NAME ]; // response should contain the slug and upgrade_notice within an array.
 			//print_r($r);
 			
 			if ( isset($r->upgrade_notice) )
@@ -943,55 +995,48 @@ if (!class_exists('connectionsLoad'))
 				$this->options->setVersion(CN_CURRENT_VERSION);
 			}
 			
-			if ($this->options->getDBVersion() < CN_DB_VERSION)
+			if ( $this->dbUpgrade )
 			{
 				include_once ( dirname (__FILE__) . '/includes/inc.upgrade.php' );
 				connectionsShowUpgradePage();
 				return;
 			}
 			
-			//if ( get_option('connections_activated') )
-			//{
-				//echo '<div id="message" class="updated fade"><p><strong>' . get_option('connections_activated') . '</strong></p></div>';
-				// Remove the admin install message set during activation.
-				//delete_option('connections_installed');
-			//}
-			
 			
 			switch ($_GET['page'])
 			{
 				case 'connections_dashboard':
-					include_once ( dirname (__FILE__) . '/submenus/dashboard.php' );
+					include_once ( CN_PATH . '/submenus/dashboard.php' );
 					connectionsShowDashboardPage();
 				break;
 				
 				case 'connections_manage':
-					include_once ( dirname (__FILE__) . '/submenus/manage.php' );
+					include_once ( CN_PATH . '/submenus/manage.php' );
 					connectionsShowViewPage();
 				break;
 				
 				case 'connections_categories':
-					include_once ( dirname (__FILE__) . '/submenus/categories.php' );
+					include_once ( CN_PATH . '/submenus/categories.php' );
 					connectionsShowCategoriesPage();
 				break;
 				
 				case 'connections_settings':
-					include_once ( dirname (__FILE__) . '/submenus/settings.php' );
+					include_once ( CN_PATH . '/submenus/settings.php' );
 					connectionsShowSettingsPage();
 				break;
 				
 				case 'connections_templates':
-					include_once ( dirname (__FILE__) . '/submenus/templates.php' );
+					include_once ( CN_PATH . '/submenus/templates.php' );
 					connectionsShowTemplatesPage();
 				break;
 				
 				case 'connections_roles':
-					include_once ( dirname (__FILE__) . '/submenus/roles.php' );
+					include_once ( CN_PATH . '/submenus/roles.php' );
 					connectionsShowRolesPage();
 				break;
 				
 				case 'connections_help':
-					include_once ( dirname (__FILE__) . '/submenus/help.php' );
+					include_once ( CN_PATH . '/submenus/help.php' );
 					connectionsShowHelpPage();
 				break;
 			}
@@ -1001,7 +1046,7 @@ if (!class_exists('connectionsLoad'))
 		/**
 		 * Verify and process requested actions in the admin.
 		 */
-		private function adminActions()
+		public function adminActions($wp)
 		{
 			// Exit the method if $_GET['page'] isn't set.
 			if ( !isset($_GET['page']) ) return;
@@ -1009,7 +1054,7 @@ if (!class_exists('connectionsLoad'))
 			
 			global $connections;
 			
-			include_once ( dirname (__FILE__) . '/includes/inc.processes.php' );
+			include_once ( CN_PATH . '/includes/inc.processes.php' );
 			$form = new cnFormObjects();
 			
 			switch ($_GET['page'])
@@ -1301,20 +1346,24 @@ if (!class_exists('connectionsLoad'))
 				remove_filter('the_content', 'wpautop');
 				remove_filter('the_content', 'wptexturize');
 				
+				/*
+				 * Clear the query just incase there were some custom queryies being called elsewhere.
+				 */
+				wp_reset_query();
+				wp_reset_postdata();
+				
 				$atts = array();
 				
-				if ( array_key_exists('cnlisttype', $wp->query_vars) && $wp->query_vars['cnlisttype'] != '' ) $atts['list_type'] = $wp->query_vars['cnlisttype'];
-				if ( array_key_exists('cnid', $wp->query_vars) && $wp->query_vars['cnid'] != '' ) $atts['id'] = $wp->query_vars['cnid'];
+				//if ( array_key_exists('cnlisttype', $wp->query_vars) && $wp->query_vars['cnlisttype'] != '' ) $atts['list_type'] = $wp->query_vars['cnlisttype'];
+				//if ( array_key_exists('cnid', $wp->query_vars) && $wp->query_vars['cnid'] != '' ) $atts['id'] = $wp->query_vars['cnid'];
 				
 				/*
 				 * Picked up this section from http://wordpress.org/extend/plugins/virtual-pages/
 				 * Learned a bit from http://www.binarymoon.co.uk/2010/02/creating-wordpress-permalink-structure-custom-content/
 				 * 
-				 * Load the $wp_query object with our virtual page data.
 				 * 
 				 * START
 				 */
-				
 				
 				// Pagination -- Will definately need this later.
 				/*if(array_key_exists('paged', $wp->query_vars)) {
@@ -1330,7 +1379,6 @@ if (!class_exists('connectionsLoad'))
 				 * but it appears to work and the codex doesn't directly say not to.
 				 */
 				$wp_query->is_page = TRUE;
-				//Not sure if this one is necessary but might as well set it like a true page
 				$wp_query->is_singular = TRUE;
 				$wp_query->is_home = FALSE;
 				$wp_query->is_archive = FALSE;
@@ -1344,8 +1392,11 @@ if (!class_exists('connectionsLoad'))
 				$wp_query->post_count = 1;
 				
 				/*
-				 * Fake post ID to prevent WP from trying to show comments or showing the edit link
-				 * for a post that doesn't really exist
+				 * Fake post ID to prevent WP from trying to show comments or 
+				 * showing the edit link for a post that doesn't really exist.
+				 * 
+				 * Also used when creating the permalink. If ID >= 0 the filter
+				 * that creates the permalink is not applied.
 				 */
 				$wp_query->post->ID = -1;
 				
@@ -1356,16 +1407,12 @@ if (!class_exists('connectionsLoad'))
 				$wp_query->post->post_author = 94;
 				
 				/*
-				 * You can pretty much fill these up with anything you want. current date is fine.
+				 * When  virtual pages are created in the admin, save the date created to be applied here.
 				 */
 				$wp_query->post->post_date = current_time('mysql');
 				$wp_query->post->post_date_gmt = current_time('mysql', 1);
 				
-				/*
-				 * Load the post content via the shortoced function passing the attribute from the query variables.
-				 * @TODO Probebly should check to make sure the function exists first. Just in case.
-				 */
-				$wp_query->post->post_content = _connections_list( $atts );
+				$wp_query->post->post_content = '';
 				
 				/*
 				 * Define the page title.
@@ -1379,16 +1426,8 @@ if (!class_exists('connectionsLoad'))
 				
 				$wp_query->post->post_status = 'publish';
 				
-				/*
-				 * Turning off comments for the post.
-				 */
 				$wp_query->post->comment_status = 'closed';
 				
-				/*
-				 * Let people ping the post?  Probably doesn't matter since
-				 * comments are turned off, so not sure if WP would even
-				 * show the pings.
-				 */
 				$wp_query->post->ping_status = 'closed';
 				
 				$wp_query->post->post_password = '';
@@ -1404,7 +1443,7 @@ if (!class_exists('connectionsLoad'))
 				$wp_query->post->pinged = '';
 				
 				/*
-				 * You can pretty much fill these up with anything you want.  The current date is fine.
+				 * When  virtual pages are modified in the admin, save the date modfied to be applied here.
 				 */
 				$wp_query->post->post_modified = current_time('mysql');
 				$wp_query->post->post_modified_gmt = current_time('mysql', 1);
@@ -1413,11 +1452,7 @@ if (!class_exists('connectionsLoad'))
 				
 				$wp_query->post->parent_post = 0;
 				
-				/*
-				 * Set the permalink. Fill with a dummy link for now
-				 * @TODO Set the proper permalink
-				 */
-				$wp_query->post->guid = get_bloginfo('wpurl') . '/' . $options['permalink'];
+				$wp_query->post->guid = esc_url("http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 				
 				$wp_query->post->menu_order = 0;
 				
@@ -1431,17 +1466,28 @@ if (!class_exists('connectionsLoad'))
 				
 				$wp_query->post->ancestors = array();
 				
-				$wp_query->post->filter = '';
+				$wp_query->post->filter = 'raw';
 				
 				
 				// Dupe the post data the posts array;
-				$wp_query->posts[] = $wp_query->post;
+				$wp_query->posts[] =& $wp_query->post;
 				
 				/*
 				 * Picked up this section from http://wordpress.org/extend/plugins/virtual-pages/
 				 * 
 				 * END
 				 */
+				
+				/*
+				 * Setup the permalink.
+				 */
+				add_filter( 'page_link', array(&$this, 'createPermalink'), 10, 3 );
+				
+				/*
+				 * Set the attributes and then populate the content.
+				 */
+				add_filter( 'cn_list_atts_pre_validate', array(&$this, 'setconnectionsListAttsPre') );
+				add_action( 'the_content', '_connections_list' );
 				
 				/*
 				 * Grab the path to the theme's page template.
@@ -1457,7 +1503,28 @@ if (!class_exists('connectionsLoad'))
 			}
 			
 		}
-				
+		
+		public function setconnectionsListAttsPre($atts)
+		{
+			global $wp;
+			
+			if ( array_key_exists('cnlisttype', $wp->query_vars) && $wp->query_vars['cnlisttype'] != '' ) $atts['list_type'] = $wp->query_vars['cnlisttype'];
+			if ( array_key_exists('cnid', $wp->query_vars) && $wp->query_vars['cnid'] != '' ) $atts['id'] = $wp->query_vars['cnid'];
+			
+			return $atts;	
+		}
+		
+		public function createPermalink( $link = '', $id = 0, $sample = FALSE )
+		{
+			if ( $id >= 0 )
+			{
+				return $link;
+			}
+			else
+			{
+				return esc_url( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REDIRECT_URL'] );
+			}
+		}
 	}
 	
 	/*
@@ -1474,7 +1541,7 @@ if (!class_exists('connectionsLoad'))
 	}
 	else
 	{
-		add_action( 'admin_notices', create_function('', 'echo \'<div id="message" class="error"><p><strong>Connections requires at least PHP5. You are using version: ' . PHP_VERSION . '</strong></p></div>\';') );
+		add_action( 'admin_notices', create_function('', 'echo \'<div id="message" class="error"><p><strong>Connections requires at least PHP5. You are using version: \' . PHP_VERSION . \'</strong></p></div>\';') );
 	}
 	
 }

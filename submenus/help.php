@@ -844,8 +844,14 @@ function connectionsShowHelpPage()
 		
 		<h3>Shortcode:</h3>
 		<dl>
+			<dt>cn_list_atts_pre_validate</dt>
+				<dd>Alter the shortcode attributes before validation. Return associative array.</dd>
+			
+			<dt>cn_list_atts_post_validate</dt>
+				<dd>Alter the shortcode attributes after validation. Return associative array.</dd>
+			
 			<dt>cn_list_atts</dt>
-				<dd>Alter the shortcode attributes before use. Return associative array.</dd>
+				<dd>Alter the shortcode attributes after validation but before use in a template. Return associative array.</dd>
 				
 			<dt>cn_list_results</dt>
 				<dd>Filter the returned results before being processed for display. Return indexed array of entry objects.</dd>
