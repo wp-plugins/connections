@@ -45,7 +45,7 @@ function connectionsShowSettingsPage()
 			?>
 			
 				<div class="form-wrap">
-					<div class="form-field connectionsform">
+					<div class="form-field">
 						<table class="form-table">
 							<tbody>
 							
@@ -76,7 +76,7 @@ function connectionsShowSettingsPage()
 						</table>
 					</div>
 					
-					<div class="form-field connectionsform">
+					<div class="form-field">
 						<table class="form-table">
 							<tbody>
 							
@@ -99,7 +99,7 @@ function connectionsShowSettingsPage()
 						</table>
 					</div>
 				
-					<div class="form-field connectionsform">
+					<div class="form-field">
 						<h3>Thumbnail Image Settings</h3>
 						<table class="form-table">
 							<tbody>
@@ -155,7 +155,7 @@ function connectionsShowSettingsPage()
 					</div>
 								
 								
-					<div class="form-field connectionsform">
+					<div class="form-field">
 						<h3>Entry Image Settings</h3>
 						<table class="form-table">
 							<tbody>
@@ -209,7 +209,7 @@ function connectionsShowSettingsPage()
 						</table>
 					</div>
 								
-					<div class="form-field connectionsform">
+					<div class="form-field">
 						<h3>Profile Image Settings</h3>
 						<table class="form-table">
 							<tbody>
@@ -264,7 +264,7 @@ function connectionsShowSettingsPage()
 					</div>
 					
 					
-					<div class="form-field connectionsform">
+					<div class="form-field">
 						<h3>Logo Image Settings</h3>
 						<table class="form-table">
 							<tbody>
