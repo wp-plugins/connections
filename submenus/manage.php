@@ -254,6 +254,11 @@ function connectionsShowViewPage()
 						//print_r($connections->lastQuery);
 					?>
 					
+						<ul class="subsubsub">
+							<li><a href="#">All</a> | </li>
+							<li><a href="#">Approved</a> | </li>
+							<li><a href="#">Moderate</a></li>
+						</ul>
 						
 						<form action="admin.php?page=connections_manage&action=do" method="post">
 						
@@ -307,14 +312,16 @@ function connectionsShowViewPage()
 											
 											$bulkActions = array();
 											
-											if (current_user_can('connections_edit_entry'))
+											if ( current_user_can('connections_edit_entry')  || current_user_can('connections_edit_entry_moderated') )
 											{
+												$bulkActions['pending'] = 'Unapprove';
+												$bulkActions['approved'] = 'Approve';
 												$bulkActions['public'] = 'Set Public';
 												$bulkActions['private'] = 'Set Private';
 												$bulkActions['unlisted'] = 'Set Unlisted';
 											}
 											
-											if (current_user_can('connections_delete_entry'))
+											if ( current_user_can('connections_delete_entry') )
 											{
 												$bulkActions['delete'] = 'Delete';
 											}
@@ -426,7 +433,8 @@ function connectionsShowViewPage()
 									$editTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=edit&id=' . $entry->getId(), 'entry_edit_' . $entry->getId());
 									$copyTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=copy&id=' . $entry->getId(), 'entry_copy_' . $entry->getId());
 									$deleteTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=delete&id=' . $entry->getId(), 'entry_delete_' . $entry->getId());
-									
+									$approvedTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=approve&id=' . $entry->getId(), 'entry_approve_' . $entry->getId());
+									$unapproveTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=unapprove&id=' . $entry->getId(), 'entry_unapprove_' . $entry->getId());
 									
 									echo "<tr id='row-" . $entry->getId() . "' class='parent-row'>";
 										echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
@@ -448,12 +456,21 @@ function connectionsShowViewPage()
 												
 												echo '<div class="row-actions">';
 													$rowActions = array();
+													$rowEditActions = array();
+													
 													$rowActions[] = '<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a>';
-													$rowActions[] = $vCard->download( array('anchorText' => 'vCard', 'return' => TRUE) );
-													if ( current_user_can('connections_edit_entry') || current_user_can('connections_edit_entry_moderated') ) $rowActions[] = '<a class="editbutton" href="' . $editTokenURL . '" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a>';
-													if ( current_user_can('connections_add_entry') || current_user_can('connections_add_entry_moderated') ) $rowActions[] = '<a class="copybutton" href="' . $copyTokenURL . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a>';
-													if ( current_user_can('connections_delete_entry') ) $rowActions[] = '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="' . $deleteTokenURL . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
+													$rowActions[] = $vCard->download( array('anchorText' => 'vCard', 'title' => 'Download vCard', 'return' => TRUE) );
+													
+													if ( $entry->getStatus() == 'approved' && current_user_can('connections_edit_entry') ) $rowEditActions[] = '<a class="action unapprove" href="' . $unapproveTokenURL . '" title="Unapprove ' . $entry->getFullFirstLastName() . '">Unapprove</a>';
+													if ( $entry->getStatus() == 'pending' && current_user_can('connections_edit_entry') ) $rowEditActions[] = '<a class="action approve" href="' . $approvedTokenURL . '" title="Approve ' . $entry->getFullFirstLastName() . '">Approve</a>';
+
+													if ( current_user_can('connections_edit_entry') || current_user_can('connections_edit_entry_moderated') ) $rowEditActions[] = '<a class="editbutton" href="' . $editTokenURL . '" title="Edit ' . $entry->getFullFirstLastName() . '">Edit</a>';
+													if ( current_user_can('connections_add_entry') || current_user_can('connections_add_entry_moderated') ) $rowEditActions[] = '<a class="copybutton" href="' . $copyTokenURL . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a>';
+													if ( current_user_can('connections_delete_entry') ) $rowEditActions[] = '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="' . $deleteTokenURL . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
+													
+													echo implode(' | ', $rowEditActions) , '<br/>';
 													echo implode(' | ', $rowActions);
+													
 												echo '</div>';
 										echo "</td> \n";
 										echo "<td > \n";

@@ -43,10 +43,10 @@ table.form-table td input {width:auto;}
 .button-primary  {margin: 1px ; padding: 3px 10px; }
 #toggleBioEditor { margin: 4px 6px 0 0; }
 #toggleNoteEditor { margin: 4px 6px 0 0; }
-/*
-form div.tablenav-pages {height: !important;}
-*/
 
+/*
+ * Manage Page Styles
+ */
 table.connections tr.entrydetails td {border-color:transparent #DFDFDF;}
 table.connections tr.entrynotes td {border-color:transparent #DFDFDF #DFDFDF;}
 table.connections div.cn_thumbnail_place_holder {-moz-border-radius: 4px;
@@ -58,7 +58,13 @@ table.connections div.cn_thumbnail_place_holder {-moz-border-radius: 4px;
 												 margin: 4px 0px;
 												 padding: 5px;
 												}
+table.connections a.action.approve { color: #006505; }
+table.connections a.action.unapprove { color: #D98500; }
+table.connections a.action:hover { color: #D54E21; }
 
+/*
+ * Template Page Styles
+ */
 table#availablethemes a { text-decoration: none; }
 table#availablethemes td.current_template {border-left: 0; border-right: 0;}
 table#availablethemes td.template_instructions {padding-left: 12px; border-right: 0;}

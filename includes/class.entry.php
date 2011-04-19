@@ -239,6 +239,8 @@ class cnEntry
 			
 			if ( isset($entry->added_by) ) $this->addedBy = $entry->added_by;
 			if ( isset($entry->edited_by) ) $this->editedBy = $entry->edited_by;
+			
+			if ( isset($entry->status) ) $this->status = $entry->status;
 		}
 		
 		// Load the formatting class for sanitizing the get methods.
