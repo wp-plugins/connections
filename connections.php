@@ -363,7 +363,10 @@ if (!class_exists('connectionsLoad'))
 			
 			$this->successMessages->add('form_entry_delete', 'The entry has been deleted.');
 			$this->successMessages->add('form_entry_delete_bulk', 'Entry(ies) have been deleted.');
-			$this->successMessages->add('form_entry_visibility_bulk', 'Entry(ies) visibility have been updated.');
+			$this->successMessages->add('form_entry_pending', 'The entry status have been set to pending.');
+			$this->successMessages->add('form_entry_pending_bulk', 'Entry(ies) status have been set to pending.');
+			$this->successMessages->add('form_entry_approve', 'The entry has been approved.');
+			$this->successMessages->add('form_entry_approve_bulk', 'Entry(ies) have been approved.');
 			
 			$this->successMessages->add('category_deleted', 'Category(ies) have been deleted.');
 			$this->successMessages->add('category_updated', 'Category has been updated.');
@@ -1086,7 +1089,37 @@ if (!class_exists('connectionsLoad'))
 								if ( current_user_can('connections_edit_entry') || current_user_can('connections_edit_entry_moderated') )
 								{
 									check_admin_referer($form->getNonce('update_entry'), '_cn_wpnonce');
-									processEntry($_POST, 'update');;
+									processEntry($_POST, 'update');
+									wp_redirect('admin.php?page=connections_manage&display_messages=true');
+								}
+								else
+								{
+									$connections->setErrorMessage('capability_edit');
+								}
+							break;
+							
+							case 'approve':
+								/*
+								 * Check whether the current user can edit an entry.
+								 */
+								if ( current_user_can('connections_edit_entry') )
+								{
+									processSetEntryStatus('approved');
+									wp_redirect('admin.php?page=connections_manage&display_messages=true');
+								}
+								else
+								{
+									$connections->setErrorMessage('capability_edit');
+								}
+							break;
+							
+							case 'unapprove':
+								/*
+								 * Check whether the current user can edit an entry.
+								 */
+								if ( current_user_can('connections_edit_entry') )
+								{
+									processSetEntryStatus('pending');
 									wp_redirect('admin.php?page=connections_manage&display_messages=true');
 								}
 								else
@@ -1131,6 +1164,38 @@ if (!class_exists('connectionsLoad'))
 										else
 										{
 											$connections->setErrorMessage('capability_delete');
+										}
+									break;
+									
+									case 'approve':
+										/*
+										 * Check whether the current user delete an entry.
+										 */
+										if (current_user_can('connections_edit_entry'))
+										{
+											check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
+											processSetEntryStatuses('approved');
+											wp_redirect('admin.php?page=connections_manage&display_messages=true');
+										}
+										else
+										{
+											$connections->setErrorMessage('capability_edit');
+										}
+									break;
+									
+									case 'unapprove':
+										/*
+										 * Check whether the current user delete an entry.
+										 */
+										if (current_user_can('connections_edit_entry'))
+										{
+											check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
+											processSetEntryStatuses('pending');
+											wp_redirect('admin.php?page=connections_manage&display_messages=true');
+										}
+										else
+										{
+											$connections->setErrorMessage('capability_edit');
 										}
 									break;
 									

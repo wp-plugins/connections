@@ -495,13 +495,13 @@ function _upcoming_list($atts, $content=null) {
 		After a new list is built, it is resorted based on the date.*/
 		foreach ($results as $key => $row)
 		{
-			if ( mktime(23, 59, 59, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', $connections->options->wpCurrentTime) ) < $connections->options->wpCurrentTime )
+			if ( gmmktime(23, 59, 59, gmdate('m', $row->$atts['list_type']), gmdate('d', $row->$atts['list_type']), gmdate('Y', $connections->options->wpCurrentTime) ) < $connections->options->wpCurrentTime )
 			{
-				$dateSort[] = $row->$atts['list_type'] = mktime(0, 0, 0, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', $connections->options->wpCurrentTime) + 1 );
+				$dateSort[] = $row->$atts['list_type'] = gmmktime(0, 0, 0, gmdate('m', $row->$atts['list_type']), gmdate('d', $row->$atts['list_type']), gmdate('Y', $connections->options->wpCurrentTime) + 1 );
 			}
 			else
 			{
-				$dateSort[] = $row->$atts['list_type'] = mktime(0, 0, 0, date('m', $row->$atts['list_type']), date('d', $row->$atts['list_type']), date('Y', $connections->options->wpCurrentTime) );
+				$dateSort[] = $row->$atts['list_type'] = gmmktime(0, 0, 0, gmdate('m', $row->$atts['list_type']), gmdate('d', $row->$atts['list_type']), gmdate('Y', $connections->options->wpCurrentTime) );
 			}
 		}
 		

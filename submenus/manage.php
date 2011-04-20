@@ -314,8 +314,8 @@ function connectionsShowViewPage()
 											
 											if ( current_user_can('connections_edit_entry')  || current_user_can('connections_edit_entry_moderated') )
 											{
-												$bulkActions['pending'] = 'Unapprove';
-												$bulkActions['approved'] = 'Approve';
+												$bulkActions['unapprove'] = 'Unapprove';
+												$bulkActions['approve'] = 'Approve';
 												$bulkActions['public'] = 'Set Public';
 												$bulkActions['private'] = 'Set Private';
 												$bulkActions['unlisted'] = 'Set Unlisted';
@@ -433,8 +433,8 @@ function connectionsShowViewPage()
 									$editTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=edit&id=' . $entry->getId(), 'entry_edit_' . $entry->getId());
 									$copyTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=copy&id=' . $entry->getId(), 'entry_copy_' . $entry->getId());
 									$deleteTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=delete&id=' . $entry->getId(), 'entry_delete_' . $entry->getId());
-									$approvedTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=approve&id=' . $entry->getId(), 'entry_approve_' . $entry->getId());
-									$unapproveTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=unapprove&id=' . $entry->getId(), 'entry_unapprove_' . $entry->getId());
+									$approvedTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=approve&id=' . $entry->getId(), 'entry_status_' . $entry->getId());
+									$unapproveTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=unapprove&id=' . $entry->getId(), 'entry_status_' . $entry->getId());
 									
 									echo "<tr id='row-" . $entry->getId() . "' class='parent-row'>";
 										echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";

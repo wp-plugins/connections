@@ -91,7 +91,7 @@ function connectionsShowTemplatesPage()
 						<td class="template_instructions" colspan="2">
 							<p><strong>Instructions:</strong></p>
 							<p>
-								By default the <code>[connections_list]</code> shortcode will show all entries types. To change the template
+								By default the <code>[connections]</code> shortcode will show all entries types. To change the template
 								used when displaying all entry types, select the "All" tab and activate the template. When the <code>list_type</code>
 								shortcode attribute is used to filter the entries based on the entry type, the template for that entry type will be used.
 								To change the template used for specific entry type, select the appropriate tab and then activate the template. If multiple

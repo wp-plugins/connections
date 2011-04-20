@@ -5,14 +5,6 @@
 	background: transparent url(../images/icon.png) no-repeat;
 }
 
-/*.connectionsform {
-	-moz-border-radius:4px;
-	background-color:#F1F1F1 !important;
-	border:1px solid;
-	border-color:#E3E3E3;
-	margin-top: 10px;
-	overflow: hidden;
-	}*/
 
 form div.form-field div.input {float:left}
 form div.form-field div.inputhalfwidth {width:50%;}
@@ -58,7 +50,7 @@ table.connections div.cn_thumbnail_place_holder {-moz-border-radius: 4px;
 												 margin: 4px 0px;
 												 padding: 5px;
 												}
-table.connections a.action.approve { color: #006505; }
+table.connections a.action.approve { color: #006505; display: inline; }
 table.connections a.action.unapprove { color: #D98500; }
 table.connections a.action:hover { color: #D54E21; }
 

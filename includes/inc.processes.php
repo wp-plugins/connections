@@ -555,6 +555,86 @@ function processLogo()
 	return $logo;
 }
 
+function processSetEntryStatus( $status )
+{
+	$permitted = array('pending', 'approved');
+	if ( !in_array($status, $permitted) ) return FALSE;
+	
+	/*
+	 * Check whether the current user can edit entries.
+	 */
+	if (current_user_can('connections_edit_entry'))
+	{
+		global $connections;
+		
+		$id = esc_attr($_GET['id']);
+		check_admin_referer('entry_status_' . $id);
+		
+		$entry = new cnEntry();
+		$entry->set($id);
+		
+		$entry->setStatus($status);
+		$entry->update();
+		unset($entry);
+		
+		switch ($status)
+		{
+			case 'pending':
+				$connections->setSuccessMessage('form_entry_pending');
+			break;
+			
+			case 'approved':
+				$connections->setSuccessMessage('form_entry_approve');
+			break;
+		}
+	}
+	else
+	{
+		$connections->setErrorMessage('capability_edit');
+	}
+}
+
+function processSetEntryStatuses( $status )
+{
+	$permitted = array('pending', 'approved');
+	if ( !in_array($status, $permitted) ) return FALSE;
+	
+	/*
+	 * Check whether the current user can edit entries.
+	 */
+	if (current_user_can('connections_edit_entry'))
+	{
+		global $connections;
+		
+		foreach ($_POST['entry'] as $id)
+		{
+			$entry = new cnEntry();
+			
+			$id = esc_attr($id);
+			$entry->set($id);
+			
+			$entry->setStatus($status);
+			$entry->update();
+			unset($entry);
+		}
+		
+		switch ($status)
+		{
+			case 'pending':
+				$connections->setSuccessMessage('form_entry_pending_bulk');
+			break;
+			
+			case 'approved':
+				$connections->setSuccessMessage('form_entry_approve_bulk');
+			break;
+		}
+	}
+	else
+	{
+		$connections->setErrorMessage('capability_edit');
+	}
+}
+
 function processSetEntryVisibility()
 {
 	$permitted = array('public', 'private', 'unlisted');
