@@ -203,6 +203,74 @@ class cnUser
 		}
     }
 	
+	
+	/**
+	 * Returns the current set filter to be used to display the entries.
+	 * The default is to return only the approved entries if not set.
+	 * 
+	 * @return string
+	 */
+	public function getFilterStatus()
+    {
+		/*
+		 * Use get_user_meta() used in WP 3.0 and newer
+		 * since get_usermeta() was deprecated.
+		 */
+		if ( function_exists('get_user_meta') )
+		{
+			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		}
+		else
+		{
+			$user_meta = get_usermeta($this->ID, 'connections');
+		}
+		
+		if ( !$user_meta == NULL && isset($user_meta['filter']['status']) )
+		{
+			return $user_meta['filter']['status'];
+		}
+		else
+		{
+			return 'approved';
+		}
+    }
+	
+	public function setFilterStatus($status)
+    {
+		$permittedVisibility = array('all', 'approved', 'pending');
+		$status = esc_attr($status);
+		
+		if (!in_array($status, $permittedVisibility)) return FALSE;
+		
+		/*
+		 * Use get_user_meta() used in WP 3.0 and newer
+		 * since get_usermeta() was deprecated.
+		 */
+		if ( function_exists('get_user_meta') )
+		{
+			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		}
+		else
+		{
+			$user_meta = get_usermeta($this->ID, 'connections');
+		}
+		
+		$user_meta['filter']['status'] = $status;
+		
+		/*
+		 * Use update_user_meta() used in WP 3.0 and newer
+		 * since update_usermeta() was deprecated.
+		 */
+		if ( function_exists('update_user_meta') )
+		{
+			update_user_meta($this->ID, 'connections', $user_meta);
+		}
+		else
+		{
+			update_usermeta($this->ID, 'connections', $user_meta);
+		}
+    }
+	
 	public function getFilterCategory()
     {
         /*

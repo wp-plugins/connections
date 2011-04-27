@@ -231,9 +231,12 @@ function connectionsShowViewPage()
 			$categoryObjects = new cnCategoryObjects();
 			$url = new cnURL();
 			
-			$limit = 200; // Page Limit
+			$limit = 5; // Page Limit
 			( !isset($_GET['cn-pg']) ) ? $offset = 0 : $offset = ( $_GET['cn-pg'] - 1 ) * $limit;
 			( !isset($_GET['cn-pg']) ) ? $currentPage = 1 : $currentPage = esc_attr($_GET['cn-pg']);
+			
+			// Set the moderation current user filter if set.
+			if ( isset($_GET['status']) ) $connections->currentUser->setFilterStatus( $_GET['status'] );
 			
 			/*
 			 * Check whether user can view the entry list
@@ -246,6 +249,7 @@ function connectionsShowViewPage()
 						$retrieveAttr['list_type'] = $connections->currentUser->getFilterEntryType();
 						$retrieveAttr['category'] = $connections->currentUser->getFilterCategory();
 						$retrieveAttr['visibility'] = $connections->currentUser->getFilterVisibility();
+						$retrieveAttr['status'] = $connections->currentUser->getFilterStatus();
 						
 						$retrieveAttr['limit'] = $limit;
 						$retrieveAttr['offset'] = $offset;
@@ -255,9 +259,9 @@ function connectionsShowViewPage()
 					?>
 					
 						<ul class="subsubsub">
-							<li><a href="#">All</a> | </li>
-							<li><a href="#">Approved</a> | </li>
-							<li><a href="#">Moderate</a></li>
+							<li><a <?php if ( $connections->currentUser->getFilterStatus() == 'all' ) echo 'class="current" ' ?> href="admin.php?page=connections_manage&status=all">All</a> | </li>
+							<li><a <?php if ( $connections->currentUser->getFilterStatus() == 'approved' ) echo 'class="current" ' ?> href="admin.php?page=connections_manage&status=approved">Approved <span class="count">(<?php echo $connections->recordCountApproved; ?>)</span></a> | </li>
+							<li><a <?php if ( $connections->currentUser->getFilterStatus() == 'pending' ) echo 'class="current" ' ?> href="admin.php?page=connections_manage&status=pending">Moderate <span class="count">(<?php echo $connections->recordCountPending; ?>)</span></a></li>
 						</ul>
 						
 						<form action="admin.php?page=connections_manage&action=do" method="post">
@@ -298,6 +302,50 @@ function connectionsShowViewPage()
 								<input type="hidden" name="formId" value="do_action" />
 								<input type="hidden" name="token" value="<?php echo $form->token("do_action"); ?>" />
 							</div>
+							
+							<div class="tablenav-pages">
+								<?php
+									
+									echo '<span class="displaying-num">Displaying ' , $connections->resultCount , ' of ' , $connections->resultCountNoLimit , ' records.</span>';
+									
+									/*
+									 * Pagination
+									 */
+									$pageCount = ceil( $connections->resultCountNoLimit / $limit );
+									
+									if ( $pageCount > 1 )
+									{
+										echo '<span class="page-navigation" id="page-input">';
+											//echo '<span class="displaying-num">Pages:</span> ';
+											echo '<a href="http://sandbox.zahmit.net/wp-admin/edit.php" title="Go to the first page" class="first-page disabled">«</a> ';
+											echo '<a href="http://sandbox.zahmit.net/wp-admin/edit.php?paged=1" title="Go to the previous page" class="prev-page disabled">‹</a> ';
+											
+											echo '<span class="paging-input"><input type="text" size="2" value="1" name="paged" title="Current page" class="current-page"> of <span class="total-pages">' . $pageCount . '</span></span> ';
+											
+											echo '<a href="http://sandbox.zahmit.net/wp-admin/edit.php?paged=2" title="Go to the next page" class="next-page">›</a> ';
+											echo '<a href="http://sandbox.zahmit.net/wp-admin/edit.php?paged=11" title="Go to the last page" class="last-page">»</a>';
+											
+											
+											/*$i = 1;
+										
+											while ($i <= $pageCount)
+											{
+												if ( $currentPage != $i )
+												{
+													echo '<a class="page-numbers" href="' . $url->modify( array('cn-pg' => $i) ) . '">' . $i . '</a> ';
+												}
+												else
+												{
+													echo '<span class="page-numbers current">' , $i , '</span> ';
+												}
+												
+												$i++;
+											}*/
+										echo '</span>';
+									}
+								?>
+							</div>
+							
 						</div>
 						<div class="clear"></div>
 						<div class="tablenav">
@@ -341,8 +389,7 @@ function connectionsShowViewPage()
 							
 							<div class="tablenav-pages">
 								<?php
-									
-									echo '<span class="displaying-num">Displaying ' , $connections->resultCount , ' of ' , $connections->recordCount , ' records.</span>';
+									echo '<span class="displaying-num">Jump to:</span>';
 									
 									/*
 									 * Dynamically builds the alpha index based on the available entries.
@@ -362,28 +409,6 @@ function connectionsShowViewPage()
 									}
 									
 									echo $setAnchor;
-									
-									/*
-									 * Pagination
-									 */
-									$pageCount = ceil( $connections->recordCount / $limit );
-									$i = 1;
-									
-									echo 'Pages: ';
-										while ($i <= $pageCount)
-										{
-											if ( $currentPage != $i )
-											{
-												echo '<a class="page-numbers" href="' . $url->modify( array('cn-pg' => $i) ) . '">' . $i . '</a>';
-											}
-											else
-											{
-												echo '<span class="page-numbers current">' , $i , '</span>';
-											}
-											
-											$i++;
-										}
-									
 								?>
 							</div>
 						</div>
@@ -436,7 +461,22 @@ function connectionsShowViewPage()
 									$approvedTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=approve&id=' . $entry->getId(), 'entry_status_' . $entry->getId());
 									$unapproveTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=unapprove&id=' . $entry->getId(), 'entry_status_' . $entry->getId());
 									
-									echo "<tr id='row-" . $entry->getId() . "' class='parent-row'>";
+									switch ( $entry->getStatus() )
+									{
+										case 'pending' :
+											$statusClass = ' unapproved';
+										break;
+										
+										case 'approved' :
+											$statusClass = ' approved';
+										break;
+										
+										default:
+											$statusClass = '';
+										break;
+									}
+									
+									echo '<tr id="row-' , $entry->getId() , '" class="parent-row' . $statusClass .'">';
 										echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
 											echo '<td>';
 												echo $entry->getThumbnailImage( array( 'place_holder' => TRUE ) );
