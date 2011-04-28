@@ -671,11 +671,16 @@ function processSetUserFilter()
 {
 	global $connections;
 	
-	if ( isset($_POST['entry_type']) ) $connections->currentUser->setFilterEntryType($_POST['entry_type']);
-	if ( isset($_POST['visibility_type']) ) $connections->currentUser->setFilterVisibility($_POST['visibility_type']);
+	if ( isset($_POST['entry_type']) ) $connections->currentUser->setFilterEntryType( $_POST['entry_type'] );
+	if ( isset($_POST['visibility_type']) ) $connections->currentUser->setFilterVisibility( $_POST['visibility_type'] );
 	
-	if ( isset($_POST['category']) ) $connections->currentUser->setFilterCategory(esc_attr($_POST['category']));
-	if ( !empty($_GET['category_id']) ) $connections->currentUser->setFilterCategory(esc_attr($_GET['category_id']));
+	if ( isset($_POST['category']) ) $connections->currentUser->setFilterCategory( esc_attr( $_POST['category'] ) );
+	if ( !empty($_GET['category_id']) ) $connections->currentUser->setFilterCategory( esc_attr( $_GET['category_id'] ) );
+	
+	if ( isset( $_POST['page'] ) && !empty( $_POST['page'] ) )
+	{
+		$connections->currentUser->setFilterPage( esc_attr( $_POST['page'] ) );
+	}
 }
 
 function processDeleteEntry()

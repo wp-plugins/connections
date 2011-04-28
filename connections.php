@@ -1053,19 +1053,21 @@ if (!class_exists('connectionsLoad'))
 		{
 			// Exit the method if $_GET['page'] isn't set.
 			if ( !isset($_GET['page']) ) return;
-			if ( !isset($_GET['action']) ) return;
 			
 			global $connections;
 			
 			include_once ( CN_PATH . '/includes/inc.processes.php' );
 			$form = new cnFormObjects();
 			
-			switch ($_GET['page'])
+			switch ( $_GET['page'] )
 			{
 				case 'connections_manage':
-					if ($_GET['action'])
+					if ( isset($_GET['action']) && !empty( $_GET['action'] ) )
 					{
-						switch ($_GET['action']) {
+						//print_r($_GET); print_r($_POST);
+						
+						switch ( $_GET['action'] )
+						{
 							case 'add':
 								/*
 								 * Check whether the current user can add an entry.
@@ -1149,76 +1151,77 @@ if (!class_exists('connectionsLoad'))
 							break;
 							
 							case 'do':
-								switch ($_POST['action'])
+								if ( isset( $_POST['action'] ) && !empty( $_POST['action'] ) )
 								{
-									case 'delete':
-										/*
-										 * Check whether the current user delete an entry.
-										 */
-										if (current_user_can('connections_delete_entry'))
-										{
-											check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
-											processDeleteEntries();
-											wp_redirect('admin.php?page=connections_manage&display_messages=true');
-										}
-										else
-										{
-											$connections->setErrorMessage('capability_delete');
-										}
-									break;
-									
-									case 'approve':
-										/*
-										 * Check whether the current user delete an entry.
-										 */
-										if (current_user_can('connections_edit_entry'))
-										{
-											check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
-											processSetEntryStatuses('approved');
-											wp_redirect('admin.php?page=connections_manage&display_messages=true');
-										}
-										else
-										{
-											$connections->setErrorMessage('capability_edit');
-										}
-									break;
-									
-									case 'unapprove':
-										/*
-										 * Check whether the current user delete an entry.
-										 */
-										if (current_user_can('connections_edit_entry'))
-										{
-											check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
-											processSetEntryStatuses('pending');
-											wp_redirect('admin.php?page=connections_manage&display_messages=true');
-										}
-										else
-										{
-											$connections->setErrorMessage('capability_edit');
-										}
-									break;
-									
-									case 'public':
-									case 'private':
-									case 'unlisted':
-										/*
-										 * Check whether the current user can edit entries.
-										 */
-										if (current_user_can('connections_edit_entry'))
-										{
-											check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
-											processSetEntryVisibility();
-											wp_redirect('admin.php?page=connections_manage&display_messages=true');
-										}
-										else
-										{
-											$connections->setErrorMessage('capability_edit');
-										}
-									break;
+									switch ($_POST['action'])
+									{
+										case 'delete':
+											/*
+											 * Check whether the current user delete an entry.
+											 */
+											if (current_user_can('connections_delete_entry'))
+											{
+												check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
+												processDeleteEntries();
+												wp_redirect('admin.php?page=connections_manage&display_messages=true');
+											}
+											else
+											{
+												$connections->setErrorMessage('capability_delete');
+											}
+										break;
+										
+										case 'approve':
+											/*
+											 * Check whether the current user delete an entry.
+											 */
+											if (current_user_can('connections_edit_entry'))
+											{
+												check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
+												processSetEntryStatuses('approved');
+												wp_redirect('admin.php?page=connections_manage&display_messages=true');
+											}
+											else
+											{
+												$connections->setErrorMessage('capability_edit');
+											}
+										break;
+										
+										case 'unapprove':
+											/*
+											 * Check whether the current user delete an entry.
+											 */
+											if (current_user_can('connections_edit_entry'))
+											{
+												check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
+												processSetEntryStatuses('pending');
+												wp_redirect('admin.php?page=connections_manage&display_messages=true');
+											}
+											else
+											{
+												$connections->setErrorMessage('capability_edit');
+											}
+										break;
+										
+										case 'public' || 'private' || 'unlisted':
+											/*
+											 * Check whether the current user can edit entries.
+											 */
+											if (current_user_can('connections_edit_entry'))
+											{
+												check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
+												processSetEntryVisibility();
+												wp_redirect('admin.php?page=connections_manage&display_messages=true');
+											}
+											else
+											{
+												$connections->setErrorMessage('capability_edit');
+											}
+										break;
+									}
 								}
 								
-								if ( isset($_POST['filter']) )
+								if ( isset( $_POST['filter'] ) && !empty( $_POST['filter'] ) )
 								{
 									check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
 									processSetUserFilter();

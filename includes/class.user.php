@@ -330,6 +330,64 @@ class cnUser
 		}
     }
 	
+	public function getFilterPage()
+    {
+		/*
+		 * Use get_user_meta() used in WP 3.0 and newer
+		 * since get_usermeta() was deprecated.
+		 */
+		if ( function_exists('get_user_meta') )
+		{
+			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		}
+		else
+		{
+			$user_meta = get_usermeta($this->ID, 'connections');
+		}
+		
+		if ( !$user_meta == NULL && isset($user_meta['filter']['manage_page']) )
+		{
+			return $user_meta['filter']['manage_page'];
+		}
+		else
+		{
+			return 1;
+		}
+    }
+	
+	public function setFilterPage($page)
+    {
+		$page = absint($page);
+		
+		/*
+		 * Use get_user_meta() used in WP 3.0 and newer
+		 * since get_usermeta() was deprecated.
+		 */
+		if ( function_exists('get_user_meta') )
+		{
+			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		}
+		else
+		{
+			$user_meta = get_usermeta($this->ID, 'connections');
+		}
+		
+		$user_meta['filter']['manage_page'] = $page;
+		
+		/*
+		 * Use update_user_meta() used in WP 3.0 and newer
+		 * since update_usermeta() was deprecated.
+		 */
+		if ( function_exists('update_user_meta') )
+		{
+			update_user_meta($this->ID, 'connections', $user_meta);
+		}
+		else
+		{
+			update_usermeta($this->ID, 'connections', $user_meta);
+		}
+    }
+	
 	public function setMessage($message)
 	{
 		/*

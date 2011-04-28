@@ -231,11 +231,13 @@ function connectionsShowViewPage()
 			$categoryObjects = new cnCategoryObjects();
 			$url = new cnURL();
 			
-			$limit = 5; // Page Limit
-			( !isset($_GET['cn-pg']) ) ? $offset = 0 : $offset = ( $_GET['cn-pg'] - 1 ) * $limit;
-			( !isset($_GET['cn-pg']) ) ? $currentPage = 1 : $currentPage = esc_attr($_GET['cn-pg']);
+			$limit = 10; // Page Limit
+			//( !isset($_POST['cnpg']) ) ? $offset = 0 : $offset = ( $_GET['cn-pg'] - 1 ) * $limit;
+			//( !isset($_POST['cnpg']) ) ? $currentPage = 1 : $currentPage = esc_attr($_GET['cn-pg']);
+			$currentPage = $connections->currentUser->getFilterPage();
+			$offset = ( $currentPage - 1 ) * $limit;
 			
-			// Set the moderation current user filter if set.
+			// Set the moderation filter for the current user.
 			if ( isset($_GET['status']) ) $connections->currentUser->setFilterStatus( $_GET['status'] );
 			
 			/*
@@ -316,11 +318,11 @@ function connectionsShowViewPage()
 									if ( $pageCount > 1 )
 									{
 										echo '<span class="page-navigation" id="page-input">';
-											//echo '<span class="displaying-num">Pages:</span> ';
+											
 											echo '<a href="http://sandbox.zahmit.net/wp-admin/edit.php" title="Go to the first page" class="first-page disabled">«</a> ';
 											echo '<a href="http://sandbox.zahmit.net/wp-admin/edit.php?paged=1" title="Go to the previous page" class="prev-page disabled">‹</a> ';
 											
-											echo '<span class="paging-input"><input type="text" size="2" value="1" name="paged" title="Current page" class="current-page"> of <span class="total-pages">' . $pageCount . '</span></span> ';
+											echo '<span class="paging-input"><input type="text" size="2" value="' . $currentPage . '" name="page" title="Current page" class="current-page"> of <span class="total-pages">' . $pageCount . '</span></span> ';
 											
 											echo '<a href="http://sandbox.zahmit.net/wp-admin/edit.php?paged=2" title="Go to the next page" class="next-page">›</a> ';
 											echo '<a href="http://sandbox.zahmit.net/wp-admin/edit.php?paged=11" title="Go to the last page" class="last-page">»</a>';
