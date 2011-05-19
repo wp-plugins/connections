@@ -288,8 +288,8 @@ class cnFormObjects
 		global $connections;
 		
 		add_meta_box('metabox-news', 'News', array(&$this, 'metaboxNews'), $connections->pageHook->dashboard, 'left', 'core', array('feed' => 'http://connections-pro.com/category/connections/feed/') );
-		add_meta_box('metabox-upgrade-modules', 'Pro Modules Update Notices', array(&$this, 'metaboxNews'), $connections->pageHook->dashboard, 'left', 'core', array('feed' => 'http://connections-pro.com/category/upgrade-notices/pro-module/feed/') );
-		add_meta_box('metabox-upgrade-templates', 'Template Update Notices', array(&$this, 'metaboxNews'), $connections->pageHook->dashboard, 'left', 'core', array('feed' => 'http://connections-pro.com/category/upgrade-notices/templates-upgrade-notices/feed/') );
+		add_meta_box('metabox-upgrade-modules', 'Pro Modules Update Notices', array(&$this, 'metaboxNews'), $connections->pageHook->dashboard, 'left', 'core', array('feed' => 'http://feeds.feedburner.com/ConnectionsProModules') );
+		add_meta_box('metabox-upgrade-templates', 'Template Update Notices', array(&$this, 'metaboxNews'), $connections->pageHook->dashboard, 'left', 'core', array('feed' => 'http://feeds.feedburner.com/ConnectionsTemplates') );
 		
 		add_meta_box('metabox-recent-added', 'Recently Added', array(&$this, 'metaboxRecentAdded'), $connections->pageHook->dashboard, 'left', 'core');
 		add_meta_box('metabox-recent-modified', 'Recently Modified', array(&$this, 'metaboxRecentModified'), $connections->pageHook->dashboard, 'left', 'core');
