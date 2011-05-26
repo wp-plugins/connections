@@ -309,6 +309,18 @@ class cnRetrieve
 		// The total number of entries based on user permissions with the status set to 'approved'
 		$connections->recordCountApproved = $this->recordCount($atts['allow_public_override'], $atts['private_override'], 'approved');
 		
+		/*
+		 * Reset the pagination filter for the current user, remove the offset from the query and re-run the
+		 * query if the offset for the query is greater than the record count with no limit set in the query.
+		 */
+		if ( $atts['offset'] > $connections->resultCountNoLimit )
+		{
+			$connections->currentUser->resetFilterPage();
+			unset( $atts['offset'] );
+			$results = $this->entries( $atts );
+		}
+		
+		// Return the results ordered.
 		return $this->orderBy($results, $atts['order_by'], $atts['id']);
 	}
 	

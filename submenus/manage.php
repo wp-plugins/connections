@@ -232,13 +232,10 @@ function connectionsShowViewPage()
 			$url = new cnURL();
 			
 			$limit = 10; // Page Limit
-			//( !isset($_POST['cnpg']) ) ? $offset = 0 : $offset = ( $_GET['cn-pg'] - 1 ) * $limit;
-			//( !isset($_POST['cnpg']) ) ? $currentPage = 1 : $currentPage = esc_attr($_GET['cn-pg']);
 			$currentPage = $connections->currentUser->getFilterPage();
 			$offset = ( $currentPage - 1 ) * $limit;
 			
-			// Set the moderation filter for the current user.
-			if ( isset($_GET['status']) ) $connections->currentUser->setFilterStatus( $_GET['status'] );
+			
 			
 			/*
 			 * Check whether user can view the entry list

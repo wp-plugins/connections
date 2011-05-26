@@ -94,6 +94,9 @@ class cnUser
 		{
 			update_usermeta($this->ID, 'connections', $user_meta);
 		}
+		
+		// Reset the current user's admin manage page.
+		//$this->resetFilterPage();
     }
 	
 	/**
@@ -201,6 +204,9 @@ class cnUser
 		{
 			update_usermeta($this->ID, 'connections', $user_meta);
 		}
+		
+		// Reset the current user's admin manage page.
+		//$this->resetFilterPage();
     }
 	
 	
@@ -212,6 +218,9 @@ class cnUser
 	 */
 	public function getFilterStatus()
     {
+		// Set the moderation filter for the current user if set in the query string.
+		if ( isset($_GET['status']) ) $this->setFilterStatus( $_GET['status'] );
+		
 		/*
 		 * Use get_user_meta() used in WP 3.0 and newer
 		 * since get_usermeta() was deprecated.
@@ -269,6 +278,9 @@ class cnUser
 		{
 			update_usermeta($this->ID, 'connections', $user_meta);
 		}
+		
+		// Reset the current user's admin manage page.
+		//$this->resetFilterPage();
     }
 	
 	public function getFilterCategory()
@@ -328,6 +340,9 @@ class cnUser
 		{
 			update_usermeta($this->ID, 'connections', $user_meta);
 		}
+		
+		// Reset the current user's admin manage page.
+		//$this->resetFilterPage();
     }
 	
 	public function getFilterPage()
@@ -387,6 +402,11 @@ class cnUser
 			update_usermeta($this->ID, 'connections', $user_meta);
 		}
     }
+	
+	public function resetFilterPage()
+	{
+		$this->setFilterPage(1);
+	}
 	
 	public function setMessage($message)
 	{
