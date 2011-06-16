@@ -26,7 +26,7 @@ function connectionsEntryList($atts)
  * 		cn_list_after		=> Can be used to add content after the output of the list. The entry list results are passed. Return string.
  * 		cn_entry_before		=> Can be used to add content before the output of the entry. The entry data is passed. Return string.
  * 		cn_entry_after		=> Can be used to add content after the output of the entry. The entry data is passed. Return string.
- * 		cn_no_result_message=> Change the no results message.
+ * 		cn_list_no_result_message=> Change the no results message.
  * 		cn_list_index		=> Can be used to modify the index before the output of the list. The entry list results are passed. Return string.
  */
 add_shortcode('connections_list', '_connections_list'); /** @deprecated since version 0.7.0.4 */

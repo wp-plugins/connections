@@ -11,4 +11,5 @@ $template->uri = 'http://llihp.blogspot.com';
 $template->version = '1.0';
 $template->author = 'Phill Pafford';
 $template->description = 'Shows popup with a Google map';
+$template->type = 'family';
 ?>
