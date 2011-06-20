@@ -89,7 +89,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 
 == Changelog ==
 
-= 0.7.1.7 XX/XX/XX =
+= 0.7.2.0 XX/XX/XX =
 * FEATURE: Added a Dashboard page in the admin.
 * FEATURE: Added a Today's Birthdays admin dashboard widget.
 * FEATURE: Added a Upcoming Birthdays admin dashboard widget.
@@ -102,7 +102,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * FEATURE: Added a Pro Module New admin dashboard widget.
 * FEATURE: Added a System Info / Configuration admin dashboard widget.
 * FEATURE: New role capabilities that allow add and edit moderation.
-* FEATURE: Added more filters to hook into.
+* FEATURE: Added more actions/filters to hook into.
 * BUG: The view_public capability was being removed when role capabilities were being reset.
 * BUG: Fix many/most/all  warnings and such reported when WP_DEBUG is TRUE.
 * BUG: Remove the connections_view_entry_list role as it is no longer needed.
@@ -110,6 +110,14 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * BUG: Fixed a bug with applying the cn_list_before filter causing the template CSS to output twice.
 * OTHER: Disabled JavaScript compression on the Add/Edit Entry page. When enabled the RTE wouldn't load to JS errors.
 * OTHER: Update Roles and Capabilities page to use the metabox visual styles.
+* OTHER: Updated the help page. Fixing typos and adding more info.
+* OTHER: Update the settings page to match the WordPress setting page styles for better integration.
+* OTHER: Update the categories page style to match the WordPress categories page styles for better integration.
+* OTHER: Update the role page style to use the post metabox style for better integration.
+* OTHER: All processes are now handled by a pocess method rather than hooking into the current page for better role capability support.
+
+= 0.7.1.6 06/15/2011 =
+* Fixes security vulnerability.
 
 = 0.7.1.5 03/06/2011 =
 * FEATURE: Pagination in the admin.
@@ -378,5 +386,5 @@ Connections is a simple to use and versatile directory manager. You can use it f
 
 == Upgrade Notice ==
 
-= 0.7.1.5 =
-Primarily bug fixes. See changelog for both 0.7.1.4 and 0.7.1.5.
+= 0.7.1.6 =
+Fixes security vulnerability.

@@ -116,7 +116,7 @@ function connectionsShowTemplatesPage()
 							
 							<?php 
 							$formAttr = array(
-										 'action' => 'admin.php?page=connections_templates&type=' . $type . '&action=install',
+										 'action' => 'admin.php?connections_process=true&process=template&type=' . $type . '&action=install',
 										 'method' => 'post',
 										 'enctype' => 'multipart/form-data'
 										 );
@@ -195,11 +195,11 @@ function connectionsShowTemplatesPage()
 									?>
 									<span class="action-links">
 										<?php
-										$activateTokenURL = $form->tokenURL( 'admin.php?page=connections_templates&action=activate&type=' . $type . '&template=' . esc_attr($templates->$slug->slug), 'activate_' . esc_attr($templates->$slug->slug) );
+										$activateTokenURL = $form->tokenURL( 'admin.php?connections_process=true&process=template&action=activate&type=' . $type . '&template=' . esc_attr($templates->$slug->slug), 'activate_' . esc_attr($templates->$slug->slug) );
 										
 										if ( $templates->$slug->custom === TRUE )
 										{
-											$deleteTokenURL = $form->tokenURL( 'admin.php?page=connections_templates&action=delete&type=' . $type . '&template=' . esc_attr($templates->$slug->slug), 'delete_' . esc_attr($templates->$slug->slug) );
+											$deleteTokenURL = $form->tokenURL( 'admin.php?connections_process=true&process=template&action=delete&type=' . $type . '&template=' . esc_attr($templates->$slug->slug), 'delete_' . esc_attr($templates->$slug->slug) );
 										}
 										
 										?>

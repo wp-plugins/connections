@@ -1,16 +1,7 @@
 <?php
-function connectionsShowViewPage()
+function connectionsShowViewPage( $action = NULL )
 {
 	global $wpdb, $connections;
-	
-	if ( isset($_GET['action']) )
-	{
-		$action = $_GET['action'];
-	}
-	else
-	{
-		$action = NULL;
-	}
 	?>
 	
 	<div class="wrap">
@@ -20,9 +11,9 @@ function connectionsShowViewPage()
 	<?php
 	$connections->displayMessages();
 	
-	switch ($action)
+	switch ( $action )
 	{
-		case 'add_new':
+		case 'add':
 			/*
 			 * Check whether current user can add an entry.
 			 */
@@ -37,7 +28,7 @@ function connectionsShowViewPage()
 					echo '<h2><a name="new"></a>Add Entry</h2>';
 					
 						$attr = array(
-									 'action' => 'admin.php?page=connections_manage&action=add',
+									 'action' => 'admin.php?connections_process=true&process=manage&action=add',
 									 'method' => 'post',
 									 'enctype' => 'multipart/form-data',
 									 );
@@ -106,7 +97,7 @@ function connectionsShowViewPage()
 					echo '<h2><a name="new"></a>Add Entry</h2>';
 					
 						$attr = array(
-									 'action' => 'admin.php?page=connections_manage&action=add&id=' . $id,
+									 'action' => 'admin.php?connections_process=true&process=manage&action=add&id=' . $id,
 									 'method' => 'post',
 									 'enctype' => 'multipart/form-data',
 									 );
@@ -175,7 +166,7 @@ function connectionsShowViewPage()
 					echo '<h2><a name="new"></a>Edit Entry</h2>';
 					
 						$attr = array(
-									 'action' => 'admin.php?page=connections_manage&action=update&id=' . $id,
+									 'action' => 'admin.php?connections_process=true&process=manage&action=update&id=' . $id,
 									 'method' => 'post',
 									 'enctype' => 'multipart/form-data',
 									 );
@@ -256,14 +247,16 @@ function connectionsShowViewPage()
 						$results = $connections->retrieve->entries($retrieveAttr);
 						//print_r($connections->lastQuery);
 					?>
-					
+						
+						<?php if ( current_user_can('connections_edit_entry') ) { ?>
 						<ul class="subsubsub">
 							<li><a <?php if ( $connections->currentUser->getFilterStatus() == 'all' ) echo 'class="current" ' ?> href="admin.php?page=connections_manage&status=all">All</a> | </li>
 							<li><a <?php if ( $connections->currentUser->getFilterStatus() == 'approved' ) echo 'class="current" ' ?> href="admin.php?page=connections_manage&status=approved">Approved <span class="count">(<?php echo $connections->recordCountApproved; ?>)</span></a> | </li>
 							<li><a <?php if ( $connections->currentUser->getFilterStatus() == 'pending' ) echo 'class="current" ' ?> href="admin.php?page=connections_manage&status=pending">Moderate <span class="count">(<?php echo $connections->recordCountPending; ?>)</span></a></li>
 						</ul>
+						<?php } ?>
 						
-						<form action="admin.php?page=connections_manage&action=do" method="post">
+						<form action="admin.php?connections_process=true&process=manage&action=do" method="post">
 						
 						<?php $form->tokenField('bulk_action'); ?>
 						
@@ -456,9 +449,9 @@ function connectionsShowViewPage()
 									 */
 									$editTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=edit&id=' . $entry->getId(), 'entry_edit_' . $entry->getId());
 									$copyTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=copy&id=' . $entry->getId(), 'entry_copy_' . $entry->getId());
-									$deleteTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=delete&id=' . $entry->getId(), 'entry_delete_' . $entry->getId());
-									$approvedTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=approve&id=' . $entry->getId(), 'entry_status_' . $entry->getId());
-									$unapproveTokenURL = $form->tokenURL('admin.php?page=connections_manage&action=unapprove&id=' . $entry->getId(), 'entry_status_' . $entry->getId());
+									$deleteTokenURL = $form->tokenURL('admin.php?connections_process=true&process=manage&action=delete&id=' . $entry->getId(), 'entry_delete_' . $entry->getId());
+									$approvedTokenURL = $form->tokenURL('admin.php?connections_process=true&process=manage&action=approve&id=' . $entry->getId(), 'entry_status_' . $entry->getId());
+									$unapproveTokenURL = $form->tokenURL('admin.php?connections_process=true&process=manage&action=unapprove&id=' . $entry->getId(), 'entry_status_' . $entry->getId());
 									
 									switch ( $entry->getStatus() )
 									{
@@ -525,7 +518,7 @@ function connectionsShowViewPage()
 													/*
 													 * Genreate the category link token URL.
 													 */
-													$categoryFilterURL = $form->tokenURL('admin.php?page=connections_manage&action=filter&category_id=' . $category->term_id, 'filter');
+													$categoryFilterURL = $form->tokenURL('admin.php?connections_process=true&process=manage&action=filter&category_id=' . $category->term_id, 'filter');
 													
 													echo '<a href="' . $categoryFilterURL . '">' . $category->name . '</a>';
 													

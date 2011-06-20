@@ -23,7 +23,11 @@ function processEntry($data, $action)
 	{
 		$entry->set(esc_attr($_GET['id']));
 	}
-						
+	
+	// Set the default visibility.
+	$entry->setVisibility('unlisted');
+	
+			
 	if ( isset($data['entry_type']) ) $entry->setEntryType($data['entry_type']);
 	if ( isset($data['family_name']) ) $entry->setFamilyName($data['family_name']);
 	if ( isset($data['family_member']) ) $entry->setFamilyMembers($data['family_member']);
@@ -282,15 +286,15 @@ function processEntry($data, $action)
 		case 'add':
 			
 			// Set moderation status per role capability assigned to the current user.		
-			if ( current_user_can('connections_add_entry_moderated') )
-			{
-				$entry->setStatus('pending');
-				$messageID = 'entry_added_moderated';
-			}
-			elseif ( current_user_can('connections_add_entry') )
+			if ( current_user_can('connections_add_entry') )
 			{
 				$entry->setStatus('approved');
 				$messageID = 'entry_added';
+			}
+			elseif ( current_user_can('connections_add_entry_moderated') )
+			{
+				$entry->setStatus('pending');
+				$messageID = 'entry_added_moderated';
 			}
 			else
 			{
@@ -314,15 +318,15 @@ function processEntry($data, $action)
 		case 'update':
 			
 			// Set moderation status per role capability assigned to the current user.		
-			if ( current_user_can('connections_edit_entry_moderated') )
-			{
-				$entry->setStatus('pending');
-				$messageID = 'entry_updated_moderated';
-			}
-			elseif ( current_user_can('connections_edit_entry') )
+			if ( current_user_can('connections_edit_entry') )
 			{
 				$entry->setStatus('approved');
 				$messageID = 'entry_updated';
+			}
+			elseif ( current_user_can('connections_edit_entry_moderated') )
+			{
+				$entry->setStatus('pending');
+				$messageID = 'entry_updated_moderated';
 			}
 			else
 			{

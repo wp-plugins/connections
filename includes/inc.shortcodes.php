@@ -18,20 +18,35 @@ function connectionsEntryList($atts)
  * Register the [connections] shortcode
  * 
  * Filters:
- * 		cn_list_atts_pre_validate		=> Alter the shortcode attributes before validation. Return associative array.
- * 		cn_list_atts_post_validate		=> Alter the shortcode attributes after validation. Return associative array.
- * 		cn_list_atts		=> Alter the shortcode attributes after validation but before use in a template. Return associative array.
- * 		cn_list_results		=> Filter the returned results before being processed for display. Return indexed array of entry objects.
- * 		cn_list_before		=> Can be used to add content before the output of the list. The entry list results are passed. Return string.
- * 		cn_list_after		=> Can be used to add content after the output of the list. The entry list results are passed. Return string.
- * 		cn_entry_before		=> Can be used to add content before the output of the entry. The entry data is passed. Return string.
- * 		cn_entry_after		=> Can be used to add content after the output of the entry. The entry data is passed. Return string.
- * 		cn_list_no_result_message=> Change the no results message.
- * 		cn_list_index		=> Can be used to modify the index before the output of the list. The entry list results are passed. Return string.
+ * 		cn_list_template_init			=> Change the list type [affects the default loaded template] or template to be loaded and intialized.
+ * 										   The shortcode atts are passed, However the associative array will be limited to list_type and template so only these values can / should be altered.
+ * 		cn_list_atts_permitted			=> The permitted shortcode attributes validated using the WordPress function shortcode_atts().
+ * 										   The permitted shortcode associative array is passed. Return associative array.
+ * 		cn_list_atts					=> Alter the shortcode attributes before validation via the WordPress function shortcode_atts().
+ * 										   The shortcode atts are passed. Return associative array.
+ * 		cn_list_retrieve_atts			=> Alter the query attributes to be used.
+ * 										   The shortcode atts are passed. however the retrieve method will filter and use only the valid atts. Return associative array.
+ * 		cn_list_results					=> Filter the returned results before being processed for display. Return indexed array of entry objects.
+ * 		cn_list_before					=> Can be used to add content before the output of the list.
+ * 										   The entry list results are passed. Return string.
+ * 		cn_list_after					=> Can be used to add content after the output of the list.
+ * 										   The entry list results are passed. Return string.
+ * 		cn_list_entry_before			=> Can be used to add content before the output of the entry.
+ * 										   The entry data is passed. Return string.
+ * 		cn_list_entry_after				=> Can be used to add content after the output of the entry.
+ * 										   The entry data is passed. Return string.
+ * 		cn_list_no_result_message		=> Change the 'no results message'.
+ * 		cn_list_index					=> Can be used to modify the index before the output of the list.
+ * 										   The entry list results are passed. Return string.
+ * 
+ * Actions:
+ * 		cn_list_retrieve_pre			=> Action is run prior to running the retrieve query.
+ * 										   The shortcode atts are passed. 
  */
 add_shortcode('connections_list', '_connections_list'); /** @deprecated since version 0.7.0.4 */
 add_shortcode('connections', '_connections_list'); /** @since version 0.7.1.0 */
-function _connections_list($atts, $content = NULL) {
+function _connections_list($atts, $content = NULL)
+{
 	global $wpdb, $connections, $current_user;
 	
 	$out = '';
@@ -43,96 +58,59 @@ function _connections_list($atts, $content = NULL) {
 	$previousLetter = '';
 	$alternate = '';
 	
-	$atts = shortcode_atts( array(
-				'id' => NULL,
-				'category' => NULL,
-				'category_in' => NULL,
-				'exclude_category' => NULL,
-				'category_name' => NULL,
-				'wp_current_category' => 'false',
-				'allow_public_override' => 'false',
-				'private_override' => 'false',
-				'show_alphaindex' => 'false',
-				'repeat_alphaindex' => 'false',
-				'show_alphahead' => 'false',
+	/*
+	 * Parse the user supplied shortcode atts for the vlues only required to load the template.
+	 * This will permit templates to apply a filter to alter the permitted shortcode atts.
+	 */
+	$preLoadAtts = $atts;
+	
+	$preLoadAtts = apply_filters( 'cn_list_template_init', $preLoadAtts);
+	
+	$preLoadAtts = shortcode_atts( array(
 				'list_type' => NULL,
-				'limit' => NULL,
-				'offset' => NULL,
-				'order_by' => NULL,
-				'group_name' => NULL,
-				'last_name' => NULL,
-				'title' => NULL,
-				'organization' => NULL,
-				'department' => NULL,
-				'city' => NULL,
-				'state' => NULL,
-				'zip_code' => NULL,
-				'country' => NULL,
 				'template' => NULL, /** @since version 0.7.1.0 */
 				'template_name' => NULL /** @deprecated since version 0.7.0.4 */
-				), $atts ) ;
+				), $preLoadAtts ) ;
 	
-	/**
-	 * @TODO: Fix deprecation errors.
-	 * 
-	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in class.terms.php on line 286
-	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in class.terms.php on line 360
-	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in class.terms.php on line 475
-	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in inc.shortcodes.php on line 71
-	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in inc.shortcodes.php on line 72
-	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in inc.shortcodes.php on line 73
-	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in inc.shortcodes.php on line 74
-	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in inc.shortcodes.php on line 75
-	 * [10-Feb-2011 14:44:54] PHP Warning: Call-time pass-by-reference has been deprecated in inc.shortcodes.php on line 76.
-	 */		
-	/*
-	 * Convert some of the $atts values in the array to boolean.
-	 */
-	$convert->toBoolean(&$atts['allow_public_override']);
-	$convert->toBoolean(&$atts['private_override']);
-	$convert->toBoolean(&$atts['show_alphaindex']);
-	$convert->toBoolean(&$atts['repeat_alphaindex']);
-	$convert->toBoolean(&$atts['show_alphahead']);
-	$convert->toBoolean(&$atts['wp_current_category']);
 	
 	$permittedListTypes = array('individual', 'organization', 'family', 'connection_group');
 	
 	// Convert the supplied entry types $atts['list_type'] to an array.
-	if ( !empty($atts['list_type']) )
+	if ( !empty($preLoadAtts['list_type']) )
 	{
 		// Trim the space characters if present.
-		$atts['list_type'] = str_replace(' ', '', $atts['list_type']);
+		$preLoadAtts['list_type'] = str_replace(' ', '', $preLoadAtts['list_type']);
 		
 		// Convert to array.
-		$atts['list_type'] = explode(',', $atts['list_type']);
+		$preLoadAtts['list_type'] = explode(',', $preLoadAtts['list_type']);
 	}
 	
 	// Set the template type to the first in the entry type from the supplied if multiple list types are provided.
-	if ( !empty($atts['list_type']) && (bool) array_intersect( (array) $atts['list_type'], $permittedListTypes) )
+	if ( !empty($preLoadAtts['list_type']) && (bool) array_intersect( (array) $preLoadAtts['list_type'], $permittedListTypes) )
 	{
-		$templateType = $atts['list_type'][0];
+		$templateType = $preLoadAtts['list_type'][0];
 	}
 	
 	/*
 	 * As of version 0.7.0.5 the $atts['template_name'] is deprecated.
 	 */
-	if ( isset($atts['template_name']) )
+	if ( isset($preLoadAtts['template_name']) )
 	{
 		// First check to see if the template is in the custom template folder.
 		if ( is_dir(CN_CUSTOM_TEMPLATE_PATH) && is_readable(CN_CUSTOM_TEMPLATE_PATH) )
 		{
-			if (file_exists(CN_CUSTOM_TEMPLATE_PATH . '/' .  $atts['template_name'] . '.php'))
+			if (file_exists(CN_CUSTOM_TEMPLATE_PATH . '/' .  $preLoadAtts['template_name'] . '.php'))
 			{
-				$template->file = CN_CUSTOM_TEMPLATE_PATH . '/' .  $atts['template_name'] . '.php';
+				$template->file = CN_CUSTOM_TEMPLATE_PATH . '/' .  $preLoadAtts['template_name'] . '.php';
 			}
 		}
 		
 		// If the template is not in the custom template folder, check for it in the default template folder.
 		if ( !isset($template->file) )
 		{
-			if (file_exists(CN_BASE_PATH . '/templates/' .  $atts['template_name'] . '.php'))
+			if (file_exists(CN_BASE_PATH . '/templates/' .  $preLoadAtts['template_name'] . '.php'))
 			{
-				$template->file = CN_BASE_PATH . '/templates/' .  $atts['template_name'] . '.php';
+				$template->file = CN_BASE_PATH . '/templates/' .  $preLoadAtts['template_name'] . '.php';
 			}
 			
 		}
@@ -142,7 +120,7 @@ function _connections_list($atts, $content = NULL) {
 		$template = new cnTemplate();
 		
 		// Change the list type to family from connection_group to maintain compatibility with versions .0.7.0.4 and earlier.
-		if ( $atts['list_type'] === 'connection_group' ) $atts['list_type'] = 'family';
+		if ( $preLoadAtts['list_type'] === 'connection_group' ) $preLoadAtts['list_type'] = 'family';
 		
 		/*
 		 * $atts['template'] can be either a string or an object. It is a string when set
@@ -153,7 +131,7 @@ function _connections_list($atts, $content = NULL) {
 		 * cnOptions::getActiveTemplate() method which stores the default template
 		 * per list style.
 		 */
-		if ( isset($atts['template']) && !is_object($atts['template']) )
+		if ( isset($preLoadAtts['template']) && !is_object($preLoadAtts['template']) )
 		{
 			$template->load($atts['template']);
 			$template->includeFunctions();
@@ -168,10 +146,59 @@ function _connections_list($atts, $content = NULL) {
 	}
 	
 	// If no template is found, return an error message.
-	if ( !isset($template->file) ) return '<p style="color:red; font-weight:bold; text-align:center;">ERROR: Template "' . $atts['template_name'] . $atts['template'] . '" not found.</p>';
+	if ( !isset($template->file) ) return '<p style="color:red; font-weight:bold; text-align:center;">ERROR: Template "' . $preLoadAtts['template_name'] . $preLoadAtts['template'] . '" not found.</p>';
+	
+	/*
+	 * Now that the template has been loaded, Validate the user supplied shortcode atts.
+	 */
+	$permittedAtts = array(
+							'id' => NULL,
+							'category' => NULL,
+							'category_in' => NULL,
+							'exclude_category' => NULL,
+							'category_name' => NULL,
+							'wp_current_category' => 'false',
+							'allow_public_override' => 'false',
+							'private_override' => 'false',
+							'show_alphaindex' => 'false',
+							'repeat_alphaindex' => 'false',
+							'show_alphahead' => 'false',
+							'list_type' => NULL,
+							'limit' => NULL,
+							'offset' => NULL,
+							'order_by' => NULL,
+							'group_name' => NULL,
+							'last_name' => NULL,
+							'title' => NULL,
+							'organization' => NULL,
+							'department' => NULL,
+							'city' => NULL,
+							'state' => NULL,
+							'zip_code' => NULL,
+							'country' => NULL,
+							'template' => NULL, /** @since version 0.7.1.0 */
+							'template_name' => NULL /** @deprecated since version 0.7.0.4 */
+						);
+	
+	$permittedAtts = apply_filters( 'cn_list_atts_permitted', $permittedAtts);
+	
+	$atts = apply_filters( 'cn_list_atts', $atts);
+	$atts = shortcode_atts( $permittedAtts, $atts ) ;
 	
 	
-	$atts = apply_filters('cn_list_atts', $atts);
+	/*
+	 * Convert some of the $atts values in the array to boolean.
+	 */
+	$convert->toBoolean($atts['allow_public_override']);
+	$convert->toBoolean($atts['private_override']);
+	$convert->toBoolean($atts['show_alphaindex']);
+	$convert->toBoolean($atts['repeat_alphaindex']);
+	$convert->toBoolean($atts['show_alphahead']);
+	$convert->toBoolean($atts['wp_current_category']);
+	
+	
+	$atts = apply_filters('cn_list_retrieve_atts', $atts);
+	do_action('cn_list_retrieve_pre', $atts);
 	
 	$results = $connections->retrieve->entries($atts);
 	
@@ -185,19 +212,11 @@ function _connections_list($atts, $content = NULL) {
 	{
 		$entry = new cnEntry($row);
 		
-		/*if (isset($continue)) unset($continue);
-		if (isset($cities)) unset($cities);
-		if (isset($states)) unset($states);
-		if (isset($zipcodes)) unset($zipcodes);
-		if (isset($countries)) unset($countries);
-		if (isset($setAnchor)) unset($setAnchor);*/
-		
 		$continue = FALSE;
 		$cities = array();
 		$states = array();
 		$zipcodes = array();
 		$countries = array();
-		//if (isset($setAnchor)) unset($setAnchor);
 		
 		/*
 		 * Check to make sure there is data stored in the address array.
@@ -241,7 +260,7 @@ function _connections_list($atts, $content = NULL) {
 		if (@!in_array($atts['country'], $countries) && $atts['country'] != NULL) 					$continue = TRUE;
 		
 		// If any of the above filters returned true, remove the entry from the results.
-		if ($continue == true) unset($results[$key]);
+		if ($continue == TRUE) unset($results[$key]);
 		
 		// Update the result count.
 		$connections->resultCount = count($results);
@@ -327,12 +346,12 @@ function _connections_list($atts, $content = NULL) {
 		
 		
 		$out .= '<div class="cn-list-row' . $alternate . ' vcard ' . $entry->getCategoryClass(TRUE) . '">' . "\n";
-			$out = apply_filters('cn_entry_before', $out, $entry);
+			$out = apply_filters('cn_list_entry_before', $out, $entry);
 			ob_start();
 			include($template->file);
 		    $out .= ob_get_contents();
 		    ob_end_clean();
-			$out = apply_filters('cn_entry_after', $out, $entry);
+			$out = apply_filters('cn_list_entry_after', $out, $entry);
 		$out .= '</div>' . "\n";
 					
 	}

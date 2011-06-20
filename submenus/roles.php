@@ -37,7 +37,7 @@ function connectionsShowRolesPage()
 			
 			<?php 
 				$attr = array(
-							 'action' => 'admin.php?page=connections_roles&action=update_role_settings',
+							 'action' => 'admin.php?connections_process=true&process=role&action=update',
 							 'method' => 'post',
 							 );
 				

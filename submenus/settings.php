@@ -36,7 +36,7 @@ function connectionsShowSettingsPage()
 			
 			<?php 
 				$attr = array(
-							 'action' => 'admin.php?page=connections_settings&action=update_settings',
+							 'action' => 'admin.php?connections_process=true&process=setting&action=update',
 							 'method' => 'post',
 							 );
 				

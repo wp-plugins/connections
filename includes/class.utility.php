@@ -112,7 +112,7 @@ class cnFormatting
 	 * @param string $value
 	 * @return boolean
 	 */
-	public function toBoolean($value)
+	public function toBoolean(&$value)
 	{
 		switch ( strtolower($value) ) 
 		{

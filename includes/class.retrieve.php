@@ -17,6 +17,7 @@ class cnRetrieve
 		$where[] = 'WHERE 1=1';
 		
 		$permittedEntryTypes = array('individual', 'organization', 'family', 'connection_group');
+		$permittedEntryStatus = array('approved', 'pending');
 		
 		/*
 		 * // START -- Set the default attributes array. \\
@@ -29,7 +30,7 @@ class cnRetrieve
 			$defaultAttr['category_name'] = NULL;
 			$defaultAttr['wp_current_category'] = FALSE;
 			$defaultAttr['visibility'] = NULL;
-			$defaultAttr['status'] = 'approved';
+			$defaultAttr['status'] = array();
 			$defaultAttr['allow_public_override'] = FALSE;
 			$defaultAttr['private_override'] = FALSE;
 			$defaultAttr['limit'] = NULL;
@@ -261,7 +262,45 @@ class cnRetrieve
 		
 		$where[] = 'AND `visibility` IN (\'' . implode("', '", (array) $visibility) . '\')';
 		
-		if ( $atts['status'] != 'all' ) $where[] = 'AND `status` IN (\'' . implode("', '", (array) $atts['status']) . '\')';
+		
+		// Convert the supplied entry statuses $atts['status'] to an array.
+		if ( ! is_array($atts['status']) && ! empty($atts['status']) )
+		{
+			// Trim the space characters if present.
+			$atts['status'] = str_replace(' ', '', $atts['status']);
+			
+			// Convert to array.
+			$atts['status'] = explode(',', $atts['status']);
+			
+			// if 'all' was supplied, set the array to all the permitted entry status types.
+			if ( in_array('all', $atts['status']) ) $atts['status'] = $permittedEntryStatus;
+		}
+		
+		// Set query status per role capability assigned to the current user.
+		if ( current_user_can('connections_edit_entry') )
+		{
+			// Set the entry statuses the user is permitted to view based on their role.
+			$userPermittedEntryStatus = array('approved', 'pending');
+			
+			$atts['status'] = array_intersect($userPermittedEntryStatus, $atts['status']);
+		}
+		elseif ( current_user_can('connections_edit_entry_moderated') )
+		{
+			// Set the entry statuses the user is permitted to view based on their role.
+			$userPermittedEntryStatus = array('approved');
+			
+			$atts['status'] = array_intersect($userPermittedEntryStatus, $atts['status']);
+		}
+		else
+		{
+			// Set the entry statuses the user is permitted to view based on their role.
+			$userPermittedEntryStatus = array('approved');
+			
+			$atts['status'] = array_intersect($userPermittedEntryStatus, $atts['status']);
+		}
+		
+		$where[] = 'AND `status` IN (\'' . implode("', '", $atts['status']) . '\')';
+		
 		
 		( empty($atts['limit']) ) ? $limit = NULL : $limit = ' LIMIT ' . $atts['limit'] . ' ';
 		( empty($atts['offset']) ) ? $offset = NULL : $offset = ' OFFSET ' . $atts['offset'] . ' ';
@@ -304,10 +343,10 @@ class cnRetrieve
 		$connections->recordCount = $this->recordCount($atts['allow_public_override'], $atts['private_override']);
 		
 		// The total number of entries based on user permissions with the status set to 'pending'
-		$connections->recordCountPending = $this->recordCount($atts['allow_public_override'], $atts['private_override'], 'pending');
+		$connections->recordCountPending = $this->recordCount($atts['allow_public_override'], $atts['private_override'], array('pending') );
 		
 		// The total number of entries based on user permissions with the status set to 'approved'
-		$connections->recordCountApproved = $this->recordCount($atts['allow_public_override'], $atts['private_override'], 'approved');
+		$connections->recordCountApproved = $this->recordCount($atts['allow_public_override'], $atts['private_override'], array('approved') );
 		
 		/*
 		 * Reset the pagination filter for the current user, remove the offset from the query and re-run the
@@ -648,7 +687,7 @@ class cnRetrieve
 	 * @param string $status
 	 * @return integer
 	 */
-	private function recordCount($allowPublicOverride, $allowPrivateOverride, $status = '')
+	private function recordCount($allowPublicOverride, $allowPrivateOverride, $status = array() )
 	{
 		global $wpdb, $connections;
 		
@@ -659,17 +698,44 @@ class cnRetrieve
 			if ( current_user_can('connections_view_public') ) $visibility[] = 'public';
 			if ( current_user_can('connections_view_private') ) $visibility[] = 'private';
 			if ( current_user_can('connections_view_unlisted') && is_admin() ) $visibility[] = 'unlisted';
+			
+			// Set query status per role capability assigned to the current user.
+			if ( current_user_can('connections_edit_entry') )
+			{
+				// Set the entry statuses the user is permitted to view based on their role.
+				$userPermittedEntryStatus = array('approved', 'pending');
+				
+				$status = array_intersect($userPermittedEntryStatus, $status);
+			}
+			elseif ( current_user_can('connections_edit_entry_moderated') )
+			{
+				// Set the entry statuses the user is permitted to view based on their role.
+				$userPermittedEntryStatus = array('approved');
+				
+				$status = array_intersect($userPermittedEntryStatus, $status);
+			}
+			else
+			{
+				// Set the entry statuses the user is permitted to view based on their role.
+				$userPermittedEntryStatus = array('approved');
+				
+				$status = array_intersect($userPermittedEntryStatus, $status);
+			}
+			
 		}
 		else
 		{
 			if ( $connections->options->getAllowPublic() ) $visibility[] = 'public';
 			if ( $allowPublicOverride == TRUE && $connections->options->getAllowPublicOverride() ) $visibility[] = 'public';
 			if ( $allowPrivateOverride == TRUE && $connections->options->getAllowPrivateOverride() ) $visibility[] = 'private';
+			
+			$status = array('approved');
 		}
 		
-		$where[] = 'AND `visibility` IN (\'' . implode("', '", (array) $visibility) . '\')';
+		$where[] = 'AND `status` IN (\'' . implode("', '", $status) . '\')';
+		$where[] = 'AND `visibility` IN (\'' . implode("', '", $visibility) . '\')';
 		
-		if ( !empty($status) ) $where[] = 'AND `status` IN (\'' . implode("', '", (array) $status) . '\')';
+		//if ( !empty($status) ) $where[] = 'AND `status` IN (\'' . implode("', '", (array) $status) . '\')';
 		
 		return $wpdb->get_var( 'SELECT COUNT(`id`) FROM ' . CN_ENTRY_TABLE . ' ' . implode(' ', $where) );
 	}

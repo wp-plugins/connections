@@ -725,10 +725,14 @@ class cnFormObjects
 			echo '<div id="entry-type">';
 				echo $this->buildRadio("entry_type","entry_type",array("Individual"=>"individual","Organization"=>"organization","Family"=>"family"), $type);
 			echo '</div>';
-			echo '<div id="visibility">';
-				echo '<span class="radio_group">' . $this->buildRadio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'), $visibility) . '</span>';
-				echo '<div class="clear"></div>';
-			echo '</div>';
+			
+			if ( current_user_can('connections_edit_entry') )
+			{
+				echo '<div id="visibility">';
+					echo '<span class="radio_group">' . $this->buildRadio('visibility','vis',array('Public'=>'public','Private'=>'private','Unlisted'=>'unlisted'), $visibility) . '</span>';
+					echo '<div class="clear"></div>';
+				echo '</div>';
+			}
 		echo '</div>';
 		
 		echo '<div id="major-publishing-actions">';
@@ -1481,7 +1485,7 @@ class cnCategoryObjects
 		 * Genreate the edit & delete tokens.
 		 */
 		$editToken = $form->tokenURL('admin.php?page=connections_categories&action=edit&id=' . $category->getId(), 'category_edit_' . $category->getId());
-		$deleteToken = $form->tokenURL('admin.php?page=connections_categories&action=delete&id=' . $category->getId(), 'category_delete_' . $category->getId());
+		$deleteToken = $form->tokenURL('admin.php?connections_process=true&process=category&action=delete&id=' . $category->getId(), 'category_delete_' . $category->getId());
 		
 		$out = '<tr id="cat-' . $category->getId() . '" class="' . $this->rowClass . '">';
 			$out .= '<th class="check-column">';
@@ -1499,7 +1503,7 @@ class cnCategoryObjects
 				/*
 				 * Genreate the category link token URL.
 				 */
-				$categoryFilterURL = $form->tokenURL('admin.php?page=connections&action=filter&category_id=' . $category->getId(), 'filter');
+				$categoryFilterURL = $form->tokenURL('admin.php?connections_process=true&process=manage&action=filter&category_id=' . $category->getId(), 'filter');
 				
 				if ( (integer) $category->getCount() > 0 )
 				{

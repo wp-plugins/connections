@@ -575,10 +575,10 @@ class cnvCard extends cnOutput
 	public function download( $atts = array('anchorText' => 'Add to Address Book', 'title' => 'Download vCard', 'return' => FALSE) )
 	{
 		extract($atts);
-		$token = wp_create_nonce('download_vcard_' . $this->getId());
+		$token = wp_create_nonce('download_vcard_' . $this->getId() );
 		
 		//echo '<a href="' . get_option('siteurl') . '/download.vCard.php?token=' . $token . '&entry=' . $this->getId() . '" rel="nofollow">' . $atts['anchorText'] . '</a>';
-		$out = '<a href="' . get_option('siteurl') . '?token=' . $token . '&cnid=' . $this->getId() . '&cnvc=1" title="' . $title . '" rel="nofollow">' . $anchorText . '</a>';
+		$out = '<a href="' . get_option('siteurl') . '?cntoken=' . $token . '&cnid=' . $this->getId() . '&cnvc=1" title="' . $title . '" rel="nofollow">' . $anchorText . '</a>';
 		
 		if ( $return ) return $out; else echo $out;
 	}

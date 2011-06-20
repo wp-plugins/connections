@@ -186,7 +186,7 @@ function connectionsShowHelpPage()
 				<p>To show entries in multiple specific categories and their children, list the categories by id
 				seperated by commas as shown in the following example.</p>
 				
-				<p><code>[connections category='1,3,9']</code></p>
+				<p><code>[connections category_in='1,3,9']</code></p>
 				
 				<p><strong>NOTE:</strong> This attribute is an operational AND function. An entry will only be shown if it is in all of the specified categories
 				or one of their children categories.</p>
@@ -844,15 +844,22 @@ function connectionsShowHelpPage()
 		
 		<h3>Shortcode:</h3>
 		<dl>
-			<dt>cn_list_atts_pre_validate</dt>
-				<dd>Alter the shortcode attributes before validation. Return associative array.</dd>
+			<dt>cn_list_template_init</dt>
+				<dd>Change the list type [affects the default loaded template] or template to be loaded and intialized.
+				The shortcode atts are passed. However the associative array will be limited to list_type and template so only these values can / should be altered.</dd>
 			
-			<dt>cn_list_atts_post_validate</dt>
-				<dd>Alter the shortcode attributes after validation. Return associative array.</dd>
+			<dt>cn_list_atts_permitted</dt>
+				<dd>The permitted shortcode attributes validated using the WordPress function shortcode_atts().
+				The permitted shortcode associative array is passed. Return associative array.</dd>
 			
 			<dt>cn_list_atts</dt>
-				<dd>Alter the shortcode attributes after validation but before use in a template. Return associative array.</dd>
+				<dd>Alter the shortcode attributes before validation via the WordPress function shortcode_atts().
+				The shortcode atts are passed. Return associative array.</dd>
 				
+			<dt>cn_list_retrieve_atts</dt>
+				<dd>Alter the query attributes to be used.
+				The shortcode atts are passed. however the retrieve method will filter and use only the valid atts. Return associative array.</dd>
+			
 			<dt>cn_list_results</dt>
 				<dd>Filter the returned results before being processed for display. Return indexed array of entry objects.</dd>
 				
@@ -864,11 +871,11 @@ function connectionsShowHelpPage()
 				<dd>Can be used to add content after the output of the list. The entry list
 				results are passed. Return string.</dd>
 			
-			<dt>cn_entry_before</dt>
+			<dt>cn_list_entry_before</dt>
 				<dd>Can be used to add content before the output of the entry. The entry data
 				is passed. Return string.</dd>
 				
-			<dt>cn_entry_after</dt>
+			<dt>cn_list_entry_after</dt>
 				<dd>Can be used to add content after the output of the entry. The entry data
 				is passed. Return string.</dd>
 			
@@ -921,6 +928,18 @@ function connectionsShowHelpPage()
 				<dd>applied to the email output string</dd>
 		</dl>
 		
+	</fieldset>
+	
+	<a name="tocIdActions"></a>
+	<fieldset>
+		<legend>Actions</legend>
+		
+		<h3>Shortcode:</h3>
+		<dl>
+			<dt>cn_list_retrieve_pre</dt>
+				<dd>Action is run prior to running the retrieve query.
+				The shortcode atts are passed.</dd>
+		</dl>
 	</fieldset>
 	
 	<a name="tocIdSupport"></a>
