@@ -271,32 +271,42 @@ class cnRetrieve
 			
 			// Convert to array.
 			$atts['status'] = explode(',', $atts['status']);
-			
-			// if 'all' was supplied, set the array to all the permitted entry status types.
-			if ( in_array('all', $atts['status']) ) $atts['status'] = $permittedEntryStatus;
-		}
-		
-		// Set query status per role capability assigned to the current user.
-		if ( current_user_can('connections_edit_entry') )
-		{
-			// Set the entry statuses the user is permitted to view based on their role.
-			$userPermittedEntryStatus = array('approved', 'pending');
-			
-			$atts['status'] = array_intersect($userPermittedEntryStatus, $atts['status']);
-		}
-		elseif ( current_user_can('connections_edit_entry_moderated') )
-		{
-			// Set the entry statuses the user is permitted to view based on their role.
-			$userPermittedEntryStatus = array('approved');
-			
-			$atts['status'] = array_intersect($userPermittedEntryStatus, $atts['status']);
 		}
 		else
 		{
-			// Set the entry statuses the user is permitted to view based on their role.
-			$userPermittedEntryStatus = array('approved');
+			// Query the approved entries
+			$atts['status'] = array('approved');
+		}
+		
+		if ( is_user_logged_in() )
+		{
+			// if 'all' was supplied, set the array to all the permitted entry status types.
+			if ( in_array('all', $atts['status']) ) $atts['status'] = $permittedEntryStatus;
 			
-			$atts['status'] = array_intersect($userPermittedEntryStatus, $atts['status']);
+			// Limit the viewable status per role capability assigned to the current user.
+			if ( current_user_can('connections_edit_entry') )
+			{
+				$userPermittedEntryStatus = array('approved', 'pending');
+				
+				$atts['status'] = array_intersect($userPermittedEntryStatus, $atts['status']);
+			}
+			elseif ( current_user_can('connections_edit_entry_moderated') )
+			{
+				$userPermittedEntryStatus = array('approved');
+				
+				$atts['status'] = array_intersect($userPermittedEntryStatus, $atts['status']);
+			}
+			else
+			{
+				$userPermittedEntryStatus = array('approved');
+				
+				$atts['status'] = array_intersect($userPermittedEntryStatus, $atts['status']);
+			}
+		}
+		else
+		{
+			// If no user is logged in, set the status for the query to approved.
+			$atts['status'] = array('approved');
 		}
 		
 		$where[] = 'AND `status` IN (\'' . implode("', '", $atts['status']) . '\')';

@@ -231,6 +231,8 @@ class cnTemplate
 					if ( file_exists( $this->path . '/' . 'template.js') ) $this->jsPath = $this->path . '/' . 'template.js';
 					if ( file_exists( $this->path . '/' . 'functions.php') ) $this->phpPath = $this->path . '/' . 'functions.php';
 					
+					//$this->includeFunctions();
+					
 					break;
 				}
 			}
@@ -260,6 +262,8 @@ class cnTemplate
 		if ( isset($template->jsPath) ) $this->jsPath = $template->jsPath;
 		if ( isset($template->phpPath) ) $this->phpPath = $template->phpPath;
 		if ( isset($template->path) ) $this->path = $template->path;
+		
+		//$this->includeFunctions();
 	}
 	
 	/**
@@ -310,12 +314,12 @@ class cnTemplate
 		}
 	}
 	
-	public function includeFunctions()
+	/*public function includeFunctions()
 	{
 		if ( isset($this->phpPath) )
 		{
 			include_once($this->phpPath);
 		}
-	}
+	}*/
 }
 ?>

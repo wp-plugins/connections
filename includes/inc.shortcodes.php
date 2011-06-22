@@ -119,7 +119,7 @@ function _connections_list($atts, $content = NULL)
 	{
 		$template = new cnTemplate();
 		
-		// Change the list type to family from connection_group to maintain compatibility with versions .0.7.0.4 and earlier.
+		// Change the list type to family from connection_group to maintain compatibility with versions 0.7.0.4 and earlier.
 		if ( $preLoadAtts['list_type'] === 'connection_group' ) $preLoadAtts['list_type'] = 'family';
 		
 		/*
@@ -134,14 +134,18 @@ function _connections_list($atts, $content = NULL)
 		if ( isset($preLoadAtts['template']) && !is_object($preLoadAtts['template']) )
 		{
 			$template->load($atts['template']);
-			$template->includeFunctions();
+			//$template->includeFunctions();
+			
+			if ( isset($template->phpPath) ) include_once($template->phpPath);
 		}
 		else
 		{
 			if ( empty($templateType) ) $templateType = 'all'; // If no list type was specified, set the default ALL template.
 			
 			$template->init( $connections->options->getActiveTemplate( $templateType ) );
-			$template->includeFunctions();
+			//$template->includeFunctions();
+			
+			if ( isset($template->phpPath) ) include_once($template->phpPath);
 		}
 	}
 	
