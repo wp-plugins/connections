@@ -137,6 +137,7 @@ function _connections_list($atts, $content = NULL)
 			//$template->includeFunctions();
 			
 			if ( isset($template->phpPath) ) include_once($template->phpPath);
+			do_action( 'cn_list_template_defaults' );
 		}
 		else
 		{
@@ -146,6 +147,7 @@ function _connections_list($atts, $content = NULL)
 			//$template->includeFunctions();
 			
 			if ( isset($template->phpPath) ) include_once($template->phpPath);
+			do_action( 'cn_list_template_defaults' );
 		}
 	}
 	
@@ -186,8 +188,9 @@ function _connections_list($atts, $content = NULL)
 	
 	$permittedAtts = apply_filters( 'cn_list_atts_permitted', $permittedAtts);
 	
-	$atts = apply_filters( 'cn_list_atts', $atts);
+	
 	$atts = shortcode_atts( $permittedAtts, $atts ) ;
+	$atts = apply_filters( 'cn_list_atts', $atts);
 	
 	
 	/*
@@ -203,6 +206,10 @@ function _connections_list($atts, $content = NULL)
 	
 	$atts = apply_filters('cn_list_retrieve_atts', $atts);
 	do_action('cn_list_retrieve_pre', $atts);
+	
+	/*print_r('<pre>');
+	print_r($atts);
+	print_r('</pre>');*/
 	
 	$results = $connections->retrieve->entries($atts);
 	

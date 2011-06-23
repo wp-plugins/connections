@@ -108,6 +108,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * BUG: Remove the connections_view_entry_list role as it is no longer needed.
 * BUG: Use gmmktime() instead of mktime() when working with the birthday and anniversary so dates are output showing the current date.
 * BUG: Fixed a bug with applying the cn_list_before filter causing the template CSS to output twice.
+* BUG: Fixed an issue with getAddressBlock() showing only the last input address.
 * OTHER: Disabled JavaScript compression on the Add/Edit Entry page. When enabled the RTE wouldn't load to JS errors.
 * OTHER: Update Roles and Capabilities page to use the metabox visual styles.
 * OTHER: Updated the help page. Fixing typos and adding more info.
