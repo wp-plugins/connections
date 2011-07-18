@@ -116,7 +116,8 @@ if (!class_exists('connectionsLoad'))
 				add_action( 'wp_print_styles', array(&$this, 'loadStyles' ) );
 				
 				// Add a version number to the header
-				add_action( 'wp_head', create_function('', 'echo "\n<meta name=\'Connections\' content=\'' . $this->options->getVersion() . '-' . $this->options->getDBVersion() . '\' />\n";') );
+				// Disable as it fails the HTML5 validation
+				//add_action( 'wp_head', create_function('', 'echo "\n<meta name=\'Connections\' content=\'' . $this->options->getVersion() . '-' . $this->options->getDBVersion() . '\' />\n";') );
 				
 				// Register all valid query variables.
 				add_filter( 'query_vars', array(&$this, 'registerQueryVariables' ) );

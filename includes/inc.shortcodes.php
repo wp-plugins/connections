@@ -47,13 +47,13 @@ add_shortcode('connections_list', '_connections_list'); /** @deprecated since ve
 add_shortcode('connections', '_connections_list'); /** @since version 0.7.1.0 */
 function _connections_list($atts, $content = NULL)
 {
-	global $wpdb, $connections, $current_user;
+	global $wpdb, $current_user, $connections, $template;
 	
 	$out = '';
 	$form = new cnFormObjects();
 	$convert = new cnFormatting();
 	$format =& $convert;
-	$template = new stdClass();
+	//$template = new stdClass();
 	
 	$previousLetter = '';
 	$alternate = '';
@@ -117,7 +117,7 @@ function _connections_list($atts, $content = NULL)
 	}
 	else
 	{
-		$template = new cnTemplate();
+		if ( ! is_object($template) ) $template = new cnTemplate();
 		
 		// Change the list type to family from connection_group to maintain compatibility with versions 0.7.0.4 and earlier.
 		if ( $preLoadAtts['list_type'] === 'connection_group' ) $preLoadAtts['list_type'] = 'family';
@@ -131,23 +131,35 @@ function _connections_list($atts, $content = NULL)
 		 * cnOptions::getActiveTemplate() method which stores the default template
 		 * per list style.
 		 */
-		if ( isset($preLoadAtts['template']) && !is_object($preLoadAtts['template']) )
+		if ( isset($preLoadAtts['template']) && ! is_object($preLoadAtts['template']) )
 		{
 			$template->load($atts['template']);
-			//$template->includeFunctions();
+			$template->includeFunctions();
 			
-			if ( isset($template->phpPath) ) include_once($template->phpPath);
-			do_action( 'cn_list_template_defaults' );
+			//do_action( 'cn_list_template_defaults' );
 		}
 		else
 		{
 			if ( empty($templateType) ) $templateType = 'all'; // If no list type was specified, set the default ALL template.
 			
 			$template->init( $connections->options->getActiveTemplate( $templateType ) );
-			//$template->includeFunctions();
+			$template->includeFunctions();
+			/*if ( isset($template->phpPath) )
+			{
+				include_once($template->phpPath);
+			}*/
+			//do_action( 'cn_list_template_defaults' );
 			
-			if ( isset($template->phpPath) ) include_once($template->phpPath);
-			do_action( 'cn_list_template_defaults' );
+			//print_r('<pre>');
+			/*$i = $connections->temp;
+			$i++;
+			$connections->temp = $i;
+			echo $connections->temp;*/
+			//echo $template->test('Error?');
+			//print_r($template);
+			//print_r($template->properties);
+			//print_r('</pre>');
+			
 		}
 	}
 	
@@ -193,6 +205,22 @@ function _connections_list($atts, $content = NULL)
 	$atts = apply_filters( 'cn_list_atts', $atts);
 	
 	
+	$template->importTemplateProperties();
+	
+	/*foreach ( $atts as $propertyName => $value )
+	{
+		$template->$propertyName = $value;
+	}*/
+	
+	/*$properties = apply_filters('cn_init_template_properties', $properties);
+		
+	foreach ( $properties as $propertyName => $value )
+	{
+		$template->$propertyName = $value;
+	}*/
+	
+	//$template->strVisitWebsite = 'My Home on the Web.';
+	
 	/*
 	 * Convert some of the $atts values in the array to boolean.
 	 */
@@ -205,11 +233,13 @@ function _connections_list($atts, $content = NULL)
 	
 	
 	$atts = apply_filters('cn_list_retrieve_atts', $atts);
-	do_action('cn_list_retrieve_pre', $atts);
+	//$template->initTemplateMethods();
+	//do_action('cn_list_retrieve_pre', $atts);
 	
-	/*print_r('<pre>');
-	print_r($atts);
-	print_r('</pre>');*/
+	//print_r('<pre>');
+	//print_r($atts);
+	//print_r($template);
+	//print_r('</pre>');
 	
 	$results = $connections->retrieve->entries($atts);
 	
@@ -309,7 +339,7 @@ function _connections_list($atts, $content = NULL)
 		$out .= $index;
 	}
 	
-	$out .=  '<div class="connections-list ' . $template->slug . '">' . "\n";
+	$out .=  '<div class="connections-list ' . $template->slug . '" data-connections-version="' . $connections->options->getVersion() . '-' . $connections->options->getDBVersion() . '">';
 	
 	foreach ( (array) $results as $row)
 	{

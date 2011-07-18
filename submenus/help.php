@@ -953,7 +953,7 @@ function connectionsShowHelpPage()
 	<fieldset>
 		<legend>FAQ</legend>
 		
-		<p>The frequently asked questions cab be found <a href="http://connections-pro.com/faq/">here</a>.</p>
+		<p>The frequently asked questions can be found <a href="http://connections-pro.com/faq/">here</a>.</p>
 	</fieldset>
 	
 	<a name="tocIdDisclaimers"></a>

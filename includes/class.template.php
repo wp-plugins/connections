@@ -92,6 +92,10 @@ class cnTemplate
 	 */
 	private $catalog;
 	
+	//private $imported = array();
+	private $importedMethods = array();
+	
+	
 	/**
 	 * Builds a catalog of all the available templates from
 	 * the supplied and the custom template directories.
@@ -314,12 +318,67 @@ class cnTemplate
 		}
 	}
 	
-	/*public function includeFunctions()
+	public function includeFunctions()
 	{
 		if ( isset($this->phpPath) )
 		{
 			include_once($this->phpPath);
+			//include($this->phpPath);
+			//$className = apply_filters( 'cn_list_register_template_methods', $className );
+			
+			//$this->importTemplateMethods($className);
 		}
-	}*/
+	}
+	
+	protected function importTemplateMethods($object)
+	{
+		if ( ! is_object($object) ) return;
+		
+		$name = get_class($object);
+		$methods = get_class_methods($name);
+		//$properties = get_class_vars($name);
+		//$properties = apply_filters('cn_init_template_properties', $properties);
+		
+		foreach ( $methods as $key => $methodName )
+		{
+			$this->importedMethods[$methodName] = &$object;
+		}
+		
+		/*foreach ( (array) $object as $propertyName => $value )
+		{
+			if ( ! is_callable($propertyName) ) $this->$propertyName = $value;
+		}*/
+		
+		//$this->templateClassName = $name;
+	}
+	
+	public function importTemplateProperties()
+	{
+		//if ( ! isset($this->templateClassName) && empty($this->templateClassName) ) return;
+		
+		//$properties = get_class_vars($this->templateClassName);
+		
+		//$properties = apply_filters('cn_list_atts', $properties);
+		
+		$properties = apply_filters('cn_init_template_properties', $properties);
+		
+		foreach ( $properties as $propertyName => $value )
+		{
+			$this->$propertyName = $value;
+		}
+	}
+	
+	public function __call($method, $args)
+	{
+		// Make sure the function exists.
+		if( array_key_exists($method, $this->importedMethods) )
+		{
+			$args[] = $this;
+			// Invoke the method.
+			return call_user_func_array( array($this->importedMethods[$method], $method), $args );
+		}
+		
+		throw new Exception ('Call to undefined method/class function: ' . $method);
+	} 
 }
 ?>
