@@ -362,7 +362,7 @@ class cnTemplate
 		
 		$properties = apply_filters('cn_init_template_properties', $properties);
 		
-		foreach ( $properties as $propertyName => $value )
+		foreach ( (array) $properties as $propertyName => $value )
 		{
 			$this->$propertyName = $value;
 		}

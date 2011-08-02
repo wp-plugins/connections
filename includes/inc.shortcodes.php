@@ -315,7 +315,7 @@ function _connections_list($atts, $content = NULL)
 	// Prints the javascript tag in the footer if $template->js path is set
 	if ( method_exists($template, 'printJS') ) $template->printJS();
 	
-	$out = apply_filters('cn_list_before', $out, $results);
+	//$out = apply_filters('cn_list_before', $out, $results);
 	
 	// If there are no results no need to proceed and output message.
 	if ( empty($results) )
@@ -325,7 +325,12 @@ function _connections_list($atts, $content = NULL)
 		return $out . '<p class="cn-list-no-results">' . $noResultMessage . '</p>';
 	}
 	
-	$out .= '<a name="connections-list-head" style="float: left;"></a>' . "\n";
+	//$out .= '<a name="connections-list-head" style="float: left;"></a>' . "\n";
+	
+	$out .=  '<div class="connections-list ' . $template->slug . '" id="connections-list-head" data-connections-version="' . $connections->options->getVersion() . '-' . $connections->options->getDBVersion() . '">';
+
+	$out = apply_filters('cn_list_before', $out, $results);
+	
 	
 	/*
 	 * The alpha index is only displayed if set set to true and not set to repeat using the shortcode attributes.
@@ -339,7 +344,6 @@ function _connections_list($atts, $content = NULL)
 		$out .= $index;
 	}
 	
-	$out .=  '<div class="connections-list ' . $template->slug . '" data-connections-version="' . $connections->options->getVersion() . '-' . $connections->options->getDBVersion() . '">';
 	
 	foreach ( (array) $results as $row)
 	{

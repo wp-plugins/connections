@@ -215,7 +215,7 @@ class cnRetrieve
 		}
 		/*print_r('Print $atts[\'id\'] = ');print_r($atts['id']);print_r(' Print $entryIDs = ');print_r($entryIDs);print_r(' END');*/
 		// Set query string to return specific entries.
-		if ( !empty($atts['id']) || !empty($entryIDs) ) $where[] = 'AND `id` IN (\'' . implode("', '", array_unique( array_merge( (array) $atts['id'], (array) $entryIDs ), SORT_NUMERIC) ) . '\')';
+		if ( !empty($atts['id']) || !empty($entryIDs) ) $where[] = 'AND `id` IN (\'' . implode("', '", array_unique( array_merge( (array) $atts['id'], (array) $entryIDs ) ) ) . '\')';
 		
 		
 		// Convert the supplied entry types $atts['list_type'] to an array.
