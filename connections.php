@@ -789,6 +789,9 @@ if (!class_exists('connectionsLoad'))
 			 * TinyMCE in WordPress Plugins
 			 * http://www.keighl.com/2010/01/tinymce-in-wordpress-plugins/
 			 * 
+			 * For full editor see:
+			 * http://dannyvankooten.com/450/tinymce-wysiwyg-editor-in-wordpress-plugin/
+			 * 
 			 * Load the tinyMCE scripts on these pages.
 			 */
 			$editorPages = array( 'connections_manage', 'connections_add' );
@@ -806,6 +809,7 @@ if (!class_exists('connectionsLoad'))
 									'theme_advanced_buttons2' => '',
 									'inline_styles' => TRUE,
 									'relative_urls' => FALSE,
+									'remove_linebreaks' => FALSE,
 									'plugins' => 'paste'
 								)
 							);

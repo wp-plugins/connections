@@ -235,7 +235,7 @@ class cnTemplate
 					if ( file_exists( $this->path . '/' . 'template.js') ) $this->jsPath = $this->path . '/' . 'template.js';
 					if ( file_exists( $this->path . '/' . 'functions.php') ) $this->phpPath = $this->path . '/' . 'functions.php';
 					
-					//$this->includeFunctions();
+					$this->includeFunctions();
 					
 					break;
 				}
@@ -267,7 +267,7 @@ class cnTemplate
 		if ( isset($template->phpPath) ) $this->phpPath = $template->phpPath;
 		if ( isset($template->path) ) $this->path = $template->path;
 		
-		//$this->includeFunctions();
+		$this->includeFunctions();
 	}
 	
 	/**
@@ -298,19 +298,23 @@ class cnTemplate
 		// Prints the javascript tag in the footer if $template->js path is set
 		if ( isset($this->jsPath) )
 		{
-			global $connections;
-			$connections->printJS = TRUE;
-			$connections->printJSURL = $this->url . '/template.js';
+			global $template;
+			
+			$template->printJS[] = $this->slug;
+			
+			wp_register_script("cn_{$this->slug}_js", $this->url . '/template.js', array(), CN_CURRENT_VERSION, TRUE);
 			
 			$printJS = create_function
 			(
 				'',
-				'global $connections;
+				'global $template;
 				
-				if ( $connections->printJS === TRUE )
+				if ( isset($template->printJS) && ! empty($template->printJS) )
 				{
-					wp_register_script("cn_template_js", $connections->printJSURL, array(), CN_CURRENT_VERSION, TRUE);
-					wp_print_scripts("cn_template_js");
+					foreach ( $template->printJS as $slug)
+					{
+						wp_print_scripts("cn_{$slug}_js");
+					}
 				}'
 			);
 			
@@ -318,67 +322,26 @@ class cnTemplate
 		}
 	}
 	
-	public function includeFunctions()
+	/**
+	 * Include the template functions.php file if present.
+	 */
+	private function includeFunctions()
 	{
 		if ( isset($this->phpPath) )
 		{
 			include_once($this->phpPath);
-			//include($this->phpPath);
-			//$className = apply_filters( 'cn_list_register_template_methods', $className );
-			
-			//$this->importTemplateMethods($className);
 		}
 	}
-	
-	protected function importTemplateMethods($object)
+		
+	public function registerTemplate()
 	{
+		$object =& apply_filters('cn_register_template', &$object);
+		
 		if ( ! is_object($object) ) return;
 		
 		$name = get_class($object);
-		$methods = get_class_methods($name);
-		//$properties = get_class_vars($name);
-		//$properties = apply_filters('cn_init_template_properties', $properties);
 		
-		foreach ( $methods as $key => $methodName )
-		{
-			$this->importedMethods[$methodName] = &$object;
-		}
-		
-		/*foreach ( (array) $object as $propertyName => $value )
-		{
-			if ( ! is_callable($propertyName) ) $this->$propertyName = $value;
-		}*/
-		
-		//$this->templateClassName = $name;
+		$this->$name =& $object;
 	}
-	
-	public function importTemplateProperties()
-	{
-		//if ( ! isset($this->templateClassName) && empty($this->templateClassName) ) return;
-		
-		//$properties = get_class_vars($this->templateClassName);
-		
-		//$properties = apply_filters('cn_list_atts', $properties);
-		
-		$properties = apply_filters('cn_init_template_properties', $properties);
-		
-		foreach ( (array) $properties as $propertyName => $value )
-		{
-			$this->$propertyName = $value;
-		}
-	}
-	
-	public function __call($method, $args)
-	{
-		// Make sure the function exists.
-		if( array_key_exists($method, $this->importedMethods) )
-		{
-			$args[] = $this;
-			// Invoke the method.
-			return call_user_func_array( array($this->importedMethods[$method], $method), $args );
-		}
-		
-		throw new Exception ('Call to undefined method/class function: ' . $method);
-	} 
 }
 ?>

@@ -134,32 +134,14 @@ function _connections_list($atts, $content = NULL)
 		if ( isset($preLoadAtts['template']) && ! is_object($preLoadAtts['template']) )
 		{
 			$template->load($atts['template']);
-			$template->includeFunctions();
-			
-			//do_action( 'cn_list_template_defaults' );
+			//$template->includeFunctions();
 		}
 		else
 		{
 			if ( empty($templateType) ) $templateType = 'all'; // If no list type was specified, set the default ALL template.
 			
 			$template->init( $connections->options->getActiveTemplate( $templateType ) );
-			$template->includeFunctions();
-			/*if ( isset($template->phpPath) )
-			{
-				include_once($template->phpPath);
-			}*/
-			//do_action( 'cn_list_template_defaults' );
-			
-			//print_r('<pre>');
-			/*$i = $connections->temp;
-			$i++;
-			$connections->temp = $i;
-			echo $connections->temp;*/
-			//echo $template->test('Error?');
-			//print_r($template);
-			//print_r($template->properties);
-			//print_r('</pre>');
-			
+			//$template->includeFunctions();
 		}
 	}
 	
@@ -205,21 +187,8 @@ function _connections_list($atts, $content = NULL)
 	$atts = apply_filters( 'cn_list_atts', $atts);
 	
 	
-	$template->importTemplateProperties();
+	$template->registerTemplate();
 	
-	/*foreach ( $atts as $propertyName => $value )
-	{
-		$template->$propertyName = $value;
-	}*/
-	
-	/*$properties = apply_filters('cn_init_template_properties', $properties);
-		
-	foreach ( $properties as $propertyName => $value )
-	{
-		$template->$propertyName = $value;
-	}*/
-	
-	//$template->strVisitWebsite = 'My Home on the Web.';
 	
 	/*
 	 * Convert some of the $atts values in the array to boolean.
@@ -233,13 +202,12 @@ function _connections_list($atts, $content = NULL)
 	
 	
 	$atts = apply_filters('cn_list_retrieve_atts', $atts);
-	//$template->initTemplateMethods();
-	//do_action('cn_list_retrieve_pre', $atts);
 	
-	//print_r('<pre>');
+	
+	/*print_r('<pre>');
 	//print_r($atts);
-	//print_r($template);
-	//print_r('</pre>');
+	print_r($template);
+	print_r('</pre>');*/
 	
 	$results = $connections->retrieve->entries($atts);
 	
