@@ -504,7 +504,7 @@ class cnTerms
 	 * NOTE: Only if the taxonomy is 'category'
 	 * 
 	 * @param int $entryID		
-	 * @param array $categoryID
+	 * @param array $termIDs
 	 * 
 	 * @return bool
 	 */

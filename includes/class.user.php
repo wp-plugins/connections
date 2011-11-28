@@ -345,116 +345,81 @@ class cnUser
 		//$this->resetFilterPage();
     }
 	
-	public function getFilterPage()
+	/**
+	 * Returns the current page and page limit of the supplied page name.
+	 * 
+	 * @param string $page
+	 * @return object
+	 */
+	public function getFilterPage( $pageName )
     {
-		/*
-		 * Use get_user_meta() used in WP 3.0 and newer
-		 * since get_usermeta() was deprecated.
-		 */
-		if ( function_exists('get_user_meta') )
-		{
-			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
-		}
-		else
-		{
-			$user_meta = get_usermeta($this->ID, 'connections');
-		}
+		$user_meta = get_user_meta($this->ID, 'connections', TRUE);
 		
-		if ( !$user_meta == NULL && isset($user_meta['filter']['manage_page']) )
+		if ( ! $user_meta == NULL && isset($user_meta['filter'][$pageName]) )
 		{
-			return $user_meta['filter']['manage_page'];
+			$page = (object) $user_meta['filter'][$pageName];
+			
+			if ( ! isset($page->limit) || empty($page->limit) ) $page->limit = 50;
+			if ( ! isset($page->current) || empty($page->current) ) $page->current = 1;
+			
+			return $page;
 		}
 		else
 		{
-			return 1;
+			$page = new stdClass();
+			
+			$page->limit = 50;
+			$page->current = 1;
+			
+			return $page;
 		}
     }
 	
-	public function setFilterPage($page)
+	/**
+	 *@param object $page
+	 */
+	public function setFilterPage( $page )
     {
-		$page = absint($page);
+		// If the page name has not been supplied, no need to process further.
+		if ( ! isset($page->name) ) return;
 		
-		/*
-		 * Use get_user_meta() used in WP 3.0 and newer
-		 * since get_usermeta() was deprecated.
-		 */
-		if ( function_exists('get_user_meta') )
-		{
-			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
-		}
-		else
-		{
-			$user_meta = get_usermeta($this->ID, 'connections');
-		}
+		$page->name = sanitize_title($page->name);
 		
-		$user_meta['filter']['manage_page'] = $page;
+		if ( isset($page->current) ) $page->current = absint($page->current);
+		if ( isset($page->limit) ) $page->limit = absint($page->limit);
 		
-		/*
-		 * Use update_user_meta() used in WP 3.0 and newer
-		 * since update_usermeta() was deprecated.
-		 */
-		if ( function_exists('update_user_meta') )
-		{
-			update_user_meta($this->ID, 'connections', $user_meta);
-		}
-		else
-		{
-			update_usermeta($this->ID, 'connections', $user_meta);
-		}
+		$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		
+		if ( isset($page->current) ) $user_meta['filter'][$page->name]['current'] = $page->current;
+		if ( isset($page->limit) ) $user_meta['filter'][$page->name]['limit'] = $page->limit;
+		
+		update_user_meta($this->ID, 'connections', $user_meta);
     }
 	
-	public function resetFilterPage()
+	public function resetFilterPage( $pageName )
 	{
-		$this->setFilterPage(1);
+		$page = $this->getFilterPage($pageName);
+		
+		$page->name = $pageName;
+		$page->current = 1;
+		
+		$this->setFilterPage($page);
 	}
 	
 	public function setMessage($message)
 	{
-		/*
-		 * Use get_user_meta() used in WP 3.0 and newer
-		 * since get_usermeta() was deprecated.
-		 */
-		if ( function_exists('get_user_meta') )
-		{
-			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
-		}
-		else
-		{
-			$user_meta = get_usermeta($this->ID, 'connections');
-		}
+		$user_meta = get_user_meta($this->ID, 'connections', TRUE);
 		
 		$user_meta['messages'][] = $message;
 		
-		/*
-		 * Use update_user_meta() used in WP 3.0 and newer
-		 * since update_usermeta() was deprecated.
-		 */
-		if ( function_exists('update_user_meta') )
-		{
-			update_user_meta($this->ID, 'connections', $user_meta);
-		}
-		else
-		{
-			update_usermeta($this->ID, 'connections', $user_meta);
-		}
+		update_user_meta($this->ID, 'connections', $user_meta);
 	}
 	
 	public function getMessages()
 	{
-		/*
-		 * Use get_user_meta() used in WP 3.0 and newer
-		 * since get_usermeta() was deprecated.
-		 */
-		if ( function_exists('get_user_meta') )
-		{
-			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
-		}
-		else
-		{
-			$user_meta = get_usermeta($this->ID, 'connections');
-		}
-		//print_r($user_meta);
-		if (!empty($user_meta['messages']))
+		$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		
+		if ( ! empty($user_meta['messages']) )
 		{
 			return $user_meta['messages'];
 		}
@@ -466,33 +431,11 @@ class cnUser
 	
 	public function resetMessages()
 	{
-		/*
-		 * Use get_user_meta() used in WP 3.0 and newer
-		 * since get_usermeta() was deprecated.
-		 */
-		if ( function_exists('get_user_meta') )
-		{
-			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
-		}
-		else
-		{
-			$user_meta = get_usermeta($this->ID, 'connections');
-		}
+		$user_meta = get_user_meta($this->ID, 'connections', TRUE);
 		
 		if ( isset($user_meta['messages']) )unset($user_meta['messages']);
-		//print_r($user_meta);
-		/*
-		 * Use update_user_meta() used in WP 3.0 and newer
-		 * since update_usermeta() was deprecated.
-		 */
-		if ( function_exists('update_user_meta') )
-		{
-			update_user_meta($this->ID, 'connections', $user_meta);
-		}
-		else
-		{
-			update_usermeta($this->ID, 'connections', $user_meta);
-		}
+		
+		update_user_meta($this->ID, 'connections', $user_meta);
 	}
 }
 ?>

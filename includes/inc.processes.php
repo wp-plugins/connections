@@ -21,7 +21,7 @@ function processEntry($data, $action)
 	// properties and then properties are overwritten by the POST data as needed.
 	if ( isset($_GET['id']) )
 	{
-		$entry->set(esc_attr($_GET['id']));
+		$entry->set(absint($_GET['id']));
 	}
 	
 	// Set the default visibility.
@@ -42,11 +42,12 @@ function processEntry($data, $action)
 	if ( isset($data['contact_first_name']) ) $entry->setContactFirstName($data['contact_first_name']);
 	if ( isset($data['contact_last_name']) ) $entry->setContactLastName($data['contact_last_name']);
 	( isset($data['address']) ) ? $entry->setAddresses($data['address']) : $entry->setAddresses( array() );
-	( isset($data['phone_numbers']) ) ? $entry->setPhoneNumbers($data['phone_numbers']) : $entry->setPhoneNumbers( array() );
+	( isset($data['phone']) ) ? $entry->setPhoneNumbers($data['phone']) : $entry->setPhoneNumbers( array() );
 	( isset($data['email']) ) ? $entry->setEmailAddresses($data['email']) : $entry->setEmailAddresses( array() );
 	( isset($data['im']) ) ? $entry->setIm($data['im']) : $entry->setIm( array() );
-	( isset($data['social_media']) ) ? $entry->setSocialMedia($data['social_media']) : $entry->setSocialMedia( array() );
-	( isset($data['website']) ) ? $entry->setWebsites($data['website']) : $entry->setWebsites( array() );
+	( isset($data['social']) ) ? $entry->setSocialMedia($data['social']) : $entry->setSocialMedia( array() );
+	//( isset($data['website']) ) ? $entry->setWebsites($data['website']) : $entry->setWebsites( array() );
+	( isset($data['link']) ) ? $entry->setLinks($data['link']) : $entry->setLinks( array() );
 	if ( isset($data['birthday_day']) && isset($data['birthday_month']) ) $entry->setBirthday($data['birthday_day'], $data['birthday_month']);
 	if ( isset($data['anniversary_day']) && isset($data['anniversary_month']) ) $entry->setAnniversary($data['anniversary_day'], $data['anniversary_month']);
 	if ( isset($data['bio']) ) $entry->setBio($data['bio']);
@@ -405,7 +406,7 @@ function processImages()
 		$process_image->auto_chmod_dir		= true;
 		$process_image->file_safe_name		= true;
 		$process_image->file_auto_rename	= true;
-		$process_image->file_name_body_add= '_original';
+		$process_image->file_name_body_add	= '_original';
 		$process_image->image_convert		= 'jpg';
 		$process_image->jpeg_quality		= 80;
 		$process_image->Process(CN_IMAGE_PATH);
@@ -414,6 +415,8 @@ function processImages()
 		if ($process_image->processed)
 		{
 			$connections->setSuccessMessage('image_uploaded');
+			if ( $connections->options->getDebug() && is_admin() ) $connections->setRuntimeMessage( 'success_runtime' , $process_image->log );
+			@chmod( CN_IMAGE_PATH . '/' . $process_image->file_dst_name , 0644 );
 			$image['original'] = $process_image->file_dst_name;
 			
 			// Creates the profile image and saves it to the wp_content/connection_images/ dir.
@@ -423,7 +426,7 @@ function processImages()
 			$process_image->auto_chmod_dir		= true;
 			$process_image->file_safe_name		= true;
 			$process_image->file_auto_rename	= true;
-			$process_image->file_name_body_add= '_profile';
+			$process_image->file_name_body_add	= '_profile';
 			$process_image->image_convert		= 'jpg';
 			$process_image->jpeg_quality		= $connections->options->getImgProfileQuality();
 			$process_image->image_resize		= true;
@@ -434,10 +437,12 @@ function processImages()
 			$process_image->Process(CN_IMAGE_PATH);
 			if ($process_image->processed) {
 				$connections->setSuccessMessage('image_profile');
+				if ( $connections->options->getDebug() && is_admin() ) $connections->setRuntimeMessage( 'success_runtime' , $process_image->log );
+				@chmod( CN_IMAGE_PATH . '/' . $process_image->file_dst_name , 0644 );
 				$image['profile'] = $process_image->file_dst_name;
 			} else {
 				$connections->setErrorMessage('image_profile_failed');
-				return FALSE;
+				//return FALSE;
 			}						
 			
 			// Creates the entry image and saves it to the wp_content/connection_images/ dir.
@@ -447,7 +452,7 @@ function processImages()
 			$process_image->auto_chmod_dir		= true;
 			$process_image->file_safe_name		= true;
 			$process_image->file_auto_rename	= true;
-			$process_image->file_name_body_add= '_entry';
+			$process_image->file_name_body_add	= '_entry';
 			$process_image->image_convert		= 'jpg';
 			$process_image->jpeg_quality		= $connections->options->getImgEntryQuality();
 			$process_image->image_resize		= true;
@@ -458,10 +463,12 @@ function processImages()
 			$process_image->Process(CN_IMAGE_PATH);
 			if ($process_image->processed) {
 				$connections->setSuccessMessage('image_entry');
+				if ( $connections->options->getDebug() && is_admin() ) $connections->setRuntimeMessage( 'success_runtime' , $process_image->log );
+				@chmod( CN_IMAGE_PATH . '/' . $process_image->file_dst_name , 0644 );
 				$image['entry'] = $process_image->file_dst_name;
 			} else {
 				$connections->setErrorMessage('image_entry_failed');
-				return FALSE;
+				//return FALSE;
 			}
 			
 			// Creates the thumbnail image and saves it to the wp_content/connection_images/ dir.
@@ -471,7 +478,7 @@ function processImages()
 			$process_image->auto_chmod_dir		= true;
 			$process_image->file_safe_name		= true;
 			$process_image->file_auto_rename	= true;
-			$process_image->file_name_body_add= '_thumbnail';
+			$process_image->file_name_body_add	= '_thumbnail';
 			$process_image->image_convert		= 'jpg';
 			$process_image->jpeg_quality		= $connections->options->getImgThumbQuality();
 			$process_image->image_resize		= true;
@@ -482,10 +489,12 @@ function processImages()
 			$process_image->Process(CN_IMAGE_PATH);
 			if ($process_image->processed) {
 				$connections->setSuccessMessage('image_thumbnail');
+				if ( $connections->options->getDebug() && is_admin() ) $connections->setRuntimeMessage( 'success_runtime' , $process_image->log );
+				@chmod( CN_IMAGE_PATH . '/' . $process_image->file_dst_name , 0644 );
 				$image['thumbnail'] = $process_image->file_dst_name;
 			} else {
 				$connections->setErrorMessage('image_thumbnail_failed');
-				return FALSE;
+				//return FALSE;
 			}
 		}
 		else
@@ -528,19 +537,21 @@ function processLogo()
 		$process_logo->auto_create_dir		= TRUE;
 		$process_logo->auto_chmod_dir		= TRUE;
 		$process_logo->file_safe_name		= TRUE;
-		$process_logo->file_auto_rename	= TRUE;
-		$process_logo->file_name_body_add= '_logo';
+		$process_logo->file_auto_rename		= TRUE;
+		$process_logo->file_name_body_add	= '_logo';
 		$process_logo->image_convert		= 'jpg';
-		$process_logo->jpeg_quality		= $connections->options->getImgLogoQuality();
-		$process_logo->image_resize		= TRUE;
-		$process_logo->image_ratio_crop	= (bool) $connections->options->getImgLogoRatioCrop();
-		$process_logo->image_ratio_fill	= (bool) $connections->options->getImgLogoRatioFill();
+		$process_logo->jpeg_quality			= $connections->options->getImgLogoQuality();
+		$process_logo->image_resize			= TRUE;
+		$process_logo->image_ratio_crop		= (bool) $connections->options->getImgLogoRatioCrop();
+		$process_logo->image_ratio_fill		= (bool) $connections->options->getImgLogoRatioFill();
 		$process_logo->image_y				= $connections->options->getImgLogoY();
 		$process_logo->image_x				= $connections->options->getImgLogoX();
 		$process_logo->Process(CN_IMAGE_PATH);
 		
 		if ($process_logo->processed) {
 			$connections->setSuccessMessage('image_thumbnail');
+			if ( $connections->options->getDebug() && is_admin() ) $connections->setRuntimeMessage( 'success_runtime' , $process_logo->log );
+			@chmod( CN_IMAGE_PATH . '/' . $process_logo->file_dst_name , 0644 );
 			$logo['name'] = $process_logo->file_dst_name;
 		} else {
 			$connections->setErrorMessage('image_thumbnail_failed');
@@ -681,9 +692,34 @@ function processSetUserFilter()
 	if ( isset($_POST['category']) ) $connections->currentUser->setFilterCategory( esc_attr( $_POST['category'] ) );
 	if ( !empty($_GET['category_id']) ) $connections->currentUser->setFilterCategory( esc_attr( $_GET['category_id'] ) );
 	
-	if ( isset( $_POST['page'] ) && !empty( $_POST['page'] ) )
+	if ( isset( $_POST['pg'] ) && ! empty( $_POST['pg'] ) )
 	{
-		$connections->currentUser->setFilterPage( esc_attr( $_POST['page'] ) );
+		$page = new stdClass();
+		
+		$page->name = 'manage';
+		$page->current = absint( $_POST['pg'] );
+		
+		$connections->currentUser->setFilterPage( $page );
+	}
+	
+	if ( isset( $_GET['pg'] ) && ! empty( $_GET['pg'] ) )
+	{
+		$page = new stdClass();
+		
+		$page->name = 'manage';
+		$page->current = absint( $_GET['pg'] );
+		
+		$connections->currentUser->setFilterPage( $page );
+	}
+	
+	if ( isset($_POST['settings']['page']['limit']) )
+	{
+		$page = new stdClass();
+		
+		$page->name = 'manage';
+		$page->limit = $_POST['settings']['page']['limit'];
+		
+		$connections->currentUser->setFilterPage( $page );
 	}
 }
 
@@ -846,6 +882,15 @@ function updateSettings()
 	if ( isset($_POST['settings']['image']['logo']['crop']) )
 	{
 		$connections->options->setImgLogoCrop($_POST['settings']['image']['logo']['crop']);
+	}
+	
+	if ( isset($_POST['settings']['debug']) && $_POST['settings']['debug'] === 'true' )
+	{
+		$connections->options->setDebug(TRUE);
+	}
+	else
+	{
+		$connections->options->setDebug(FALSE);
 	}
 	
 	$connections->options->saveOptions();

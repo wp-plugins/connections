@@ -2,166 +2,342 @@
 
 class cnOutput extends cnEntry
 {
+	/**
+	 * Echos the 'Entry Sized' image.
+	 * 
+	 * @deprecated since 0.7.2.0
+	 */
 	public function getCardImage()
 	{
-		if ( $this->getImageLinked() && $this->getImageDisplay() )
-		{
-			//if ( is_file(CN_IMAGE_PATH . $this->getImageNameCard()) ) 
-			echo '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameCard() . '" />';
-		}
-	}
-	
-	public function getProfileImage()
-	{
-		if ( $this->getImageLinked() && $this->getImageDisplay() )
-		{
-			//if ( is_file(CN_IMAGE_PATH . $this->getImageNameProfile()) ) 
-			echo '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameProfile() . '" />';
-		}
-	}
-	
-	public function getThumbnailImage( $atts = NULL )
-	{
-		global $connections;
-		
-		$defaultAtts = array( 'default' => FALSE, 'place_holder' => FALSE, 'style' => NULL, 'return' => FALSE );
-		
-		$atts = $this->validate->attributesArray($defaultAtts, (array) $atts);
-		
-		if ( $this->getImageLinked() && $this->getImageDisplay())
-		{
-			//if ( is_file(CN_IMAGE_PATH . $this->getImageNameThumbnail()) ) 
-			$out = '<img class="photo" alt="Photo of ' . $this->getFirstName() . ' ' . $this->getLastName() . '" style="-moz-border-radius:4px; background-color: #FFFFFF; border:1px solid #E3E3E3; margin-bottom:10px; padding:5px;" src="' . CN_IMAGE_BASE_URL . $this->getImageNameThumbnail() . '" />';
-		}
-		elseif ( $atts['place_holder'] )
-		{
-			$out = '<div class="cn_thumbnail_place_holder" style="height: ' . $connections->options->getImgThumbY() . 'px ; width: ' . $connections->options->getImgThumbX() . 'px"></div>';
-		}
-		
-		if ( $atts['return'] ) return $out;
-		echo $out;
+		$this->getImage();
 	}
 	
 	/**
-	 * Echo the logo if associated in a HTML hCard compliant string.
+	 * Echos the 'Profile Sized' image.
+	 * 
+	 * @deprecated since 0.7.2.0
+	 */
+	public function getProfileImage()
+	{
+		$this->getImage( array( 'image' => 'photo' , 'preset' => 'profile' ) );
+	}
+	
+	/**
+	 * Echos the 'Thumbnail Sized' image.
+	 * 
+	 * @deprecated since 0.7.2.0
+	 */
+	public function getThumbnailImage()
+	{
+		$this->getImage( array( 'image' => 'photo' , 'preset' => 'thumbnail' ) );
+	}
+	
+	/**
+	 * Echos the logo image.
+	 * 
+	 * @deprecated since 0.7.2.0
+	 */
+	public function getLogoImage( $atts = array() )
+	{
+		global $connections;
+		
+		/*
+		 * Set some defaults so the result resembles how the previous rendered.
+		 */
+		$atts['image'] = 'logo';
+		$atts['height'] = $connections->options->getImgLogoY();
+		$atts['width'] = $connections->options->getImgLogoX();
+		$atts['zc'] = 3;
+		$this->getImage( $atts );
+	}
+	
+	/**
+	 * Echo or return the image/logo if associated in a HTML hCard compliant string.
 	 * 
 	 * Accepted option for the $atts property are:
-	 * 		tag == string -- HTML tag.
-	 * 		id == string -- The tag id.
-	 * 		class == string -- The tag class.
-	 * 		alt == string -- The tag alt text.
-	 * 		title == string -- The tag title text.
-	 * 		src == string -- The image source.
-	 * 		longdesc == string -- URL to document containing text for image long description.
-	 * 		style == associative array -- Customize an inline stlye tag. Array format key == attribute; value == value.
-	 * 		before == string -- HTML to output before the logo.
-	 *  	after == string -- HTML to output after the logo.
-	 * 		display == string -- Display place holder area or default image or logo. Permitted values are logo, place_holder, default, blank.
-	 * 		return == TRUE || FALSE -- Return string if set to TRUE instead of echo string.
+	 * 	image (string) Select the image to display. Valid values are photo || logo
+	 * 	preset (string) Select one of the predefined image sizes Must be used in conjunction with the 'image' option. Valid values are thumbnail || entry || profile
+	 * 	fallback (array) Object to be shown when there is no image or logo. 
+	 * 		type (string) Fallback type. Valid values are; none || default || block
+	 * 		string (string) The string used with the block fallback
+	 * 		height (int) Block height. [Required if a image custom size was set.]
+	 * 		width (int) Block width.
+	 * 	height (int) Override the values saved in the settings. [Required if providing custom size.]
+	 * 	width (int) Override the values saved in the settings.
+	 * 	zc (int) Crop format
+	 * 		0 Resize to Fit specified dimensions (no cropping)
+	 * 		1 Crop and resize to best fit the dimensions (default behaviour)
+	 * 		2 Resize proportionally to fit entire image into specified dimensions, and add borders if required
+	 * 		3 Resize proportionally adjusting size of scaled image so there are no borders gaps
+	 * 	before (string) HTML to output before the image
+	 * 	after (string) HTML to after before the image
+	 * 	style (array) Customize an inline stlye tag for the image or the placeholder block. Array format key == attribute; value == value.
+	 * 	return (bool) Return or echo the string. Default is to echo.
+	 * 
+	 * NOTE: If only the height or width was set for a custom image size, the opposite image dimension must be set for
+	 * the fallback block. This does not apply if the fallback is the default image.
+	 * 
+	 * @todo Enable support for a default image to be set.
 	 * 
 	 * @param array $atts [optional]
 	 * @return string
 	 */
-	public function getLogoImage( $atts = NULL )
+	public function getImage( $suppliedAtts = array() )
 	{
-		global $connections;
-		
-		$defaultAtts = array( 'tag' => array(),
-							  'id' => NULL,
-							  'class' => NULL,
-							  'alt' => NULL,
-							  'title' => NULL,
-							  'src' => NULL,
-							  'longdesc' => NULL,
-							  'style' => NULL,
-							  'before' => NULL,
-							  'after' => NULL,
-							  'display' => 'logo',
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+		$defaultAtts = array( 'image' => 'photo',
+							  'preset' => 'entry',
+							  'fallback' => array( 'type' => 'none',
+							  					   'string' => '',
+												   'height' => 0,
+												   'width' => 0
+												 ),
+							  'height' => 0,
+							  'width' => 0,
+							  'zc' => 2,
+							  'before' => '',
+							  'after' => '',
+							  'style' => array(),
 							  'return' => FALSE
 							);
 		
-		$atts = $this->validate->attributesArray($defaultAtts, (array) $atts);
-		$nonAtts = array('default', 'display', 'return', 'tag');
+		$atts = $this->validate->attributesArray( $defaultAtts , $suppliedAtts );
+		$atts['fallback'] = $this->validate->attributesArray( $defaultAtts['fallback'] , $suppliedAtts['fallback'] );
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
 		
-		$displayValues = array('logo', 'default', 'place_holder', 'blank');
-		if ( !in_array($atts['display'], $displayValues) ) return NULL;
+		global $connections;
+		$displayImage = FALSE;
+		$style = array();
+		$tag = array();
+		$out = '';
 		
-		$imageDimesion['height'] = $connections->options->getImgLogoY() . 'px';
-		$imageDimesion['width'] = $connections->options->getImgLogoX() . 'px';
+		/*
+		 * The $atts key that are not image tag attributes.
+		 */
+		$nonAtts = array( 'image' , 'preset' , 'fallback' , 'image_size' , 'zc' , 'before' , 'after' , 'return' );
 		
-		switch ( $atts['display'] )
+		( ! empty($atts['height']) || ! empty($atts['width']) ) ? $customSize = TRUE : $customSize = FALSE;
+		
+		switch ( $atts['image'] )
 		{
+			case 'photo':
+				if ( $this->getImageLinked() && $this->getImageDisplay() )
+				{
+					$displayImage = TRUE;
+					$atts['class'] = 'photo';
+					$atts['alt'] = 'Photo of ' . $this->getName();
+					$atts['title'] = 'Photo of ' . $this->getName();
+										
+					if ( $customSize )
+					{
+						$atts['src'] = WP_CONTENT_URL . '/plugins/connections/includes/timthumb/timthumb.php?src=' .
+									   CN_IMAGE_BASE_URL . $this->getImageNameOriginal() . 
+									   ( ( empty($atts['height'] ) ) ? '' : '&amp;h=' . $atts['height'] ) . 
+									   ( ( empty($atts['width'] ) ) ? '' : '&amp;w=' . $atts['width'] ) . 
+									   ( ( empty($atts['zc'] ) ) ? '' : '&amp;zc=' . $atts['zc'] );
+					}
+					else
+					{
+						switch ( $atts['preset'])
+						{
+							case 'entry':
+								$atts['image_size'] = getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
+								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameCard();
+								break;
+							case 'profile':
+								$atts['image_size'] = getimagesize( CN_IMAGE_PATH . $this->getImageNameProfile() );
+								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameProfile();
+								break;
+							case 'thumbnail':
+								$atts['image_size'] = getimagesize( CN_IMAGE_PATH . $this->getImageNameThumbnail() );
+								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameThumbnail();
+								break;
+							default:
+								$atts['image_size'] = getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
+								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameCard();
+								break;
+						}
+						
+						if ( $atts['image_size'] !== FALSE )
+						{
+							$atts['width'] = $atts['image_size'][0];
+							$atts['height'] = $atts['image_size'][1];
+						}
+					}
+				}
+			break;
+			
 			case 'logo':
 				if ( $this->getLogoLinked() && $this->getLogoDisplay() )
 				{
-					if ( empty($atts['tag']) ) $atts['tag'] = 'img';
-					if ( empty($atts['class']) ) $atts['class'] = 'logo';
-					if ( empty($atts['alt']) ) $atts['alt'] = 'Logo for ' . $this->getFirstName() . ' ' . $this->getLastName();
-					if ( empty($atts['title']) ) $atts['title'] = 'Logo for ' . $this->getFirstName() . ' ' . $this->getLastName();
-					if ( empty($atts['style']) ) $atts['style'] = array('-moz-border-radius' => '4px', 'background-color' => '#FFFFFF', 'border' => '1px solid #E3E3E3', 'margin-bottom' => '10px', 'padding' => '5px');
+					$displayImage = TRUE;
+					$atts['class'] = 'logo';
+					$atts['alt'] = 'Logo for ' . $this->getName();
+					$atts['title'] = 'Logo for ' . $this->getName();
 					
-					$atts['src'] = CN_IMAGE_BASE_URL . $this->getLogoName();
-					$atts['height'] = $imageDimesion['height'];
-					$atts['width'] = $imageDimesion['width'];
+					if ( $customSize )
+					{
+						$atts['src'] = WP_CONTENT_URL . '/plugins/connections/includes/timthumb/timthumb.php?src=' .
+									   CN_IMAGE_BASE_URL . $this->getLogoName() . 
+									   ( (empty($atts['height']) ) ? '' : '&amp;h=' . $atts['height'] ) . 
+									   ( (empty($atts['width']) ) ? '' : '&amp;w=' . $atts['width'] ) . 
+									   ( (empty($atts['zc']) ) ? '' : '&amp;zc=' . $atts['zc'] );
+					}
+					else
+					{
+						$atts['src'] = CN_IMAGE_BASE_URL . $this->getLogoName();
+						$atts['image_size'] = getimagesize( CN_IMAGE_PATH . $this->getLogoName() );
+						
+						if ( $atts['image_size'] !== FALSE )
+						{
+							$atts['width'] = $atts['image_size'][0];
+							$atts['height'] = $atts['image_size'][1];
+						}
+					}
 				}
-				else
-				{
-					return '';
-				}
-			break;
-			
-			case 'place_holder':
-				if ( empty($atts['tag']) ) $atts['tag'] = 'div';
-				if ( empty($atts['class']) ) $atts['class'] = 'cn_logo_place_holder';
-				
-				$atts['style'] = array_merge( (array) $atts['style'], $imageDimesion);
-			break;
-			
-			case 'default':
-			break;
-			
-			case 'blank':
-				return '';
-			break;
-			
-			default:
-				return '';
 			break;
 		}
 		
-		
+		/*
+		 * Add to the inline style the user supplied styles.
+		 */
 		foreach ( (array) $atts['style'] as $attr => $value )
 		{
-			if ( !empty($value) ) $style[] = "$attr: $value;";
+			if ( ! empty($value) ) $style[] = "$attr: $value";
 		}
 		
-		if ( !empty($style) ) $atts['style'] = implode(' ', $style);
-		
-			
-		foreach ( $atts as $attr => $value)
+		if ( $displayImage )
 		{
-			if ( !empty($value) && !in_array($attr, $nonAtts) ) $tag[] = "$attr=\"$value\"";
+			foreach ( $atts as $attr => $value)
+			{
+				if ( ! empty($value) && ! in_array( $attr , $nonAtts ) ) $tag[] = "$attr=\"$value\"";
+			}
+			
+			if ( ! empty($atts['height']) ) $style[] = 'height: ' . $atts['height'] . 'px';
+			if ( ! empty($atts['width']) ) $style[] = 'width: ' . $atts['width'] . 'px';
+			
+			$out = '<span class="cn-image-style" style="display: inline-block;"><span class="cn-image"' . ( ( empty($style) ) ? '' : ' style="' . implode('; ', $style) . ';"') . '><img ' . implode(' ', $tag) . ' /></span></span>';
+		}
+		else
+		{
+			if ( $customSize )
+			{
+				/*
+				 * Set the size to the supplied custom. The fallback custom size would take priority if it has been supplied.
+				 */
+				( empty( $atts['fallback']['height'] ) ) ? $style[] = 'height: ' . $atts['height'] . 'px' : $style[] = 'height: ' . $atts['fallback']['height'] . 'px';
+				( empty( $atts['fallback']['width'] ) ) ? $style[] = 'width: ' . $atts['width'] . 'px' : $style[] = 'width: ' . $atts['fallback']['width'] . 'px';
+			}
+			else
+			{
+				/*
+				 * If a custom size was not set, use the dimensions saved in the settings.
+				 */
+				switch ( $atts['image'] )
+				{
+					case 'photo':
+						
+						switch ( $atts['preset'])
+						{
+							case 'entry':
+								$style[] = 'height: ' . $connections->options->getImgEntryY() . 'px';
+								$style[] = 'width: ' . $connections->options->getImgEntryX() . 'px';
+								break;
+							case 'profile':
+								$style[] = 'height: ' . $connections->options->getImgProfileY() . 'px';
+								$style[] = 'width: ' . $connections->options->getImgProfileX() . 'px';
+								break;
+							case 'thumbnail':
+								$style[] = 'height: ' . $connections->options->getImgThumbY() . 'px';
+								$style[] = 'width: ' . $connections->options->getImgThumbX() . 'px';
+								break;
+							default:
+								$style[] = 'height: ' . $connections->options->getImgEntryY() . 'px';
+								$style[] = 'width: ' . $connections->options->getImgEntryX() . 'px';
+								break;
+						}
+						
+						break;
+					
+					case 'logo':
+						$style[] = 'height: ' . $connections->options->getImgLogoY() . 'px';
+						$style[] = 'width: ' . $connections->options->getImgLogoX() . 'px';
+						break;
+				}
+			}
+			
+			switch ( $atts['fallback']['type'] )
+			{
+				case 'block':
+					$style[] = 'display: inline-block';
+					
+					( empty( $atts['fallback']['string'] ) ) ? $string = '' : $string = '<p>' . $atts['fallback']['string'] . '</p>';
+					
+					$out = '<span class="cn-image-style" style="display: inline-block;"><span class="cn-image-none"' . ( ( empty($style) ) ? '' : ' style="' . implode('; ', $style) . ';"') . '>' . $string . '</span></span>';
+							
+					break;
+				
+				case 'default':
+					/*
+					 * @todo Enable support for a default image to be set.
+					 * NOTE: Use switch for image type to allow a default image for both the image and logo.
+					 */
+					break;
+			}
 		}
 		
-		if ( !empty($atts['before']) ) $out = $atts['before'];
-		
-		$out .= '<' . $atts['tag'] . ' ' . implode(' ', $tag) . '></' . $atts['tag'] . '>';
-		
-		if ( !empty($atts['after']) ) $out .= $atts['after'];
-		
-		if ( $atts['return'] ) return $out;
-		echo $out;
+		/*
+		 * Return or echo the string.
+		 */
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
-	public function getNameBlock($atts = NULL)
+	/**
+	 * Echo or return the entry name in a HTML hCard compliant string.
+	 * 
+	 * Accepted options for the $atts property are:
+	 * 	format (string) Tokens for the parts of the name.
+	 * 		Permitted Tokens:
+	 * 			%prefix%
+	 * 			%first%
+	 * 			%middle%
+	 * 			%last%
+	 * 			%suffix%
+	 * 	before (string) HTML to output before an address.
+	 * 	after (string) HTML to after before an address.
+	 * 	return (bool) Return or echo the string. Default is to echo.
+	 * 
+	 * Example:
+	 * 	If an entry is an individual this would return their name as Last Name, First Name
+	 * 	
+	 * 	$this->getName( array( 'format' => '%last%, %first% %middle%' ) );
+	 * 
+	 * NOTE: If an entry is a organization/family, this will return the organization/family name instead
+	 * 		 ignoring the format attribute because it does not apply.
+	 * 
+	 * @param array $atts [optional]
+	 * @return string
+	 */
+	public function getNameBlock( $suppliedAtts = array() )
 	{
-		//global $connections;
-		
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
 		$defaultAtts = array( 'format' => '%prefix% %first% %middle% %last% %suffix%',
+							  'before' => '',
+							  'after' => '',
 							  'return' => FALSE
 							);
 		
-		$atts = $this->validate->attributesArray($defaultAtts, (array) $atts);
+		$atts = $this->validate->attributesArray($defaultAtts, $suppliedAtts);
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
 		
 		$search = array('%prefix%', '%first%', '%middle%', '%last%', '%suffix%');
 		$replace = array();
@@ -184,7 +360,7 @@ class cnOutput extends cnEntry
 			break;
 			
 			case 'organization':
-				$out = '<span class="fn org">' . $this->getOrganization() . '</span>';
+				$out = '<span class="org fn">' . $this->getOrganization() . '</span>';
 			break;
 			
 			case 'family':
@@ -207,16 +383,33 @@ class cnOutput extends cnEntry
 			break;
 		}
 		
-		
-		if ( $atts['return'] ) return $out;
-		echo $out;
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
+	/**
+	 * Returns the Entry's full first and last name.
+	 * 
+	 * NOTE: If an entry is a organization/family, this will return the organization/family name instead
+	 * 		 ignoring the format attribute because it does not apply. 
+	 * 
+	 * @deprecated since 0.7.2.0
+	 * @return string
+	 */
     public function getFullFirstLastNameBlock()
     {
         return $this->getNameBlock( array('format' => '%prefix% %first% %middle% %last% %suffix%', 'return' => TRUE) );		
     }
-        
+    
+	/**
+	 * Returns the Entry's full first and last name with the last name first.
+	 * 
+	 * NOTE: If an entry is a organization/family, this will return the organization/family name instead
+	 * 		 ignoring the format attribute because it does not apply. 
+	 * 
+	 * @deprecated since 0.7.2.0
+	 * @return string
+	 */ 
     public function getFullLastFirstNameBlock()
     {
     	return $this->getNameBlock( array('format' => '%last%, %first% %middle%', 'return' => TRUE) );	
@@ -226,6 +419,7 @@ class cnOutput extends cnEntry
 	 * Echos the family members of the family entry type.
 	 * 
 	 * @deprecated since 0.7.1.0
+	 * @return string
 	 */
 	public function getConnectionGroupBlock()
 	{
@@ -251,78 +445,308 @@ class cnOutput extends cnEntry
 		}
 	}
 	
-	public function getTitleBlock()
+	/**
+	 * Echo or return the entry's title in a HTML hCard compliant string.
+	 * 
+	 * Accepted options for the $atts property are:
+	 * 	before (string) HTML to output before an address.
+	 * 	after (string) HTML to after before an address.
+	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (bool) $cached Returns the cached address data rather than querying the db.
+	 * @return string
+	 */
+	public function getTitleBlock( $suppliedAtts = array() )
 	{
-		if ($this->getTitle()) return '<span class="title">' . $this->getTitle() . '</span>' . "\n";
-	}
-	
-	public function getOrgUnitBlock()
-	{
-		if ($this->getOrganization() || $this->getDepartment()) $out = '<div class="org">' . "\n";
-			if ($this->getOrganization() && $this->getEntryType() != 'organization') $out .= '<span class="organization-name">' . $this->getOrganization() . '</span><br />' . "\n";
-			if ($this->getDepartment()) $out .= '<span class="organization-unit">' . $this->getDepartment() . '</span><br />' . "\n";
-		if ($this->getOrganization() || $this->getDepartment()) $out .= '</div>' . "\n";
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+		$defaultAtts = array( 'format' => '%prefix% %first% %middle% %last% %suffix%',
+							  'before' => '',
+							  'after' => '',
+							  'return' => FALSE
+							);
 		
-		return $out;
+		$atts = $this->validate->attributesArray($defaultAtts, $suppliedAtts);
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		$out = '';
+		$title = $this->getTitle();
+		
+		if ( ! empty($title) )
+		{
+			$out .= '<span class="title">' . $title . '</span>';
+		}
+		else
+		{
+			return '';
+		}
+		
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
-	public function getOrganizationBlock()
-	{
-		if ($this->getOrganization() && $this->getEntryType() != 'organization') return '<span class="org">' . $this->getOrganization() . '</span>' . "\n";
-	}
-	
-	public function getDepartmentBlock()
-	{
-		if ($this->getDepartment()) return '<span class="org"><span class="organization-unit">' . $this->getDepartment() . '</span></span>' . "\n";
-	}
-	
-	public function getAddressBlock()
+	/**
+	 * Echo or return the entry's organization and/or departartment in a HTML hCard compliant string.
+	 * 
+	 * Accepted options for the $atts property are:
+	 * 	before (string) HTML to output before an address.
+	 * 	after (string) HTML to after before an address.
+	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (bool) $cached Returns the cached address data rather than querying the db.
+	 * @return string
+	 */
+	public function getOrgUnitBlock( $suppliedAtts = array() )
 	{
 		$out = '';
+		$org = $this->getOrganization();
+		$dept = $this->getDepartment();
 		
-		if ($this->getAddresses())
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+		$defaultAtts = array( 'before' => '',
+							  'after' => '',
+							  'return' => FALSE
+							);
+		
+		$atts = $this->validate->attributesArray($defaultAtts, $suppliedAtts);
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		if ( ! empty($org) || ! empty($dept) )
 		{
-			$out .= '<div class="adr" style="margin-bottom: 10px;">' . "\n";
-			
-			foreach ($this->getAddresses() as $address)
-			{
-				if ($address->name != NULL || $address->type != NULL) $out .= '<span class="address_name"><strong>' . $address->name . '</strong></span><br />' . "\n"; //The OR is for compatiblity for 0.2.24 and under
-				if ($address->line_one != NULL) $out .= '<div class="street-address">' . $address->line_one . '</div>' . "\n";
-				if ($address->line_two != NULL) $out .= '<div class="extended-address">' . $address->line_two . '</div>' . "\n";
-				if ($address->city != NULL) $out .= '<span class="locality">' . $address->city . ',</span>&nbsp;' . "\n";
-				if ($address->state != NULL) $out .= '<span class="region">' . $address->state . '</span>&nbsp;' . "\n";
-				if ($address->zipcode != NULL) $out .= '<span class="postal-code">' . $address->zipcode . '</span><br />' . "\n";
-				if ($address->country != NULL) $out .= '<span class="country-name">' . $address->country . '</span>' . "\n";
-			}
-			
-			$out .= '</div>' . "\n\n";
+			$out .= '<span class="org">';
+			if ( ! empty($org) ) $out .= '<span class="organization-name"' . ( ( $this->getEntryType() == 'organization' ) ? ' style="display: none;"' : '' ) . '>' . $org . '</span>';
+			if ( ! empty($dept) ) $out .= '<span class="organization-unit">' . $dept . '</span>';
+			$out .= '</span>';
+		}
+		else
+		{
+			return '';
 		}
 		
-		return $out;
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
-	public function getPhoneNumberBlock()
+	/**
+	 * Return the entry's organization and/or departartment in a HTML hCard compliant string.
+	 * 
+	 * @deprecated since 0.7.2.0
+	 */
+	public function getOrganizationBlock()
 	{
-		if ($this->getPhoneNumbers())
-		{
-			$out = '<div class="phone-number-block" style="margin-bottom: 10px;">' . "\n";
-			foreach ($this->getPhoneNumbers() as $phone) 
-			{
-				//Type for hCard compatibility. Hidden.
-				if ($phone->number != null) $out .=  '<strong>' . $phone->name . ':</strong> <span class="tel">' . $this->gethCardTelType($phone->type) . '<span class="value">' .  $phone->number . '</span></span><br />' . "\n";
-			}
-			$out .= '</div>' . "\n";
-		}
-		
-		if ( !isset($out) || empty($out) ) $out = '';
-		
-		return $out;
+		return $this->getOrgUnitBlock( array( 'return' => TRUE ) );
 	}
 	
+	/**
+	 * Return the entry's organization and/or departartment in a HTML hCard compliant string.
+	 * 
+	 * @deprecated since 0.7.2.0
+	 */
+	public function getDepartmentBlock()
+	{
+		return $this->getOrgUnitBlock( array( 'return' => TRUE ) );
+	}
+	
+	/**
+	 * Echo or return the entry's addresses in a HTML hCard compliant string.
+	 * 
+	 * Accepted options for the $atts property are:
+	 * 	preferred (bool) Retrieve the preferred entry address.
+	 * 	type (array) || (string) Retrieve specific address types.
+	 * 		Permitted Types:
+	 * 			home
+	 * 			work
+	 * 			school
+	 * 			other
+	 * 	city (array) || (string) Retrieve addresses in a specific city.
+	 * 	state (array) || (string) Retrieve addresses in a specific state..
+	 * 	zipcode (array) || (string) Retrieve addresses in a specific zipcode.
+	 * 	country (array) || (string) Retrieve addresses in a specific country.
+	 * 	coordinates (array) Retrieve addresses in with specific coordinates. Both latitude and longitude must be supplied.
+	 * 	format (string) The tokens to use to display the address block parts.
+	 * 		Permitted Tokens:
+	 * 			%label%
+	 * 			%line1%
+	 * 			%line2%
+	 * 			%line3%
+	 * 			%city%
+	 * 			%state%
+	 * 			%zipcode%
+	 * 			%country%
+	 * 			%geo%
+	 * 	before (string) HTML to output before the addresses.
+	 * 	after (string) HTML to after before the addresses.
+	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (bool) $cached Returns the cached address rather than querying the db.
+	 * @return string
+	 */
+	public function getAddressBlock( $suppliedAttr = array() , $cached = TRUE )
+	{
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['type'] = NULL;
+			$defaultAttr['city'] = NULL;
+			$defaultAttr['state'] = NULL;
+			$defaultAttr['zipcode'] = NULL;
+			$defaultAttr['country'] = NULL;
+			$defaultAttr['coordinates'] = array();
+			//$defaultAttr['format'] = '%label%|%line1%|%line2%|%line3%|%city%, %state%  %zipcode%|%geo%';
+			$defaultAttr['format'] = '%label% %line1% %line2% %line3% %city%, %state%  %zipcode%';
+			$defaultAttr['before'] = '';
+			$defaultAttr['after'] = '';
+			$defaultAttr['return'] = FALSE;
+			
+			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
+			$atts['id'] = $this->getId();
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		$out = '';
+		$addresses = $this->getAddresses( $atts , $cached );
+		$search = array('%label%' , '%line1%' , '%line2%' , '%line3%' , '%city%' , '%state%' , '%zipcode%' , '%country%' , '%geo%');
+		
+		if ( empty($addresses) ) return '';
+		
+		$out .= '<span class="address-block">';
+		
+		foreach ($addresses as $address)
+		{
+			$replace = array();
+			
+			$out .= "\n" . '<span class="adr">';
+			
+				( empty($address->name) ) ? $replace[] = '' : $replace[] = '<span class="address-name">' . $address->name . '</span>';
+				( empty($address->line_1) ) ? $replace[] = '' : $replace[] = '<span class="street-address">' . $address->line_1 . '</span>';
+				( empty($address->line_2) ) ? $replace[] = '' : $replace[] = '<span class="street-address">' . $address->line_2 . '</span>';
+				( empty($address->line_3) ) ? $replace[] = '' : $replace[] = '<span class="street-address">' . $address->line_3 . '</span>';
+				
+				( empty($address->city) ) ? $replace[] = '' : $replace[] = '<span class="locality">' . $address->city . '</span>';
+				( empty($address->state) ) ? $replace[] = '' : $replace[] = '<span class="region">' . $address->state . '</span>';
+				( empty($address->zipcode) ) ? $replace[] = '' : $replace[] = '<span class="postal-code">' . $address->zipcode . '</span>';
+				
+				( empty($address->country) ) ? $replace[] = '' : $replace[] = '<span class="country-name">' . $address->country . '</span>';
+				
+				if ( ! empty($address->latitude) || ! empty($address->longitude) )
+				{
+					 $replace[] = '<span class="geo">' . 
+					 	( ( empty($address->latitude) ) ? '' : '<span class="latitude" title="' . $address->latitude . '"><span class="cn-label">Latitude: </span>' . $address->latitude . '</span>' ) . 
+						( ( empty($address->longitude) ) ? '' : '<span class="longitude" title="' . $address->longitude . '"><span class="cn-label">Longitude: </span>' . $address->longitude . '</span>' ) . 
+						'</span>';
+				}
+				
+				$out .= str_ireplace( $search , $replace , $atts['format'] );
+				
+				// Set the hCard Address Type.
+				$out .= $this->gethCardAdrType($address->type);
+				
+			$out .= '</span>' . "\n";
+		}
+		
+		$out .= '</span>';
+		
+		//$out = str_ireplace( array('|||||||||' , '||||||||' ,'|||||||' ,'||||||' ,'|||||' ,'||||' ,'|||' ,'||' ,'|') , '<br>' , $out );
+		
+		if ( $return ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+	}
+	
+	/**
+	 * Echo or return the entry's phone numbers in a HTML hCard compliant string.
+	 * 
+	 * Accepted options for the $atts property are:
+	 * 	preferred (bool) Retrieve the preferred entry phone number.
+	 * 	type (array) || (string) Retrieve specific phone number types.
+	 * 		Permitted Types:
+	 * 			homephone
+	 * 			homefax
+	 * 			cellphone
+	 * 			workphone
+	 * 			workfax
+	 * 	format (string) The tokens to use to display the phone number block parts.
+	 * 		Permitted Tokens:
+	 * 			%label%
+	 * 			%number%
+	 * 	before (string) HTML to output before the phone numbers.
+	 * 	after (string) HTML to after before the phone numbers.
+	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (bool) $cached Returns the cached data rather than querying the db.
+	 * @return string
+	 */
+	public function getPhoneNumberBlock( $suppliedAttr = array() , $cached = TRUE )
+	{
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['type'] = NULL;
+			$defaultAttr['format'] = '%label%: %number%';
+			$defaultAttr['before'] = '';
+			$defaultAttr['after'] = '';
+			$defaultAttr['return'] = FALSE;
+			
+			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
+			$atts['id'] = $this->getId();
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		$out = '';
+		$phoneNumbers = $this->getPhoneNumbers( $atts , $cached );
+		$search = array('%label%' , '%number%');
+		
+		if ( empty($phoneNumbers) ) return '';
+		
+		$out .= '<span class="phone-number-block">';
+		
+		foreach ( $phoneNumbers as $phone ) 
+		{
+			$replace = array();
+			
+			$out .= "\n" . '<span class="tel">';
+			
+				( empty($phone->name) ) ? $replace[] = '' : $replace[] = '<span class="phone-name">' . $phone->name . '</span>';
+				( empty($phone->number) ) ? $replace[] = '' : $replace[] = '<span class="value">' . $phone->number . '</span>';
+				
+				$out .= str_ireplace( $search , $replace , $atts['format'] );
+				
+				// Set the hCard Phone Number Type.
+				$out .= $this->gethCardTelType($phone->type);
+				
+			$out .= '</span>' . "\n";
+		}
+		
+		$out .= '</span>';
+		
+		if ( $return ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+	}
+	
+	/**
+	 * Returns the entry's telephone type in a HTML hCard compliant string.
+	 * 
+	 * @url http://microformats.org/wiki/hcard-cheatsheet
+	 * @param (string) $data
+	 * @return string
+	 */
 	public function gethCardTelType($data)
     {
-        //This is here for compatibility for versions 0.2.24 and earlier;
-		switch ($data)
+        switch ($data)
 		{
 			case 'home':
 				$type = '<span class="type" style="display: none;">home</span>';
@@ -351,19 +775,21 @@ class cnOutput extends cnEntry
 			case 'fax':
 				$type = '<span class="type" style="display: none;">work</span><span class="type" style="display: none;">fax</span>';
 				break;
-			
-			default:
-				$type = $data;
-			break;
 		}
 		
 		return $type;
     }
 	
-	public function gethCardAdrType($data)
+	/**
+	 * Returns the entry's address type in a HTML hCard compliant string.
+	 * 
+	 * @url http://microformats.org/wiki/adr-cheatsheet#Properties_.28Class_Names.29
+	 * @param (string) $data
+	 * @return string
+	 */
+	public function gethCardAdrType($adrType)
     {
-        //This is here for compatibility for versions 0.2.24 and earlier;
-		switch ($data)
+        switch ($adrType)
 		{
 			case 'home':
 				$type = '<span class="type" style="display: none;">home</span>';
@@ -372,101 +798,345 @@ class cnOutput extends cnEntry
 				$type = '<span class="type" style="display: none;">work</span>';
 				break;
 			case 'school':
-				$type = '<span class="type" style="display: none;">school</span>';
+				$type = '<span class="type" style="display: none;">postal</span>';
 				break;
 			case 'other':
-				$type = '<span class="type" style="display: none;">other</span>';
+				$type = '<span class="type" style="display: none;">postal</span>';
 				break;
 			
 			default:
-				if ($this->getEntryType() == 'individual')
-				{
-					$type = '<span class="type" style="display: none;">home</span>';
-				}
-				elseif ($this->getEntryType() == 'organization')
-				{
-					$type = '<span class="type" style="display: none;">work</span>';
-				}
-			break;
+				$type = '<span class="type" style="display: none;">postal</span>';
+				break;
 		}
 		
 		return $type;
     }
 	
-	public function getEmailAddressBlock()
+	/**
+	 * Echo or return the entry's email addresses in a HTML hCard compliant string.
+	 * 
+	 * Accepted options for the $atts property are:
+	 * 	preferred (bool) Retrieve the preferred entry email address.
+	 * 	type (array) || (string) Retrieve specific email address types.
+	 * 		Permitted Types:
+	 * 			personal
+	 * 			work
+	 * 	format (string) The tokens to use to display the email address block parts.
+	 * 		Permitted Tokens:
+	 * 			%label%
+	 * 			%address%
+	 * 	before (string) HTML to output before the email addresses.
+	 * 	after (string) HTML to after before the email addresses.
+	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (bool) $cached Returns the cached data rather than querying the db.
+	 * @return string
+	 */
+	public function getEmailAddressBlock( $suppliedAttr = array() , $cached = TRUE )
 	{
-		if ($this->getEmailAddresses())
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['type'] = NULL;
+			$defaultAttr['format'] = '%label%: %address%';
+			$defaultAttr['before'] = '';
+			$defaultAttr['after'] = '';
+			$defaultAttr['return'] = FALSE;
+			
+			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
+			$atts['id'] = $this->getId();
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		$out = '';
+		$emailAddresses = $this->getEmailAddresses( $atts , $cached );
+		$search = array('%label%' , '%address%');
+		
+		if ( empty($emailAddresses) ) return '';
+		
+		$out .= '<span class="email-address-block">';
+		
+		foreach ( $emailAddresses as $email) 
 		{
-			$out = '<div class="email-address-block">' . "\n";
+			$replace = array();
 			
-			foreach ($this->getEmailAddresses() as $email)
-			{
-				//Type for hCard compatibility. Hidden.
-				if ($email->address != NULL) $out .= '<strong>' . $email->name . ':</strong><br /><span class="email"><span class="type" style="display: none;">INTERNET</span><a class="value" href="mailto:' . $email->address . '">' . $email->address . '</a></span><br /><br />' . "\n";
-			}
-			
-			$out .= '</div>' . "\n";
-			
-			$out = apply_filters('cn_output_email_addresses', $out);
+			$out .= "\n" . '<span class="email">';
+				
+				( empty($email->name) ) ? $replace[] = '' : $replace[] = '<span class="email-name">' . $email->name . '</span>';
+				( empty($email->address) ) ? $replace[] = '' : $replace[] = '<a class="value" href="mailto:' . $email->address . '">' . $email->address . '</a>';
+				
+				$out .= str_ireplace( $search , $replace , $atts['format'] );
+				
+				// Set the hCard Email Address Type.
+				$out .= '<span class="type" style="display: none;">INTERNET</span>';
+				
+			$out .= '</span>' . "\n";
 		}
 		
-		if ( !isset($out) || empty($out) ) $out = '';
+		$out .= '</span>';
 		
-		return $out;
+		// This filter is required to allow the ROT13 encyption plugin to function.
+		$out = apply_filters('cn_output_email_addresses', $out);
+		
+		if ( $return ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
-	public function getImBlock()
+	/**
+	 * Echo or return the entry's IM network IDs in a HTML hCard compliant string.
+	 * 
+	 * Accepted options for the $atts property are:
+	 * 	preferred (bool) Retrieve the preferred entry IM network.
+	 * 	type (array) || (string) Retrieve specific IM network types.
+	 * 		Permitted Types:
+	 * 			aim
+	 * 			yahoo
+	 * 			jabber
+	 * 			messenger
+	 * 			skype
+	 * 	format (string) The tokens to use to display the IM network block parts.
+	 * 		Permitted Tokens:
+	 * 			%label%
+	 * 			%id%
+	 * 	before (string) HTML to output before the IM networks.
+	 * 	after (string) HTML to after before the IM networks.
+	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * @url http://microformats.org/wiki/hcard-examples#New_Types_of_Contact_Info
+	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (bool) $cached Returns the cached data rather than querying the db.
+	 * @return string
+	 */
+	public function getImBlock( $suppliedAttr = array() , $cached = TRUE )
 	{
-		if ($this->getIm())
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['type'] = NULL;
+			$defaultAttr['format'] = '%label%: %id%';
+			$defaultAttr['before'] = '';
+			$defaultAttr['after'] = '';
+			$defaultAttr['return'] = FALSE;
+			
+			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
+			$atts['id'] = $this->getId();
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		$out = '';
+		$networks = $this->getIm( $atts , $cached );
+		$search = array('%label%' , '%id%');
+		
+		if ( empty($networks) ) return '';
+		
+		$out .= '<span class="im-network-block">';
+		
+		foreach ( $networks as $network )
 		{
-			/**
-			 * @TODO: Out as clickable links using hCard spec.
-			 */
-			$out = '<div class="im-block" style="margin-bottom: 10px;">' . "\n";
-			foreach ($this->getIm() as $imRow)
-			{
-				if ($imRow->id != NULL) $out .= '<span class="im-item"><strong>' . $imRow->name . ':</strong> ' . $imRow->id . '</span><br />' . "\n";
-			}
-			$out .= '</div>' . "\n";
+			$replace = array();
+			
+			$out .= "\n" . '<span class="im-network">';
+				
+				( empty($network->name) ) ? $replace[] = '' : $replace[] = '<span class="im-name">' . $network->name . '</span>';
+				
+				switch ( $network->type )
+				{
+					case 'aim':
+						( empty($network->id) ) ? $replace[] = '' : $replace[] = '<a class="url im-id" href="aim:goim?screenname=' . $network->id . '">' . $network->id . '</a>';
+						break;
+					
+					case 'yahoo':
+						( empty($network->id) ) ? $replace[] = '' : $replace[] = '<a class="url im-id" href="ymsgr:sendIM?' . $network->id . '">' . $network->id . '</a>';
+						break;
+						
+					case 'jabber':
+						( empty($network->id) ) ? $replace[] = '' : $replace[] = '<span class="im-id">' . $network->id . '</span>';
+						break;
+						
+					case 'messenger':
+						( empty($network->id) ) ? $replace[] = '' : $replace[] = '<a class="url im-id" href="msnim:chat?contact=' . $network->id . '">' . $network->id . '</a>';
+						break;
+						
+					case 'skype':
+						( empty($network->id) ) ? $replace[] = '' : $replace[] = '<a class="url im-id" href="skype:' . $network->id . '?chat">' . $network->id . '</a>';
+						break;
+					
+					case 'icq':
+						( empty($network->id) ) ? $replace[] = '' : $replace[] = '<a class="url im-id" type="application/x-icq" href="http://www.icq.com/people/cmd.php?uin=' . $network->id . '&action=message">' . $network->id . '</a>';
+						break;
+						
+					default:
+						( empty($network->id) ) ? $replace[] = '' : $replace[] = '<span class="im-id">' . $network->id . '</span>';
+						break;
+				}
+				
+				$out .= str_ireplace( $search , $replace , $atts['format'] );
+				
+			$out .= '</span>' . "\n";
 		}
 		
-		if ( !isset($out) || empty($out) ) $out = '';
+		$out .= '</span>';
 		
-		return $out;
+		if ( $return ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
-	public function getSocialMediaBlock()
+	/**
+	 * Echo or return the entry's social media network IDs in a HTML hCard compliant string.
+	 * 
+	 * Accepted options for the $atts property are:
+	 * 	preferred (bool) Retrieve the preferred entry social media network.
+	 * 	type (array) || (string) Retrieve specific social media network types.
+	 * 		Permitted Types:
+	 * 			delicious
+	 * 			cdbaby
+	 * 			facebook
+	 * 			flickr
+	 * 			itunes
+	 * 			linked-in
+	 * 			mixcloud
+	 * 			myspace
+	 * 			podcast
+	 * 			reverbnation
+	 * 			rss
+	 * 			technorati
+	 * 			twitter
+	 * 			soundcloud
+	 * 			youtube
+	 * 	before (string) HTML to output before the social media networks.
+	 * 	after (string) HTML to after before the social media networks.
+	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * @url http://microformats.org/wiki/hcard-examples#Site_profiles
+	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (bool) $cached Returns the cached data rather than querying the db.
+	 * @return string
+	 */
+	public function getSocialMediaBlock( $suppliedAttr = array() , $cached = TRUE )
 	{
-		if ($this->getSocialMedia())
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['type'] = NULL;
+			$defaultAttr['before'] = '';
+			$defaultAttr['after'] = '';
+			$defaultAttr['return'] = FALSE;
+			
+			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
+			$atts['id'] = $this->getId();
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		$out = '';
+		$networks = $this->getSocialMedia( $atts , $cached );
+		
+		if ( empty($networks) ) return '';
+		
+		$out = '<span class="social-media-block">';
+		
+		foreach ( $networks as $network )
 		{
-			$out = '<div class="social-media-block" style="margin-bottom: 10px;">' . "\n";
-			foreach ($this->getSocialMedia() as $socialNetwork)
-			{
-				if ($socialNetwork->id != null) $out .= '<span class="social-media-item"><a class="url uid ' . $socialNetwork->type . '" href="' . $socialNetwork->url . '" target="_blank" title="' . $socialNetwork->name . '">' . $socialNetwork->name . '</a></span><br />' . "\n";
-			}
-			$out .= '</div>' . "\n";
+			$out .= "\n" . '<span class="social-media-network">';
+			
+				$out .= '<a class="url ' . $network->type . '" href="' . $network->url . '" target="_blank" title="' . $network->name . '">' . $network->name . '</a>';
+			
+			$out .= '</span>' . "\n";
 		}
 		
-		if ( !isset($out) || empty($out) ) $out = '';
+		$out .= '</span>';
 		
-		echo $out;
+		if ( $return ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
+	/**
+	 * Return the entry's websites in a HTML hCard compliant string.
+	 * 
+	 * @deprecated since 0.7.2.0
+	 */
 	public function getWebsiteBlock()
 	{
-		if ($this->getWebsites())
+		/*
+		 * Set some defaults so the result resembles how the previous rendered.
+		 */
+		return $this->getLinkBlock( array( 'format' => '%label%: %url%' , 'type' => 'website' , 'return' => TRUE ) );
+	}
+	
+	/**
+	 * Echo or return the entry's links in a HTML hCard compliant string.
+	 * 
+	 * Accepted options for the $atts property are:
+	 * 	preferred (bool) Retrieve the preferred entry link.
+	 * 	type (array) || (string) Retrieve specific link types.
+	 * 		Permitted Types:
+	 * 			website
+	 * 			blog
+	 * 	format (string) The tokens to use to display the phone number block parts.
+	 * 		Permitted Tokens:
+	 * 			%label%
+	 * 			%title%
+	 * 			%url%
+	 * 	before (string) HTML to output before the social media networks.
+	 * 	after (string) HTML to after before the social media networks.
+	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * @url http://microformats.org/wiki/hcard-examples#Site_profiles
+	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (bool) $cached Returns the cached data rather than querying the db.
+	 * @return string
+	 */
+	public function getLinkBlock( $suppliedAttr = array() , $cached = TRUE )
+	{
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['type'] = NULL;
+			$defaultAttr['format'] = '%title%';
+			$defaultAttr['before'] = '';
+			$defaultAttr['after'] = '';
+			$defaultAttr['return'] = FALSE;
+			
+			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
+			$atts['id'] = $this->getId();
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		$out = '';
+		$links = $this->getLinks( $atts , $cached );
+		$search = array('%label%' , '%title%' , '%url%');
+		
+		if ( empty($links) ) return '';
+		
+		$out .= '<span class="link-block">';
+		
+		foreach ( $links as $link )
 		{
-			$out = '<div class="website-block" style="margin-bottom: 10px;">' . "\n";
-			foreach ($this->getWebsites() as $website)
-			{
-				if ($website->url != NULL) $out .= '<span class="website-address" style="display: block"><strong>Website:</strong> <a class="url" href="' . $website->url . '" target="_blank">' . $website->url . '</a></span>' . "\n";
-			}
-			$out .= "</div>" . "\n";
+			$replace = array();
+			
+			$out .= "\n" . '<span class="link ' . $link->type . '">';
+			
+				( empty($link->name) ) ? $replace[] = '' : $replace[] = '<span class="link-name">' . $link->name . '</span>';
+				( empty($link->title) ) ? $replace[] = '' : $replace[] = '<a class="url" href="' . $link->url . '"' . ( ( empty($link->target) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty($link->followString) ? '' : ' rel="' . $link->followString . '"' ) ) . '>' . $link->title . '</a>';
+				( empty($link->url) ) ? $replace[] = '' : $replace[] = '<a class="url" href="' . $link->url . '"' . ( ( empty($link->target) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty($link->followString) ? '' : ' rel="' . $link->followString . '"' ) ) . '>' . $link->url . '</a>';
+				
+				$out .= str_ireplace( $search , $replace , $atts['format'] );
+				
+			$out .= '</span>' . "\n";
 		}
 		
-		if ( !isset($out) || empty($out) ) $out = '';
+		$out .= '</span>';
 		
-		return $out;
+		if ( $return ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
 	public function getBirthdayBlock( $format = 'F jS' )
@@ -474,9 +1144,9 @@ class cnOutput extends cnEntry
 		//NOTE: The vevent span is for hCalendar compatibility.
 		//NOTE: The second birthday span [hidden] is for hCard compatibility.
 		//NOTE: The third span series [hidden] is for hCalendar compatibility.
-		if ($this->getBirthday()) $out = '<span class="vevent"><span class="birthday"><strong>Birthday:</strong> <abbr class="dtstart" title="' . $this->getBirthday('Ymd') .'">' . $this->getBirthday($format) . '</abbr></span>' .
+		if ($this->getBirthday()) $out = "\n" . '<div class="vevent"><span class="birthday"><strong>Birthday:</strong> <abbr class="dtstart" title="' . $this->getBirthday('Ymd') .'">' . $this->getBirthday($format) . '</abbr></div>' .
 										 '<span class="bday" style="display:none">' . $this->getBirthday('Y-m-d') . '</span>' .
-										 '<span class="summary" style="display:none">Birthday - ' . $this->getFullFirstLastName() . '</span> <span class="uid" style="display:none">' . $this->getBirthday('YmdHis') . '</span> </span><br />' . "\n";
+										 '<span class="summary" style="display:none">Birthday - ' . $this->getFullFirstLastName() . '</span> <span class="uid" style="display:none">' . $this->getBirthday('YmdHis') . '</span> </span>' . "\n";
 		
 		if ( !isset($out) || empty($out) ) $out = '';
 		
@@ -486,8 +1156,8 @@ class cnOutput extends cnEntry
 	public function getAnniversaryBlock( $format = 'F jS' )
 	{
 		//NOTE: The vevent span is for hCalendar compatibility.
-		if ($this->getAnniversary()) $out = '<span class="vevent"><span class="anniversary"><strong>Anniversary:</strong> <abbr class="dtstart" title="' . $this->getAnniversary('Ymd') . '">' . $this->getAnniversary($format) . '</abbr></span>' .
-											'<span class="summary" style="display:none">Anniversary - ' . $this->getFullFirstLastName() . '</span> <span class="uid" style="display:none">' . $this->getAnniversary('YmdHis') . '</span> </span><br />' . "\n";
+		if ($this->getAnniversary()) $out = "\n" . '<div class="vevent"><span class="anniversary"><strong>Anniversary:</strong> <abbr class="dtstart" title="' . $this->getAnniversary('Ymd') . '">' . $this->getAnniversary($format) . '</abbr></div>' .
+											'<span class="summary" style="display:none">Anniversary - ' . $this->getFullFirstLastName() . '</span> <span class="uid" style="display:none">' . $this->getAnniversary('YmdHis') . '</span> </span>' . "\n";
 		
 		if ( !isset($out) || empty($out) ) $out = '';
 		
@@ -496,12 +1166,12 @@ class cnOutput extends cnEntry
 	
 	public function getNotesBlock()
 	{
-		return '<div class="note">' . $this->getNotes() . '</div>' . "\n";
+		return "\n" . '<div class="note">' . $this->getNotes() . '</div>' . "\n";
 	}
 	
 	public function getBioBlock()
 	{
-		return '<div class="bio">' . $this->getBio() . '</div>' . "\n";
+		return "\n" . '<div class="bio">' . $this->getBio() . '</div>' . "\n";
 	}
 	
 	/**

@@ -2,58 +2,56 @@
 function connectionsShowViewPage( $action = NULL )
 {
 	global $wpdb, $connections;
-	?>
 	
-	<div class="wrap">
-		<div class="icon32" id="icon-connections"><br/></div>
-		<h2>Connections : Manage</h2>
-	
-	<?php
 	$connections->displayMessages();
 	
 	switch ( $action )
 	{
 		case 'add':
+			
+			echo '<div class="wrap">
+					<div class="icon32" id="icon-connections"><br/></div>
+					<h2>Connections : Add Entry</h2>';
+			
 			/*
 			 * Check whether current user can add an entry.
 			 */
 			if ( current_user_can('connections_add_entry') || current_user_can('connections_add_entry_moderated') )
 			{
-				add_meta_box('metabox-name', 'Name', array(&$form, 'metaboxName'), $connections->pageHook->manage, 'normal', 'high');
+				add_meta_box('metabox-name', 'Name', array(&$form, 'metaboxName'), $connections->pageHook->add, 'normal', 'high');
 				
 				$form = new cnFormObjects();
 				$entry = new cnEntry();
 				
 				echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
-					echo '<h2><a name="new"></a>Add Entry</h2>';
 					
-						$attr = array(
-									 'action' => 'admin.php?connections_process=true&process=manage&action=add',
-									 'method' => 'post',
-									 'enctype' => 'multipart/form-data',
-									 );
-						
-						$form->open($attr);
-						
-						$form->tokenField('add_entry');
-						wp_nonce_field('howto-metaboxes-general');
-						wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false );
-						wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false );
-						
-						echo '<input type="hidden" name="action" value="save_howto_metaboxes_general" />';
-						
-						echo '<div id="side-info-column" class="inner-sidebar">';
-							do_meta_boxes($connections->pageHook->manage, 'side', $entry);
+					$attr = array(
+								 'action' => 'admin.php?connections_process=true&process=manage&action=add',
+								 'method' => 'post',
+								 'enctype' => 'multipart/form-data',
+								 );
+					
+					$form->open($attr);
+					
+					$form->tokenField('add_entry');
+					wp_nonce_field('cn-add-metaboxes');
+					wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false );
+					wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false );
+					
+					echo '<input type="hidden" name="action" value="save_cn_add_metaboxes" />';
+					
+					echo '<div id="side-info-column" class="inner-sidebar">';
+						do_meta_boxes($connections->pageHook->add, 'side', $entry);
+					echo '</div>';
+					
+					
+					echo '<div id="post-body" class="has-sidebar">';
+						echo '<div id="post-body-content" class="has-sidebar-content">';
+							do_meta_boxes($connections->pageHook->add, 'normal', $entry);
 						echo '</div>';
-						
-						
-						echo '<div id="post-body" class="has-sidebar">';
-							echo '<div id="post-body-content" class="has-sidebar-content">';
-								do_meta_boxes($connections->pageHook->manage, 'normal', $entry);
-							echo '</div>';
-						echo '</div>';
-						
-						$form->close();
+					echo '</div>';
+					
+					$form->close();
 						
 				echo '</div>';
 				?>
@@ -64,7 +62,7 @@ function connectionsShowViewPage( $action = NULL )
 					// close postboxes that should be closed
 					$('.if-js-closed').removeClass('if-js-closed').addClass('closed');
 					// postboxes setup
-					postboxes.add_postbox_toggles('<?php echo $connections->pageHook->manage ?>');
+					postboxes.add_postbox_toggles('<?php echo $connections->pageHook->add ?>');
 				});
 				//]]>
 				</script>
@@ -80,6 +78,11 @@ function connectionsShowViewPage( $action = NULL )
 		break;
 		
 		case 'copy':
+			
+			echo '<div class="wrap">
+					<div class="icon32" id="icon-connections"><br/></div>
+					<h2>Connections : Copy Entry</h2>';
+			
 			/*
 			 * Check whether current user can add an entry.
 			 */
@@ -94,36 +97,35 @@ function connectionsShowViewPage( $action = NULL )
 				$entry = new cnEntry( $connections->retrieve->entry($id) );
 				
 				echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
-					echo '<h2><a name="new"></a>Add Entry</h2>';
 					
-						$attr = array(
-									 'action' => 'admin.php?connections_process=true&process=manage&action=add&id=' . $id,
-									 'method' => 'post',
-									 'enctype' => 'multipart/form-data',
-									 );
-						
-						$form->open($attr);
-						
-						$form->tokenField('add_entry');
-						wp_nonce_field('howto-metaboxes-general');
-						wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false );
-						wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false );
-						
-						echo '<input type="hidden" name="action" value="save_howto_metaboxes_general" />';
-						
-						echo '<div id="side-info-column" class="inner-sidebar">';
-							do_meta_boxes($connections->pageHook->manage, 'side', $entry);
+					$attr = array(
+								 'action' => 'admin.php?connections_process=true&process=manage&action=add&id=' . $id,
+								 'method' => 'post',
+								 'enctype' => 'multipart/form-data',
+								 );
+					
+					$form->open($attr);
+					
+					$form->tokenField('add_entry');
+					wp_nonce_field('cn-manage-metaboxes');
+					wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false );
+					wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false );
+					
+					echo '<input type="hidden" name="action" value="save_cn_add_metaboxes" />';
+					
+					echo '<div id="side-info-column" class="inner-sidebar">';
+						do_meta_boxes($connections->pageHook->manage, 'side', $entry);
+					echo '</div>';
+					
+					
+					echo '<div id="post-body" class="has-sidebar">';
+						echo '<div id="post-body-content" class="has-sidebar-content">';
+							do_meta_boxes($connections->pageHook->manage, 'normal', $entry);
 						echo '</div>';
-						
-						
-						echo '<div id="post-body" class="has-sidebar">';
-							echo '<div id="post-body-content" class="has-sidebar-content">';
-								do_meta_boxes($connections->pageHook->manage, 'normal', $entry);
-							echo '</div>';
-						echo '</div>';
-						
-						$form->close();
-						
+					echo '</div>';
+					
+					$form->close();
+					
 				echo '</div>';
 				?>
 				
@@ -149,6 +151,11 @@ function connectionsShowViewPage( $action = NULL )
 		break;
 		
 		case 'edit':
+			
+			echo '<div class="wrap">
+					<div class="icon32" id="icon-connections"><br/></div>
+					<h2>Connections : Edit Entry</h2>';
+					
 			/*
 			 * Check whether the current user can edit entries.
 			 */
@@ -163,37 +170,37 @@ function connectionsShowViewPage( $action = NULL )
 				$entry = new cnEntry( $connections->retrieve->entry($id) );
 				
 				echo '<div id="poststuff" class="metabox-holder has-right-sidebar">';
-					echo '<h2><a name="new"></a>Edit Entry</h2>';
 					
-						$attr = array(
-									 'action' => 'admin.php?connections_process=true&process=manage&action=update&id=' . $id,
-									 'method' => 'post',
-									 'enctype' => 'multipart/form-data',
-									 );
-						
-						$form->open($attr);
-						
-						$form->tokenField('update_entry');
-						wp_nonce_field('howto-metaboxes-general');
-						wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false );
-						wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false );
-						
-						echo '<input type="hidden" name="action" value="save_howto_metaboxes_general" />';
-						
-						echo '<div id="side-info-column" class="inner-sidebar">';
-							do_meta_boxes($connections->pageHook->manage, 'side', $entry);
+					$attr = array(
+								 'action' => 'admin.php?connections_process=true&process=manage&action=update&id=' . $id,
+								 'method' => 'post',
+								 'enctype' => 'multipart/form-data',
+								 );
+					
+					$form->open($attr);
+					
+					$form->tokenField('update_entry');
+					wp_nonce_field('cn-manage-metaboxes');
+					wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false );
+					wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false );
+					
+					echo '<input type="hidden" name="action" value="save_cn_add_metaboxes" />';
+					
+					echo '<div id="side-info-column" class="inner-sidebar">';
+						do_meta_boxes($connections->pageHook->manage, 'side', $entry);
+					echo '</div>';
+					
+					
+					echo '<div id="post-body" class="has-sidebar">';
+						echo '<div id="post-body-content" class="has-sidebar-content">';
+							do_meta_boxes($connections->pageHook->manage, 'normal', $entry);
 						echo '</div>';
-						
-						
-						echo '<div id="post-body" class="has-sidebar">';
-							echo '<div id="post-body-content" class="has-sidebar-content">';
-								do_meta_boxes($connections->pageHook->manage, 'normal', $entry);
-							echo '</div>';
-						echo '</div>';
-						
-						$form->close();
-						
+					echo '</div>';
+					
+					$form->close();
+					
 				echo '</div>';
+				
 				?>
 				
 				<script type="text/javascript">
@@ -222,11 +229,12 @@ function connectionsShowViewPage( $action = NULL )
 			$categoryObjects = new cnCategoryObjects();
 			$url = new cnURL();
 			
-			$limit = 10; // Page Limit
-			$currentPage = $connections->currentUser->getFilterPage();
-			$offset = ( $currentPage - 1 ) * $limit;
+			$page = $connections->currentUser->getFilterPage('manage');
+			$offset = ( $page->current - 1 ) * $page->limit;
 			
-			
+			echo '<div class="wrap">
+					<div class="icon32" id="icon-connections"><br/></div>
+					<h2>Connections : Manage</h2>';
 			
 			/*
 			 * Check whether user can view the entry list
@@ -234,18 +242,32 @@ function connectionsShowViewPage( $action = NULL )
 			if(current_user_can('connections_manage'))
 			{
 				?>
-				
+					
 					<?php
 						$retrieveAttr['list_type'] = $connections->currentUser->getFilterEntryType();
 						$retrieveAttr['category'] = $connections->currentUser->getFilterCategory();
 						$retrieveAttr['visibility'] = $connections->currentUser->getFilterVisibility();
 						$retrieveAttr['status'] = $connections->currentUser->getFilterStatus();
 						
-						$retrieveAttr['limit'] = $limit;
+						$retrieveAttr['limit'] = $page->limit;
 						$retrieveAttr['offset'] = $offset;
 						
-						$results = $connections->retrieve->entries($retrieveAttr);
-						//print_r($connections->lastQuery);
+						if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) )
+						{
+							$searchResults = $connections->retrieve->search( array( 'search' => $_GET['s'] ) );
+							//print_r($searchResults);
+							
+							$retrieveAttr['id'] = $searchResults;
+							
+							$results = ( ! empty($searchResults) ) ? $connections->retrieve->entries($retrieveAttr) : array();
+							//print_r($connections->lastQuery);
+						}
+						else
+						{
+							$results = $connections->retrieve->entries($retrieveAttr);
+							//print_r($connections->lastQuery);
+						}
+						
 					?>
 						
 						<?php if ( current_user_can('connections_edit_entry') ) { ?>
@@ -258,6 +280,12 @@ function connectionsShowViewPage( $action = NULL )
 						
 						<form action="admin.php?connections_process=true&process=manage&action=do" method="post">
 						
+						<p class="search-box">
+							<label class="screen-reader-text" for="post-search-input">Search Entries:</label>
+							<input type="text" id="entry-search-input" name="s" value="<?php if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) echo $_GET['s'] ; ?>" />
+							<input type="submit" name="" id="search-submit" class="button" value="Search Entries"  />
+						</p>
+						
 						<?php $form->tokenField('bulk_action'); ?>
 						
 						<div class="tablenav">
@@ -266,7 +294,7 @@ function connectionsShowViewPage( $action = NULL )
 								<?php
 									echo '<select class="postform" id="category" name="category">';
 										echo '<option value="-1">Show All Categories</option>';
-										echo $categoryObjects->buildCategoryRow('option', $connections->retrieve->categories(), $level, $connections->currentUser->getFilterCategory());
+										echo $categoryObjects->buildCategoryRow('option', $connections->retrieve->categories(), 0, $connections->currentUser->getFilterCategory());
 									echo '</select>';
 									
 									echo $form->buildSelect('entry_type', array('all'=>'Show All Enties', 'individual'=>'Show Individuals', 'organization'=>'Show Organizations', 'family'=>'Show Families'), $connections->currentUser->getFilterEntryType());
@@ -301,40 +329,57 @@ function connectionsShowViewPage( $action = NULL )
 									echo '<span class="displaying-num">Displaying ' , $connections->resultCount , ' of ' , $connections->resultCountNoLimit , ' records.</span>';
 									
 									/*
-									 * Pagination
+									 * // START --> Pagination
+									 * 
+									 * Grab the pagination data again incase a filter reset the values
+									 * or the user input an invalid number which the retrieve query would have reset.
 									 */
-									$pageCount = ceil( $connections->resultCountNoLimit / $limit );
+									$page = $connections->currentUser->getFilterPage('manage');
+									
+									$pageCount = ceil( $connections->resultCountNoLimit / $page->limit );
 									
 									if ( $pageCount > 1 )
 									{
+										$pageDisabled = array();
+										$pageFilterURL = array();
+										$pageValue = array();
+										$currentPageURL = add_query_arg( array( 'page' => FALSE , 'connections_process' => TRUE , 'process' => 'manage' , 'action' => 'filter' )  );
+										
+										$pageValue['first_page'] = 1;
+										$pageValue['previous_page'] = ( $page->current - 1 >= 1 ) ? $page->current - 1 : 1;
+										$pageValue['next_page'] = ( $page->current + 1 <= $pageCount ) ? $page->current + 1 : $pageCount;
+										$pageValue['last_page'] = $pageCount;
+										
+										( $page->current > 1 ) ? $pageDisabled['first_page'] = '' : $pageDisabled['first_page'] = ' disabled';
+										( $page->current - 1 >= 1 ) ? $pageDisabled['previous_page'] = '' : $pageDisabled['previous_page'] = ' disabled';
+										( $page->current + 1 <= $pageCount ) ? $pageDisabled['next_page'] = '' : $pageDisabled['next_page'] = ' disabled';
+										( $page->current < $pageCount ) ? $pageDisabled['last_page'] = '' : $pageDisabled['last_page'] = ' disabled';
+										
+										/*
+										 * Genreate the page link token URL.
+										 */
+										//print_r( add_query_arg( array( 'pg' => $pageValue['first_page'] ) , $currentPageURL ) );
+										$pageFilterURL['first_page'] = $form->tokenURL( add_query_arg( array( 'pg' => $pageValue['first_page'] ) , $currentPageURL ) , 'filter');
+										$pageFilterURL['previous_page'] = $form->tokenURL( add_query_arg( array( 'pg' => $pageValue['previous_page'] ) , $currentPageURL ) , 'filter');
+										$pageFilterURL['next_page'] = $form->tokenURL( add_query_arg( array( 'pg' => $pageValue['next_page'] ) , $currentPageURL ) , 'filter');
+										$pageFilterURL['last_page'] = $form->tokenURL( add_query_arg( array( 'pg' => $pageValue['last_page'] ) , $currentPageURL ) , 'filter');
+										
 										echo '<span class="page-navigation" id="page-input">';
 											
-											echo '<a href="http://sandbox.zahmit.net/wp-admin/edit.php" title="Go to the first page" class="first-page disabled">«</a> ';
-											echo '<a href="http://sandbox.zahmit.net/wp-admin/edit.php?paged=1" title="Go to the previous page" class="prev-page disabled">‹</a> ';
+											echo '<a href="' . $pageFilterURL['first_page'] . '" title="Go to the first page" class="first-page' , $pageDisabled['first_page'] , '">«</a> ';
+											echo '<a href="' . $pageFilterURL['previous_page'] . '" title="Go to the previous page" class="prev-page' , $pageDisabled['previous_page'] , '">‹</a> ';
 											
-											echo '<span class="paging-input"><input type="text" size="2" value="' . $currentPage . '" name="page" title="Current page" class="current-page"> of <span class="total-pages">' . $pageCount . '</span></span> ';
+											echo '<span class="paging-input"><input type="text" size="2" value="' . $page->current . '" name="pg" title="Current page" class="current-page"> of <span class="total-pages">' . $pageCount . '</span></span> ';
 											
-											echo '<a href="http://sandbox.zahmit.net/wp-admin/edit.php?paged=2" title="Go to the next page" class="next-page">›</a> ';
-											echo '<a href="http://sandbox.zahmit.net/wp-admin/edit.php?paged=11" title="Go to the last page" class="last-page">»</a>';
+											echo '<a href="' . $pageFilterURL['next_page'] . '" title="Go to the next page" class="next-page' , $pageDisabled['next_page'] , '">›</a> ';
+											echo '<a href="' . $pageFilterURL['last_page'] . '" title="Go to the last page" class="last-page' , $pageDisabled['last_page'] , '">»</a>';
 											
-											
-											/*$i = 1;
-										
-											while ($i <= $pageCount)
-											{
-												if ( $currentPage != $i )
-												{
-													echo '<a class="page-numbers" href="' . $url->modify( array('cn-pg' => $i) ) . '">' . $i . '</a> ';
-												}
-												else
-												{
-													echo '<span class="page-numbers current">' , $i , '</span> ';
-												}
-												
-												$i++;
-											}*/
 										echo '</span>';
 									}
+									
+									/*
+									 * // END --> Pagination
+									 */
 								?>
 							</div>
 							
@@ -471,7 +516,8 @@ function connectionsShowViewPage( $action = NULL )
 									echo '<tr id="row-' , $entry->getId() , '" class="parent-row' . $statusClass .'">';
 										echo "<th class='check-column' scope='row'><input type='checkbox' value='" . $entry->getId() . "' name='entry[]'/></th> \n";
 											echo '<td>';
-												echo $entry->getThumbnailImage( array( 'place_holder' => TRUE ) );
+												//echo $entry->getThumbnailImage( array( 'place_holder' => TRUE ) );
+												$entry->getImage( array( 'image' => 'photo' , 'preset' => 'thumbnail' , 'height' => 54 , 'width' => 80 , 'zc' => 2 , 'fallback' => array( 'type' => 'block' , 'string' => 'No Photo Available' ) ) );
 											echo '</td>';
 											echo '<td  colspan="2">';
 												if ($setAnchor) echo $setAnchor;
@@ -479,11 +525,11 @@ function connectionsShowViewPage( $action = NULL )
 												
 												if ( current_user_can('connections_edit_entry') || current_user_can('connections_edit_entry_moderated') )
 												{
-													echo '<a class="row-title" title="Edit ' . $entry->getFullFirstLastName() . '" href="' . $editTokenURL . '"> ' . $entry->getFullLastFirstName() . '</a><br />';
+													echo '<a class="row-title" title="Edit ' . $entry->getName( array( 'format' => '%last%, %first%' ) ) . '" href="' . $editTokenURL . '"> ' . $entry->getName( array( 'format' => '%last%, %first%' ) ) . '</a><br />';
 												}
 												else
 												{
-													echo '<strong>' . $entry->getFullLastFirstName() . '</strong>';
+													echo '<strong>' . $entry->getName( array( 'format' => '%last%, %first%' ) ) . '</strong>';
 												}
 												
 												echo '<div class="row-actions">';
@@ -500,8 +546,8 @@ function connectionsShowViewPage( $action = NULL )
 													if ( current_user_can('connections_add_entry') || current_user_can('connections_add_entry_moderated') ) $rowEditActions[] = '<a class="copybutton" href="' . $copyTokenURL . '" title="Copy ' . $entry->getFullFirstLastName() . '">Copy</a>';
 													if ( current_user_can('connections_delete_entry') ) $rowEditActions[] = '<a class="submitdelete" onclick="return confirm(\'You are about to delete this entry. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="' . $deleteTokenURL . '" title="Delete ' . $entry->getFullFirstLastName() . '">Delete</a>';
 													
-													echo implode(' | ', $rowEditActions) , '<br/>';
-													echo implode(' | ', $rowActions);
+													if ( ! empty($rowEditActions) ) echo implode(' | ', $rowEditActions) , '<br/>';
+													if ( ! empty($rowActions) ) echo implode(' | ', $rowActions);
 													
 												echo '</div>';
 										echo "</td> \n";
@@ -537,10 +583,10 @@ function connectionsShowViewPage( $action = NULL )
 										echo "</td> \n";											
 									echo "</tr> \n";
 									
-									echo "<tr class='child-row-" . $entry->getId() . " entrydetails' id='contact-" . $entry->getId() . "-detail' style='display:none;'>";
-										echo "<td colspan='2' >&nbsp;</td> \n";
+									echo "<tr class='child-row-" . $entry->getId() . " cn-entry-details' id='contact-" . $entry->getId() . "-detail' style='display:none;'>";
+										echo '<td colspan="2">&nbsp;</td>' , "\n";
 										//echo "<td >&nbsp;</td> \n";
-										echo "<td colspan='2'>";
+										echo '<td colspan="2">';
 											
 											/*
 											 * Check if the entry has relations. Count the relations and then cycle thru each relation.
@@ -585,62 +631,118 @@ function connectionsShowViewPage( $action = NULL )
 											if ($entry->getOrganization() && $entry->getEntryType() !== 'organization' ) echo '<strong>Organization:</strong> ' . $entry->getOrganization() . '<br />';
 											if ($entry->getDepartment()) echo '<strong>Department:</strong> ' . $entry->getDepartment() . '<br />';
 											
-											if ($entry->getAddresses())
+											$addresses = $entry->getAddresses();
+											//print_r($addresses);
+											
+											if ( ! empty($addresses) )
 											{
-												foreach ($entry->getAddresses() as $address)
+												foreach ($addresses as $address)
 												{
-													echo "<div style='margin-bottom: 10px;'>";
-														if ($address->name != NULL || $address->type) echo "<strong>" . $address->name . "</strong><br />"; //The OR is for compatiblity for 0.2.24 and under
-														if ($address->line_one != NULL) echo $address->line_one . "<br />";
-														if ($address->line_two != NULL) echo $address->line_two . "<br />";
-														if ($address->city != NULL) echo $address->city . "&nbsp;";
-														if ($address->state != NULL) echo $address->state . "&nbsp;";
-														if ($address->zipcode != NULL) echo $address->zipcode . "<br />";
-														if ($address->country != NULL) echo $address->country;
-													echo "</div>";														
+													$outCache = array();
+													
+													echo '<div style="margin: 10px 0;">';
+														( $address->preferred ) ? $preferred = '*' : $preferred = '';
+														
+														if ( ! empty($address->name) ) echo '<span style="display: block"><strong>' , $address->name , $preferred , '</strong></span>';
+														if ( ! empty($address->line_1) ) echo '<span style="display: block">' , $address->line_1 , '</span>';
+														if ( ! empty($address->line_2) ) echo '<span style="display: block">' , $address->line_2 , '</span>';
+														if ( ! empty($address->line_3) ) echo '<span style="display: block">' , $address->line_3 , '</span>';
+														
+														if ( ! empty($address->city) ) $outCache[] = '<span>' . $address->city . '</span>';
+														if ( ! empty($address->state) ) $outCache[] = '<span>' . $address->state . '</span>';
+														if ( ! empty($address->zipcode) ) $outCache[] = '<span>' . $address->zipcode . '</span>';
+														
+														if ( ! empty($outCache) ) echo '<span style="display: block">' , implode('&nbsp;', $outCache) , '</span>';
+														
+														if ( ! empty($address->country) ) echo '<span style="display: block">' , $address->country , '</span>';
+														if ( ! empty($address->latitude) && ! empty($address->longitude) ) echo '<span style="display: block">' , '<strong>Latitude:</strong>' , ' ' , $address->latitude , ' ' , '<strong>Longitude:</strong>' , ' ', $address->longitude , '</span>';
+													echo '</div>';														
 												}
+												
+												unset($outCache);
 											}
-										echo "</td> \n";
+										echo '</td>' , "\n";
 										
-										echo "<td>";
-											if ($entry->getEmailAddresses())
+										echo '<td>';
+											
+											$phoneNumbers = $entry->getPhoneNumbers();
+											
+											if ( ! empty($phoneNumbers) )
 											{
-												foreach ($entry->getEmailAddresses() as $emailRow)
+												echo '<div class="phone-numbers">';
+												
+												foreach ($phoneNumbers as $phone) 
 												{
-													if ($emailRow->address != null) echo "<strong>" . $emailRow->name . ":</strong><br /><a href='mailto:" . $emailRow->address . "'>" . $emailRow->address . "</a><br /><br />";
+													( $phone->preferred ) ? $preferred = '*' : $preferred = '';
+													
+													echo '<span class="phone"><strong>' , $phone->name , '</strong>: ' ,  $phone->number , $preferred , '</span>';
 												}
+												
+												echo '</div>';
 											}
 											
-											if ($entry->getIm())
+											$emailAddresses = $entry->getEmailAddresses();
+											
+											if ( ! empty($emailAddresses) )
 											{
-												foreach ($entry->getIm() as $imRow)
+												echo '<div class="email-addresses">';
+												
+												foreach ($emailAddresses as $email)
 												{
-													if ($imRow->id != "") echo "<strong>" . $imRow->name . ":</strong><br />" . $imRow->id . "<br /><br />";
+													( $email->preferred ) ? $preferred = '*' : $preferred = '';
+													
+													echo '<span class="email"><strong>' , $email->name , ':</strong> <a href="mailto:' , $email->address , '">' , $email->address , '</a>' , $preferred , '</span>';
 												}
+												
+												echo '</div>';
 											}
 											
-											if ($entry->getSocialMedia())
+											$imIDs = $entry->getIm();
+											
+											if ( ! empty($imIDs) 	)
 											{
-												foreach ($entry->getSocialMedia() as $socialNetwork)
+												echo '<div class="im-ids">';
+												
+												foreach ($imIDs as $im)
 												{
-													if ($socialNetwork->id != "") echo "<strong>" . $socialNetwork->name . ":</strong><br /><a target='_blank' href='" . $socialNetwork->url . "'>" . $socialNetwork->url . "</a><br /><br />";
+													( $im->preferred ) ? $preferred = '*' : $preferred = '';
+													
+													echo '<span class="im"><strong>' , $im->name , ':</strong> ' , $im->id , $preferred , '</span>';
 												}
+												
+												echo '</div>';
 											}
 											
-											if ($entry->getWebsites())
+											$socialNetworks = $entry->getSocialMedia();
+											
+											if ( ! empty($socialNetworks) )
 											{
-												foreach ($entry->getWebsites() as $website)
+												echo '<div class="social-networks">';
+												
+												foreach ($entry->getSocialMedia() as $network)
 												{
-													if ($website->url != "") echo "<strong>Website:</strong><br /><a target='_blank' href='" . $website->url . "'>" . $website->url . "</a><br /><br />";
+													( $network->preferred ) ? $preferred = '*' : $preferred = '';
+													
+													echo '<span class="social-network"><strong>' , $network->name , ':</strong> <a target="_blank" href="' , $network->url , '">' , $network->url . '</a>' , $preferred , '</span>';
 												}
+												
+												echo '</div>';
 											}
 											
-											if ($entry->getPhoneNumbers())
+											$links = $entry->getLinks();
+											
+											if ( ! empty($links) )
 											{
-												foreach ($entry->getPhoneNumbers() as $phone) 
+												echo '<div class="links">';
+												
+												foreach ( $links as $link )
 												{
-													if ($phone->number != "") echo "<strong>" . $phone->name . "</strong>: " .  $phone->number . "<br />";
+													( $link->preferred ) ? $preferred = '*' : $preferred = '';
+													
+													echo '<span class="link"><strong>' , $link->name , ':</strong> <a target="_blank" href="' , $link->url , '">' , $link->url , '</a>' , $preferred , '</span>';
 												}
+												
+												echo '</div>';
 											}
 											
 										echo "</td> \n";
@@ -660,6 +762,7 @@ function connectionsShowViewPage( $action = NULL )
 										echo "</td> \n";
 										echo '<td>
 											<strong>Entry ID:</strong> ' . $entry->getId() . '<br />' . '
+											<strong>Entry Slug:</strong> ' . $entry->getSlug() . '<br />' . '
 											<strong>Date Added:</strong> ' . $entry->getDateAdded('m/d/Y g:ia') . '<br />
 											<strong>Added By:</strong> ' . $entry->getAddedBy() . '<br />';
 											if (!$entry->getImageLinked()) echo "<br /><strong>Image Linked:</strong> No"; else echo "<br /><strong>Image Linked:</strong> Yes";

@@ -44,7 +44,7 @@ class cnFormatting
 	public function sanitizeString($string, $allowHTML = FALSE, $permittedTags = NULL)
 	{
 		// Strip all tags except the permitted.
-		if (!$allowHTML)
+		if ( ! $allowHTML)
 		{
 			// Ensure all tags are closed. Uses WordPress method balanceTags().
 			$balancedText = balanceTags($string, TRUE);
@@ -169,6 +169,8 @@ class cnValidate
 {
 	public function attributesArray($defaults, $untrusted)
 	{
+		//print_r($defaults);
+		
 		$intersect = array_intersect_key($untrusted, $defaults); // Get data for which is in the valid fields.
 		$difference = array_diff_key($defaults, $untrusted); // Get default data which is not supplied.
 		return array_merge($intersect, $difference); // Merge the results. Contains only valid fields of all defaults.
@@ -182,6 +184,50 @@ class cnValidate
 	public function email()
 	{
 		
+	}
+	
+	/**
+	 * Will return TRUE?FALSE based on current user capability or privacy setting if the user is not logged in to WordPress.
+	 * 
+	 * @author Steven A. Zahm
+	 * @since 0.7.2.0
+	 * @param string $visibilty
+	 * @return bool
+	 */
+	public function userPermitted($visibilty)
+	{
+		global $connections;
+		
+		if ( is_user_logged_in() )
+		{
+			if ( ! empty($visibilty) )
+			{
+				if ( current_user_can('connections_view_public') && $visibilty == 'public' ) return TRUE;
+				if ( current_user_can('connections_view_private') && $visibilty == 'private' ) return TRUE;
+				if ( ( current_user_can('connections_view_unlisted') && is_admin() ) && $visibilty == 'unlisted' ) return TRUE;
+				
+				// If we get here, return FALSE
+				return FALSE;
+			}
+			else
+			{
+				return FALSE;
+			}
+		}
+		else
+		{
+			if ( $visibilty == 'unlisted' ) return FALSE;
+			
+			if ( $connections->options->getAllowPublic() && $visibilty == 'public' ) return TRUE;
+			if ( ( $atts['allow_public_override'] == TRUE && $connections->options->getAllowPublicOverride() ) && $visibilty == 'public' ) return TRUE;
+			if ( ( $atts['private_override'] == TRUE && $connections->options->getAllowPrivateOverride() ) && $visibilty == 'private' ) return TRUE;
+			
+			// If we get here, return FALSE
+			return FALSE;
+		}
+		
+		// Shouldn't happen....
+		return FALSE;
 	}
 }
 

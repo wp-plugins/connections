@@ -59,10 +59,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * Add exclude_category_name shortcode attribute to allow multiple categories by name entries to be excluded from the output.
 
 = Upcoming features: =
-* Pagination
-* Search
 * Localization
-* Make the Connection Group relations in the front end entry list clickable to bring up the entry's specific details.
 * Integration with WP users to permit registered users to maintain their own info with optional moderation.
 * Gravatar support
 * Backup
@@ -73,6 +70,10 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * vCard class is a modified version by [Troy Wolf](http://www.troywolf.com/articles/php/class_vcard/)
 * Image uploading and processing done by the class.upload.php by [Colin Verot](http://www.verot.net/php_class_upload.htm)
 * Counter class from O'Reilly's [Intro to PHP Objects](http://www.onlamp.com/pub/a/php/2002/07/18/php_foundations.html?page=2)
+* Update Notice in plugin admin inspired by Changelogger 1.2.8 by [Oliver Schlöbe](http://wordpress.org/extend/plugins/changelogger/).
+* TimThumb by [Ben Gillbanks and Mark Maunder](http://code.google.com/p/timthumb/).
+* Screen Options class by [Janis Elsts](http://w-shadow.com/blog/2010/06/29/adding-stuff-to-wordpress-screen-options/).
+* spin.js by [Felix Gnass](http://fgnass.github.com/spin.js/).
 
 == Screenshots ==
 [Samples and screenshots can be found here](http://connections-pro.com/?page_id=52)
@@ -90,6 +91,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 == Changelog ==
 
 = 0.7.2.0 XX/XX/XX =
+* FEATURE: Search.
 * FEATURE: Added a Dashboard page in the admin.
 * FEATURE: Added a Today's Birthdays admin dashboard widget.
 * FEATURE: Added a Upcoming Birthdays admin dashboard widget.
@@ -103,12 +105,18 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * FEATURE: Added a System Info / Configuration admin dashboard widget.
 * FEATURE: New role capabilities that allow add and edit moderation.
 * FEATURE: Added more actions/filters to hook into.
+* FEATURE: Added hooks to allow templates o be configured via the shortcode so the template's funcions.php file does not need edited.
+* FEATURE: Collapsible and sortable addresses and ect., when adding or editing an address and ect.
+* FEATURE: Added ICQ as a messenger type.
 * BUG: The view_public capability was being removed when role capabilities were being reset.
 * BUG: Fix many/most/all  warnings and such reported when WP_DEBUG is TRUE.
 * BUG: Remove the connections_view_entry_list role as it is no longer needed.
 * BUG: Use gmmktime() instead of mktime() when working with the birthday and anniversary so dates are output showing the current date.
 * BUG: Fixed a bug with applying the cn_list_before filter causing the template CSS to output twice.
 * BUG: Fixed an issue with getAddressBlock() showing only the last input address.
+* BUG: Removed the Screen Options tab from the Connections Manage page unless an action was being performed on an entry such as edit/copy.
+* BUG: Fixed some minor bugs in the upgrade function.
+* BUG: Fixed malformed vCard when Department was entered without and organization name.
 * OTHER: Remove the meta Connections version from the head as it failed HTML5 validation. Added to the connections div as an HTML5 data attribute.
 * OTHER: Disabled JavaScript compression on the Add/Edit Entry page. When enabled the RTE wouldn't load to JS errors.
 * OTHER: Update Roles and Capabilities page to use the metabox visual styles.
@@ -117,6 +125,26 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * OTHER: Update the categories page style to match the WordPress categories page styles for better integration.
 * OTHER: Update the role page style to use the post metabox style for better integration.
 * OTHER: All processes are now handled by a pocess method rather than hooking into the current page for better role capability support.
+* OTHER: Remove the Donate link from the meta links on the Plugins page.
+* OTHER: Added a entry meta table for future support for custom entry details.
+* OTHER: Tweaked the header of the Manage / Copy / Edit screen.
+* OTHER: Added a cache folder during activation for TimThumb.
+* OTHER: Removed 'Select' from the address type select to force user selection.
+* OTHER: Set the 'Member' template as a 'family' template type.
+* OTHER: Set the 'Single Entry Card' template as a 'individual' template type.
+* OTHER: Greatly improved support for using the shortcode multiple times on the same page.
+* OTHER: Improved the pagination support on the Manage page. The limit is now user adjustable.
+* OTHER: Completely revamped the db structure. Using the original table columns for addresses, ect., for an object to keep db queries to a minimum.
+* OTHER: Added support for WP 3.3.
+* OTHER: Use wp_editor when user is running WP 3.3+.
+* OTHER: Moved the filters to be part of the entry retrieve query. Made possible by the new db structure.
+* OTHER: Moved the order by option to be part of the entry retrieve query. Made possible by the new db structure.
+* OTHER: Upgrade the class.php.upload class to .31
+* OTHER: Added debug logging and display for image uploads.
+* OTHER: Reworked just about every method in the cnOutput() class to remove all inline styles.
+* OTHER: All styles have been moved to an external CSS file.
+* OTHER: Completely restructured the [connections] shortcode logic.
+* OTHER: The output of the IM networks now conform to the hCard spec.
 
 = 0.7.1.6 06/15/2011 =
 * Fixes security vulnerability.

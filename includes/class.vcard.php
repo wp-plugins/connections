@@ -127,10 +127,12 @@ class cnvCard extends cnOutput
 		
 		if ($this->data['nickname']) { $this->card .= "NICKNAME;CHARSET=utf-8:".$this->data['nickname']."\r\n"; }
 		if ($this->data['title']) { $this->card .= "TITLE;CHARSET=utf-8:".$this->data['title']."\r\n"; }
-		if ($this->data['company']) { $this->card .= "ORG;CHARSET=utf-8:".$this->data['company']; }
-		if ($this->data['department']) { $this->card .= ";".$this->data['department']; }
-		$this->card .= "\r\n";
-			
+		if ( $this->data['company'] || $this->data['department'] )
+		{
+			$this->card .= "ORG;CHARSET=utf-8:" . ( ( empty($this->data['company'] ) ) ? '' : $this->data['company'] ) . ';' . ( ( empty( $this->data['department'] ) ) ? '' : $this->data['department'] );
+			$this->card .= "\r\n";
+		}
+		
 		if ($this->data['work_po_box']
 			|| $this->data['work_extended_address']
 			|| $this->data['work_address']
