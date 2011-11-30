@@ -109,6 +109,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * FEATURE: Added hooks to allow templates o be configured via the shortcode so the template's funcions.php file does not need edited.
 * FEATURE: Collapsible and sortable addresses and ect., when adding or editing an address and ect.
 * FEATURE: Added ICQ as a messenger type.
+* FEATURE: Added Google+ to the social networks.
 * BUG: The view_public capability was being removed when role capabilities were being reset.
 * BUG: Fix many/most/all  warnings and such reported when WP_DEBUG is TRUE.
 * BUG: Remove the connections_view_entry_list role as it is no longer needed.

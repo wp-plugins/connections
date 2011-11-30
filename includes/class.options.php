@@ -98,6 +98,7 @@ class cnOptions
 											 'cdbaby' => 'CD Baby',
 											 'facebook' => 'Facebook',
 											 'flickr' => 'Flickr',
+											 'googleplus' => 'Google+',
 											 'itunes' => 'iTunes',
 											 'linked-in' => 'Linked-in',
 											 'mixcloud' => 'mixcloud',
