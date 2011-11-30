@@ -341,20 +341,24 @@ class cnOutput extends cnEntry
 		
 		$search = array('%prefix%', '%first%', '%middle%', '%last%', '%suffix%');
 		$replace = array();
+		$honorificPrefix = $this->getHonorificPrefix();
+		$first = $this->getFirstName();
+		$middle = $this->getMiddleName();
+		$last = $this->getLastName();
+		$honorificSuffix = $this->getHonorificSuffix();
 		
 		switch ( $this->getEntryType() )
 		{
 			case 'individual':
+				( empty($honorificPrefix) ) ? $replace[] = '' : $replace[] = '<span class="honorific-prefix">' . $honorificPrefix . '</span>';
 				
-				( $this->getHonorificPrefix() ) ? $replace[] = '<span class="honorific-prefix">' . $this->getHonorificPrefix() . '</span>' : $replace[] = '';;
+				( empty($first) ) ? $replace[] = '' : $replace[] = '<span class="given-name">' . $first . '</span>';
 				
-				( $this->getFirstName() ) ? $replace[] = '<span class="given-name">' . $this->getFirstName() . '</span>' : $replace[] = '';
+				( empty($middle) ) ? $replace[] = '' : $replace[] = '<span class="additional-name">' . $middle . '</span>';
 				
-				( $this->getMiddleName() ) ? $replace[] = '<span class="additional-name">' . $this->getMiddleName() . '</span>' : $replace[] = '';
+				( empty($last) ) ? $replace[] = '' : $replace[] = '<span class="family-name">' . $last . '</span>';
 				
-				( $this->getLastName() ) ? $replace[] = '<span class="family-name">' . $this->getLastName() . '</span>' : $replace[] = '';
-				
-				( $this->getHonorificSuffix() ) ? $replace[] = '<span class="honorific-suffix">' . $this->getHonorificSuffix() . '</span>' : $replace[] = '';
+				( empty($honorificSuffix) ) ? $replace[] = '' : $replace[] = '<span class="honorific-suffix">' . $honorificSuffix . '</span>';
 				
 				$out = '<span class="fn n">' . str_ireplace( $search, $replace, $atts['format'] ) . '</span>';
 			break;
@@ -368,16 +372,15 @@ class cnOutput extends cnEntry
 			break;
 			
 			default:
+				( empty($honorificPrefix) ) ? $replace[] = '' : $replace[] = '<span class="honorific-prefix">' . $honorificPrefix . '</span>';
 				
-				( $this->getHonorificPrefix() ) ? $replace[] = '<span class="honorific-prefix">' . $this->getHonorificPrefix() . '</span>' : $replace[] = '';;
+				( empty($first) ) ? $replace[] = '' : $replace[] = '<span class="given-name">' . $first . '</span>';
 				
-				( $this->getFirstName() ) ? $replace[] = '<span class="given-name">' . $this->getFirstName() . '</span>' : $replace[] = '';
+				( empty($middle) ) ? $replace[] = '' : $replace[] = '<span class="additional-name">' . $middle . '</span>';
 				
-				( $this->getMiddleName() ) ? $replace[] = '<span class="additional-name">' . $this->getMiddleName() . '</span>' : $replace[] = '';
+				( empty($last) ) ? $replace[] = '' : $replace[] = '<span class="family-name">' . $last . '</span>';
 				
-				( $this->getLastName() ) ? $replace[] = '<span class="family-name">' . $this->getLastName() . '</span>' : $replace[] = '';
-				
-				( $this->getHonorificSuffix() ) ? $replace[] = '<span class="honorific-suffix">' . $this->getHonorificSuffix() . '</span>' : $replace[] = '';
+				( empty($honorificSuffix) ) ? $replace[] = '' : $replace[] = '<span class="honorific-suffix">' . $honorificSuffix . '</span>';
 				
 				$out = '<span class="fn n">' . str_ireplace( $search, $replace, $atts['format'] ) . '</span>';
 			break;
@@ -554,6 +557,58 @@ class cnOutput extends cnEntry
 	public function getDepartmentBlock()
 	{
 		return $this->getOrgUnitBlock( array( 'return' => TRUE ) );
+	}
+	
+	/**
+	 * Echo or return the entry's contact name in a HTML string.
+	 * 
+	 * Accepted options for the $atts property are:
+	 * 	format (string) Tokens for the parts of the name.
+	 * 		Permitted Tokens:
+	 * 			%label%
+	 * 			%first%
+	 * 			%last%
+	 * 	before (string) HTML to output before an address.
+	 * 	after (string) HTML to after before an address.
+	 * 	return (bool) Return or echo the string. Default is to echo.
+	 * 
+	 * @param array $atts [optional]
+	 * @return string
+	 */
+	public function getContactNameBlock( $suppliedAtts = array() )
+	{
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+		$defaultAtts = array( 'format' => '%label%: %first% %last%',
+							  'label' => 'Contact',
+							  'before' => '',
+							  'after' => '',
+							  'return' => FALSE
+							);
+		
+		$atts = $this->validate->attributesArray($defaultAtts, $suppliedAtts);
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		$search = array('%label%','%first%', '%last%');
+		$replace = array();
+		$first = $this->getContactFirstName();
+		$last = $this->getContactLastName();
+		
+		if ( empty($first) && empty($last) ) return '';
+		
+		( empty($first) && empty($last) ) ? $replace[] = '' : $replace[] = '<span class="contact-label">' . $atts['label'] . '</span>';
+		
+		( empty($first) ) ? $replace[] = '' : $replace[] = '<span class="contact-given-name">' . $first . '</span>';
+		
+		( empty($last) ) ? $replace[] = '' : $replace[] = '<span class="contact-family-name">' . $last . '</span>';
+				
+		$out = '<span class="contact-name">' . str_ireplace( $search, $replace, $atts['format'] ) . '</span>';
+		
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
 	/**
@@ -1166,12 +1221,12 @@ class cnOutput extends cnEntry
 	
 	public function getNotesBlock()
 	{
-		return "\n" . '<div class="note">' . $this->getNotes() . '</div>' . "\n";
+		return "\n" . '<div class="note">' . apply_filters( 'the_content' , $this->getNotes() ) . '</div>' . "\n";
 	}
 	
 	public function getBioBlock()
 	{
-		return "\n" . '<div class="bio">' . $this->getBio() . '</div>' . "\n";
+		return "\n" . '<div class="bio">' . apply_filters( 'the_content' , $this->getBio() ) . '</div>' . "\n";
 	}
 	
 	/**

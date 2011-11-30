@@ -59,6 +59,7 @@ jQuery(document).ready(function($){
 				jQuery('.namefield').slideDown();
 				jQuery('#contact_name').slideUp();
 				jQuery('.celebrate').slideDown();
+				jQuery('.celebrate-disabled').slideUp();
 			});
 	});
 	
@@ -69,6 +70,7 @@ jQuery(document).ready(function($){
 				jQuery('.namefield').slideUp();
 				jQuery('#contact_name').slideDown();
 				jQuery('.celebrate').slideUp();
+				jQuery('.celebrate-disabled').slideDown();
 			});
 	});
 	
@@ -78,6 +80,7 @@ jQuery(document).ready(function($){
 				jQuery('#family').slideDown();
 				jQuery('.namefield').slideUp();
 				jQuery('.celebrate').slideUp();
+				jQuery('.celebrate-disabled').slideDown();
 			});
 	});
 	
@@ -90,17 +93,20 @@ jQuery(document).ready(function($){
 			case 'individual':
 				jQuery('#family').slideUp();
 				jQuery('#contact_name').slideUp();
+				jQuery('.celebrate-disabled').slideUp();
 				break;
 			
 			case 'organization':
 				jQuery('#family').slideUp();
 				jQuery('.namefield').slideUp();
 				jQuery('.celebrate').slideUp();
+				jQuery('.celebrate-disabled').slideDown();
 				break;
 			
 			case 'family':
 				jQuery('.namefield').slideUp();
 				jQuery('.celebrate').slideUp();
+				jQuery('.celebrate-disabled').slideDown();
 				break;
 		}
 	

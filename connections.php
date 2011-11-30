@@ -50,6 +50,9 @@ Author URI: http://connections-pro.com/
  * 
  * spin.js by Felix Gnass
  * http://fgnass.github.com/spin.js/
+ * 
+ * $.goMap() jQuery Google Maps Plugin by Jevgenijs Shtrauss
+ * http://www.pittss.lv/jquery/gomap/
  */
 
 /**
@@ -184,14 +187,7 @@ if (!class_exists('connectionsLoad'))
 			define('CN_CUSTOM_TEMPLATE_URL', WP_CONTENT_URL . '/connections_templates');
 			define('CN_CACHE_PATH', CN_PATH . '/cache');
 			
-			$siteURL = get_option('siteurl');
-			if( is_ssl() ) $siteURL = str_replace('http://', 'https://', $siteURL);
-			
-			/**
-			 * Defines the URL to the plugin folder setting.
-			 * @author: Ben Klocek
-			 */
-			define('CN_PLUGIN_URL', $siteURL . '/wp-content/plugins/' . CN_DIR_NAME);
+			define('CN_PLUGIN_URL', get_site_url() . '/wp-content/plugins/' . CN_DIR_NAME);
 		}
 		
 		private function loadDependencies()
@@ -1083,8 +1079,11 @@ if (!class_exists('connectionsLoad'))
 			
 			wp_enqueue_script('cn-ui', WP_PLUGIN_URL . '/connections/js/cn-user.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
 			wp_enqueue_script('jquery-preloader', WP_PLUGIN_URL . '/connections/js/jquery.preloader.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
-			//wp_enqueue_script('cn-spin', WP_PLUGIN_URL . '/connections/js/spin.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
-			//wp_enqueue_script('jquery-spin', WP_PLUGIN_URL . '/connections/js/jquery.spin.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
+			
+			wp_register_script('cn-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, TRUE);
+			wp_register_script('jquery-gomap-min', WP_PLUGIN_URL . '/connections/js/jquery.gomap-1.3.2.min.js', array('jquery' , 'cn-google-maps-api' ), CN_CURRENT_VERSION, TRUE);
+			
+			wp_register_script('jquery-spin', WP_PLUGIN_URL . '/connections/js/jquery.spin.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
 		}
 		
 		/**

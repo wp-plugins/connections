@@ -537,7 +537,7 @@ function connectionsShowViewPage( $action = NULL )
 													$rowEditActions = array();
 													
 													$rowActions[] = '<a class="detailsbutton" id="row-' . $entry->getId() . '">Show Details</a>';
-													$rowActions[] = $vCard->download( array('anchorText' => 'vCard', 'title' => 'Download vCard', 'return' => TRUE) );
+													$rowActions[] = $vCard->download( array('anchorText' => 'vCard', 'return' => TRUE) );
 													
 													if ( $entry->getStatus() == 'approved' && current_user_can('connections_edit_entry') ) $rowEditActions[] = '<a class="action unapprove" href="' . $unapproveTokenURL . '" title="Unapprove ' . $entry->getFullFirstLastName() . '">Unapprove</a>';
 													if ( $entry->getStatus() == 'pending' && current_user_can('connections_edit_entry') ) $rowEditActions[] = '<a class="action approve" href="' . $approvedTokenURL . '" title="Approve ' . $entry->getFullFirstLastName() . '">Approve</a>';

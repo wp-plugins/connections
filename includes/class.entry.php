@@ -392,6 +392,12 @@ class cnEntry
 	 * 
 	 * Accepted options for the $atts property are:
 	 * 	format (string) Tokens for the parts of the name.
+	 * 		Permitted Tokens:
+	 * 			%prefix%
+	 * 			%first%
+	 * 			%middle%
+	 * 			%last%
+	 * 			%suffix%
 	 * 
 	 * Example:
 	 * 	If an entry is an individual this would return their name as Last Name, First Name
@@ -624,6 +630,34 @@ class cnEntry
 		$this->department = stripslashes($department);
     }
 	
+	/**
+	 * Returns the entry's contact name.
+	 * 
+	 * Accepted options for the $atts property are:
+	 * 	format (string) Tokens for the parts of the name.
+	 * 		Permitted Tokens:
+	 * 			%first%
+	 * 			%last%
+	 * 
+	 * @param array $atts [optional]
+	 * @return string
+	 */
+	public function getContactName($atts = NULL)
+	{
+		$defaultAtts = array( 'format' => '%first% %last%' );
+		
+		$atts = $this->validate->attributesArray($defaultAtts, $atts);
+		
+		$search = array('%first%', '%last%');
+		$replace = array();
+		
+		( isset($this->contactFirstName) ) ? $replace[] = $this->getContactFirstName() : $replace[] = '';
+		
+		( isset($this->contactLastName) ) ? $replace[] = $this->getContactLastName() : $replace[] = '';
+		
+		return str_ireplace( $search , $replace , $atts['format'] );
+	}
+	
 	public function getContactFirstName()
 	{
 		return $this->format->sanitizeString($this->contactFirstName);
@@ -747,7 +781,7 @@ class cnEntry
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['preferred'] = FALSE;
 			$defaultAttr['type'] = NULL;
 			$defaultAttr['city'] = NULL;
 			$defaultAttr['state'] = NULL;
@@ -829,7 +863,7 @@ class cnEntry
 					/*
 					 * // START -- Do not return addresses that do not match the supplied $atts.
 					 */
-					if ( ! empty($preferred) && $row->preferred != (bool) $preferred ) continue;
+					if ( $preferred && ! $row->preferred ) continue;
 					if ( ! empty($type) && ! in_array($row->type, $type) ) continue;
 					if ( ! empty($city) && ! in_array($row->city, $city) ) continue;
 					if ( ! empty($state) && ! in_array($row->state, $state) ) continue;
@@ -1048,7 +1082,7 @@ class cnEntry
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['preferred'] = FALSE;
 			$defaultAttr['type'] = NULL;
 			
 			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
@@ -1117,7 +1151,7 @@ class cnEntry
 					/*
 					 * // START -- Do not return phone numbers that do not match the supplied $atts.
 					 */
-					if ( ! empty($preferred) && $row->preferred != (bool) $preferred ) continue;
+					if ( $preferred && ! $row->preferred ) continue;
 					if ( ! empty($type) && ! in_array($row->type, $type) ) continue;
 					/*
 					 * // END -- Do not return phone numbers that do not match the supplied $atts.
@@ -1322,7 +1356,7 @@ class cnEntry
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['preferred'] = FALSE;
 			$defaultAttr['type'] = NULL;
 			
 			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
@@ -1375,7 +1409,7 @@ class cnEntry
 					/*
 					 * // START -- Do not return email addresses that do not match the supplied $atts.
 					 */
-					if ( ! empty($preferred) && $row->preferred != (bool) $preferred ) continue;
+					if ( $preferred && ! $row->preferred ) continue;
 					if ( ! empty($type) && ! in_array($row->type, $type) ) continue;
 					/*
 					 * // END -- Do not return email addresses that do not match the supplied $atts.
@@ -1563,7 +1597,7 @@ class cnEntry
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['preferred'] = FALSE;
 			$defaultAttr['type'] = NULL;
 			
 			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
@@ -1637,7 +1671,7 @@ class cnEntry
 					/*
 					 * // START -- Do not return IM IDs that do not match the supplied $atts.
 					 */
-					if ( ! empty($preferred) && $row->preferred != (bool) $preferred ) continue;
+					if ( $preferred && ! $row->preferred ) continue;
 					if ( ! empty($type) && ! in_array($row->type, $type) ) continue;
 					/*
 					 * // END -- Do not return IM IDs that do not match the supplied $atts.
@@ -1850,7 +1884,7 @@ class cnEntry
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['preferred'] = FALSE;
 			$defaultAttr['type'] = NULL;
 			
 			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
@@ -1902,7 +1936,7 @@ class cnEntry
 					/*
 					 * // START -- Do not return social networks that do not match the supplied $atts.
 					 */
-					if ( ! empty($preferred) && $row->preferred != (bool) $preferred ) continue;
+					if ( $preferred && ! $row->preferred ) continue;
 					if ( ! empty($type) && ! in_array($row->type, $type) ) continue;
 					/*
 					 * // END -- Do not return social networks that do not match the supplied $atts.
@@ -2089,7 +2123,7 @@ class cnEntry
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['preferred'] = FALSE;
 			$defaultAttr['type'] = NULL;
 			
 			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
@@ -2186,7 +2220,7 @@ class cnEntry
 					/*
 					 * // START -- Do not return links that do not match the supplied $atts.
 					 */
-					if ( ! empty($preferred) && $row->preferred != (bool) $preferred ) continue;
+					if ( $preferred && ! $row->preferred ) continue;
 					if ( ! empty($type) && ! in_array($row->type, $type) ) continue;
 					/*
 					 * // END -- Do not return links that do not match the supplied $atts.
@@ -2528,7 +2562,8 @@ class cnEntry
      */
     public function getNotes()
     {
-        return $this->format->sanitizeString($this->notes, TRUE);
+        //return $this->notes;
+		return $this->format->sanitizeString($this->notes, TRUE);
     }
     
     /**

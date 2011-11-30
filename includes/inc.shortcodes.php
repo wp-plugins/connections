@@ -140,8 +140,6 @@ function _connections_list($atts, $content = NULL)
 							'repeat_alphaindex' => 'false',
 							'show_alphahead' => 'false',
 							'list_type' => NULL,
-							/*'limit' => NULL,*/
-							/*'offset' => NULL,*/
 							'order_by' => NULL,
 							'family_name' => NULL,
 							'last_name' => NULL,
@@ -153,13 +151,15 @@ function _connections_list($atts, $content = NULL)
 							'zip_code' => NULL,
 							'country' => NULL,
 							'template' => NULL, /** @since version 0.7.1.0 */
-							'template_name' => NULL /** @deprecated since version 0.7.0.4 */
+							'template_name' => NULL /** @deprecated since version 0.7.0.4 */,
+							'width' => NULL
 						);
 	
 	$permittedAtts = apply_filters( 'cn_list_atts_permitted' , $permittedAtts );
 	$permittedAtts = apply_filters( 'cn_list_atts_permitted-' . $template->slug , $permittedAtts );
 	
 	$atts = shortcode_atts( $permittedAtts , $atts ) ;
+	//$out .= print_r($atts, TRUE);
 	
 	$atts = apply_filters( 'cn_list_atts' , $atts );
 	$atts = apply_filters( 'cn_list_atts-' . $template->slug , $atts );
@@ -203,7 +203,10 @@ function _connections_list($atts, $content = NULL)
 	// Prints the template's CSS file.
 	if ( method_exists($template, 'printCSS') ) $out .= $template->printCSS();
 	
-	$out .= '<div class="cn-list" id="cn-list" data-connections-version="' . $connections->options->getVersion() . '-' . $connections->options->getDBVersion() . '">' . "\n";
+	$out .= '<div class="cn-list" id="cn-list" data-connections-version="' . 
+		$connections->options->getVersion() . '-' . 
+		$connections->options->getDBVersion() . '"' . 
+		( ( empty($atts['width']) ) ? '' : ' style="width: ' . $atts['width'] . 'px;"' ) . '>' . "\n";
 	
 		$out .= "\n" . '<div class="cn-template cn-' . $template->slug . '" id="cn-' . $template->slug . '">' . "\n";
 					
@@ -444,6 +447,7 @@ function _upcoming_list($atts, $content=null) {
 		. $visibilityfilter;
 	
 	$results = $wpdb->get_results($newSQL);
+	//$out .= print_r($results , TRUE);
 	
 	// If there are no results no need to proceed and output message.
 	if ( empty($results) )
@@ -552,7 +556,8 @@ function _upcoming_list($atts, $content=null) {
 		
 		$out .= "\n" . '</div>' . "\n";
 		
-		return $out;
 	}
+	
+	return $out;
 }
 ?>

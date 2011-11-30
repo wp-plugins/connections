@@ -1558,10 +1558,11 @@ class cnFormObjects
 	{
 		$date = new cnDate();
 		
-		echo "<div class='form-field celebrate'>
-				<span class='selectbox'>Birthday: " . $this->buildSelect('birthday_month',$date->months,$date->getMonth($entry->getBirthday())) . "</span>
-				<span class='selectbox'>" . $this->buildSelect('birthday_day',$date->days,$date->getDay($entry->getBirthday())) . "</span>
-		</div>";
+		echo '<div class="form-field celebrate">
+				<span class="selectbox">Birthday: ' . $this->buildSelect('birthday_month',$date->months,$date->getMonth($entry->getBirthday())) . '</span>
+				<span class="selectbox">' . $this->buildSelect('birthday_day',$date->days,$date->getDay($entry->getBirthday())) . '</span>
+			</div>';
+		echo '<div class="form-field celebrate-disabled"><p>Field not available for this entry type.</p></div>';
 	}
 	
 	/**
@@ -1575,10 +1576,11 @@ class cnFormObjects
 	{
 		$date = new cnDate();
 		
-		echo "<div class='form-field celebrate'>
-				<span class='selectbox'>Anniversary: " . $this->buildSelect('anniversary_month',$date->months,$date->getMonth($entry->getAnniversary())) . "</span>
-				<span class='selectbox'>" . $this->buildSelect('anniversary_day',$date->days,$date->getDay($entry->getAnniversary())) . "</span>
-		</div>";
+		echo '<div class="form-field celebrate">
+				<span class="selectbox">Anniversary: ' . $this->buildSelect('anniversary_month',$date->months,$date->getMonth($entry->getAnniversary())) . '</span>
+				<span class="selectbox">' . $this->buildSelect('anniversary_day',$date->days,$date->getDay($entry->getAnniversary())) . '</span>
+			</div>';
+		echo '<div class="form-field celebrate-disabled"><p>Field not available for this entry type.</p></div>';
 	}
 	
 	/**

@@ -74,6 +74,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * TimThumb by [Ben Gillbanks and Mark Maunder](http://code.google.com/p/timthumb/).
 * Screen Options class by [Janis Elsts](http://w-shadow.com/blog/2010/06/29/adding-stuff-to-wordpress-screen-options/).
 * spin.js by [Felix Gnass](http://fgnass.github.com/spin.js/).
+* $.goMap() jQuery Google Maps Plugin by [Jevgenijs Shtrauss](http://www.pittss.lv/jquery/gomap/).
 
 == Screenshots ==
 [Samples and screenshots can be found here](http://connections-pro.com/?page_id=52)
@@ -145,6 +146,8 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * OTHER: All styles have been moved to an external CSS file.
 * OTHER: Completely restructured the [connections] shortcode logic.
 * OTHER: The output of the IM networks now conform to the hCard spec.
+* OTHER: Added the missing contact first and last name template tag.
+* OTHER: Enable shortcode use in the bio and notes fields.
 
 = 0.7.1.6 06/15/2011 =
 * Fixes security vulnerability.

@@ -30,6 +30,8 @@ div#cn-list span.org { display: block; }
 div#cn-list span.organization-name { display: block; }
 div#cn-list span.organization-unit { display: block; }
 div#cn-list span.title { display: block; }
+div#cn-list span.contact-name { display: block; }
+div#cn-list span.contact-label { font-weight: bold; }
 
 /*
  * Address Styles
