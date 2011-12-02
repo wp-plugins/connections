@@ -111,12 +111,15 @@ if (!class_exists('connectionsLoad'))
 		
 		public function start()
 		{
-			global $wpdb, /*$connections,*/ $current_user;
+			global $wpdb, $current_user;
 		
 			get_currentuserinfo();
 			$this->currentUser->setID($current_user->ID);
 			
 			//$this->options->setDBVersion('0.1.5');
+			
+			// Register Common scripts
+			add_action( 'init', array(&$this, 'registerScripts' ) );
 			
 			if ( is_admin() )
 			{
@@ -136,7 +139,7 @@ if (!class_exists('connectionsLoad'))
 			}
 			else
 			{
-				// Calls the methods to load the frontend scripts and CSS.
+				// Calls the methods to enqueue the frontend scripts and CSS.
 				add_action( 'wp_print_scripts', array(&$this, 'loadScripts' ) );
 				add_action( 'wp_print_styles', array(&$this, 'loadStyles' ) );
 				
@@ -994,6 +997,20 @@ if (!class_exists('connectionsLoad'))
 		}
 		
 		/**
+		 * Register the external JS libraries that may be enqueued in either the frontend or admin.
+		 * 
+		 * @return NULL
+		 */
+		public function registerScripts()
+		{
+			wp_register_script('cn-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, TRUE);
+			wp_register_script('jquery-gomap-min', WP_PLUGIN_URL . '/connections/js/jquery.gomap-1.3.2.min.js', array('jquery' , 'cn-google-maps-api' ), CN_CURRENT_VERSION, TRUE);
+			
+			wp_register_script('jquery-preloader', WP_PLUGIN_URL . '/connections/js/jquery.preloader.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
+			wp_register_script('jquery-spin', WP_PLUGIN_URL . '/connections/js/jquery.spin.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
+		}
+		
+		/**
 		 * Loads the Connections javascripts only on required admin pages.
 		 */
 		public function loadAdminScripts()
@@ -1006,7 +1023,7 @@ if (!class_exists('connectionsLoad'))
 			if ( in_array($_GET['page'], $allPages) )
 			{
 				wp_enqueue_script('cn-ui-admin', WP_PLUGIN_URL . '/connections/js/cn-admin.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
-				wp_enqueue_script('jquery-preloader', WP_PLUGIN_URL . '/connections/js/jquery.preloader.js', array('jquery' , 'cn-ui-admin'), CN_CURRENT_VERSION, TRUE);
+				wp_enqueue_script('jquery-preloader');
 			}
 			
 			/*
@@ -1078,12 +1095,7 @@ if (!class_exists('connectionsLoad'))
 			 */
 			
 			wp_enqueue_script('cn-ui', WP_PLUGIN_URL . '/connections/js/cn-user.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
-			wp_enqueue_script('jquery-preloader', WP_PLUGIN_URL . '/connections/js/jquery.preloader.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
-			
-			wp_register_script('cn-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, TRUE);
-			wp_register_script('jquery-gomap-min', WP_PLUGIN_URL . '/connections/js/jquery.gomap-1.3.2.min.js', array('jquery' , 'cn-google-maps-api' ), CN_CURRENT_VERSION, TRUE);
-			
-			wp_register_script('jquery-spin', WP_PLUGIN_URL . '/connections/js/jquery.spin.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
+			wp_enqueue_script('jquery-preloader');
 		}
 		
 		/**

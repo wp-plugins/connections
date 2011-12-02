@@ -12,6 +12,11 @@ class cnEntry
 	private $id;
 	
 	/**
+	 * @var string
+	 */
+	private $ruid;
+	
+	/**
 	 * Unix timestamp
 	 * @var integer unix timestamp
 	 */
@@ -262,6 +267,8 @@ class cnEntry
 			if ( isset($entry->edited_by) ) $this->editedBy = $entry->edited_by;
 			
 			if ( isset($entry->status) ) $this->status = $entry->status;
+			
+			$this->ruid = uniqid( $this->getId() , FALSE );
 		}
 		
 		// Load the formatting class for sanitizing the get methods.
@@ -289,7 +296,17 @@ class cnEntry
     {
         $this->id = $id;
     }
-
+	
+	/**
+	 * Returns a runtime unique id.
+	 * 
+	 * @return string
+	 */
+	public function getRuid()
+	{
+		return $this->ruid;
+	}
+	
     /**
      * Timestamp format can be sent as a string variable.
      * Returns $timeStamp

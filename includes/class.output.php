@@ -104,7 +104,7 @@ class cnOutput extends cnEntry
 							);
 		
 		$atts = $this->validate->attributesArray( $defaultAtts , $suppliedAtts );
-		$atts['fallback'] = $this->validate->attributesArray( $defaultAtts['fallback'] , $suppliedAtts['fallback'] );
+		if ( isset($suppliedAtts['fallback']) && is_array($suppliedAtts['fallback']) ) $atts['fallback'] = $this->validate->attributesArray( $defaultAtts['fallback'] , $suppliedAtts['fallback'] );
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -715,7 +715,72 @@ class cnOutput extends cnEntry
 		
 		//$out = str_ireplace( array('|||||||||' , '||||||||' ,'|||||||' ,'||||||' ,'|||||' ,'||||' ,'|||' ,'||' ,'|') , '<br>' , $out );
 		
-		if ( $return ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+	}
+	
+	/**
+	 * Echo or return a <div> with the entry's address within the HTML5 data- attribute. To be used for
+	 * placing a Google Map in with the jQuery goMap plugin.
+	 * 
+	 * NOTE: wp_enqueue_script('jquery-gomap-min') must called before use, otherwise just an empty div will be diaplayed.
+	 * 
+	 * Accepted options for the $atts property are:
+	 * 	preferred (bool) Retrieve the preferred entry address.
+	 * 	type (array) || (string) Retrieve specific address types.
+	 * 		Permitted Types:
+	 * 			home
+	 * 			work
+	 * 			school
+	 * 			other
+	 * 	height (int) Specifiy the div height in px.
+	 * 	width (int) Specifiy the div widdth in px.
+	 * 	coordinates (array) Retrieve addresses in with specific coordinates. Both latitude and longitude must be supplied.
+	 * 	before (string) HTML to output before the addresses.
+	 * 	after (string) HTML to after before the addresses.
+	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * @TODO Add support for the geo attr.
+	 * 
+	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (bool) $cached Returns the cached address rather than querying the db.
+	 * @return string
+	 */
+	public function getMapBlock( $suppliedAttr = array() , $cached = TRUE )
+	{
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['type'] = NULL;
+			$defaultAttr['height'] = 400;
+			$defaultAttr['width'] = 400;
+			$defaultAttr['before'] = '';
+			$defaultAttr['after'] = '';
+			$defaultAttr['return'] = FALSE;
+			
+			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
+			$atts['id'] = $this->getId();
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		$out = '';
+		$addresses = $this->getAddresses( $atts , $cached );
+		
+		if ( empty($addresses) ) return '';
+		
+		if ( ! empty($addresses[0]->line_one) ) $addr[] = $addresses[0]->line_one;
+		if ( ! empty($addresses[0]->line_two) ) $addr[] = $addresses[0]->line_two;
+		if ( ! empty($addresses[0]->city) ) $addr[] = $addresses[0]->city;
+		if ( ! empty($addresses[0]->state) ) $addr[] = $addresses[0]->state;
+		if ( ! empty($addresses[0]->zipcode) ) $addr[] = $addresses[0]->zipcode;
+		
+		if ( empty($addr) ) return '';
+		
+		$out = '<div id="map-' . $this->getRuid() . '" style="width: ' . $atts['width'] . 'px; height: ' . $atts['height'] . 'px" data-address="' . implode(', ', $addr) . '"></div>';
+		
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
@@ -788,7 +853,7 @@ class cnOutput extends cnEntry
 		
 		$out .= '</span>';
 		
-		if ( $return ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
@@ -936,7 +1001,7 @@ class cnOutput extends cnEntry
 		// This filter is required to allow the ROT13 encyption plugin to function.
 		$out = apply_filters('cn_output_email_addresses', $out);
 		
-		if ( $return ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
@@ -1037,7 +1102,7 @@ class cnOutput extends cnEntry
 		
 		$out .= '</span>';
 		
-		if ( $return ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
@@ -1107,7 +1172,7 @@ class cnOutput extends cnEntry
 		
 		$out .= '</span>';
 		
-		if ( $return ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
@@ -1190,7 +1255,7 @@ class cnOutput extends cnEntry
 		
 		$out .= '</span>';
 		
-		if ( $return ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	

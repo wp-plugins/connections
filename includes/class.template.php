@@ -68,6 +68,7 @@ class cnTemplate
 	public $cssPath;
 	
 	public $printCSS = array();
+	public $printJS =array();
 	
 	/**
 	 * The path to the template's Javascript file.
