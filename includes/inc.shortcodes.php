@@ -118,8 +118,8 @@ function _connections_list($atts, $content = NULL)
 	//$out .= print_r($template , TRUE);
 	
 	// If no template was found, exit return an error message.
-	if ( ! isset($template->file) || empty($template->file) )
-		return '<p style="color:red; font-weight:bold; text-align:center;">ERROR: Template "' . $preLoadAtts['template_name'] . $preLoadAtts['template'] . '" not found.</p>';
+	if ( ! isset($template->file) || empty($template->file) || ! is_file($template->file) )
+		return '<p style="color:red; font-weight:bold; text-align:center;">ERROR: Template ' . $preLoadAtts['template_name'] . $preLoadAtts['template'] . ' not found.</p>';
 	
 	
 	/*
@@ -176,7 +176,7 @@ function _connections_list($atts, $content = NULL)
 	$convert->toBoolean($atts['wp_current_category']);
 	
 	/*
-	 * The WP post editor encodes the post text we have to decode it
+	 * The WP post editor entity encodes the post text we have to decode it
 	 * so a match can be made when the query is run.
 	 */
 	$atts['family_name'] = html_entity_decode($atts['family_name']);
@@ -188,6 +188,7 @@ function _connections_list($atts, $content = NULL)
 	$atts['state'] = html_entity_decode($atts['state']);
 	$atts['zip_code'] = html_entity_decode($atts['zip_code']);
 	$atts['country'] = html_entity_decode($atts['country']);
+	$atts['category_name'] = html_entity_decode($atts['category_name']);
 	
 	$atts = apply_filters('cn_list_retrieve_atts' , $atts );
 	$atts = apply_filters('cn_list_retrieve_atts-' . $template->slug , $atts );
@@ -208,7 +209,7 @@ function _connections_list($atts, $content = NULL)
 		$connections->options->getDBVersion() . '"' . 
 		( ( empty($atts['width']) ) ? '' : ' style="width: ' . $atts['width'] . 'px;"' ) . '>' . "\n";
 	
-		$out .= "\n" . '<div class="cn-template cn-' . $template->slug . '" id="cn-' . $template->slug . '">' . "\n";
+		$out .= "\n" . '<div class="cn-template cn-' . $template->slug . '" id="cn-' . $template->slug . '" data-template-version="' . $template->version . '">' . "\n";
 					
 			$out .= "\n" . '<div class="cn-clear" id="cn-list-head">' . "\n";
 			
@@ -559,5 +560,19 @@ function _upcoming_list($atts, $content=null) {
 	}
 	
 	return $out;
+}
+
+add_shortcode('connections_vcard', '_connections_vcard');
+function _connections_vcard( $atts , $content = NULL )
+{
+	$atts = shortcode_atts( array(
+									'id' => NULL
+								 ), $atts ) ;
+								 
+	if ( empty($atts['id']) || ! is_numeric($atts['id']) || empty($content) ) return '';
+	
+	$vCard = '<span id="vcard" style="display: none">' . _connections_list( array( 'id' => $atts['id'] , 'template' => 'qtip-vcard' ) ) . '</span>';
+	
+	return '<span class="cn-vcard">' . $content . $vCard . '</span>';
 }
 ?>

@@ -568,6 +568,7 @@ class cnOutput extends cnEntry
 	 * 			%label%
 	 * 			%first%
 	 * 			%last%
+	 * 	label (string) The label to be displayed for the contact name.
 	 * 	before (string) HTML to output before an address.
 	 * 	after (string) HTML to after before an address.
 	 * 	return (bool) Return or echo the string. Default is to echo.
@@ -733,6 +734,9 @@ class cnOutput extends cnEntry
 	 * 			work
 	 * 			school
 	 * 			other
+	 * 	static (bool) Query map via the Google Static Maps API
+	 * 	maptype (string) Valid types are: HYBRID, ROADMAP, SATELLITE, TERRAIN
+	 * 	zoom (int) Sets the zoom level.
 	 * 	height (int) Specifiy the div height in px.
 	 * 	width (int) Specifiy the div widdth in px.
 	 * 	coordinates (array) Retrieve addresses in with specific coordinates. Both latitude and longitude must be supplied.
@@ -741,6 +745,7 @@ class cnOutput extends cnEntry
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
 	 * 
 	 * @TODO Add support for the geo attr.
+	 * @TODO Add support for the Google Maps API Premier client id.
 	 * 
 	 * @param (array) $suppliedAttr Accepted values as noted above.
 	 * @param (bool) $cached Returns the cached address rather than querying the db.
@@ -753,6 +758,9 @@ class cnOutput extends cnEntry
 		 */
 			$defaultAttr['preferred'] = NULL;
 			$defaultAttr['type'] = NULL;
+			$defaultAttr['static'] = FALSE;
+			$defaultAttr['maptype'] = 'ROADMAP';
+			$defaultAttr['zoom'] = 13;
 			$defaultAttr['height'] = 400;
 			$defaultAttr['width'] = 400;
 			$defaultAttr['before'] = '';
@@ -766,6 +774,20 @@ class cnOutput extends cnEntry
 		 */
 		
 		$out = '';
+		$attr = array();
+		
+		// Limit the map type to one of the valid types to prevent user error.
+		$permittedMapTypes = array( 'HYBRID', 'ROADMAP', 'SATELLITE', 'TERRAIN' );
+		$atts['maptype'] = strtoupper( $atts['maptype'] );
+		if ( ! in_array( $atts['maptype'] , $permittedMapTypes ) ) $atts['maptype'] = 'ROADMAP';
+		
+		// Limit the user specified zoom level to between 0 and 21
+		if ( ! in_array( $atts['zoom'] , range(0, 21) ) ) $atts['zoom'] = 13;
+		
+		// Ensure the requested map size does not exceed the permitted sizes permitted by the Google Static Maps API
+		$atts['width'] = ( $atts['width'] <= 640 ) ? $atts['width'] : 400;
+		$atts['height'] = ( $atts['height'] <= 640 ) ? $atts['height'] : 400;
+		
 		$addresses = $this->getAddresses( $atts , $cached );
 		
 		if ( empty($addresses) ) return '';
@@ -778,7 +800,31 @@ class cnOutput extends cnEntry
 		
 		if ( empty($addr) ) return '';
 		
-		$out = '<div id="map-' . $this->getRuid() . '" style="width: ' . $atts['width'] . 'px; height: ' . $atts['height'] . 'px" data-address="' . implode(', ', $addr) . '"></div>';
+		if ( $atts['static'] )
+		{
+			$attr['center'] = implode( ', ' , $addr );
+			$attr['markers'] = $attr['center'];
+			$attr['size'] = $atts['width'] . 'x' . $atts['height'];
+			$attr['maptype'] = $atts['maptype'];
+			$attr['zoom'] = $atts['zoom'];
+			//$attr['scale'] = 2;
+			$attr['format'] = 'png';
+			$attr['sensor'] = 'false';
+			
+			$out .= '<span class="cn-image-style" style="display: inline-block;"><span class="cn-image" style="height: ' . $atts['height'] . '; width: ' . $atts['width'] . '">';
+			$out .= '<img class="map" title="' . $attr['center'] . '" alt="' . $attr['center'] . '" width="' . $atts['width'] . '" height="' . $atts['height'] . '" src="http://maps.googleapis.com/maps/api/staticmap?' . http_build_query( $attr , '' , '&amp;' ) . '"/>';
+			$out .= '</span></span>';
+		}
+		else
+		{
+			$attr[] = 'id="map-' . $this->getRuid() . '"';
+			$attr[] = 'data-address="' . implode(', ', $addr) .'"';
+			$attr[] = 'style="width: ' . $atts['width'] . 'px; height: ' . $atts['height'] . 'px"';
+			$attr[] = 'data-maptype="' . $atts['maptype'] .  '"';
+			$attr[] = 'data-zoom="' . $atts['zoom'] .  '"';
+			
+			$out = '<div ' . implode(' ', $attr) . '></div>';
+		}
 		
 		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
@@ -1203,6 +1249,10 @@ class cnOutput extends cnEntry
 	 * 			%label%
 	 * 			%title%
 	 * 			%url%
+	 * 			%image%
+	 * 	label (string) The label to be displayed for the links.
+	 * 	image (bool) If true, create a websot of the link and display it.
+	 * 	size (string) The valid image sizes. Valid values are: mcr || tny || vsm || sm || lg || xlg
 	 * 	before (string) HTML to output before the social media networks.
 	 * 	after (string) HTML to after before the social media networks.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
@@ -1220,6 +1270,9 @@ class cnOutput extends cnEntry
 			$defaultAttr['preferred'] = NULL;
 			$defaultAttr['type'] = NULL;
 			$defaultAttr['format'] = '%title%';
+			$defaultAttr['label'] = NULL;
+			$defaultAttr['image'] = FALSE;
+			$defaultAttr['size'] = 'lg';
 			$defaultAttr['before'] = '';
 			$defaultAttr['after'] = '';
 			$defaultAttr['return'] = FALSE;
@@ -1232,7 +1285,7 @@ class cnOutput extends cnEntry
 		
 		$out = '';
 		$links = $this->getLinks( $atts , $cached );
-		$search = array('%label%' , '%title%' , '%url%');
+		$search = array('%label%' , '%title%' , '%url%' , '%image%');
 		
 		if ( empty($links) ) return '';
 		
@@ -1241,12 +1294,83 @@ class cnOutput extends cnEntry
 		foreach ( $links as $link )
 		{
 			$replace = array();
+			$imgBlock = '';
+			$queryURL = '';
+			$imageTag ='';
 			
 			$out .= "\n" . '<span class="link ' . $link->type . '">';
 			
-				( empty($link->name) ) ? $replace[] = '' : $replace[] = '<span class="link-name">' . $link->name . '</span>';
+				if ( empty( $atts['label'] ) )
+				{
+					( empty($link->name) ) ? $replace[] = '' : $replace[] = '<span class="link-name">' . $link->name . '</span>';
+				}
+				else
+				{
+					$replace[] = '<span class="link-name">' . $atts['label'] . '</span>';
+				}
+				
+				
 				( empty($link->title) ) ? $replace[] = '' : $replace[] = '<a class="url" href="' . $link->url . '"' . ( ( empty($link->target) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty($link->followString) ? '' : ' rel="' . $link->followString . '"' ) ) . '>' . $link->title . '</a>';
 				( empty($link->url) ) ? $replace[] = '' : $replace[] = '<a class="url" href="' . $link->url . '"' . ( ( empty($link->target) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty($link->followString) ? '' : ' rel="' . $link->followString . '"' ) ) . '>' . $link->url . '</a>';
+				
+				if ( $atts['image'] )
+				{
+					// Set the image size; These string values match the valid size for http://www.shrinktheweb.com
+					switch ( $atts['size'] )
+					{
+						case 'mcr':
+							$width = 75;
+							$height = 56;
+							break;
+							
+						case 'tny':
+							$width = 90;
+							$height = 68;
+							break;
+							
+						case 'vsm':
+							$width = 100;
+							$height = 75;
+							break;
+							
+						case 'sm':
+							$width = 120;
+							$height = 90;
+							break;
+							
+						case 'lg':
+							$width = 200;
+							$height = 150;
+							break;
+							
+						case 'xlg':
+							$width = 320;
+							$height = 240;
+							break;
+					}
+					
+					if ( $this->validate->url( $link->url , FALSE ) == 1 )
+					{
+						// Create the query the WordPress for the webshot to be displayed.
+						$queryURL = 'http://s.wordpress.com/mshots/v1/' . urlencode($link->url) . '?w=' . $width;
+						$imageTag = '<img class="screenshot" alt="' . esc_attr($link->url) . '" width="' . $width . '" src="' . $queryURL . '" />';
+						
+						$imgBlock .= '<span class="cn-image-style" style="display: inline-block;"><span class="cn-image" style="height: ' . $height . '; width: ' . $width . '">';
+						$imgBlock .= '<a class="url" href="' . $link->url . '"' . ( ( empty($link->target) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty($link->followString) ? '' : ' rel="' . $link->followString . '"' ) ) . '>' . $imageTag . '</a>';
+						$imgBlock .= '</span></span>';
+						
+						$replace[] = $imgBlock;
+					}
+					else
+					{
+						$replace[] = '';
+					}
+				}
+				else
+				{
+					$replace[] = '';
+				}
+				
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );
 				

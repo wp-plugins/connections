@@ -30,7 +30,7 @@ function processEntry($data, $action)
 			
 	if ( isset($data['entry_type']) ) $entry->setEntryType($data['entry_type']);
 	if ( isset($data['family_name']) ) $entry->setFamilyName($data['family_name']);
-	if ( isset($data['family_member']) ) $entry->setFamilyMembers($data['family_member']);
+	( isset($data['family_member']) ) ? $entry->setFamilyMembers($data['family_member']) : $entry->setFamilyMembers( array() );
 	if ( isset($data['honorific_prefix']) ) $entry->setHonorificPrefix($data['honorific_prefix']);
 	if ( isset($data['first_name']) ) $entry->setFirstName($data['first_name']);
 	if ( isset($data['middle_name']) ) $entry->setMiddleName($data['middle_name']);

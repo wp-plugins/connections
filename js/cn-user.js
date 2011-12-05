@@ -1,7 +1,7 @@
 jQuery(document).ready(function($) {
 	jQuery('.connections-list').preloader({
 		delay:200,
-		imgSelector:'.cn-image img.photo, .cn-image img.logo',
+		imgSelector:'.cn-image img.photo, .cn-image img.logo, .cn-image img.map, .cn-image img.screenshot',
 		beforeShow:function(){
 			jQuery(this).closest('.cn-image img').css('visibility','hidden');
 		},

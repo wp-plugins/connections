@@ -199,10 +199,10 @@ class cnFormObjects
 	 * @param array $value_options Associative array where the key is the name visible in the HTML output and the value is the option attribute value
 	 * @param string $selected[optional]
 	 */
-	public function buildSelect($name, $value_options, $selected=null)
+	public function buildSelect($name, $value_options, $selected=null, $class='', $id='')
 	{
 		
-		$select = "<select name='" . $name . "'> \n";
+		$select = "\n" . '<select' . ( ( empty($class) ? '' : ' class="' . $class . '"' ) ) . ( ( empty($id) ? '' : ' id="' . $id . '"' ) ) . ' name="' . $name . '">' . "\n";
 		foreach($value_options as $key=>$value)
 		{
 			$select .= "<option ";
@@ -828,8 +828,8 @@ class cnFormObjects
 							
 						// --> Start template for Connection Group <-- \\
 						echo '<textarea id="relation_row_base" style="display: none">';
-							echo $this->getEntrySelect('family_member[::FIELD::][entry_id]');
-							echo $this->buildSelect('family_member[::FIELD::][relation]', $connections->options->getDefaultFamilyRelationValues());
+							echo $this->getEntrySelect('family_member[::FIELD::][entry_id]' , NULL , 'family-member-name'  );
+							echo $this->buildSelect('family_member[::FIELD::][relation]', $connections->options->getDefaultFamilyRelationValues() , NULL , 'family-member-relation' );
 						echo '</textarea>';
 						// --> End template for Connection Group <-- \\
 						
@@ -842,8 +842,8 @@ class cnFormObjects
 								$token = $this->token($relation->getId());
 								
 								echo '<div id="relation_row_' . $token . '" class="relation_row">';
-									echo $this->getEntrySelect('family_member[' . $token . '][entry_id]', $key);
-									echo $this->buildSelect('family_member[' . $token . '][relation]', $connections->options->getDefaultFamilyRelationValues(), $value);
+									echo $this->getEntrySelect('family_member[' . $token . '][entry_id]', $key , 'family-member-name' );
+									echo $this->buildSelect('family_member[' . $token . '][relation]', $connections->options->getDefaultFamilyRelationValues(), $value  , 'family-member-relation' );
 									echo '<a href="#" id="remove_button_' . $token . '" class="button button-warning" onClick="removeEntryRow(\'#relation_row_' . $token . '\'); return false;">Remove</a>';
 								echo '</div>';
 								
@@ -979,7 +979,7 @@ class cnFormObjects
 	 * 
 	 * @param array $entry
 	 */
-	public function metaboxAddress( &$entry = NULL )
+	public function metaboxAddress( $entry = NULL )
 	{
 		global $connections;
 			
@@ -1666,7 +1666,7 @@ class cnFormObjects
 		}
 	}
 	
-	private function getEntrySelect($name, $selected = NULL)
+	private function getEntrySelect($name, $selected = NULL, $class = NULL , $id = NULL )
 	{
 		global $wpdb, $connections;
 		
@@ -1676,7 +1676,7 @@ class cnFormObjects
 		
 		$results = $connections->retrieve->entries($atts);
 		
-	    $out = '<select name="' . $name . '">';
+	    $out = '<select' . ( ( empty($class) ? '' : ' class="' . $class . '"' ) ) . ( ( empty($id) ? '' : ' id="' . $id . '"' ) ) . ' name="' . $name . '">';
 			$out .= '<option value="">Select Entry</option>';
 			foreach($results as $row)
 			{

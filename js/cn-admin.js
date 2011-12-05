@@ -127,9 +127,11 @@ jQuery(document).ready(function($){
 					id
 					);
 				
-				jQuery('#relations').append( '<div id="relation_row_' + id + '" class="relation_row">' + jRelations + '<a href="#" id="remove_button_' + intCount + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#relation_row_' + intCount + '\'); return false;">Remove</a>' + '</div>' );
+				jQuery('#relations').append( '<div id="relation_row_' + id + '" class="relation_row">' + jRelations + '<a href="#" id="remove_button_' + id + '" ' + 'class="button button-warning" onClick="removeEntryRow(\'#relation_row_' + id + '\'); return false;">Remove</a>' + '</div>' );
 				
 				//intCount++;
+				$('.family-member-name').chosen();
+				$('.family-member-relation').chosen();
 			});
 	});
 	
@@ -298,7 +300,8 @@ jQuery(document).ready(function($){
 		}
 	);
 	
-
+	$('.family-member-name').chosen();
+	$('.family-member-relation').chosen();
 });
 
 function removeEntryRow(id)

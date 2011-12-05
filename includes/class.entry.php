@@ -724,7 +724,7 @@ class cnEntry
      */
     public function getFamilyMembers()
     {
-        if ( !empty($this->familyMembers) )
+        if ( ! empty($this->familyMembers) )
 		{
 			return $this->familyMembers;
 		}
@@ -748,14 +748,18 @@ class cnEntry
 		 * 
 		 * This loop re-writes the data into an associative array entry_id => relation.
 		 */
-		if ($familyMembers)
+		if ( empty($familyMembers) )
 		{
-			foreach($familyMembers as $relation)
+			$family = array();
+		}
+		else
+		{
+			foreach( $familyMembers as $relation )
 			{
-				$family[$relation['entry_id']] .= $relation['relation'];
+				$family[ $relation['entry_id'] ] .= $relation['relation'];
 			}
 		}
-		//$this->options['connection_group'] = $family;
+		
 		$this->options['group']['family'] = $family;
     }
 	
@@ -2951,6 +2955,8 @@ class cnEntry
 			case 'individual':
 				$this->familyName = '';
 				$this->familyMembers = '';
+				$this->contactFirstName = '';
+				$this->contactLastName = '';
 			break;
 			
 			case 'organization':
@@ -2973,6 +2979,8 @@ class cnEntry
 				$this->lastName = '';
 				$this->honorificSuffix = '';
 				$this->title = '';
+				$this->contactFirstName = '';
+				$this->contactLastName = '';
 				$this->birthday = '';
 				$this->anniversary = '';
 			break;
