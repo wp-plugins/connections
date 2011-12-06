@@ -13,7 +13,8 @@ jQuery(document).ready(function ($) {
 				at: 'top center'
 			},
 			hide: false,
-			hide: 'unfocus'
+			hide: 'unfocus',
+			style: { classes: 'ui-tooltip-shadow ui-tooltip-jtools' }
 		});
 	
 });

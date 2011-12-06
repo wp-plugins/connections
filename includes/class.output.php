@@ -744,7 +744,6 @@ class cnOutput extends cnEntry
 	 * 	after (string) HTML to after before the addresses.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
 	 * 
-	 * @TODO Add support for the geo attr.
 	 * @TODO Add support for the Google Maps API Premier client id.
 	 * 
 	 * @param (array) $suppliedAttr Accepted values as noted above.
@@ -775,6 +774,7 @@ class cnOutput extends cnEntry
 		
 		$out = '';
 		$attr = array();
+		$geo = array();
 		
 		// Limit the map type to one of the valid types to prevent user error.
 		$permittedMapTypes = array( 'HYBRID', 'ROADMAP', 'SATELLITE', 'TERRAIN' );
@@ -798,11 +798,17 @@ class cnOutput extends cnEntry
 		if ( ! empty($addresses[0]->state) ) $addr[] = $addresses[0]->state;
 		if ( ! empty($addresses[0]->zipcode) ) $addr[] = $addresses[0]->zipcode;
 		
-		if ( empty($addr) ) return '';
+		if ( ! empty($addresses[0]->latitude) && ! empty($addresses[0]->longitude) )
+		{
+			$geo['latitude'] = $addresses[0]->latitude;
+			$geo['longitude'] = $addresses[0]->longitude;
+		}
+		
+		if ( empty($addr) && empty($geo) ) return '';
 		
 		if ( $atts['static'] )
 		{
-			$attr['center'] = implode( ', ' , $addr );
+			$attr['center'] = ( empty($geo) ) ? implode( ', ' , $addr ) : implode( ',' , $geo );
 			$attr['markers'] = $attr['center'];
 			$attr['size'] = $atts['width'] . 'x' . $atts['height'];
 			$attr['maptype'] = $atts['maptype'];
@@ -819,6 +825,8 @@ class cnOutput extends cnEntry
 		{
 			$attr[] = 'id="map-' . $this->getRuid() . '"';
 			$attr[] = 'data-address="' . implode(', ', $addr) .'"';
+			if ( ! empty($geo['latitude']) ) $attr[] = 'data-latitude="' . $geo['latitude'] .'"';
+			if ( ! empty($geo['longitude']) ) $attr[] = 'data-longitude="' . $geo['longitude'] .'"';
 			$attr[] = 'style="width: ' . $atts['width'] . 'px; height: ' . $atts['height'] . 'px"';
 			$attr[] = 'data-maptype="' . $atts['maptype'] .  '"';
 			$attr[] = 'data-zoom="' . $atts['zoom'] .  '"';
