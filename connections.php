@@ -838,8 +838,12 @@ if (!class_exists('connectionsLoad'))
 			// Add FAQ, Support and Donate links
 			add_filter('plugin_row_meta', array(&$this, 'addMetaLinks'), 10, 2);
 			
-			// Add the Add Entry item to the favorites dropdown.
-			add_filter('favorite_actions', array(&$this, 'addEntryFavorite') );
+			/*
+			 * Add the Add Entry item to the favorites dropdown.
+			 * WordPress removed this in 3.2. I'm temporarily disabling the filter as I might be able to conver the code
+			 * in the function to be used in the admin bar.
+			 */
+			//add_filter('favorite_actions', array(&$this, 'addEntryFavorite') );
 			
 			// Add Changelog table row in the Manage Plugins admin page.
 			add_action('after_plugin_row_' . CN_BASE_NAME, array(&$this, 'displayUpgradeNotice'), 1, 0);
@@ -1157,6 +1161,8 @@ if (!class_exists('connectionsLoad'))
 		
 		/*
 		 * Add items to the favorites drop down.
+		 * WordPress removed the favorites drop down in 3.2. I might be able to conver this to an admin bar menu.
+		 * @url http://wpdevel.wordpress.com/2011/12/07/admin_user_info_links/
 		 */
 		public function addEntryFavorite($actions)
 		{

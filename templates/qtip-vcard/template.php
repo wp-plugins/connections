@@ -1,1 +1,1 @@
-<span class="qtip-vcard"><?php echo $vCard->download() ?></span>
+<?php echo $vCard->download() ?>

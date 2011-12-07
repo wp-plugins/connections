@@ -571,7 +571,7 @@ function _connections_vcard( $atts , $content = NULL )
 								 
 	if ( empty($atts['id']) || ! is_numeric($atts['id']) || empty($content) ) return '';
 	
-	$vCard = '<span id="vcard" style="display: none">' . _connections_list( array( 'id' => $atts['id'] , 'template' => 'qtip-vcard' ) ) . '</span>';
+	$vCard = '<span class="qtip-vcard" style="display: none">' . _connections_list( array( 'id' => $atts['id'] , 'template' => 'qtip-vcard' ) ) . '</span>';
 	
 	return '<span class="cn-vcard">' . $content . $vCard . '</span>';
 }
