@@ -1,1 +1,5 @@
-<?php echo $vCard->download() ?>
+<?php
+$entry->getNameBlock();
+
+echo $vCard->download();
+?>

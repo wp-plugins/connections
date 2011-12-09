@@ -111,7 +111,7 @@ if (!class_exists('connectionsLoad'))
 			if ( is_admin() ) add_action('admin_menu', array (&$this, 'loadAdminMenus'));
 			
 			// Add the rewrite rules.
-			add_action( 'init', array(&$this, 'addRewriteRules') );
+			//add_action( 'init', array(&$this, 'addRewriteRules') );
 			
 			
 			// Start this plug-in once all other plugins are fully loaded

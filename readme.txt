@@ -155,6 +155,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * OTHER: Added the missing contact first and last name template tag.
 * OTHER: Enable shortcode use in the bio and notes fields.
 * OTHER: Addressed the "Warning: Call-time pass-by-reference has been deprecated" warning messages.
+* OTHER: Disable the filter that added menu items to the 'Favorite' drop down that was removed from WordPress 3.2.
 
 = 0.7.1.6 06/15/2011 =
 * Fixes security vulnerability.

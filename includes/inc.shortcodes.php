@@ -571,8 +571,22 @@ function _connections_vcard( $atts , $content = NULL )
 								 
 	if ( empty($atts['id']) || ! is_numeric($atts['id']) || empty($content) ) return '';
 	
-	$vCard = '<span class="qtip-vcard" style="display: none">' . _connections_list( array( 'id' => $atts['id'] , 'template' => 'qtip-vcard' ) ) . '</span>';
+	$qTipContent = '<span class="cn-qtip-content-vcard" style="display: none">' . _connections_list( array( 'id' => $atts['id'] , 'template' => 'qtip-vcard' ) ) . '</span>';
 	
-	return '<span class="cn-vcard">' . $content . $vCard . '</span>';
+	return '<span class="cn-qtip-vcard">' . $content . $qTipContent . '</span>';
+}
+
+add_shortcode('connections_qtip', '_connections_qtip');
+function _connections_qtip( $atts , $content = NULL )
+{
+	$atts = shortcode_atts( array(
+									'id' => NULL
+								 ), $atts ) ;
+								 
+	if ( empty($atts['id']) || ! is_numeric($atts['id']) || empty($content) ) return '';
+	
+	$qTipContent = '<span class="cn-qtip-content-card" style="display: none">' . _connections_list( array( 'id' => $atts['id'] , 'template' => 'qtip-card' ) ) . '</span>';
+	
+	return '<span class="cn-qtip-card">' . $content . $qTipContent . '</span>';
 }
 ?>
