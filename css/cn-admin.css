@@ -72,6 +72,7 @@ table.connections span.link { display: block; }
  */
 table#availablethemes a { text-decoration: none; }
 table#availablethemes td.current_template {border-left: 0; border-right: 0;}
+table#availablethemes td.current_template h3.error { font-weight: bold; color: #F00000; }
 table#availablethemes td.template_instructions {padding-left: 12px; border-right: 0;}
 table#availablethemes td.install_template {border-left: 0; border-right: 0;}
 table#availablethemes div.current-template img {border-width: 0;}
@@ -105,54 +106,63 @@ div#metabox-quick-links .one-half,.one-third,.two-third { position: relative; ma
 div#metabox-quick-links .last { margin-right: 0 !important; clear: right; }
 
 div#metabox-quick-links .button {
-  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  -moz-user-select: none;
-  background: none;
-  background: -moz-linear-gradient(center top , rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%) repeat scroll 0 0 transparent;
-  background: -webkit-gradient(linear, center bottom, center top, from(rgba(0, 0, 0, .1)), to(rgba(255, 255, 255, .1)));
-  filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#19FFFFFF', EndColorStr='#19000000'); /* IE6,IE7 */
-  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#19FFFFFF', EndColorStr='#19000000')"; /* IE8 */
-  border-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.4);
-  border-style: solid;
-  border-width: 1px;
-  cursor: pointer;
-  line-height: 1em;
-  overflow: visible;
-  position: relative;
-  white-space: nowrap;
+	-moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	-moz-user-select: none;
+	background: none;
+	background: -moz-linear-gradient(top, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.2) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0.1)), color-stop(100%,rgba(0,0,0,0.2))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgba(255,255,255,0.1) 0%,rgba(0,0,0,0.2) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgba(255,255,255,0.1) 0%,rgba(0,0,0,0.2) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgba(255,255,255,0.1) 0%,rgba(0,0,0,0.2) 100%); /* IE10+ */
+	background: linear-gradient(top, rgba(255,255,255,0.1) 0%,rgba(0,0,0,0.2) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1affffff', endColorstr='#33000000',GradientType=0 ); /* IE6-9 */
+	border-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.4);
+	border-style: solid;
+	border-width: 1px;
+	cursor: pointer;
+	line-height: 1em;
+	overflow: hidden;
+	padding: 0;
+	position: relative;
+	white-space: nowrap;
 }
 div#metabox-quick-links .button:hover, div#metabox-quick-links .button.hover {
-  background-image: -moz-linear-gradient(center top , rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
-  background: -webkit-gradient( linear, center bottom, center top, from(rgba(255, 255, 255, .1)), to(rgba(255, 255, 255, .2)));
-  filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#33FFFFFF', EndColorStr='#19FFFFFF'); /* IE6,IE7 */
-  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#33FFFFFF', EndColorStr='#19FFFFFF')"; /* IE8 */
+	background: -moz-linear-gradient(top, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0.2)), color-stop(100%,rgba(255,255,255,0.1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgba(255,255,255,0.2) 0%,rgba(255,255,255,0.1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgba(255,255,255,0.2) 0%,rgba(255,255,255,0.1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgba(255,255,255,0.2) 0%,rgba(255,255,255,0.1) 100%); /* IE10+ */
+	background: linear-gradient(top, rgba(255,255,255,0.2) 0%,rgba(255,255,255,0.1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#33ffffff', endColorstr='#1affffff',GradientType=0 ); /* IE6-9 */
 }
 div#metabox-quick-links .button:active, div#metabox-quick-links .button.active {
-  background: -moz-linear-gradient(center top , rgba(0, 0, 0, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%);
-  background: -webkit-gradient( linear, center bottom, center top, from(rgba(255, 255, 255, .1)), to(rgba(0, 0, 0, .1)));
-  filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#19000000', EndColorStr='#19FFFFFF'); /* IE6,IE7 */
-  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#19000000', EndColorStr='#19FFFFFF')"; /* IE8 */
-  top: 1px;
+	background: -moz-linear-gradient(top, rgba(0,0,0,0.2) 0%, rgba(255,255,255,0.1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.2)), color-stop(100%,rgba(255,255,255,0.1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgba(0,0,0,0.2) 0%,rgba(255,255,255,0.1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgba(0,0,0,0.2) 0%,rgba(255,255,255,0.1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgba(0,0,0,0.2) 0%,rgba(255,255,255,0.1) 100%); /* IE10+ */
+	background: linear-gradient(top, rgba(0,0,0,0.2) 0%,rgba(255,255,255,0.1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#33000000', endColorstr='#1affffff',GradientType=0 ); /* IE6-9 */
+	top: 1px;
 }
 div#metabox-quick-links .button.blue {
   background-color: #00ADEE;
 }
 div#metabox-quick-links .button span {
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  color: #FFFFFF;
-  line-height: 1em;
-  padding: 0.5em;
-  position: relative;
-  text-align: center;
-  text-decoration: none;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
-  white-space: nowrap;
+	color: #FFFFFF;
+	line-height: 1em;
+	padding: 0.5em 0;
+	position: relative;
+	text-align: center;
+	text-decoration: none;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+	white-space: nowrap;
 }
 div#metabox-quick-links .button.full, .button.full span {
   display: block;
 }
 div#metabox-quick-links .button.large span {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
 }
 

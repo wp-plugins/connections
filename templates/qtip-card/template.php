@@ -1,26 +1,22 @@
-<div class="cn-entry" style="-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative;">
+<div class="cn-entry">
 	<div style="width:49%; float:left">
-		<?php echo $entry->getCardImage() ?>
-		<div style="clear:both;"></div>
-		<div style="margin-bottom: 10px;">
-			<span style="font-size:larger;font-variant: small-caps"><strong><?php echo $entry->getFullFirstLastNameBlock() ?></strong></span><br />
-			
-			<?php echo $entry->getTitleBlock() ?>
-			<?php echo $entry->getOrgUnitBlock() ?>
-			
-		</div>
-			
-			<?php echo $entry->getAddressBlock() ?>
+		<?php $entry->getImage( array( 'width' => 225 , 'zc' => 2 ) ) ?>
 	</div>
 		
 	<div align="right">
-	
-		<?php echo $entry->getConnectionGroupBlock() ?>
-		<?php echo $entry->getPhoneNumberBlock() ?>
-		<?php echo $entry->getEmailAddressBlock() ?>
-		<?php echo $entry->getImBlock() ?>
-		<?php echo $entry->getSocialMediaBlock() ?>
-		<?php echo $entry->getWebsiteBlock() ?>
+		<div style="margin-bottom: 10px;">
+			<?php $entry->getNameBlock() ?>
+			<?php $entry->getTitleBlock() ?>
+			<?php $entry->getOrgUnitBlock() ?>
+		</div>
+		
+		<?php $entry->getAddressBlock() ?>
+		<?php $entry->getConnectionGroupBlock() ?>
+		<?php $entry->getPhoneNumberBlock() ?>
+		<?php $entry->getEmailAddressBlock() ?>
+		<?php $entry->getImBlock() ?>
+		<?php $entry->getSocialMediaBlock() ?>
+		<?php $entry->getWebsiteBlock() ?>
 		
 		<?php echo $entry->getBirthdayBlock('F j') ?>
 		<?php echo $entry->getAnniversaryBlock() ?>

@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.1.7
+Version: 0.7.2.0
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 
@@ -171,7 +171,7 @@ if (!class_exists('connectionsLoad'))
 			
 			define('CN_LOG', FALSE);
 			
-			define('CN_CURRENT_VERSION', '0.7.1.7');
+			define('CN_CURRENT_VERSION', '0.7.2.0');
 			define('CN_DB_VERSION', '0.1.6');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
@@ -728,8 +728,16 @@ if (!class_exists('connectionsLoad'))
 			
 			
 			// Create the cache folder.
-			if ( ! file_exists( CN_CACHE_PATH ) ) mkdir( CN_CACHE_PATH );
+			if ( ! file_exists( CN_CACHE_PATH ) ) @mkdir( CN_CACHE_PATH );
+			if ( ! file_exists( CN_CACHE_PATH ) ) @chmod( CN_CACHE_PATH , '0755' );
 			
+			// Create the images folder.
+			if ( ! file_exists( CN_IMAGE_PATH ) ) @mkdir( CN_IMAGE_PATH );
+			if ( ! file_exists( CN_IMAGE_PATH ) ) @chmod( CN_IMAGE_PATH , '0755' );
+			
+			// Create the custom template folder.
+			if ( ! file_exists( CN_CUSTOM_TEMPLATE_PATH ) ) @mkdir( CN_CUSTOM_TEMPLATE_PATH );
+			if ( ! file_exists( CN_CUSTOM_TEMPLATE_PATH ) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0755' );
 			
 			$this->initOptions();
 			
@@ -826,7 +834,17 @@ if (!class_exists('connectionsLoad'))
 			$this->initSuccessMessages();
 			
 			//Check if the db requires updating, display message if it does.
-			if ($this->options->getDBVersion() < CN_DB_VERSION) $this->dbUpgrade = add_action( 'admin_notices', array( &$this , 'addDBUpgradeMessage' ) );
+			if ($this->options->getDBVersion() < CN_DB_VERSION) $this->dbUpgrade = add_action( 'admin_notices' , array( &$this , 'addDBUpgradeMessage' ) );
+			
+			/*
+			 * Add admin notices if required directories are not present or not writeable.
+			 */
+			if ( ! is_dir(CN_IMAGE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connection_images does not seem to exist.</p></div>\';' ) );
+			if ( ! is_writeable(CN_IMAGE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connection_images does not seem to be writeable.</p></div>\';' ) );
+			if ( ! is_dir(CN_CUSTOM_TEMPLATE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connections_templates does not seem to exist.</p></div>\';' ) );
+			if ( ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connections_templates does not seem to be writeable.</p></div>\';' ) );
+			if ( ! is_dir(CN_CACHE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/plugins/connections/cache does not seem to exist.</p></div>\';' ) );
+			if ( ! is_writeable(CN_CACHE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/plugins/connections/cache does not seem to be writeable.</p></div>\';' ) );
 			
 			// Calls the methods to load the admin scripts and CSS.
 			add_action('admin_print_scripts', array(&$this, 'loadAdminScripts') );
@@ -1363,7 +1381,7 @@ if (!class_exists('connectionsLoad'))
 			switch ( $_GET['process'] )
 			{
 				case 'manage':
-					if ( isset($_GET['action']) && !empty( $_GET['action'] ) )
+					if ( isset($_GET['action']) && ! empty( $_GET['action'] ) )
 					{
 						switch ( $_GET['action'] )
 						{
@@ -1449,6 +1467,7 @@ if (!class_exists('connectionsLoad'))
 								processSetUserFilter();
 								//wp_redirect('admin.php?page=connections_manage');
 								wp_redirect( add_query_arg( 's' , urlencode( $_GET['s'] ) , 'admin.php?page=connections_manage' ) );
+								wp_redirect( add_query_arg( array( 's' => urlencode( $_POST['s'] ) , 'display_messages' => 'true' ) , 'admin.php?page=connections_manage' ) );
 							break;
 							
 							case 'do':
@@ -1464,7 +1483,8 @@ if (!class_exists('connectionsLoad'))
 											{
 												check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
 												processDeleteEntries();
-												wp_redirect('admin.php?page=connections_manage&display_messages=true');
+												//wp_redirect('admin.php?page=connections_manage&display_messages=true');
+												wp_redirect( add_query_arg( array( 's' => urlencode( $_POST['s'] ) , 'display_messages' => 'true' ) , 'admin.php?page=connections_manage' ) );
 											}
 											else
 											{
@@ -1480,7 +1500,8 @@ if (!class_exists('connectionsLoad'))
 											{
 												check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
 												processSetEntryStatuses('approved');
-												wp_redirect('admin.php?page=connections_manage&display_messages=true');
+												//wp_redirect('admin.php?page=connections_manage&display_messages=true');
+												wp_redirect( add_query_arg( array( 's' => urlencode( $_POST['s'] ) , 'display_messages' => 'true' ) , 'admin.php?page=connections_manage' ) );
 											}
 											else
 											{
@@ -1496,7 +1517,8 @@ if (!class_exists('connectionsLoad'))
 											{
 												check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
 												processSetEntryStatuses('pending');
-												wp_redirect('admin.php?page=connections_manage&display_messages=true');
+												//wp_redirect('admin.php?page=connections_manage&display_messages=true');
+												wp_redirect( add_query_arg( array( 's' => urlencode( $_POST['s'] ) , 'display_messages' => 'true' ) , 'admin.php?page=connections_manage' ) );
 											}
 											else
 											{
@@ -1512,7 +1534,8 @@ if (!class_exists('connectionsLoad'))
 											{
 												check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
 												processSetEntryVisibility();
-												wp_redirect('admin.php?page=connections_manage&display_messages=true');
+												wp_redirect( add_query_arg( array( 's' => urlencode( $_POST['s'] ) , 'display_messages' => 'true' ) , 'admin.php?page=connections_manage' ) );
+												//wp_redirect('admin.php?page=connections_manage&display_messages=true');
 											}
 											else
 											{
@@ -1521,30 +1544,15 @@ if (!class_exists('connectionsLoad'))
 										break;
 										
 										default:
-											wp_redirect('admin.php?page=connections_manage&display_messages=true');
+											//wp_redirect('admin.php?page=connections_manage&display_messages=true');
+											wp_redirect( add_query_arg( array( 's' => urlencode( $_POST['s'] ) , 'display_messages' => 'true' ) , 'admin.php?page=connections_manage' ) );
 										break;
 									}
 								}
 								
-								// Apply the user filters.
-								if ( isset( $_POST['filter'] ) && ! empty( $_POST['filter'] ) )
-								{
-									check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
-									processSetUserFilter();
-									wp_redirect('admin.php?page=connections_manage&display_messages=true');
-									//wp_redirect( add_query_arg( 's' , urlencode( $_GET['s'] ) , 'admin.php?page=connections_manage' ) );
-								}
-								
-								// Search.
-								if ( isset( $_POST['s'] ) && ! empty( $_POST['s'] ) )
-								{
-									check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
-									wp_redirect( add_query_arg( 's' , urlencode( $_POST['s'] ) , 'admin.php?page=connections_manage' ) );
-								}
-								else
-								{
-									wp_redirect('admin.php?page=connections_manage&display_messages=true');
-								}
+								check_admin_referer($form->getNonce('bulk_action'), '_cn_wpnonce');
+								processSetUserFilter();
+								wp_redirect( add_query_arg( array( 's' => urlencode( $_POST['s'] ) , 'display_messages' => 'true' ) , 'admin.php?page=connections_manage' ) );
 								
 							break;
 						}

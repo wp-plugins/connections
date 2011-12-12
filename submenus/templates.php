@@ -58,8 +58,8 @@ function connectionsShowTemplatesPage()
 							<div id="current-theme">
 								<?php
 								$currentTemplate = $connections->options->getActiveTemplate($type);
-								
-								if ( !empty($currentTemplate) )
+								//print_r($currentTemplate);
+								if ( ! empty($currentTemplate) && is_dir( $currentTemplate->path ) )
 								{
 									$author = '';
 									
@@ -82,6 +82,11 @@ function connectionsShowTemplatesPage()
 									
 									// Remove the current template so it does not show in the available templates.
 									unset($templates->{$currentTemplate->slug});
+								}
+								else
+								{
+									echo '<h3 class="error"> Template ' , esc_attr($currentTemplate->name) , ' can not be found.</h3>';
+									echo '<p class="theme-description error">Path ', esc_attr($currentTemplate->path), ' can not be located.</p>';
 								}
 								?>
 							</div>

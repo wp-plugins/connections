@@ -228,24 +228,25 @@ function _connections_list($atts, $content = NULL)
 				$out .= apply_filters( 'cn_list_before' , '' , $results );
 				$out .= apply_filters( 'cn_list_before-' . $template->slug , '' , $results );
 				$filterRegistry[] = 'cn_list_before-' . $template->slug;
-			
+				
+				/*
+				 * The alpha index is only displayed if set set to true and not set to repeat using the shortcode attributes.
+				 * If a alpha index is set to repeat, that is handled separately.
+				 */
+				if ( $atts['show_alphaindex'] && ! $atts['repeat_alphaindex'] )
+				{
+					$index = "\n" . '<div class="cn-alphaindex">' . $form->buildAlphaIndex(). '</div>' . "\n";
+					$index = apply_filters( 'cn_list_index' , $index , $results );
+					$index = apply_filters( 'cn_list_index-' . $template->slug , $index , $results );
+					$filterRegistry[] = 'cn_list_index-' . $template->slug;
+					
+					$out .= $index;
+				}
+				
 			$out .= "\n" . '</div>' . "\n";
 			
 			$out .= '<div class="connections-list cn-clear" id="cn-list-body">' . "\n";
 			
-			/*
-			 * The alpha index is only displayed if set set to true and not set to repeat using the shortcode attributes.
-			 * If a alpha index is set to repeat, that is handled separately.
-			 */
-			if ( $atts['show_alphaindex'] && ! $atts['repeat_alphaindex'] )
-			{
-				$index = "\n" . '<div class="cn-alphaindex" style="text-align:right;font-size:larger;font-weight:bold">' . $form->buildAlphaIndex(). '</div>' . "\n";
-				$index = apply_filters( 'cn_list_index' , '' , $results );
-				$index = apply_filters( 'cn_list_index-' . $template->slug , '' , $results );
-				$filterRegistry[] = 'cn_list_index-' . $template->slug;
-				
-				$out .= $index;
-			}
 			
 			// If there are no results no need to proceed and output message.
 			if ( empty($results) )
@@ -281,7 +282,7 @@ function _connections_list($atts, $content = NULL)
 						
 						if ($atts['show_alphaindex'] && $atts['repeat_alphaindex'])
 						{
-							$repeatIndex = "\n" . "<div class='cn-alphaindex' style='text-align:right;font-size:larger;font-weight:bold'>" . $form->buildAlphaIndex() . "</div>" . "\n";
+							$repeatIndex = "\n" . '<div class="cn-alphaindex">' . $form->buildAlphaIndex() . '</div>' . "\n";
 							$repeatIndex = apply_filters( 'cn_list_index' , '' , $results );
 							$repeatIndex = apply_filters( 'cn_list_index-' . $template->slug , '' , $results );
 							$filterRegistry[] = 'cn_list_index-' . $template->slug;

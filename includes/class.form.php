@@ -336,7 +336,7 @@ class cnFormObjects
 		</div>
 		
 		<div class="two-third last">
-			<p>Connections comes with several templates to get you started, something, something, bla, bla.</p>
+			<p>Check out the template market.</p>
 		</div>
 		<div class="clearboth"></div>
 		
@@ -347,7 +347,7 @@ class cnFormObjects
 		</div>
 		
 		<div class="two-third last">
-			<p>Dig find a bug, please take the time to report it. Thanks.</p>
+			<p>Did you find a bug, please take the time to report it. Thanks.</p>
 		</div>
 		<div class="clearboth"></div>
 		
@@ -358,7 +358,7 @@ class cnFormObjects
 		</div>
 		
 		<div class="two-third last">
-			<p>Need a feature, request the feature.</p>
+			<p>Need a feature, request a feature.</p>
 		</div>
 		<div class="clearboth"></div>
 		
@@ -711,7 +711,7 @@ class cnFormObjects
 			if ( is_dir(CN_CUSTOM_TEMPLATE_PATH) ) echo '<li>Template Path Writeable: ' , $convert->toYesNo( is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) , '</li>';
 			
 			echo '<li>Cache Path Exists: ' , $convert->toYesNo( is_dir(CN_CACHE_PATH) ) , '</li>';
-			if ( is_dir(CN_CUSTOM_TEMPLATE_PATH) ) echo '<li>Cache Path Writeable: ' , $convert->toYesNo( is_writeable(CN_CACHE_PATH) ) , '</li>';
+			if ( is_dir(CN_CACHE_PATH) ) echo '<li>Cache Path Writeable: ' , $convert->toYesNo( is_writeable(CN_CACHE_PATH) ) , '</li>';
 		echo '</ul>';
 	}
 	

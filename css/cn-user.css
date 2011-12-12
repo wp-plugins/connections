@@ -1,4 +1,8 @@
 /*
+ * Common
+ */
+div.cn-alphaindex { clear: both; text-align: right; font-size: larger; font-weight: bold }
+/*
  * Image / Logo Styles
  */
 div#cn-list span.cn-image {
