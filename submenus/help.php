@@ -10,7 +10,9 @@ function connectionsShowHelpPage()
 	
 	<h2>Connections : Help</h2>
 	
-	<div class="updated fade" id="message"><strong>IMPORTANT: </strong>If you copy code from this page, make sure you switch the editor
+	<div class="updated fade" id="message"><p><strong>IMPORTANT: </strong>The documentation for Connections has been moved to here: <a href="http://connections-pro.com/documentation/plugin/">http://connections-pro.com/documentation/plugin/</a>.</p></div>
+	
+	<!--<div class="updated fade" id="message"><strong>IMPORTANT: </strong>If you copy code from this page, make sure you switch the editor
 	to the HTML tab before pasting, otherwise extra code will be copied which will cause the directory to be incorrectly displayed.</div>
 	
 	<div id="toc">
@@ -977,7 +979,7 @@ function connectionsShowHelpPage()
 		
 	</fieldset>
 	
-	</div>
+	</div>-->
 
 <?php
 }

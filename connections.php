@@ -251,6 +251,7 @@ if (!class_exists('connectionsLoad'))
 			$this->currentUser = new cnUser();
 			$this->retrieve = new cnRetrieve();
 			$this->term = new cnTerms();
+			$this->template = new cnTemplate();
 		}
 		
 		/**

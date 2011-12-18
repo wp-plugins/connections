@@ -307,7 +307,7 @@ class cnRetrieve
 		 */
 			if ( is_user_logged_in() )
 			{
-				if ( !$atts['visibility'] )
+				if ( ! isset( $atts['visibility'] ) || empty( $atts['visibility'] ) )
 				{
 					if ( current_user_can('connections_view_public') ) $visibility[] = 'public';
 					if ( current_user_can('connections_view_private') ) $visibility[] = 'private';
@@ -715,7 +715,7 @@ class cnRetrieve
 		// Set query string for visibility based on user permissions if logged in.
 		if ( is_user_logged_in() )
 		{
-			if ( !$atts['visibility'] )
+			if ( ! isset( $atts['visibility'] ) || empty( $atts['visibility'] ) )
 			{
 				if ( current_user_can('connections_view_public') ) $visibility[] = 'public';
 				if ( current_user_can('connections_view_private') ) $visibility[] = 'private';
@@ -819,7 +819,7 @@ class cnRetrieve
 		// Set query string for visibility based on user permissions if logged in.
 		if ( is_user_logged_in() )
 		{
-			if ( !$atts['visibility'] )
+			if ( ! isset( $atts['visibility'] ) || empty( $atts['visibility'] ) )
 			{
 				if ( current_user_can('connections_view_public') ) $visibility[] = 'public';
 				if ( current_user_can('connections_view_private') ) $visibility[] = 'private';
@@ -923,7 +923,7 @@ class cnRetrieve
 		// Set query string for visibility based on user permissions if logged in.
 		if ( is_user_logged_in() )
 		{
-			if ( !$atts['visibility'] )
+			if ( ! isset( $atts['visibility'] ) || empty( $atts['visibility'] ) )
 			{
 				if ( current_user_can('connections_view_public') ) $visibility[] = 'public';
 				if ( current_user_can('connections_view_private') ) $visibility[] = 'private';
@@ -1027,7 +1027,7 @@ class cnRetrieve
 		// Set query string for visibility based on user permissions if logged in.
 		if ( is_user_logged_in() )
 		{
-			if ( !$atts['visibility'] )
+			if ( ! isset( $atts['visibility'] ) || empty( $atts['visibility'] ) )
 			{
 				if ( current_user_can('connections_view_public') ) $visibility[] = 'public';
 				if ( current_user_can('connections_view_private') ) $visibility[] = 'private';
@@ -1131,7 +1131,7 @@ class cnRetrieve
 		// Set query string for visibility based on user permissions if logged in.
 		if ( is_user_logged_in() )
 		{
-			if ( !$atts['visibility'] )
+			if ( ! isset( $atts['visibility'] ) || empty( $atts['visibility'] ) )
 			{
 				if ( current_user_can('connections_view_public') ) $visibility[] = 'public';
 				if ( current_user_can('connections_view_private') ) $visibility[] = 'private';
@@ -1235,7 +1235,7 @@ class cnRetrieve
 		// Set query string for visibility based on user permissions if logged in.
 		if ( is_user_logged_in() )
 		{
-			if ( !$atts['visibility'] )
+			if ( ! isset( $atts['visibility'] ) || empty( $atts['visibility'] ) )
 			{
 				if ( current_user_can('connections_view_public') ) $visibility[] = 'public';
 				if ( current_user_can('connections_view_private') ) $visibility[] = 'private';

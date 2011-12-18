@@ -427,11 +427,11 @@ class cnFormObjects
 						    
 			                $diff = human_time_diff( strtotime($date, time()) );
 			                 
-							if ( $date_stamp == strtotime( $date ) )
+							/*if ( $date_stamp == strtotime( $date ) )
 								$date = ' <span class="rss-date">' . date_i18n( get_option( 'date_format' ), $date_stamp ) . '</span>';
 							else
-								$date = '';
-						}            
+								$date = '';*/
+						}
 			        ?>
 			          <li>
 			          	<h4 class="rss-title"><a title="" href='<?php echo $link; ?>'><?php echo $title; ?></a></h4>

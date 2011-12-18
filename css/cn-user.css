@@ -1,7 +1,9 @@
 /*
  * Common
  */
-div.cn-alphaindex { clear: both; text-align: right; font-size: larger; font-weight: bold }
+div#cn-list div.cn-list-section-head { position: relative; }
+div#cn-list div.cn-list-section-head h4 { font-size: 16px; padding: 0; margin-bottom: .8em; }
+div#cn-list div.cn-alphaindex { font-weight: bold; font-size: 14px; position: absolute; bottom: 0; right: 0; }
 /*
  * Image / Logo Styles
  */

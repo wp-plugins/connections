@@ -52,7 +52,7 @@ function _connections_list($atts, $content = NULL)
 	$format =& $convert;
 	$filterRegistry = array();
 	
-	if ( ! isset($connections->template) ) $connections->template = new cnTemplate();
+	//if ( ! isset($connections->template) ) $connections->template = new cnTemplate();
 	$template =& $connections->template;
 	
 	$previousLetter = '';
@@ -160,6 +160,7 @@ function _connections_list($atts, $content = NULL)
 	
 	$atts = shortcode_atts( $permittedAtts , $atts ) ;
 	//$out .= print_r($atts, TRUE);
+	//$out .= var_dump($atts);
 	
 	$atts = apply_filters( 'cn_list_atts' , $atts );
 	$atts = apply_filters( 'cn_list_atts-' . $template->slug , $atts );
@@ -174,6 +175,7 @@ function _connections_list($atts, $content = NULL)
 	$convert->toBoolean($atts['repeat_alphaindex']);
 	$convert->toBoolean($atts['show_alphahead']);
 	$convert->toBoolean($atts['wp_current_category']);
+	//$out .= var_dump($atts);
 	
 	/*
 	 * The WP post editor entity encodes the post text we have to decode it
@@ -203,6 +205,9 @@ function _connections_list($atts, $content = NULL)
 	
 	// Prints the template's CSS file.
 	if ( method_exists($template, 'printCSS') ) $out .= $template->printCSS();
+	
+	// The return to top anchor
+	$out .= '<div id="cn-top" style="position: absolute; top: 0; right: 0;">Return to top.</div>';
 	
 	$out .= '<div class="cn-list" id="cn-list" data-connections-version="' . 
 		$connections->options->getVersion() . '-' . 
@@ -276,30 +281,33 @@ function _connections_list($atts, $content = NULL)
 					 */
 					$currentLetter = strtoupper(mb_substr($entry->getSortColumn(), 0, 1));
 					
-					if ($currentLetter != $previousLetter && $atts['id'] == NULL)
+					
+					if ( $currentLetter != $previousLetter )
 					{
-						if ($atts['show_alphaindex']) $setAnchor = '<a class="cn-index-head" name="' . $currentLetter . '"></a>';
+						$out .= "\n" . '<div class="cn-list-section-head cn-clear" id="' . $currentLetter . '">' . "\n";
 						
-						if ($atts['show_alphaindex'] && $atts['repeat_alphaindex'])
+						if ( $atts['show_alphaindex'] && $atts['repeat_alphaindex'] )
 						{
 							$repeatIndex = "\n" . '<div class="cn-alphaindex">' . $form->buildAlphaIndex() . '</div>' . "\n";
-							$repeatIndex = apply_filters( 'cn_list_index' , '' , $results );
-							$repeatIndex = apply_filters( 'cn_list_index-' . $template->slug , '' , $results );
+							$repeatIndex = apply_filters( 'cn_list_index' , $repeatIndex , $results );
+							$repeatIndex = apply_filters( 'cn_list_index-' . $template->slug , $repeatIndex , $results );
 							$filterRegistry[] = 'cn_list_index-' . $template->slug;
 						}
 						
 						if ($atts['show_alphahead']) $setAnchor .= "\n" . '<h4 class="cn-alphahead">' . $currentLetter . '</h4>' . "\n";
 						
+						/*
+						 * The anchor and/or the alpha head is displayed if set to true using the shortcode attributes.
+						 */
+						if ($atts['show_alphaindex'] || $atts['show_alphahead']) $out .= $repeatIndex . $setAnchor;
+						
+						$out .= "\n" . '</div>' . "\n";
+						
 						$previousLetter = $currentLetter;
 					}
 					
-					/*
-					 * The anchor and/or the alpha head is displayed if set to true using the shortcode attributes.
-					 */
-					if ($atts['show_alphaindex'] || $atts['show_alphahead']) $out .= $setAnchor . $repeatIndex;
 					
 					$alternate == '' ? $alternate = '-alternate' : $alternate = '';
-					
 					
 					$out .= "\n" . '<div class="cn-list-row' . $alternate . ' vcard ' . $entry->getEntryType() . ' ' . $entry->getCategoryClass(TRUE) . '" id="' . $entry->getSlug() . '">' . "\n";
 						

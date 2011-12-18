@@ -49,7 +49,9 @@ function connectionsShowTemplatesPage()
 				<li><a <?php if ($type === 'birthday') echo 'class="current" ' ?>href="admin.php?page=connections_templates&type=birthday">Birthday</a></li>
 			</ul>
 			
-			<table cellspacing="0" cellpadding="0" id="availablethemes">
+			<br class="clear">
+			
+			<table cellspacing="0" cellpadding="0" id="currenttheme">
 				<tbody>
 					<tr>
 						<td class="current_template">
@@ -96,25 +98,29 @@ function connectionsShowTemplatesPage()
 						<td class="template_instructions" colspan="2">
 							<p><strong>Instructions:</strong></p>
 							<p>
-								By default the <code>[connections]</code> shortcode will show all entries types. To change the template
-								used when displaying all entry types, select the "All" tab and activate the template. When the <code>list_type</code>
+								By default the <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/">[connections]</a></code> shortcode will show all entries types. To change the template
+								used when displaying all entry types, select the "All" tab and activate the template. When the <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/list_type/">list_type</a></code>
 								shortcode attribute is used to filter the entries based on the entry type, the template for that entry type will be used.
 								To change the template used for specific entry type, select the appropriate tab and then activate the template. If multiple
-								entry types are specified in the <code>list_type</code> shortcode attribute, the template for the entry type listed first
+								entry types are specified in the <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/list_type/">list_type</a></code> shortcode attribute, the template for the entry type listed first
 								will be used to display the entry list.
 							</p>
 							
 							<p>
-								The <code>[upcoming_list]</code> shortcode which displays the upcoming anniversaries and birthdays will be displayed with the template
+								The <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-upcoming-list/">[upcoming_list]</a></code> shortcode which displays the upcoming anniversaries and birthdays will be displayed with the template
 								that is activated under their respective tabs.
 							</p>
 							
 							<p>
-								The current active template for each template type can be overridden by using the the <code>template</code> shortcode attribute.
+								The current active template for each template type can be overridden by using the the <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/template/">template</a></code> shortcode attribute.
 							</p>
 						</td>
 					</tr>
-					
+				</tbody>
+			</table>
+			
+			<table cellspacing="0" cellpadding="0" id="installthemes">
+				<tbody>
 					<tr>
 						<td class="install_template" colspan="3">
 							<h2>Install Template</h2>
@@ -140,7 +146,11 @@ function connectionsShowTemplatesPage()
 							<?php $form->close(); ?>
 						</td>
 					</tr>
-					
+				</tbody>
+			</table>
+			
+			<table cellspacing="0" cellpadding="0" id="availablethemes">
+				<tbody>
 					<tr>
 						<td class="current_template" colspan="3">
 							<h2>Available Templates</h2>

@@ -44,11 +44,12 @@ class cnOutput extends cnEntry
 		/*
 		 * Set some defaults so the result resembles how the previous rendered.
 		 */
-		$atts['image'] = 'logo';
+		/*$atts['image'] = 'logo';
 		$atts['height'] = $connections->options->getImgLogoY();
 		$atts['width'] = $connections->options->getImgLogoX();
 		$atts['zc'] = 3;
-		$this->getImage( $atts );
+		$this->getImage( $atts );*/
+		$this->getImage( array( 'image' => 'logo' ) );
 	}
 	
 	/**
@@ -1546,7 +1547,7 @@ class cnOutput extends cnEntry
 	
 	public function returnToTopAnchor()
 	{
-		return '<a href="#connections-list-head" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" alt="Return to top."/></a>';
+		return '<a href="#cn-top" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" alt="Return to top."/></a>';
 	}
 	
 }
