@@ -36,7 +36,7 @@ function connectionsShowSettingsPage()
 			
 			<?php 
 				$attr = array(
-							 'action' => 'admin.php?page=connections_settings&action=update_settings',
+							 'action' => 'admin.php?connections_process=true&process=setting&action=update',
 							 'method' => 'post',
 							 );
 				
@@ -45,7 +45,7 @@ function connectionsShowSettingsPage()
 			?>
 			
 				<div class="form-wrap">
-					<div class="form-field connectionsform">
+					<div class="form-field">
 						<table class="form-table">
 							<tbody>
 							
@@ -76,7 +76,7 @@ function connectionsShowSettingsPage()
 						</table>
 					</div>
 					
-					<div class="form-field connectionsform">
+					<div class="form-field">
 						<table class="form-table">
 							<tbody>
 							
@@ -99,7 +99,7 @@ function connectionsShowSettingsPage()
 						</table>
 					</div>
 				
-					<div class="form-field connectionsform">
+					<div class="form-field">
 						<h3>Thumbnail Image Settings</h3>
 						<table class="form-table">
 							<tbody>
@@ -155,7 +155,7 @@ function connectionsShowSettingsPage()
 					</div>
 								
 								
-					<div class="form-field connectionsform">
+					<div class="form-field">
 						<h3>Entry Image Settings</h3>
 						<table class="form-table">
 							<tbody>
@@ -209,7 +209,7 @@ function connectionsShowSettingsPage()
 						</table>
 					</div>
 								
-					<div class="form-field connectionsform">
+					<div class="form-field">
 						<h3>Profile Image Settings</h3>
 						<table class="form-table">
 							<tbody>
@@ -264,7 +264,7 @@ function connectionsShowSettingsPage()
 					</div>
 					
 					
-					<div class="form-field connectionsform">
+					<div class="form-field">
 						<h3>Logo Image Settings</h3>
 						<table class="form-table">
 							<tbody>
@@ -319,7 +319,27 @@ function connectionsShowSettingsPage()
 						</table>
 					</div>
 					
-					
+					<div class="form-field">
+						<h3>Debug Messages</h3>
+						<table class="form-table">
+							<tbody>
+								<tr valign="top">
+									<th scope="row">
+										Display
+									</th>
+									<td>
+										<label>
+											<input type="checkbox" value="true" name="settings[debug]" id="allow_public" 
+												<?php if ( $connections->options->getDebug() ) echo 'CHECKED ' ?>
+											/>
+											Run time debug messages.
+										</label>
+									</td>
+								</tr>
+								
+							</tbody>
+						</table>
+					</div>
 				</div>
 			
 			<p class="submit"><input class="button-primary" type="submit" value="Save Changes" name="save" /></p>

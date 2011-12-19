@@ -24,10 +24,12 @@ class cnOptions
 	private $dbVersion;
 	
 	private $defaultCapabilities = array(
-								'connections_view_entry_list' => 'View Entry List', /** @deprecated since 0.7.1.0 */
-								'connections_manage' => 'Manage',
+								'connections_view_dashboard' => 'View Dashboard',
+								'connections_manage' => 'View List (Manage)',
 								'connections_add_entry' => 'Add Entry',
+								'connections_add_entry_moderated' => 'Add Entry Moderated',
 								'connections_edit_entry' => 'Edit Entry',
+								'connections_edit_entry_moderated' => 'Edit Entry Moderated',
 								'connections_delete_entry' => 'Delete Entry',
 								'connections_view_public' => 'View Public Entries',
 								'connections_view_private' => 'View Private Entries',
@@ -76,7 +78,6 @@ class cnOptions
 	
 	private $defaultAddressValues	=	array
 											(
-												''=>'Select',
 												'home'=>'Home',
 												'work'=>'Work',
 												'school'=>'School',
@@ -97,6 +98,7 @@ class cnOptions
 											 'cdbaby' => 'CD Baby',
 											 'facebook' => 'Facebook',
 											 'flickr' => 'Flickr',
+											 'googleplus' => 'Google+',
 											 'itunes' => 'iTunes',
 											 'linked-in' => 'Linked-in',
 											 'mixcloud' => 'mixcloud',
@@ -116,7 +118,8 @@ class cnOptions
 										'yahoo'=>'Yahoo IM',
 										'jabber'=>'Jabber / Google Talk',
 										'messenger'=>'Messenger',
-										'skype' => 'Skype'
+										'skype' => 'Skype',
+										'icq' => 'ICQ'
 									);
 	
 	private $defaultEmailValues  =   array
@@ -125,6 +128,12 @@ class cnOptions
 										'work'=>'Work Email'
 									);
 	
+	private $defaultLinkValues  =   array
+									(
+										'website'=>'Website',
+										'blog' => 'Blog'
+									);
+									
 	private $allowPublic;
 	private $allowPublicOverride;
 	
@@ -160,6 +169,8 @@ class cnOptions
 	
 	private $defaultTemplatesSet;
 	private $activeTemplates;
+	
+	private $debug;
 	
 	/**
 	 * Current time as reported by PHP in Unix timestamp format.
@@ -200,6 +211,9 @@ class cnOptions
 		$this->options = get_option('connections_options');
 		$this->version = $this->options['version'];
 		$this->dbVersion = $this->options['db_version'];
+		
+		$this->debug = $this->options['debug'];
+		
 		//$this->entryType = $this->options[$this->currentUserID]['filter']['entry_type'];
 		//$this->visibilityType = $this->options[$this->currentUserID]['filter']['visibility_type'];
 		
@@ -238,7 +252,7 @@ class cnOptions
 		
 		$this->defaultTemplatesSet = $this->options['settings']['template']['defaults_set'];
 		$this->activeTemplates = (array) $this->options['settings']['template']['active'];
-		
+				
 		$this->wpCurrentTime = current_time('timestamp');
 		$this->currentTime = date('U');
 		
@@ -261,6 +275,8 @@ class cnOptions
 	{
 		$this->options['version'] = $this->version;
 		$this->options['db_version'] = $this->dbVersion;
+		
+		$this->options['debug'] = $this->debug;
 		
 		//$this->options[$this->currentUserID]['filter']['entry_type'] = $this->entryType;
 		//$this->options[$this->currentUserID]['filter']['visibility_type'] = $this->visibilityType;
@@ -308,7 +324,7 @@ class cnOptions
 	{
 		delete_option('connections_options');
 	}
-	
+        
     /**
      * Returns $allowPublic.
      * @see pluginOptions::$allowPublic
@@ -481,6 +497,9 @@ class cnOptions
 				}
 			}
 		}
+		
+		// Make sure the capability to view public entries is set for the roles based on the previously saved preference.
+		$this->setAllowPublic($this->allowPublic);
 	}
 	
 	public function removeDefaultCapabilities()
@@ -1135,6 +1154,35 @@ class cnOptions
     public function getDefaultEmailValues() {
         return $this->defaultEmailValues;
     }
+    
+    /**
+     * Returns $defaultLinkValues.
+     *
+     * @see cnOptions::$defaultLinkValues
+     */
+    public function getDefaultLinkValues() {
+        return $this->defaultLinkValues;
+    }
+    
+    /**
+     * Sets $defaultLinkValues.
+     *
+     * @param object $defaultLinkValues
+     * @see cnOptions::$defaultLinkValues
+     */
+    public function setDefaultLinkValues($defaultLinkValues) {
+        $this->defaultLinkValues = $defaultLinkValues;
+    }
+    
+	public function setDebug( $bool )
+	{
+		$this->debug = $bool;
+	}
+	
+	public function getDebug()
+	{
+		return $this->debug;
+	}
     
     /**
      * Returns $options.

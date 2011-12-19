@@ -26,45 +26,9 @@ function connectionsShowRolesPage()
 		$form = new cnFormObjects();
 		
 		$connections->displayMessages();
-							
-		/*if (isset($_POST['submit']))
-		{
-			if (isset($_POST['roles']))
-			{
-				// Cycle thru each role available because checkboxes do not report a value when not checked.
-				foreach ($wp_roles->get_names() as $role => $name)
-				{
-					if (!isset($_POST['roles'][$role])) continue;
-					
-					foreach ($_POST['roles'][$role]['capabilities'] as $capability => $grant)
-					{
-						// the admininistrator should always have all capabilities
-						if ($role == 'administrator') continue;
-						
-						if ($grant == 'true')
-						{
-							$connections->options->addCapability($role, $capability);
-						}
-						else
-						{
-							$connections->options->removeCapability($role, $capability);
-						}
-					}
-				}
-			}
-			
-			if (isset($_POST['reset'])) $connections->options->setDefaultCapabilities($_POST['reset']);
-			
-			if (isset($_POST['reset_all'])) $connections->options->setDefaultCapabilities();
-			
-			echo "<div id='message' class='updated fade'>";
-				echo "<p><strong>Role capabilities have been updated.</strong></p>";
-			echo "</div>";
-			
-		}*/
-	
+		
 	?>
-		<div class="wrap">
+		<div class="wrap cn-roles">
 			<div id="icon-connections" class="icon32">
 		        <br>
 		    </div>
@@ -73,89 +37,93 @@ function connectionsShowRolesPage()
 			
 			<?php 
 				$attr = array(
-							 'action' => 'admin.php?page=connections_roles&action=update_role_settings',
+							 'action' => 'admin.php?connections_process=true&process=role&action=update',
 							 'method' => 'post',
 							 );
 				
 				$form->open($attr);
 				$form->tokenField('update_role_settings');
 			?>
+				
+			<div id="poststuff" class="metabox-holder has-right-sidebar">
+				
+				<div class="inner-sidebar" id="side-info-column">
+					<div id="submitdiv" class="postbox">
+						<h3 class="hndle">
+							<span>Save Changes or Reset</span>
+						</h3>
 						
-				<div class="form-wrap">
-					
-					<?php
-						$editable_roles = get_editable_roles();
+						<div class="inside">
+							
+							<div id="minor-publishing">
+								<label for="reset_all_roles">
+									<input type="checkbox" id="reset_all_roles" name="reset_all" value="true">
+									Reset All Role Capabilities
+								</label>
+							</div>
+							
+							<div id="major-publishing-actions">
+								<div id="publishing-action">
+									<input class="button-primary" type="submit" value="Update" name="save" />
+								</div>
+								<div class="clear"></div>
+							</div>
+						</div>
 						
-						foreach( $editable_roles as $role => $details )
-						{
-							$name = translate_user_role($details['name'] );	
-							
-							// the admininistrator should always have all capabilities
-							if ($role == 'administrator') continue;
-							
-							echo '<div class="form-field connectionsform">';
-								echo '<table class="form-table">';
-									echo '<tbody>';
-							
-										echo '<tr valign="top">';
-											echo '<th scope="row">';
-												echo $name;
-											echo '</th>';
-											echo '<td>';
-												$capabilies = $connections->options->getDefaultCapabilities();
-												
-												foreach ($capabilies as $capability => $capabilityName)
-												{
-													// if unregistered users are permitted to view the entry list there is no need for setting this capability
-													if ($capability == 'connections_view_public' && $connections->options->getAllowPublic() == true) continue;
-													
-													echo '<label for="' . $role . '_' . $capability . '">';
-													echo '<input type="hidden" name="roles[' . $role . '][capabilities][' . $capability . ']" value="false" />';
-													echo '<input type="checkbox" id="' . $role . '_' . $capability . '" name="roles[' . $role . '][capabilities][' . $capability . ']" value="true" '; 
-													
-													if ($connections->options->hasCapability($role, $capability)) echo 'CHECKED ';
-													// the admininistrator should always have all capabilities
-													if ($role == 'administrator') echo 'DISABLED ';
-													echo '/> ' . $capabilityName . '</label>' . "\n";
-													
-												}
-												
-												echo '<label for="' . $role . '_reset_capabilities">';
-												echo '<input type="checkbox" id="' . $role . '_reset_capabilities" name="reset[' . $role . ']" value="' . $name . '" ';
-												echo '/> Reset ' . $name . ' Capabilities</label>' . "\n";
-													
-											echo '</td>';
-										echo '</tr>';
-									echo '</tbody>';
-								echo '</table>';
-							echo '</div>';
-						}
-					?>
-								
-					<div class="form-field" style="background-color:#FFFBCC; border: 1px solid #E6DB55; -moz-border-radius:3px; border-style:solid; border-width:1px;">
-						<table class="form-table">
-							<tbody>
-								
-								<tr valign="top">
-									<th scope="row">
-										Reset
-									</th>
-									<td>
-										<label for="reset_all_roles">
-											<input type="checkbox" id="reset_all_roles" name="reset_all" value="true">
-											Reset All Role Capabilities
-										</label>
-									</td>
-								</tr>
-								
-							</tbody>
-						</table>
 					</div>
 				</div>
-				
-			<p class="submit"><input class="button-primary" type="submit" value="Save Changes" name="save" /></p>
+			
+				<div class="has-sidebar" id="post-body">
+					<div class="has-sidebar-content" id="post-body-content">
+						<?php
+							$editable_roles = get_editable_roles();
+							
+							foreach( $editable_roles as $role => $details )
+							{
+								$name = translate_user_role($details['name'] );	
+								
+								// the admininistrator should always have all capabilities
+								if ($role == 'administrator') continue;
+								
+								$capabilies = $connections->options->getDefaultCapabilities();
+								
+								echo '<div class="postbox">';
+								
+								echo '<h3 class="hndle"><span>' , $name , '</span></h3>';
+								
+								echo '<div class="inside">';
+								
+								foreach ($capabilies as $capability => $capabilityName)
+								{
+									// if unregistered users are permitted to view the entry list there is no need for setting this capability
+									if ($capability == 'connections_view_public' && $connections->options->getAllowPublic() == true) continue;
+									
+									echo '<label for="' . $role . '_' . $capability . '">';
+									echo '<input type="hidden" name="roles[' . $role . '][capabilities][' . $capability . ']" value="false" />';
+									echo '<input type="checkbox" id="' . $role . '_' . $capability . '" name="roles[' . $role . '][capabilities][' . $capability . ']" value="true" '; 
+									
+									if ($connections->options->hasCapability($role, $capability)) echo 'CHECKED ';
+									// the admininistrator should always have all capabilities
+									if ($role == 'administrator') echo 'DISABLED ';
+									echo '/> ' . $capabilityName . '</label>' . "\n";
+									
+								}
+								
+								echo '<label for="' . $role . '_reset_capabilities">';
+								echo '<input type="checkbox" id="' . $role . '_reset_capabilities" name="reset[' . $role . ']" value="' . $name . '" ';
+								echo '/> Reset ' . $name . ' Capabilities</label>' . "\n";
+								
+								echo '</div>';
+								echo '</div>';
+							}
+						?>
+					</div>
+				</div>
+			</div>
 			
 			<?php $form->close(); ?>
+			
+		
 		</div>
 		<div class="clear"></div>
 		
