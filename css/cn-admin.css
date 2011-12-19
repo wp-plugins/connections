@@ -175,6 +175,9 @@ div#metabox-quick-links .button:active, div#metabox-quick-links .button.active {
 div#metabox-quick-links .button.blue {
   background-color: #00ADEE;
 }
+div#metabox-quick-links .button.green {
+  background-color: #91BD09;
+}
 div#metabox-quick-links .button span {
 	color: #FFFFFF;
 	line-height: 1em;

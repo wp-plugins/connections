@@ -207,7 +207,7 @@ function _connections_list($atts, $content = NULL)
 	if ( method_exists($template, 'printCSS') ) $out .= $template->printCSS();
 	
 	// The return to top anchor
-	$out .= '<div id="cn-top" style="position: absolute; top: 0; right: 0;">Return to top.</div>';
+	$out .= '<div id="cn-top" style="position: absolute; top: 0; right: 0;"></div>';
 	
 	$out .= '<div class="cn-list" id="cn-list" data-connections-version="' . 
 		$connections->options->getVersion() . '-' . 

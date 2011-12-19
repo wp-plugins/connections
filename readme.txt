@@ -2,70 +2,55 @@
 Contributors: shazahm1@hotmail.com
 Donate link: http://connections-pro.com/
 Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, business directory, business-directory, church, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, staff, user, users, vcard
-Requires at least: 3.0
-Tested up to: 3.1.3
-Stable tag: 0.7.1.6
-Connections is a simple to use directory manager for an addressbook, business, staff or church directory.
+Requires at least: 3.2
+Tested up to: 3.3
+Stable tag: 0.7.2.1
+Connections is a simple to use directory manager which can be used to create an addressbook, business, staff or church directory.
 
 == Description ==
 
-Connections is a simple to use and versatile directory manager. You can use it for an address book, create a church directory, business directory, staff directory and even profiles pages by using templates. If none of the default templates suit your needs, you can easily create your own custom template. Want to show a list of upcoming birthdays and anniversaries, no problem, you can do that too. Take a look at the screen shots and the samples to see all Connections can do.
+[Plugin Homepage](http://connections-pro.com/) | [Documentation](http://connections-pro.com/documentation/plugin/) | [Premium Templates](http://connections-pro.com/connections/templates/) | [Pro Addons](http://connections-pro.com/connections/pro-module/)
 
-= Requirements =
-* **WordPress version:** >= 3.0
-* **PHP version:** >= 5.1.0
-* Upgrading from version 0.6.1 and newer is supported. Previous version must upgrade to 0.6.1 before upgrading to the current version.
+Quite simply, Connections is the best directory plugin available for WordPress. Its simplicity in design and function, vast array of unique features and versatility are the reasons more and more people are turning to Connections for their directory needs. You can use Connections to create a simple address book, maintain a staff directory and even run a business or link directory. Connections was built bottom up to be as configurable as possible while providing the features you need. Read on to learn about some of the best features Connections has to offer...
 
-= Admin Features =
-* Built-in help page
-* Selectable entry type; Individual / Organization / Family 
-* Each entry has selectable visibility. You can choose between, public, private and unlisted.
-* Image support with the ability to set custom images sizes and how they should be scaled and cropped.
-* Copy entries.
-* Bulk actions that include setting the visibility on deleting entries.
-* Filters that are persistent per user between sessions and browsers.
-* Extensive role support.
-* Category Support. Categories can be hierarchical and entries can be assigned to any number of categoies.
-
-= Frontend Features =
-* xHTML Transition output
-* Custom template support
-* Shortcode filter attributes for the entry list that include being able to filter by last name, title, organization, department, city, state, zip, country and category.
-* Shortcode attributes for choosing the supplied templates or custom templates which include; single entry, multiple entry (default) and profile view templates.
-* Shortcode attribute to repeat the alpha index and the beginning of each character change. [User requested.](http://wordpress.org/support/topic/266754)
-* Shortcode attribute to show the current character at the beginning of each character group. [User requested.](http://wordpress.org/support/topic/266754)
-* Entries output in [hCard](http://microformats.org/wiki/hcard) compatible format.
-* Download the vCard of an individual entry that can be imported into you email application.
+= Features =
+* Seamless integration with the WordPress admin.
+* A Dashboard admin page where you can keep up to date with Connections related news, such as updates notices for [templates](http://connections-pro.com/connections/templates/) and the [pro addons](http://connections-pro.com/connections/pro-module/). Also see at a glance today's anniversaries and birthdays as well as any upcoming anniversaries and birthdays.
+* When inputting an entry there are multiple entry types from which to choose. They are individual, organization and family. The family entry type is unique to Connections. This entry type allows you to group individuals together as a family which makes Connections ideally suited for creating church directories.
+* You control which entries are viewable to the public and which entries are private, viewable for logged in users only. You can even have entries set as unlisted so only admins can view them.
+* Fields, fields and more fields... no other directory plugin offers more. There are fields for addresses, phone numbers, email addresses, IM, social networks, an image, a logo, bio, notes and more. Want more? Many fields, such as addresses and phone numbers, you can assign as many as you need. Wait, I'm not done yet... want to be able to list the business phone but keep that cell phone number private? You can do that, too. Most of the fields have selectable visibility. What this means is you can have an entry set as public but keep personal details private or even unlisted so only them admin can view it.
+* Connections is being used to manage directories which contain thousands of entries so the ability to manage them easily is a must- a task which Connections stands and delivers. You can filter the entries list by category, entry type and visibility. You can search for entries. You can even search within the filtered entries. Of course Connections doesn't stop there, there are several bulk actions available to make changes a breeze.
+* Category support. This feature was modeled after the category feature for WordPress posts. So if you know how to add and manage categories for posts, you know how they work for Connections. Categories can be hierarchical and entries can be assigned to any number of categories.
+* Extensive role support. For your users that have access to the WordPress admin, there is extensive role support. You can define which roles can perform tasks to manage entries in Connections.
+* Unrivaled customability with templates. Connections comes with many basic templates to get you started. For many, these meet their needs. But if you need more than these basic templates provide, check out these great [premium templates](http://connections-pro.com/connections/templates/).
+* Displaying your entries on the front end is as simple as putting a shortcode on a page. Don't let this simplicity fool you. The Connections shortcode provides almost a dizzying array of options that are just too numerous to list. But if you want to know more, you can find it [here](http://connections-pro.com/documentation/plugin/shortcodes/).
+* Even a bit of SEO was sprinkled in. Every entry outputs following the [hCard](http://microformats.org/wiki/hcard) spec.
+* One last item. [Extensibility](http://connections-pro.com/connections/pro-module/).
 
 = New features this version: =
-* Added Contact First and Last name fields the the Organization entry type.
-* Added honorable prefix and honorable suffix fields.
-* Added a template manager to the admin.
-* Templates now support stylesheets.
-* Templates now support javascript.
-* Added RSS option under social media.
-* Added Podcast option under social media.
-* Added SoundCloud option under social media.
-* Improved the rich text editor by using the bundled tinyMCE.
-* Added three additional order_by attributes; date_added, date_modified and title.
-* Added Skype option under the messenger IDs.
-* Added the option to upload a logo in addition to an image.
-* Latitude and longitude can now be set with each address.
-* Add exclude_category shortcode attribute.
-* Convert the add/edit entry form to use the WP metaboxes and 'Screen Options' feature to allow some form customization.
+* A Dashboard admin page with an array of widgets.
+* Search in the admin.
+* Moderation.
+* Improved pagination on the Manage admin page. The number of entries to display is now user definable.
+* General improvements throughout which are too many to list. See the change log for more details.
 
-= New features coming in the next version: =
-* Add in_category_name shortcode attribute. Define multiple categories by name that an entry must be assigned in order to be displayed. [Operational AND]
-* Add exclude_category_name shortcode attribute to allow multiple categories by name entries to be excluded from the output.
 
 = Upcoming features: =
 * Localization
+* Pretty (permalink) support
+* Geocoding of addresses.
+* Landing pages
 * Integration with WP users to permit registered users to maintain their own info with optional moderation.
 * Gravatar support
 * Backup
-* ...and any suggestion that I may receive...
+* ...and any suggestions that I may receive...
 
-= Credits: =
+
+
+
+
+
+== Credits: ==
 * This plugin was based off LBB, ["Little Black Book"](http://wordpress.org/extend/plugins/lbb-little-black-book/); which was based on [Addressbook](http://wordpress.org/extend/plugins/addressbook/), both of which can be found in the Plugin Directory.
 * vCard class is a modified version by [Troy Wolf](http://www.troywolf.com/articles/php/class_vcard/)
 * Image uploading and processing done by the class.upload.php by [Colin Verot](http://www.verot.net/php_class_upload.htm)
@@ -80,21 +65,24 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * Email and URL validation methods by [Gizmo Digital Fusion](http://wpcodesnippets.info/blog/two-useful-php-validation-functions.html)
 
 == Screenshots ==
-[Samples and screenshots can be found here](http://connections-pro.com/?page_id=52)
+[Screenshots can be found here.](http://connections-pro.com/connections/screenshots/)
 
+[Connections running on live websites can be found here.](http://connections-pro.com/connections/live-samples/)
 
 == Installation ==
-1. Upload the `connections` directory to the `/wp-content/plugins/` directory.
-2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. If you wish to create and use custom template be sure to create the `./wp-content/connections_templates` directory/folder. This is where you will copy any custom templates you might create.
-4. Add the shortcode `[connections_list]` to display the directory on a page or post.
+[Installation instructions can be found here.](http://connections-pro.com/documentation/plugin/install/)
+
+= Requirements =
+* **WordPress version:** >= 3.2
+* **PHP version:** >= 5.2.4
+* **NOTE:** Upgrading from version 0.6.1 and newer is supported. Previous version must upgrade to 0.6.1 before upgrading to the current version.
 
 == Frequently Asked Questions ==
-[FAQs can be found here](http://connections-pro.com/?page_id=56)
+[FAQs can be found here.](http://connections-pro.com/connections/faq/)
 
 == Changelog ==
 
-= 0.7.2.0 XX/XX/XX =
+= 0.7.2.1 12/18/11 =
 * FEATURE: Search for the admin and select premium templates.
 * FEATURE: Added a Dashboard page in the admin.
 * FEATURE: Added a Today's Birthdays admin dashboard widget.
@@ -109,8 +97,8 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * FEATURE: Added a System Info / Configuration admin dashboard widget.
 * FEATURE: New role capabilities that allow add and edit moderation.
 * FEATURE: Added more actions/filters to hook into.
-* FEATURE: Added hooks to allow templates o be configured via the shortcode so the template's funcions.php file does not need edited.
-* FEATURE: Collapsible and sortable addresses and ect., when adding or editing an address and ect.
+* FEATURE: Added hooks to allow templates o be configured via the shortcode so the template's functions.php file does not need edited.
+* FEATURE: Collapsible and sortable addresses and etc., when adding or editing an address and etc.
 * FEATURE: Added ICQ as a messenger type.
 * FEATURE: Added Google+ to the social networks.
 * BUG: The view_public capability was being removed when role capabilities were being reset.
@@ -131,7 +119,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * OTHER: Update the settings page to match the WordPress setting page styles for better integration.
 * OTHER: Update the categories page style to match the WordPress categories page styles for better integration.
 * OTHER: Update the role page style to use the post metabox style for better integration.
-* OTHER: All processes are now handled by a pocess method rather than hooking into the current page for better role capability support.
+* OTHER: All processes are now handled by a process method rather than hooking into the current page for better role capability support.
 * OTHER: Remove the Donate link from the meta links on the Plugins page.
 * OTHER: Added a entry meta table for future support for custom entry details.
 * OTHER: Tweaked the header of the Manage / Copy / Edit screen.
@@ -141,7 +129,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * OTHER: Set the 'Single Entry Card' template as a 'individual' template type.
 * OTHER: Greatly improved support for using the shortcode multiple times on the same page.
 * OTHER: Improved the pagination support on the Manage page. The limit is now user adjustable.
-* OTHER: Completely revamped the db structure. Using the original table columns for addresses, ect., for an object to keep db queries to a minimum.
+* OTHER: Completely revamped the db structure. Using the original table columns for addresses, etc., for an object to keep db queries to a minimum.
 * OTHER: Added support for WP 3.3.
 * OTHER: Use wp_editor when user is running WP 3.3+.
 * OTHER: Moved the filters to be part of the entry retrieve query. Made possible by the new db structure.
@@ -175,7 +163,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 = 0.7.1.4 Unreleased =
 * FEATURE: Add in_category shortcode attribute. Define multiple categories by id that an entry must be assigned in order to be displayed. [Operational AND]
 * BUG: Fixed bug with category recursion.
-* BUG: Fixed bug where identicle categoriy names/IDs would be included in the query.
+* BUG: Fixed bug where identical category names/IDs would be included in the query.
 * OTHER: Moved the shortcode entry filters to be processed right after the results query.
 * OTHER: Removed the copying of the download.vCard.php to the WP root during activation. Instead hooked into parse_request for vCard download. 
 * OTHER: Fixed the template in the sample folder from 0.7.1.1 so it functions and renamed it to Members.
@@ -211,7 +199,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * BUG: Fix birthday/anniversary with date of January 1st not being saved.
 * BUG: Fix Upgrade notice to be compatible with WordPress => 3.0.
 * BUG: Fix entry drop down when creating a family. Drop downs would only show entries based on the current filter setting for the current user in the admin. The drop down will now show all permitted entries.
-* BUG: Fix public entries "Allow unregistered vistors and users..." setting not being saved.
+* BUG: Fix public entries "Allow unregistered visitors and users..." setting not being saved.
 * BUG: Fix DB upgrade method logic.
 * BUG: Strip HTML from the Note output for vCard.
 * OTHER: Entry human time difference in now based the current blog time.
@@ -236,7 +224,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * BUG: Fix many errors reported when WP_DEBUG is set to true.
 * BUG: Fix database table check before the table is created during activation.
 * BUG: When an entry is added, the last modified by field is now correctly set.
-* BUG: The intial entry category relationship would not be set correctly to uncatgorized if no categories were selected.
+* BUG: The initial entry category relationship would not be set correctly to uncatgorized if no categories were selected.
 * BUG: Fix recursive category children when using specified categories multiple times on the same page.
 * OTHER: Reduced memory requirements further by passing a few large objects by reference rather than creating new instances.
 * OTHER: Add UTF-8 support in the vCard file.
@@ -249,7 +237,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * FEATURE: Add upgrade notice to the plugin admin page.
 * BUG: Fix WYSIWYG <em> tag parse.
 * BUG: Fix order_by bug. Would not sot sort by city, state, zipcode, country.
-* OTHER: Add missing documentions for the social media template tags.
+* OTHER: Add missing documentation for the social media template tags.
 
 = 0.7.0.1 5/17/2010 =
 * BUG: Fix fatal error when custom ordering the results.
@@ -258,8 +246,8 @@ Connections is a simple to use and versatile directory manager. You can use it f
 = 0.7.0.0 5/16/2010 =
 * FEATURE: Add links on the plug-in management admin page for Settings, Help, Support and Donate.
 * FEATURE: Added group_name shortcode attribute filter.
-* FEATURE: Theme Template tag for theme developement to display the entry list. All shortcode attributes are supported.
-* FEATURE: Theme Template tag for theme developement to display the upcoming list. All shortcode attributes are supported.
+* FEATURE: Theme Template tag for theme development to display the entry list. All shortcode attributes are supported.
+* FEATURE: Theme Template tag for theme development to display the upcoming list. All shortcode attributes are supported.
 * FEATURE: The category shortcode attribute has been expanded to allow multiple categories to be called via a comma separated list. If the category has children entries, they will has display (recursively).
 * FEATURE: Added shortcode attribute, wp_current_category. When this is set to true and the shortcode is used in a post, all entries that have the same category name will be displayed.
 * FEATURE: Allow more than one website address to be entered per entry.
@@ -286,17 +274,17 @@ Connections is a simple to use and versatile directory manager. You can use it f
 * BUG: Fixed issue where database would go thru the update cycle on a new install.
 * OTHER: Add instructional text to the image settings.
 * OTHER: Add rel="nofollow" to the vCard download link.
-* OTHER: Removed the use of $_SESSION throughtout the plug-in.
+* OTHER: Removed the use of $_SESSION throughout the plug-in.
 * OTHER: Enhance plug-in security through the use of nonce.
 * OTHER: Move the methods from cnConvert class to the cnFormatting class.
 * OTHER: Move the class.upload.php to the image processing method to remove 1.3MB of plug-in overhead.
 * OTHER: Reduce memory overhead.
 * OTHER: Reduce database queries.
-* OTHER: More efficient query to return entires.
+* OTHER: More efficient query to return entries.
 * OTHER: Removed the 'custom_template' shortcode attribute. Instead, the custom template folder will be checked for the specified template.
 * OTHER: Moved the template file checking out of the entry list loop to reduce server file system IO.
 * OTHER: Add place holders in the admin entry list if no image is associated to an entry.
-* OTHER: Add dependecies and versions to all wp_enqueue_script / wp_enqueue_style calls.
+* OTHER: Add dependencies and versions to all wp_enqueue_script / wp_enqueue_style calls.
 * OTHER: Upgrade the class.php.upload class to .29
 * OTHER: Better documentation throughout.
 
@@ -306,7 +294,7 @@ Connections is a simple to use and versatile directory manager. You can use it f
 = 0.6.2 2/2/2010 =
 * BUG: Fixed unable to remove phone numbers.
 * BUG: Fixed when removing a field from an entry that the entire field is removed leaving no remnants.
-* Add support for basic HTML and RTE for the Notes and Bio fields using the jwysiwyg 0.6 jOquery plug-in.
+* Add support for basic HTML and RTE for the Notes and Bio fields using the jwysiwyg 0.6 jQuery plug-in.
 * Add order_by shortcode attribute for custom ordering of entries and updated the help page.
 * Add support for the CSV premium add-on.
 * Add the missing getBioBlock method to the output class.
@@ -427,5 +415,5 @@ Connections is a simple to use and versatile directory manager. You can use it f
 
 == Upgrade Notice ==
 
-= 0.7.1.6 =
-Fixes security vulnerability.
+= 0.7.2.1 =
+This is a major update. It would be advisable to backup the Connections tables in the database before upgrading.

@@ -320,6 +320,28 @@ class cnFormObjects
 		?>
 		<div class="one-third">
 			<p class="center">
+				<a class="button large green full" href="http://connections-pro.com/documentation/plugin/"><span>Documentation</span></a>
+			</p>
+		</div>
+		
+		<div class="two-third last">
+			<p></p>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="one-third">
+			<p class="center">
+				<a class="button large blue full" href="http://connections-pro.com/connections/faq/"><span>FAQs</span></a>
+			</p>
+		</div>
+		
+		<div class="two-third last">
+			<p>Have a question, maybe someone else had the same question, please check the FAQs.</p>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="one-third">
+			<p class="center">
 				<a class="button large blue full" href="http://connections-pro.com/connections/connections-pro/"><span>Pro Modules</span></a>
 			</p>
 		</div>
@@ -359,17 +381,6 @@ class cnFormObjects
 		
 		<div class="two-third last">
 			<p>Need a feature, request a feature.</p>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="one-third">
-			<p class="center">
-				<a class="button large blue full" href="http://connections-pro.com/connections/faq/"><span>FAQs</span></a>
-			</p>
-		</div>
-		
-		<div class="two-third last">
-			<p>Have a question, maybe someone else had the same question, please check the FAQs.</p>
 		</div>
 		<div class="clearboth"></div>
 		<?php

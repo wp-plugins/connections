@@ -318,6 +318,8 @@ class cnTemplate
 	
 	/**
 	 * Prints the template's JS in the theme's footer.
+	 * 
+	 * NOTE: As of WP3.3 simple using wp_enqueue_script() should work to print the script in the footer.
 	 */
 	public function printJS()
 	{
