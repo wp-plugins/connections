@@ -45,7 +45,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * Backup
 * ...and any suggestions that I may receive...
 
-
+ 
 
 
 
