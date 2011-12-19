@@ -768,7 +768,7 @@ if (!class_exists('connectionsLoad'))
 		
 		public function addDBUpgradeMessage()
 		{
-			echo '<div id="message" class="error"><p><strong>Connections database requires updating. <a class="button-highlighted" href="admin.php?page=connections_dashboard">START</a></strong></p></div>';
+			echo '<div id="message" class="error"><p><strong>Connections database requires updating. <a class="button-highlighted" href="admin.php?page=connections_manage">START</a></strong></p></div>';
 		}
 		
 		/**
