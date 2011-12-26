@@ -85,7 +85,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 
 == Changelog ==
 
-= 0.7.2.2 12/XX/11 =
+= 0.7.2.2 12/25/11 =
 * FEATURE: Added optin to the links to be able to assign them to either the image or logo.
 * FEATURE: Social media networks now default to having an icon rather than the text link.
 * BUG: Add missing style for the cn-list-head so the alphaindex will be positioned correctly.
