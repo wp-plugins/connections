@@ -1502,6 +1502,11 @@ class cnFormObjects
 					echo '<span class="follow">' , $this->buildSelect('link[::FIELD::][follow]', array( 'nofollow' => 'nofollow', 'dofollow' => 'dofollow' ), 'nofollow' ) , '</span>' , "\n";
 				echo '</div>' , "\n";
 				
+				echo '<div>' , "\n";
+					echo '<label><input type="radio" name="link[image]" value="::FIELD::"> Assign link to the image.</label>' , "\n";
+					echo '<label><input type="radio" name="link[logo]" value="::FIELD::"> Assign link to the logo.</label>' , "\n";
+				echo '</div>' , "\n";
+				
 				echo  '<p class="remove-button"><a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#link-row-::FIELD::\'); return false;">Remove</a></p>' , "\n";
 				
 			echo '</div>' , "\n";
@@ -1519,6 +1524,8 @@ class cnFormObjects
 				$token = $this->token( $entry->getId() );
 				$selectName = 'link['  . $token . '][type]';
 				( $link->preferred ) ? $preferredLink = 'CHECKED' : $preferredLink = '';
+				( $link->image ) ? $imageLink = 'CHECKED' : $imageLink = '';
+				( $link->logo ) ? $logoLink = 'CHECKED' : $logoLink = '';
 				//var_dump($link);
 				
 				echo '<div class="widget link" id="link-row-'  . $token . '">' , "\n";
@@ -1543,6 +1550,11 @@ class cnFormObjects
 						echo '<div>' , "\n";
 							echo '<span class="target">Target: ' , $this->buildSelect('link[' . $token . '][target]', array( 'new' => 'New Window', 'same'  => 'Same Window' ), $link->target ) , '</span>' , "\n";
 							echo '<span class="follow">' , $this->buildSelect('link[' . $token . '][follow]', array( 'nofollow' => 'nofollow', 'dofollow' => 'dofollow' ), $link->followString ) , '</span>' , "\n";
+						echo '</div>' , "\n";
+						
+						echo '<div>' , "\n";
+							echo '<label><input type="radio" name="link[image]" value="' , $token , '" ' , $imageLink , '> Assign link to the image.</label>' , "\n";
+							echo '<label><input type="radio" name="link[logo]" value="' , $token , '" ' , $logoLink , '> Assign link to the logo.</label>' , "\n";
 						echo '</div>' , "\n";
 						
 						echo  '<input type="hidden" name="link[' , $token , '][id]" value="' , $link->id , '">' , "\n";

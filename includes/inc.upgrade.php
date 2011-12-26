@@ -664,7 +664,36 @@ function cnRunDBUpgrade()
 			 */
 			if ( file_exists(ABSPATH . 'download.vCard.php') ) @unlink( ABSPATH . 'download.vCard.php' );
 			
+			// Create the cache folder.
+			if ( ! file_exists( CN_CACHE_PATH ) ) @mkdir( CN_CACHE_PATH );
+			if ( file_exists( CN_CACHE_PATH ) ) @chmod( CN_CACHE_PATH , '0755' );
+			
+			// Create the images folder.
+			if ( ! file_exists( CN_IMAGE_PATH ) ) @mkdir( CN_IMAGE_PATH );
+			if ( file_exists( CN_IMAGE_PATH ) ) @chmod( CN_IMAGE_PATH , '0755' );
+			
+			// Create the custom template folder.
+			if ( ! file_exists( CN_CUSTOM_TEMPLATE_PATH ) ) @mkdir( CN_CUSTOM_TEMPLATE_PATH );
+			if ( file_exists( CN_CUSTOM_TEMPLATE_PATH ) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0755' );
+			
 			$connections->options->setDBVersion('0.1.6');
+		}
+		
+		if (version_compare($dbVersion, '0.1.7', '<'))
+		{
+			echo '<h4>Upgrade from database version ' . $connections->options->getDBVersion() . ' to database version ' . CN_DB_VERSION . ".</h4>\n";
+			
+			echo '<ul>';
+				
+				echo '<li>Adding Column "image" to the links table' . "</li>\n";
+				if (cnAddTableColumn(CN_ENTRY_LINK_TABLE, 'image', "tinyint unsigned NOT NULL default '0' AFTER follow")) echo '<ul><li>SUCCESS</li></ul>';
+				
+				echo '<li>Adding Column "logo" to the links table' . "</li>\n";
+				if (cnAddTableColumn(CN_ENTRY_LINK_TABLE, 'logo', "tinyint unsigned NOT NULL default '0' AFTER image")) echo '<ul><li>SUCCESS</li></ul>';
+				
+			echo '</ul>';
+			
+			$connections->options->setDBVersion('0.1.7');
 		}
 		
 		/*echo '<h4>Updating entries to the new database stucture.' . "</h4>\n";

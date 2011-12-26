@@ -216,7 +216,7 @@ function _connections_list($atts, $content = NULL)
 	
 		$out .= "\n" . '<div class="cn-template cn-' . $template->slug . '" id="cn-' . $template->slug . '" data-template-version="' . $template->version . '">' . "\n";
 					
-			$out .= "\n" . '<div class="cn-clear" id="cn-list-head">' . "\n";
+			$out .= "\n" . '<div class="cn-list-head cn-clear" id="cn-list-head">' . "\n";
 			
 				ob_start();
 					do_action( 'cn_action_list_before' );
@@ -264,12 +264,22 @@ function _connections_list($atts, $content = NULL)
 			}
 			else
 			{
+				/*
+				 * When an entry is assigned multiple categories and the RANDOM order_by shortcode attribute
+				 * is used, this will cause the entry to show once for every category it is assigned.
+				 */
+				$skipEntry = array();
+				
 				foreach ( (array) $results as $row )
 				{
 					$entry = new cnvCard($row);
 					$vCard =& $entry;
 					$repeatIndex = '';
 					$setAnchor = '';
+					
+					// @TODO --> Fix this somehow in the query, see comment above for $skipEntry.
+					if ( in_array( $entry->getId() , $skipEntry ) ) continue;
+					$skipEntry[] = $entry->getId();
 					
 					/*
 					 * Checks the first letter of the last name to see if it is the next
@@ -409,11 +419,11 @@ function _upcoming_list($atts, $content=null) {
 	/*
 	 * Convert some of the $atts values in the array to boolean.
 	 */
-	$convert->toBoolean(&$atts['include_today']);
-	$convert->toBoolean(&$atts['private_override']);
-	$convert->toBoolean(&$atts['show_lastname']);
-	$convert->toBoolean(&$atts['repeat_alphaindex']);
-	$convert->toBoolean(&$atts['show_title']);
+	$convert->toBoolean($atts['include_today']);
+	$convert->toBoolean($atts['private_override']);
+	$convert->toBoolean($atts['show_lastname']);
+	$convert->toBoolean($atts['repeat_alphaindex']);
+	$convert->toBoolean($atts['show_title']);
 	
 	if ( ! empty( $atts['template'] ) )
 	{

@@ -114,6 +114,8 @@ class cnOutput extends cnEntry
 		$displayImage = FALSE;
 		$style = array();
 		$tag = array();
+		$anchorStart = '';
+		$anchorEnd = '</a>';
 		$out = '';
 		
 		/*
@@ -170,6 +172,19 @@ class cnOutput extends cnEntry
 						}
 					}
 				}
+				
+				/*
+				 * Create the link for the image if one was assigned.
+				 */
+				$links = $this->getLinks( array( 'image' => TRUE ) );
+				
+				if ( ! empty($links) )
+				{
+					$link = $links[0];
+					
+					$anchorStart = '<a href="' . $link->url . '"' . ( ( empty($link->target) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty($link->followString) ? '' : ' rel="' . $link->followString . '"' ) ) . '>';
+				}
+				
 			break;
 			
 			case 'logo':
@@ -200,6 +215,19 @@ class cnOutput extends cnEntry
 						}
 					}
 				}
+				
+				/*
+				 * Create the link for the image if one was assigned.
+				 */
+				$links = $this->getLinks( array( 'logo' => TRUE ) );
+				
+				if ( ! empty($links) )
+				{
+					$link = $links[0];
+					
+					$anchorStart = '<a href="' . $link->url . '"' . ( ( empty($link->target) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty($link->followString) ? '' : ' rel="' . $link->followString . '"' ) ) . '>';
+				}
+				
 			break;
 		}
 		
@@ -221,7 +249,7 @@ class cnOutput extends cnEntry
 			if ( ! empty($atts['height']) ) $style[] = 'height: ' . $atts['height'] . 'px';
 			if ( ! empty($atts['width']) ) $style[] = 'width: ' . $atts['width'] . 'px';
 			
-			$out = '<span class="cn-image-style" style="display: inline-block;"><span class="cn-image"' . ( ( empty($style) ) ? '' : ' style="' . implode('; ', $style) . ';"') . '><img ' . implode(' ', $tag) . ' /></span></span>';
+			$out = '<span class="cn-image-style" style="display: inline-block;"><span class="cn-image"' . ( ( empty($style) ) ? '' : ' style="' . implode('; ', $style) . ';"') . '>' . ( ( empty($anchorStart) ) ? '' : $anchorStart ) . '<img ' . implode(' ', $tag) . ' />' . ( ( empty($anchorStart) ) ? '' : $anchorEnd ) . '</span></span>';
 		}
 		else
 		{
@@ -284,7 +312,7 @@ class cnOutput extends cnEntry
 				
 				case 'default':
 					/*
-					 * @todo Enable support for a default image to be set.
+					 * @TODO Enable support for a default image to be set.
 					 * NOTE: Use switch for image type to allow a default image for both the image and logo.
 					 */
 					break;
@@ -786,8 +814,8 @@ class cnOutput extends cnEntry
 		if ( ! in_array( $atts['zoom'] , range(0, 21) ) ) $atts['zoom'] = 13;
 		
 		// Ensure the requested map size does not exceed the permitted sizes permitted by the Google Static Maps API
-		$atts['width'] = ( $atts['width'] <= 640 ) ? $atts['width'] : 400;
-		$atts['height'] = ( $atts['height'] <= 640 ) ? $atts['height'] : 400;
+		if ( $atts['static'] ) $atts['width'] = ( $atts['width'] <= 640 ) ? $atts['width'] : 640;
+		if ( $atts['static'] ) $atts['height'] = ( $atts['height'] <= 640 ) ? $atts['height'] : 640;
 		
 		$addresses = $this->getAddresses( $atts , $cached );
 		
@@ -1183,6 +1211,21 @@ class cnOutput extends cnEntry
 	 * 			twitter
 	 * 			soundcloud
 	 * 			youtube
+	 * 	format (string) The tokens to use to display the social media block parts.
+	 * 		Permitted Tokens:
+	 * 			%title%
+	 * 			%url%
+	 * 			%icon%
+	 * 	style (string) The icon style to be used.
+	 * 		Permitted Styles:
+	 * 			wpzoom
+	 * 		Permitted Sizes:
+	 * 			16
+	 * 			24
+	 * 			32
+	 * 			48
+	 * 			64
+	 * 	size (int) The icon size to be used.
 	 * 	before (string) HTML to output before the social media networks.
 	 * 	after (string) HTML to after before the social media networks.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
@@ -1199,6 +1242,9 @@ class cnOutput extends cnEntry
 		 */
 			$defaultAttr['preferred'] = NULL;
 			$defaultAttr['type'] = NULL;
+			$defaultAttr['format'] = '%icon%';
+			$defaultAttr['style'] = 'wpzoom';
+			$defaultAttr['size'] = 32;
 			$defaultAttr['before'] = '';
 			$defaultAttr['after'] = '';
 			$defaultAttr['return'] = FALSE;
@@ -1211,6 +1257,16 @@ class cnOutput extends cnEntry
 		
 		$out = '';
 		$networks = $this->getSocialMedia( $atts , $cached );
+		$search = array('%label%' , '%url%' , '%icon%');
+		
+		$iconStyles = array('wpzoom');
+		$iconSizes = array(16, 24, 32, 48, 64);
+		
+		/*
+		 * Ensure the supplied icon style and size are valid, if not reset to the default values.
+		 */
+		( in_array($atts['style'], $iconStyles) ) ? $iconStyle = $atts['style'] : $iconStyle = 'wpzoom';
+		( in_array($atts['size'], $iconSizes) ) ? $iconSize = $atts['size'] : $iconSize = 32;
 		
 		if ( empty($networks) ) return '';
 		
@@ -1218,10 +1274,26 @@ class cnOutput extends cnEntry
 		
 		foreach ( $networks as $network )
 		{
+			$replace = array();
+			$iconClass = array();
+			
+			/*
+			 * Create the icon image class. This array will implode to a string.
+			 */
+			$iconClass[] = $network->type;
+			$iconClass[] = $iconStyle;
+			$iconClass[] = 'sz-' . $iconSize;
+			
 			$out .= "\n" . '<span class="social-media-network">';
 			
-				$out .= '<a class="url ' . $network->type . '" href="' . $network->url . '" target="_blank" title="' . $network->name . '">' . $network->name . '</a>';
-			
+				$replace[] = '<a class="url ' . $network->type . '" href="' . $network->url . '" target="_blank" title="' . $network->name . '">' . $network->name . '</a>';
+				
+				$replace[] = '<a class="url ' . $network->type . '" href="' . $network->url . '" target="_blank" title="' . $network->name . '">' . $network->url . '</a>';
+				
+				$replace[] = '<a class="url ' . $network->type . '" href="' . $network->url . '" target="_blank" title="' . $network->name . '"><image class="' . implode(' ', $iconClass) . '" src="' . CN_URL . '/images/icons/' . $iconStyle . '/' . $iconSize . '/' . $network->type . '.png" height="' . $iconSize . 'px" width="' . $iconSize . 'px"/></a>';
+				
+				$out .= str_ireplace( $search , $replace , $atts['format'] );
+				
 			$out .= '</span>' . "\n";
 		}
 		
@@ -1417,14 +1489,38 @@ class cnOutput extends cnEntry
 		return $out;
 	}
 	
-	public function getNotesBlock()
+	/**
+	 * Echo or returns the entry Notes.
+	 * 
+	 * Registers the global $wp_embed because the run_shortcode method needs 
+	 * to run before the do_shortcode function for the [embed] shortcode to fire
+	 * 
+	 * @TODO Add support for the $atts array. 
+	 * @return string
+	 */
+	public function getNotesBlock( $suppliedAttr = array() )
 	{
-		return "\n" . '<div class="note">' . apply_filters( 'the_content' , $this->getNotes() ) . '</div>' . "\n";
+		global $wp_embed;
+		$notes = $wp_embed->run_shortcode( $this->getNotes() );
+		
+		return "\n" . '<div class="note">' . do_shortcode( $notes ) . '</div>' . "\n";
 	}
 	
-	public function getBioBlock()
+	/**
+	 * Echo or returns the entry Bio.
+	 * 
+	 * Registers the global $wp_embed because the run_shortcode method needs 
+	 * to run before the do_shortcode function for the [embed] shortcode to fire
+	 * 
+	 * @TODO Add support for the $atts array. 
+	 * @return string
+	 */
+	public function getBioBlock( $suppliedAttr = array() )
 	{
-		return "\n" . '<div class="bio">' . apply_filters( 'the_content' , $this->getBio() ) . '</div>' . "\n";
+		global $wp_embed;
+		$bio = $wp_embed->run_shortcode( $this->getBio() );
+		
+		return "\n" . '<div class="bio">' . do_shortcode( $bio ) . '</div>' . "\n";
 	}
 	
 	/**

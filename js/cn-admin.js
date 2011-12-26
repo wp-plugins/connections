@@ -300,8 +300,10 @@ jQuery(document).ready(function($){
 		}
 	);
 	
-	$('.family-member-name').chosen();
-	$('.family-member-relation').chosen();
+	if ($.fn.chosen) {
+		$('.family-member-name').chosen();
+		$('.family-member-relation').chosen();
+	}
 });
 
 function removeEntryRow(id)

@@ -2128,6 +2128,8 @@ class cnEntry
 	 * 		Permitted Types:
 	 * 			website
 	 * 			blog
+	 * 	image (bool) Retrieve the link assigned to the image.
+	 * 	logo (bool) Retrieve the link assigned to the logo.
 	 * 
 	 * Filters:
 	 * 	cn_link_atts => (array) Set the method attributes.
@@ -2153,6 +2155,8 @@ class cnEntry
 		 */
 			$defaultAttr['preferred'] = FALSE;
 			$defaultAttr['type'] = NULL;
+			$defaultAttr['image'] = FALSE;
+			$defaultAttr['logo'] = FALSE;
 			
 			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
 			$atts['id'] = $this->getId();
@@ -2199,6 +2203,8 @@ class cnEntry
 					$row->url = $this->format->sanitizeString($link['url']);
 					$row->target = $this->format->sanitizeString($link['target']);
 					$row->follow = (bool) $link['follow'];
+					$row->image = (bool) $link['image'];
+					$row->logo = (bool) $link['logo'];
 					$row->visibility = $this->format->sanitizeString($link['visibility']);
 					
 					/*
@@ -2250,6 +2256,8 @@ class cnEntry
 					 */
 					if ( $preferred && ! $row->preferred ) continue;
 					if ( ! empty($type) && ! in_array($row->type, $type) ) continue;
+					if ( $image && ! $row->image ) continue;
+					if ( $logo && ! $row->logo ) continue;
 					/*
 					 * // END -- Do not return links that do not match the supplied $atts.
 					 */
@@ -2289,6 +2297,8 @@ class cnEntry
 				$link->url = $this->format->sanitizeString($link->url);
 				$link->target = $this->format->sanitizeString($link->target);
 				$link->follow = (bool) $link->follow;
+				$link->image = (bool) $link->image;
+				$link->logo = (bool) $link->logo;
 				$link->visibility = $this->format->sanitizeString($link->visibility);
 				
 				/*
@@ -2398,13 +2408,27 @@ class cnEntry
 		if ( ! empty($links) )
 		{
 			$order = 0;
-			$preferred = '';
+			$preferred = FALSE;
+			$image = FALSE;
+			$logo = FALSE;
 			
 			if ( isset( $links['preferred'] ) )
 			{
 				$preferred = $links['preferred'];
 				unset( $links['preferred'] );
-			}	
+			}
+			
+			if ( isset( $links['image'] ) )
+			{
+				$image = $links['image'];
+				unset( $links['image'] );
+			}
+			
+			if ( isset( $links['logo'] ) )
+			{
+				$logo = $links['logo'];
+				unset( $links['logo'] );
+			}
 			
 			foreach ($links as $key => $link)
 			{
@@ -2425,6 +2449,10 @@ class cnEntry
 				
 				( ( ! empty( $preferred ) ) && $preferred == $key ) ? $links[$key]['preferred'] = TRUE : $links[$key]['preferred'] = FALSE;
 				
+				( ( ! empty( $image ) ) && $image == $key ) ? $links[$key]['image'] = TRUE : $links[$key]['image'] = FALSE;
+				
+				( ( ! empty( $logo ) ) && $logo == $key ) ? $links[$key]['logo'] = TRUE : $links[$key]['logo'] = FALSE;
+				
 				/*
 				 * If the user set a perferred network, save the $key value.
 				 * This is going to be needed because if a network that the user
@@ -2432,6 +2460,8 @@ class cnEntry
 				 * will have preference.
 				 */
 				if ( $links[$key]['preferred'] ) $userPreferred = $key;
+				if ( $links[$key]['image'] ) $userImage = $key;
+				if ( $links[$key]['logo'] ) $userLogo = $key;
 				
 				$order++;
 			}
@@ -2467,6 +2497,22 @@ class cnEntry
 						
 						// Throw the user a message so they know why their choice was overridden.
 						$connections->setErrorMessage('entry_preferred_overridden_link');
+					}
+					
+					// If the link is already assigned to an image, it takes precedence, so the user's choice is overriden.
+					if ( ! empty($image) && $link['image'] )
+					{
+						$links[$userImage]['image'] = FALSE;
+						
+						// @TODO Create error message for the user.
+					}
+					
+					// If the link is already assigned to an image, it takes precedence, so the user's choice is overriden.
+					if ( ! empty($logo) && $link['logo'] )
+					{
+						$links[$userLogo]['log0'] = FALSE;
+						
+						// @TODO Create error message for the user.
 					}
 				}
 			}
@@ -3545,6 +3591,8 @@ class cnEntry
 													`url`				= %s,
 													`target`			= %s,
 													`follow`			= %d,
+													`image`				= %d,
+													`logo`				= %d,
 													`visibility`		= %s
 													WHERE `id` 			= %d',
 													$this->getId(),
@@ -3555,6 +3603,8 @@ class cnEntry
 													$link->url,
 													$link->target,
 													(int) $link->follow,
+													(int) $link->image,
+													(int) $link->logo,
 													$link->visibility,
 													$link->id));
 					
@@ -3573,6 +3623,8 @@ class cnEntry
 														`url`				= %s,
 														`target`			= %s,
 														`follow`			= %d,
+														`image`				= %d,
+														`logo`				= %d,
 														`visibility`		= %s',
 														$this->getId(),
 														$link->order,
@@ -3582,6 +3634,8 @@ class cnEntry
 														$link->url,
 														$link->target,
 														(int) $link->follow,
+														(int) $link->image,
+														(int) $link->logo,
 														$link->visibility));
 						
 						// Save the link IDs that have been added
@@ -3885,6 +3939,8 @@ class cnEntry
 											`url`				= %s,
 											`target`			= %s,
 											`follow`			= %d,
+											`image`				= %d,
+											`logo`				= %d,
 											`visibility`		= %s',
 											$connections->lastInsertID,
 											$link->order,
@@ -3894,6 +3950,8 @@ class cnEntry
 											$link->url,
 											$link->target,
 											(int) $link->follow,
+											(int) $link->image,
+											(int) $link->logo,
 											$link->visibility);
 					
 					$wpdb->query($sql);

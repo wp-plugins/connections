@@ -13,7 +13,7 @@ class cnRetrieve
 		
 		$entryIDs = array();
 		$validate = new cnValidate();
-		$select = array();
+		$select[] = CN_ENTRY_TABLE . '.*';
 		$from[] = CN_ENTRY_TABLE;
 		$join = array();
 		$where[] = 'WHERE 1=1';
@@ -534,7 +534,7 @@ class cnRetrieve
 		/*
 		 * // START --> Build the SELECT query segment.
 		 */
-			$select[] = CN_ENTRY_TABLE . '.*';
+			//$select[] = CN_ENTRY_TABLE . '.*';
 			$select[] = 'CASE `entry_type`
 						  WHEN \'individual\' THEN `last_name`
 						  WHEN \'organization\' THEN `organization`
@@ -595,7 +595,8 @@ class cnRetrieve
 	public function entry($id)
 	{
 		global $wpdb;
-		return $wpdb->get_row('SELECT * FROM ' . $wpdb->prefix . 'connections WHERE id="' . $wpdb->escape($id) . '"');
+		//return $wpdb->get_row('SELECT * FROM ' . $wpdb->prefix . 'connections WHERE id="' . $wpdb->escape($id) . '"');
+		return $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . CN_ENTRY_TABLE . ' WHERE id="%d"' , $id ) );
 	}
 	
 	public function entryCategories($id)
@@ -1205,6 +1206,8 @@ class cnRetrieve
 		 */
 			$defaultAttr['id'] = NULL;
 			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['image'] = NULL;
+			$defaultAttr['logo'] = NULL;
 			$defaultAttr['type'] = NULL;
 			
 			$atts = $validate->attributesArray($defaultAttr, $suppliedAttr);
@@ -1222,6 +1225,16 @@ class cnRetrieve
 			if ( ! empty($preferred) )
 			{
 				$where[] = $wpdb->prepare( 'AND `preferred` = %d', (bool) $preferred );
+			}
+			
+			if ( ! empty($image) )
+			{
+				$where[] = $wpdb->prepare( 'AND `image` = %d', (bool) $image );
+			}
+			
+			if ( ! empty($logo) )
+			{
+				$where[] = $wpdb->prepare( 'AND `logo` = %d', (bool) $logo );
 			}
 			
 			if ( ! empty($type) )
@@ -1668,6 +1681,7 @@ class cnRetrieve
 		global $wpdb, $connections;
 		
 		$where[] = 'WHERE 1=1';
+		$visibility = array();
 		
 		if ( is_user_logged_in() )
 		{
@@ -1709,9 +1723,7 @@ class cnRetrieve
 		}
 		
 		$where[] = 'AND `status` IN (\'' . implode("', '", $status) . '\')';
-		$where[] = 'AND `visibility` IN (\'' . implode("', '", $visibility) . '\')';
-		
-		//if ( !empty($status) ) $where[] = 'AND `status` IN (\'' . implode("', '", (array) $status) . '\')';
+		if ( ! empty($visibility) ) $where[] = 'AND `visibility` IN (\'' . implode("', '", $visibility) . '\')';
 		
 		return $wpdb->get_var( 'SELECT COUNT(`id`) FROM ' . CN_ENTRY_TABLE . ' ' . implode(' ', $where) );
 	}

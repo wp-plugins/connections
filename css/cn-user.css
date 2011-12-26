@@ -1,9 +1,10 @@
 /*
  * Common
  */
+div#cn-list div.cn-list-head { position: relative; }
 div#cn-list div.cn-list-section-head { position: relative; }
 div#cn-list div.cn-list-section-head h4 { font-size: 16px; padding: 0; margin-bottom: .8em; }
-div#cn-list div.cn-alphaindex { font-weight: bold; font-size: 14px; position: absolute; bottom: 0; right: 0; }
+div#cn-list div.cn-alphaindex { font-weight: bold; font-size: 14px; position: relative; bottom: 0; right: 0; }
 /*
  * Image / Logo Styles
  */
@@ -74,7 +75,9 @@ div#cn-list span.im-network span.im-name { font-weight: bold; }
  * Social Media Network Styles
  */
 div#cn-list span.social-media-block { display: block; margin-bottom: 10px; }
-div#cn-list span.social-media-network { display: block; }
+div#cn-list span.social-media-block a { margin: 0; padding: 0; }
+div#cn-list span.social-media-block img { margin: 0; padding: 0; }
+div#cn-list span.social-media-network { display: inline-block; }
 
 /*
  * Link Styles
