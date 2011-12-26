@@ -33,7 +33,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * Moderation.
 * Improved pagination on the Manage admin page. The number of entries to display is now user definable.
 * General improvements throughout which are too many to list. See the change log for more details.
-
+ 
 
 = Upcoming features: =
 * Localization
