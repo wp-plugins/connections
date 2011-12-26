@@ -49,7 +49,9 @@ function connectionsShowTemplatesPage()
 				<li><a <?php if ($type === 'birthday') echo 'class="current" ' ?>href="admin.php?page=connections_templates&type=birthday">Birthday</a></li>
 			</ul>
 			
-			<table cellspacing="0" cellpadding="0" id="availablethemes">
+			<br class="clear">
+			
+			<table cellspacing="0" cellpadding="0" id="currenttheme">
 				<tbody>
 					<tr>
 						<td class="current_template">
@@ -58,8 +60,8 @@ function connectionsShowTemplatesPage()
 							<div id="current-theme">
 								<?php
 								$currentTemplate = $connections->options->getActiveTemplate($type);
-								
-								if ( !empty($currentTemplate) )
+								//print_r($currentTemplate);
+								if ( ! empty($currentTemplate) && is_dir( $currentTemplate->path ) )
 								{
 									$author = '';
 									
@@ -83,6 +85,11 @@ function connectionsShowTemplatesPage()
 									// Remove the current template so it does not show in the available templates.
 									unset($templates->{$currentTemplate->slug});
 								}
+								else
+								{
+									echo '<h3 class="error"> Template ' , esc_attr($currentTemplate->name) , ' can not be found.</h3>';
+									echo '<p class="theme-description error">Path ', esc_attr($currentTemplate->path), ' can not be located.</p>';
+								}
 								?>
 							</div>
 							<div class="clear"></div>
@@ -91,32 +98,36 @@ function connectionsShowTemplatesPage()
 						<td class="template_instructions" colspan="2">
 							<p><strong>Instructions:</strong></p>
 							<p>
-								By default the <code>[connections_list]</code> shortcode will show all entries types. To change the template
-								used when displaying all entry types, select the "All" tab and activate the template. When the <code>list_type</code>
+								By default the <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/">[connections]</a></code> shortcode will show all entries types. To change the template
+								used when displaying all entry types, select the "All" tab and activate the template. When the <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/list_type/">list_type</a></code>
 								shortcode attribute is used to filter the entries based on the entry type, the template for that entry type will be used.
 								To change the template used for specific entry type, select the appropriate tab and then activate the template. If multiple
-								entry types are specified in the <code>list_type</code> shortcode attribute, the template for the entry type listed first
+								entry types are specified in the <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/list_type/">list_type</a></code> shortcode attribute, the template for the entry type listed first
 								will be used to display the entry list.
 							</p>
 							
 							<p>
-								The <code>[upcoming_list]</code> shortcode which displays the upcoming anniversaries and birthdays will be displayed with the template
+								The <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-upcoming-list/">[upcoming_list]</a></code> shortcode which displays the upcoming anniversaries and birthdays will be displayed with the template
 								that is activated under their respective tabs.
 							</p>
 							
 							<p>
-								The current active template for each template type can be overridden by using the the <code>template</code> shortcode attribute.
+								The current active template for each template type can be overridden by using the the <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/template/">template</a></code> shortcode attribute.
 							</p>
 						</td>
 					</tr>
-					
+				</tbody>
+			</table>
+			
+			<table cellspacing="0" cellpadding="0" id="installthemes">
+				<tbody>
 					<tr>
 						<td class="install_template" colspan="3">
 							<h2>Install Template</h2>
 							
 							<?php 
 							$formAttr = array(
-										 'action' => 'admin.php?page=connections_templates&type=' . $type . '&action=install',
+										 'action' => 'admin.php?connections_process=true&process=template&type=' . $type . '&action=install',
 										 'method' => 'post',
 										 'enctype' => 'multipart/form-data'
 										 );
@@ -135,7 +146,11 @@ function connectionsShowTemplatesPage()
 							<?php $form->close(); ?>
 						</td>
 					</tr>
-					
+				</tbody>
+			</table>
+			
+			<table cellspacing="0" cellpadding="0" id="availablethemes">
+				<tbody>
 					<tr>
 						<td class="current_template" colspan="3">
 							<h2>Available Templates</h2>
@@ -195,11 +210,11 @@ function connectionsShowTemplatesPage()
 									?>
 									<span class="action-links">
 										<?php
-										$activateTokenURL = $form->tokenURL( 'admin.php?page=connections_templates&action=activate&type=' . $type . '&template=' . esc_attr($templates->$slug->slug), 'activate_' . esc_attr($templates->$slug->slug) );
+										$activateTokenURL = $form->tokenURL( 'admin.php?connections_process=true&process=template&action=activate&type=' . $type . '&template=' . esc_attr($templates->$slug->slug), 'activate_' . esc_attr($templates->$slug->slug) );
 										
 										if ( $templates->$slug->custom === TRUE )
 										{
-											$deleteTokenURL = $form->tokenURL( 'admin.php?page=connections_templates&action=delete&type=' . $type . '&template=' . esc_attr($templates->$slug->slug), 'delete_' . esc_attr($templates->$slug->slug) );
+											$deleteTokenURL = $form->tokenURL( 'admin.php?connections_process=true&process=template&action=delete&type=' . $type . '&template=' . esc_attr($templates->$slug->slug), 'delete_' . esc_attr($templates->$slug->slug) );
 										}
 										
 										?>

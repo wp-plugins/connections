@@ -94,6 +94,9 @@ class cnUser
 		{
 			update_usermeta($this->ID, 'connections', $user_meta);
 		}
+		
+		// Reset the current user's admin manage page.
+		//$this->resetFilterPage();
     }
 	
 	/**
@@ -201,6 +204,83 @@ class cnUser
 		{
 			update_usermeta($this->ID, 'connections', $user_meta);
 		}
+		
+		// Reset the current user's admin manage page.
+		//$this->resetFilterPage();
+    }
+	
+	
+	/**
+	 * Returns the current set filter to be used to display the entries.
+	 * The default is to return only the approved entries if not set.
+	 * 
+	 * @return string
+	 */
+	public function getFilterStatus()
+    {
+		// Set the moderation filter for the current user if set in the query string.
+		if ( isset($_GET['status']) ) $this->setFilterStatus( $_GET['status'] );
+		
+		/*
+		 * Use get_user_meta() used in WP 3.0 and newer
+		 * since get_usermeta() was deprecated.
+		 */
+		if ( function_exists('get_user_meta') )
+		{
+			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		}
+		else
+		{
+			$user_meta = get_usermeta($this->ID, 'connections');
+		}
+		
+		if ( !$user_meta == NULL && isset($user_meta['filter']['status']) )
+		{
+			return $user_meta['filter']['status'];
+		}
+		else
+		{
+			return 'approved';
+		}
+    }
+	
+	public function setFilterStatus($status)
+    {
+		$permittedVisibility = array('all', 'approved', 'pending');
+		$status = esc_attr($status);
+		
+		if (!in_array($status, $permittedVisibility)) return FALSE;
+		
+		/*
+		 * Use get_user_meta() used in WP 3.0 and newer
+		 * since get_usermeta() was deprecated.
+		 */
+		if ( function_exists('get_user_meta') )
+		{
+			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		}
+		else
+		{
+			$user_meta = get_usermeta($this->ID, 'connections');
+		}
+		
+		$user_meta['filter']['status'] = $status;
+		
+		/*
+		 * Use update_user_meta() used in WP 3.0 and newer
+		 * since update_usermeta() was deprecated.
+		 */
+		if ( function_exists('update_user_meta') )
+		{
+			update_user_meta($this->ID, 'connections', $user_meta);
+		}
+		else
+		{
+			update_usermeta($this->ID, 'connections', $user_meta);
+		}
+		
+		// Reset the current user's admin manage page.
+		//$this->resetFilterPage();
     }
 	
 	public function getFilterCategory()
@@ -260,55 +340,86 @@ class cnUser
 		{
 			update_usermeta($this->ID, 'connections', $user_meta);
 		}
+		
+		// Reset the current user's admin manage page.
+		//$this->resetFilterPage();
     }
+	
+	/**
+	 * Returns the current page and page limit of the supplied page name.
+	 * 
+	 * @param string $page
+	 * @return object
+	 */
+	public function getFilterPage( $pageName )
+    {
+		$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		
+		if ( ! $user_meta == NULL && isset($user_meta['filter'][$pageName]) )
+		{
+			$page = (object) $user_meta['filter'][$pageName];
+			
+			if ( ! isset($page->limit) || empty($page->limit) ) $page->limit = 50;
+			if ( ! isset($page->current) || empty($page->current) ) $page->current = 1;
+			
+			return $page;
+		}
+		else
+		{
+			$page = new stdClass();
+			
+			$page->limit = 50;
+			$page->current = 1;
+			
+			return $page;
+		}
+    }
+	
+	/**
+	 *@param object $page
+	 */
+	public function setFilterPage( $page )
+    {
+		// If the page name has not been supplied, no need to process further.
+		if ( ! isset($page->name) ) return;
+		
+		$page->name = sanitize_title($page->name);
+		
+		if ( isset($page->current) ) $page->current = absint($page->current);
+		if ( isset($page->limit) ) $page->limit = absint($page->limit);
+		
+		$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		
+		if ( isset($page->current) ) $user_meta['filter'][$page->name]['current'] = $page->current;
+		if ( isset($page->limit) ) $user_meta['filter'][$page->name]['limit'] = $page->limit;
+		
+		update_user_meta($this->ID, 'connections', $user_meta);
+    }
+	
+	public function resetFilterPage( $pageName )
+	{
+		$page = $this->getFilterPage($pageName);
+		
+		$page->name = $pageName;
+		$page->current = 1;
+		
+		$this->setFilterPage($page);
+	}
 	
 	public function setMessage($message)
 	{
-		/*
-		 * Use get_user_meta() used in WP 3.0 and newer
-		 * since get_usermeta() was deprecated.
-		 */
-		if ( function_exists('get_user_meta') )
-		{
-			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
-		}
-		else
-		{
-			$user_meta = get_usermeta($this->ID, 'connections');
-		}
+		$user_meta = get_user_meta($this->ID, 'connections', TRUE);
 		
 		$user_meta['messages'][] = $message;
 		
-		/*
-		 * Use update_user_meta() used in WP 3.0 and newer
-		 * since update_usermeta() was deprecated.
-		 */
-		if ( function_exists('update_user_meta') )
-		{
-			update_user_meta($this->ID, 'connections', $user_meta);
-		}
-		else
-		{
-			update_usermeta($this->ID, 'connections', $user_meta);
-		}
+		update_user_meta($this->ID, 'connections', $user_meta);
 	}
 	
 	public function getMessages()
 	{
-		/*
-		 * Use get_user_meta() used in WP 3.0 and newer
-		 * since get_usermeta() was deprecated.
-		 */
-		if ( function_exists('get_user_meta') )
-		{
-			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
-		}
-		else
-		{
-			$user_meta = get_usermeta($this->ID, 'connections');
-		}
-		//print_r($user_meta);
-		if (!empty($user_meta['messages']))
+		$user_meta = get_user_meta($this->ID, 'connections', TRUE);
+		
+		if ( ! empty($user_meta['messages']) )
 		{
 			return $user_meta['messages'];
 		}
@@ -320,33 +431,11 @@ class cnUser
 	
 	public function resetMessages()
 	{
-		/*
-		 * Use get_user_meta() used in WP 3.0 and newer
-		 * since get_usermeta() was deprecated.
-		 */
-		if ( function_exists('get_user_meta') )
-		{
-			$user_meta = get_user_meta($this->ID, 'connections', TRUE);
-		}
-		else
-		{
-			$user_meta = get_usermeta($this->ID, 'connections');
-		}
+		$user_meta = get_user_meta($this->ID, 'connections', TRUE);
 		
 		if ( isset($user_meta['messages']) )unset($user_meta['messages']);
-		//print_r($user_meta);
-		/*
-		 * Use update_user_meta() used in WP 3.0 and newer
-		 * since update_usermeta() was deprecated.
-		 */
-		if ( function_exists('update_user_meta') )
-		{
-			update_user_meta($this->ID, 'connections', $user_meta);
-		}
-		else
-		{
-			update_usermeta($this->ID, 'connections', $user_meta);
-		}
+		
+		update_user_meta($this->ID, 'connections', $user_meta);
 	}
 }
 ?>

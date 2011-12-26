@@ -10,7 +10,9 @@ function connectionsShowHelpPage()
 	
 	<h2>Connections : Help</h2>
 	
-	<div class="updated fade" id="message"><strong>IMPORTANT: </strong>If you copy code from this page, make sure you switch the editor
+	<div class="updated fade" id="message"><p><strong>IMPORTANT: </strong>The documentation for Connections has been moved to here: <a href="http://connections-pro.com/documentation/plugin/">http://connections-pro.com/documentation/plugin/</a>.</p></div>
+	
+	<!--<div class="updated fade" id="message"><strong>IMPORTANT: </strong>If you copy code from this page, make sure you switch the editor
 	to the HTML tab before pasting, otherwise extra code will be copied which will cause the directory to be incorrectly displayed.</div>
 	
 	<div id="toc">
@@ -186,7 +188,7 @@ function connectionsShowHelpPage()
 				<p>To show entries in multiple specific categories and their children, list the categories by id
 				seperated by commas as shown in the following example.</p>
 				
-				<p><code>[connections category='1,3,9']</code></p>
+				<p><code>[connections category_in='1,3,9']</code></p>
 				
 				<p><strong>NOTE:</strong> This attribute is an operational AND function. An entry will only be shown if it is in all of the specified categories
 				or one of their children categories.</p>
@@ -460,6 +462,8 @@ function connectionsShowHelpPage()
 				<li>list_type</li>
 		
 				<li>days</li>
+				
+				<li>include_today</li>
 		
 				<li>private_override</li>
 		
@@ -468,6 +472,8 @@ function connectionsShowHelpPage()
 				<li>show_lastname</li>
 		
 				<li>list_title</li>
+				
+				<li>show_title</li>
 			</ol>
 			
 			<fieldset>
@@ -493,6 +499,17 @@ function connectionsShowHelpPage()
 				<em>private_override</em> to true this list will show all entries whether the user is logged in or not.</p>
 			
 				<p><code>[upcoming_list private_override='true']</code></p>
+				
+			</fieldset>
+			
+			<fieldset>
+				<legend>include_today</legend>
+				
+				<p>The <em>include_today</em> option allows you to to include or exlude the anniversaries and birthdays
+				occurring on today. The default value is TRUE. Setting this to FALSE will exclude any anniversaries and birthdays
+				occurring on today.</p>
+			
+				<p><code>[upcoming_list include_today='false']</code></p>
 				
 			</fieldset>
 			
@@ -526,6 +543,15 @@ function connectionsShowHelpPage()
 				read "Upcoming Birthdays for the next 7 days".</p>
 			
 				<p><code>[upcoming_list list_title='Any Text']</code></p>
+				
+			</fieldset>
+			
+			<fieldset>
+				<legend>show_title</legend>
+				
+				<p>The <em>show_title</em> option allows you to not output the list title.</p>
+			
+				<p><code>[upcoming_list show_title='FALSE']</code></p>
 				
 			</fieldset>
 			
@@ -820,9 +846,22 @@ function connectionsShowHelpPage()
 		
 		<h3>Shortcode:</h3>
 		<dl>
+			<dt>cn_list_template_init</dt>
+				<dd>Change the list type [affects the default loaded template] or template to be loaded and intialized.
+				The shortcode atts are passed. However the associative array will be limited to list_type and template so only these values can / should be altered.</dd>
+			
+			<dt>cn_list_atts_permitted</dt>
+				<dd>The permitted shortcode attributes validated using the WordPress function shortcode_atts().
+				The permitted shortcode associative array is passed. Return associative array.</dd>
+			
 			<dt>cn_list_atts</dt>
-				<dd>Alter the shortcode attributes before use. Return associative array.</dd>
+				<dd>Alter the shortcode attributes before validation via the WordPress function shortcode_atts().
+				The shortcode atts are passed. Return associative array.</dd>
 				
+			<dt>cn_list_retrieve_atts</dt>
+				<dd>Alter the query attributes to be used.
+				The shortcode atts are passed. however the retrieve method will filter and use only the valid atts. Return associative array.</dd>
+			
 			<dt>cn_list_results</dt>
 				<dd>Filter the returned results before being processed for display. Return indexed array of entry objects.</dd>
 				
@@ -834,17 +873,23 @@ function connectionsShowHelpPage()
 				<dd>Can be used to add content after the output of the list. The entry list
 				results are passed. Return string.</dd>
 			
-			<dt>cn_entry_before</dt>
+			<dt>cn_list_entry_before</dt>
 				<dd>Can be used to add content before the output of the entry. The entry data
 				is passed. Return string.</dd>
 				
-			<dt>cn_entry_after</dt>
+			<dt>cn_list_entry_after</dt>
 				<dd>Can be used to add content after the output of the entry. The entry data
 				is passed. Return string.</dd>
 			
 			<dt>cn_list_index</dt>
 				<dd>Can be used to modify the index before the output of the list. The entry list
 				results are passed. Return string.</dd>
+				
+			<dt>cn_list_no_result_message</dt>
+				<dd>Can be used to modify the entry list No Results message.</dd>
+				
+			<dt>cn_upcoming_no_result_message</dt>
+				<dd>Can be used to modify the upcoming list No Results message.</dd>
 		</dl>
 		
 		
@@ -887,6 +932,18 @@ function connectionsShowHelpPage()
 		
 	</fieldset>
 	
+	<a name="tocIdActions"></a>
+	<fieldset>
+		<legend>Actions</legend>
+		
+		<h3>Shortcode:</h3>
+		<dl>
+			<dt>cn_list_retrieve_pre</dt>
+				<dd>Action is run prior to running the retrieve query.
+				The shortcode atts are passed.</dd>
+		</dl>
+	</fieldset>
+	
 	<a name="tocIdSupport"></a>
 	<fieldset>
 		<legend>Support</legend>
@@ -898,7 +955,7 @@ function connectionsShowHelpPage()
 	<fieldset>
 		<legend>FAQ</legend>
 		
-		<p>The frequently asked questions cab be found <a href="http://connections-pro.com/faq/">here</a>.</p>
+		<p>The frequently asked questions can be found <a href="http://connections-pro.com/faq/">here</a>.</p>
 	</fieldset>
 	
 	<a name="tocIdDisclaimers"></a>
@@ -922,7 +979,7 @@ function connectionsShowHelpPage()
 		
 	</fieldset>
 	
-	</div>
+	</div>-->
 
 <?php
 }

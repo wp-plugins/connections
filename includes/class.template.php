@@ -67,11 +67,8 @@ class cnTemplate
 	 */
 	public $cssPath;
 	
-	/**
-	 * The URL to the template's CSS file.
-	 * @var string
-	 */
-	public $cssURL;
+	public $printCSS = array();
+	public $printJS =array();
 	
 	/**
 	 * The path to the template's Javascript file.
@@ -91,6 +88,7 @@ class cnTemplate
 	 * @var object
 	 */
 	private $catalog;
+	
 	
 	/**
 	 * Builds a catalog of all the available templates from
@@ -217,7 +215,7 @@ class cnTemplate
 					$this->url = ( $templatePath === CN_TEMPLATE_PATH ) ? CN_TEMPLATE_URL . '/' . $this->slug : CN_CUSTOM_TEMPLATE_URL . '/' . $this->slug;
 					$this->file = $this->path . '/template.php';
 					
-					include_once( $this->path . '/meta.php' );
+					include( $this->path . '/meta.php' );
 		
 					$this->name = $template->name;
 					$this->uri = $template->uri;
@@ -231,8 +229,18 @@ class cnTemplate
 					if ( file_exists( $this->path . '/' . 'template.js') ) $this->jsPath = $this->path . '/' . 'template.js';
 					if ( file_exists( $this->path . '/' . 'functions.php') ) $this->phpPath = $this->path . '/' . 'functions.php';
 					
+					$this->includeFunctions();
+					$this->printJS();
+					
 					break;
 				}
+			}
+			elseif ( is_file( $templatePath . '/' .  $slug . '.php' ) )
+			{
+				$this->slug = $slug;
+				$this->path = $templatePath;
+				$this->url = ( $templatePath === CN_TEMPLATE_PATH ) ? CN_TEMPLATE_URL : CN_CUSTOM_TEMPLATE_URL;
+				$this->file = $this->path . '/' . $slug . '.php';
 			}
 		}
 		
@@ -260,6 +268,27 @@ class cnTemplate
 		if ( isset($template->jsPath) ) $this->jsPath = $template->jsPath;
 		if ( isset($template->phpPath) ) $this->phpPath = $template->phpPath;
 		if ( isset($template->path) ) $this->path = $template->path;
+		
+		$this->includeFunctions();
+		$this->printJS();
+	}
+	
+	public function reset()
+	{
+		$this->name = ''; // REQUIRED
+		$this->slug = ''; // REQUIRED
+		$this->url = ''; // REQUIRED
+		$this->uri = ''; // REQUIRED
+		$this->version = '';
+		$this->author = '';
+		$this->description = '';
+		$this->legacy = '';
+		$this->custom = '';
+		$this->file = ''; // REQUIRED
+		$this->cssPath = '';
+		$this->jsPath = '';
+		$this->phpPath = '';
+		$this->path = '';
 	}
 	
 	/**
@@ -270,52 +299,78 @@ class cnTemplate
 	 */
 	public function printCSS()
 	{
-		if ( !isset($this->cssPath) ) return NULL;
+		if ( empty($this->cssPath) ) return '';
 		
-		$contents = file_get_contents( $this->cssPath );
+		if ( ! in_array( $this->slug , $this->printCSS ) )
+		{
+			$this->printCSS[] = $this->slug;
 		
-		// Loads the CSS style in the body, valid HTML5 when set with the 'scoped' attribute.
-		$out = '<style type="text/css" scoped>' . "\n";
-		$out .= str_replace('%%PATH%%', $this->url, $contents);
-		$out .= '</style>' . "\n";
+			$contents = file_get_contents( $this->cssPath );
+			
+			// Loads the CSS style in the body, valid HTML5 when set with the 'scoped' attribute.
+			$out = "\n" . '<style type="text/css" scoped>' . "\n";
+			$out .= str_replace('%%PATH%%', $this->url, $contents);
+			$out .= "\n" . '</style>' . "\n";
+		}
 		
 		return $out;
 	}
 	
 	/**
 	 * Prints the template's JS in the theme's footer.
+	 * 
+	 * NOTE: As of WP3.3 simple using wp_enqueue_script() should work to print the script in the footer.
 	 */
 	public function printJS()
 	{
 		// Prints the javascript tag in the footer if $template->js path is set
-		if ( isset($this->jsPath) )
+		if ( isset($this->jsPath) && ! empty($this->jsPath) )
 		{
-			global $connections;
-			$connections->printJS = TRUE;
-			$connections->printJSURL = $this->url . '/template.js';
-			
-			$printJS = create_function
-			(
-				'',
-				'global $connections;
+			if ( ! in_array( $this->slug , $this->printJS ) )
+			{
+				$this->printJS[] = $this->slug;
 				
-				if ( $connections->printJS === TRUE )
-				{
-					wp_register_script("cn_template_js", $connections->printJSURL, array(), CN_CURRENT_VERSION, TRUE);
-					wp_print_scripts("cn_template_js");
-				}'
-			);
-			
-			add_action( 'wp_footer', $printJS );
+				wp_register_script("cn_{$this->slug}_js", $this->url . '/template.js', array(), $this->version, TRUE);
+				
+				$printJS = create_function
+				(
+					'',
+					'global $connections;
+					
+					if ( isset($connections->template->printJS) && ! empty($connections->template->printJS) )
+					{
+						foreach ( $connections->template->printJS as $slug)
+						{
+							wp_print_scripts("cn_{$slug}_js");
+						}
+					}'
+				);
+				
+				add_action( 'wp_footer', $printJS );
+			}
 		}
 	}
 	
-	public function includeFunctions()
+	/**
+	 * Include the template functions.php file if present.
+	 */
+	private function includeFunctions()
 	{
-		if ( isset($this->phpPath) )
+		if ( ! empty($this->phpPath) )
 		{
 			include_once($this->phpPath);
 		}
 	}
+		
+	/*public function register()
+	{
+		$object =& apply_filters('cn_register_template', &$object);
+		
+		if ( ! is_object($object) ) return;
+		
+		$name = get_class($object);
+		
+		$this->$name =& $object;
+	}*/
 }
 ?>

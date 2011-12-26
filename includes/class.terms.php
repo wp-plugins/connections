@@ -287,7 +287,7 @@ class cnTerms
 		$description = $attributes['description'];
 		$parent = $attributes['parent'];
 		
-		$this->getUniqueSlug(&$slug, $term);
+		$slug = $this->getUniqueSlug($slug, $term);
 		
 		/**
 		 * @TODO: Make sure the term doesn't exist before adding it.
@@ -361,7 +361,7 @@ class cnTerms
 		if (!$wpdb->query($wpdb->prepare($sql))) return;
 		unset($sql);
 		
-		$this->getUniqueSlug(&$slug, $name);
+		$slug = $this->getUniqueSlug($slug, $name);
 		
 		$sql = "UPDATE " . CN_TERMS_TABLE . " SET
 			name		= '" . $wpdb->escape($name) . "',
@@ -476,7 +476,7 @@ class cnTerms
 		}
 		
 		// WP function -- formatting class
-		sanitize_title(&$slug);
+		$slug = sanitize_title($slug);
 		
 		$query = $wpdb->prepare( "SELECT slug FROM " . CN_TERMS_TABLE . " WHERE slug = %s", $slug );
 		
@@ -504,7 +504,7 @@ class cnTerms
 	 * NOTE: Only if the taxonomy is 'category'
 	 * 
 	 * @param int $entryID		
-	 * @param array $categoryID
+	 * @param array $termIDs
 	 * 
 	 * @return bool
 	 */

@@ -45,7 +45,7 @@ function connectionsShowCategoriesPage()
 			
 					<?php
 						$attr = array(
-									 'action' => 'admin.php?page=connections_categories&action=update',
+									 'action' => 'admin.php?connections_process=true&process=category&action=update',
 									 'method' => 'post',
 									 'id' => 'addcat',
 									 'name' => 'updatecategory'
@@ -78,7 +78,7 @@ function connectionsShowCategoriesPage()
 							<div class="col-wrap">
 								<?php
 									$attr = array(
-												 'action' => 'admin.php?page=connections_categories&action=bulk_delete',
+												 'action' => 'admin.php?connections_process=true&process=category&action=bulk_delete',
 												 'method' => 'post',
 												 );
 									
@@ -157,7 +157,7 @@ function connectionsShowCategoriesPage()
 									<h3>Add Category</h3>
 										<?php
 											$attr = array(
-														 'action' => 'admin.php?page=connections_categories&action=add',
+														 'action' => 'admin.php?connections_process=true&process=category&action=add',
 														 'method' => 'post',
 														 'id' => 'addcat',
 														 'name' => 'addcat'
