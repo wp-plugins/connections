@@ -62,6 +62,18 @@ Author URI: http://connections-pro.com/
  * 
  * Email and URL validation methods by Gizmo Digital Fusion
  * http://wpcodesnippets.info/blog/two-useful-php-validation-functions.html
+ * 
+ * Social media icons by WPZOOM.com
+ * http://www.wpzoom.com/wpzoom/500-free-icons-wpzoom-social-networking-icon-set/
+ * License CC BY-SA 3.0  http://creativecommons.org/licenses/by-sa/3.0/
+ * 
+ * iTunes icon by isabi3
+ * http://www.softicons.com/free-icons/application-icons/isabi3-icons-by-barrymieny/apple-itunes-icon
+ * License CC BY-NC-SA 3.0  http://creativecommons.org/licenses/by-nc-sa/3.0/
+ * 
+ * Podcast icon by schollidesign
+ * http://findicons.com/icon/94188/podcast_new)
+ * License GNU/GPL
  */
 
 /**
