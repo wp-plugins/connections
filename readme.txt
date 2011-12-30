@@ -85,6 +85,15 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 
 == Changelog ==
 
+= 0.7.2.3 12/XX/11 =
+* FEATURE: Added TripAdvisor to the social media networks per user request.
+* BUG: Fixed critical table creation error for the links table on new installs. Upgrades are ok.
+* BUG: Fixed bug in getWebsiteBlock(). Would not return entries with the legacy type of 'personal'.
+* BUG: Make sure a boolean can not be passed to the opendir() function in class.template.php.
+* OTHER: If critical Connections folders are not writable, attempt to increment permissions until they are writable. NOTE: This occurs only during plugin activation and upgrading from a previous version.
+* OTHER: Update the default templates to use the new output methods.
+* OTHER: Removed the unused code in cnEntry::getLinks() to convert a string to an array. It was being done twice, two differnet ways.
+
 = 0.7.2.2 12/25/11 =
 * FEATURE: Added option to the links to be able to assign them to either the image or logo.
 * FEATURE: Social media networks now default to having an icon rather than the text link.

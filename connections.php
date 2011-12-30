@@ -732,6 +732,8 @@ if (!class_exists('connectionsLoad'))
 					`url` tinytext NOT NULL,
 					`target` tinytext NOT NULL,
 					`follow` tinyint unsigned NOT NULL default '0',
+					`image` tinyint unsigned NOT NULL default '0',
+					`logo` tinyint unsigned NOT NULL default '0',
 					`visibility` tinytext NOT NULL,
 					PRIMARY KEY (`id`, `entry_id`)
 			    ) $charsetCollate";
@@ -742,15 +744,48 @@ if (!class_exists('connectionsLoad'))
 			
 			// Create the cache folder.
 			if ( ! file_exists( CN_CACHE_PATH ) ) @mkdir( CN_CACHE_PATH );
-			if ( file_exists( CN_CACHE_PATH ) ) @chmod( CN_CACHE_PATH , '0755' );
+			
+			/*
+			 * Attempt to set the folder writeable per http://codex.wordpress.org/Changing_File_Permissions#Using_the_Command_Line
+			 */
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0746' );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0747' );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0756' );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0757' );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0764' );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0765' );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0766' );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0767' );
 			
 			// Create the images folder.
 			if ( ! file_exists( CN_IMAGE_PATH ) ) @mkdir( CN_IMAGE_PATH );
-			if ( file_exists( CN_IMAGE_PATH ) ) @chmod( CN_IMAGE_PATH , '0755' );
+			
+			/*
+			 * Attempt to set the folder writeable per http://codex.wordpress.org/Changing_File_Permissions#Using_the_Command_Line
+			 */
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0746' );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0747' );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0756' );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0757' );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0764' );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0765' );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0766' );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0767' );
 			
 			// Create the custom template folder.
 			if ( ! file_exists( CN_CUSTOM_TEMPLATE_PATH ) ) @mkdir( CN_CUSTOM_TEMPLATE_PATH );
-			if ( file_exists( CN_CUSTOM_TEMPLATE_PATH ) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0755' );
+			
+			/*
+			 * Attempt to set the folder writeable per http://codex.wordpress.org/Changing_File_Permissions#Using_the_Command_Line
+			 */
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0746' );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0747' );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0756' );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0757' );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0764' );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0765' );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0766' );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0767' );
 			
 			$this->initOptions();
 			
@@ -852,12 +887,12 @@ if (!class_exists('connectionsLoad'))
 			/*
 			 * Add admin notices if required directories are not present or not writeable.
 			 */
-			if ( ! is_dir(CN_IMAGE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connection_images does not seem to exist. Please try deactivating and reactivating Connections.</p></div>\';' ) );
-			if ( is_dir(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connection_images does not seem to be writeable.</p></div>\';' ) );
-			if ( ! is_dir(CN_CUSTOM_TEMPLATE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connections_templates does not seem to exist. Please try deactivating and reactivating Connections.</p></div>\';' ) );
-			if ( is_dir(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connections_templates does not seem to be writeable.</p></div>\';' ) );
-			if ( ! is_dir(CN_CACHE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/plugins/connections/cache does not seem to exist. Please try deactivating and reactivating Connections.</p></div>\';' ) );
-			if ( is_dir(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/plugins/connections/cache does not seem to be writeable.</p></div>\';' ) );
+			if ( ! file_exists(CN_IMAGE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connection_images does not seem to exist. Please try deactivating and reactivating Connections.</p></div>\';' ) );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connection_images does not seem to be writeable.</p></div>\';' ) );
+			if ( ! file_exists(CN_CUSTOM_TEMPLATE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connections_templates does not seem to exist. Please try deactivating and reactivating Connections.</p></div>\';' ) );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connections_templates does not seem to be writeable.</p></div>\';' ) );
+			if ( ! file_exists(CN_CACHE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/plugins/connections/cache does not seem to exist. Please try deactivating and reactivating Connections.</p></div>\';' ) );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/plugins/connections/cache does not seem to be writeable.</p></div>\';' ) );
 			
 			// Calls the methods to load the admin scripts and CSS.
 			add_action('admin_print_scripts', array(&$this, 'loadAdminScripts') );

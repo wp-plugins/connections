@@ -20,7 +20,7 @@
 		<?php echo $entry->getEmailAddressBlock() ?>
 		<?php echo $entry->getImBlock() ?>
 		<?php echo $entry->getSocialMediaBlock() ?>
-		<?php echo $entry->getWebsiteBlock() ?>
+		<?php $entry->getLinkBlock() ?>
 		
 		<?php echo $entry->getBirthdayBlock('F j') ?>
 		<?php echo $entry->getAnniversaryBlock() ?>

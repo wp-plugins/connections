@@ -1313,7 +1313,7 @@ class cnOutput extends cnEntry
 		/*
 		 * Set some defaults so the result resembles how the previous rendered.
 		 */
-		return $this->getLinkBlock( array( 'format' => '%label%: %url%' , 'type' => 'website' , 'return' => TRUE ) );
+		return $this->getLinkBlock( array( 'format' => '%label%: %url%' , 'type' => array('personal', 'website') , 'return' => TRUE ) );
 	}
 	
 	/**

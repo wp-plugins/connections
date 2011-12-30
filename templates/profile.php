@@ -8,7 +8,7 @@
 				<?php echo $entry->getTitleBlock() ?>
 				<?php echo $entry->getOrgUnitBlock() ?>
 			</div>
-			<?php echo $entry->getBio() ?>
+			<?php echo $entry->getBioBlock() ?>
 		</div>
 			
 	</div>

@@ -101,14 +101,16 @@ class cnTemplate
 		/**
 		 * --> START <-- Find the available templates
 		 */
-		$templatePaths = array(CN_TEMPLATE_PATH, CN_CUSTOM_TEMPLATE_PATH);
+		$templatePaths = array( CN_TEMPLATE_PATH , CN_CUSTOM_TEMPLATE_PATH );
 		$templates = new stdClass();
 		
 		foreach ($templatePaths as $templatePath)
 		{
-			if ( !is_dir($templatePath . '/') && !is_readable($templatePath . '/') ) continue;
+			if ( ! is_dir($templatePath . '/') && ! is_readable($templatePath . '/') ) continue;
 			
-			$templateDirectories = opendir($templatePath);
+			if ( ! $templateDirectories = opendir($templatePath) ) continue;
+			
+			//$templateDirectories = opendir($templatePath);
 			
 			while ( ( $templateDirectory = readdir($templateDirectories) ) !== FALSE )
 			{
@@ -163,7 +165,7 @@ class cnTemplate
 				}
 			}
 			
-			closedir($templateDirectories);
+			closedir($templatePath);
 		}
 		/**
 		 * --> END <-- Find the available templates
