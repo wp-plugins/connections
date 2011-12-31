@@ -689,7 +689,7 @@ class cnOutput extends cnEntry
 			$defaultAttr['country'] = NULL;
 			$defaultAttr['coordinates'] = array();
 			//$defaultAttr['format'] = '%label%|%line1%|%line2%|%line3%|%city%, %state%  %zipcode%|%geo%';
-			$defaultAttr['format'] = '%label% %line1% %line2% %line3% %city%, %state%  %zipcode%';
+			$defaultAttr['format'] = '%label% %line1% %line2% %line3% %city%, %state%  %zipcode% %country%';
 			$defaultAttr['before'] = '';
 			$defaultAttr['after'] = '';
 			$defaultAttr['return'] = FALSE;

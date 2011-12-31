@@ -137,7 +137,7 @@ if (!class_exists('connectionsLoad'))
 			get_currentuserinfo();
 			$this->currentUser->setID($current_user->ID);
 			
-			//$this->options->setDBVersion('0.1.5');
+			//$this->options->setDBVersion('0.1.7');
 			
 			// Register Common scripts
 			add_action( 'init', array(&$this, 'registerScripts' ) );
@@ -184,7 +184,7 @@ if (!class_exists('connectionsLoad'))
 			define('CN_LOG', FALSE);
 			
 			define('CN_CURRENT_VERSION', '0.7.2.2');
-			define('CN_DB_VERSION', '0.1.7');
+			define('CN_DB_VERSION', '0.1.8');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
 			

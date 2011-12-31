@@ -9,7 +9,7 @@ Connections is a simple to use directory manager which can be used to create an 
 
 == Description ==
 
-[Plugin Homepage](http://connections-pro.com/) | [Documentation](http://connections-pro.com/documentation/plugin/) | [Premium Templates](http://connections-pro.com/connections/templates/) | [Pro Addons](http://connections-pro.com/connections/pro-module/)
+[Plugin Homepage](http://connections-pro.com/) | [Documentation](http://connections-pro.com/documentation/plugin/) | [Showcase](http://connections-pro.com/showcase/) | [Premium Templates](http://connections-pro.com/connections/templates/) | [Pro Addons](http://connections-pro.com/connections/pro-module/)
 
 Quite simply, Connections is the best directory plugin available for WordPress. Its simplicity in design and function, vast array of unique features and versatility are the reasons more and more people are turning to Connections for their directory needs. You can use Connections to create a simple address book, maintain a staff directory and even run a business or link directory. Connections was built bottom up to be as configurable as possible while providing the features you need. Read on to learn about some of the best features Connections has to offer...
 
@@ -93,6 +93,10 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * OTHER: If critical Connections folders are not writable, attempt to increment permissions until they are writable. NOTE: This occurs only during plugin activation and upgrading from a previous version.
 * OTHER: Update the default templates to use the new output methods.
 * OTHER: Removed the unused code in cnEntry::getLinks() to convert a string to an array. It was being done twice, two differnet ways.
+* OTHER: Increase the TimThumb FILE_CACHE_MAX_FILE_AGE to 7 days.
+* OTHER: Add an "Add New" button next to the H2 on the Connections : Manage admin page.
+* OTHER: Add FULLTEXT to several of the Connections tables.
+* OTHER: Add a secondary LIKE search if the FULLTEXT search returns no results OR for when the users DB does not support FULLTEXT.
 
 = 0.7.2.2 12/25/11 =
 * FEATURE: Added option to the links to be able to assign them to either the image or logo.

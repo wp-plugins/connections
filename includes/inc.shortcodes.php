@@ -115,7 +115,7 @@ function _connections_list($atts, $content = NULL)
 		}
 	}
 	
-	//$out .= print_r($template , TRUE);
+	//$out .= '<pre style="display: none;">' . print_r($template , TRUE) . '</pre>';
 	
 	// If no template was found, exit return an error message.
 	if ( ! isset($template->file) || empty($template->file) || ! is_file($template->file) )

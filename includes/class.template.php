@@ -68,7 +68,7 @@ class cnTemplate
 	public $cssPath;
 	
 	public $printCSS = array();
-	public $printJS =array();
+	public $printJS = array();
 	
 	/**
 	 * The path to the template's Javascript file.
@@ -303,17 +303,24 @@ class cnTemplate
 	{
 		if ( empty($this->cssPath) ) return '';
 		
-		if ( ! in_array( $this->slug , $this->printCSS ) )
-		{
-			$this->printCSS[] = $this->slug;
+		/*
+		 * The intent was to keep a log as the CSS was output so if a template was called multiple time on on the same page,
+		 * the CSS would not output multiple times. The issue is that some plugins pre-process the page content. When this hppens
+		 * the CSS is not output when needed.
+		 * 
+		 * @TODO Create a page pre-process function so the CSS outputs only once in the page head.
+		 */
 		
-			$contents = file_get_contents( $this->cssPath );
+		//if ( ! in_array( $this->slug , $this->printCSS ) )
+		//{
+			
+			$this->printCSS[] = $this->slug;
 			
 			// Loads the CSS style in the body, valid HTML5 when set with the 'scoped' attribute.
 			$out = "\n" . '<style type="text/css" scoped>' . "\n";
-			$out .= str_replace('%%PATH%%', $this->url, $contents);
+			$out .= str_replace( '%%PATH%%' , $this->url , file_get_contents( $this->cssPath ) );
 			$out .= "\n" . '</style>' . "\n";
-		}
+		//}
 		
 		return $out;
 	}

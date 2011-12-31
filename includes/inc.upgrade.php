@@ -616,7 +616,7 @@ function cnRunDBUpgrade()
 			echo '<li>Changing column name from websites to links...' . "</li>\n";
 			if ( cnAlterTable( CN_ENTRY_TABLE , 'links' , 'CHANGE COLUMN websites links longtext NOT NULL' ) ) echo '<ul><li>SUCCESS</li></ul>';
 			
-			echo '<li>Adding Column... "slug"' . "</li>\n";
+			echo '<li>Adding column "slug"' . "</li>\n";
 			if (cnAddTableColumn(CN_ENTRY_TABLE, 'slug', 'tinytext NOT NULL AFTER visibility')) echo '<ul><li>SUCCESS</li></ul>';
 			
 			echo '<li>Adding entry slugs.' . "</li>\n";
@@ -706,15 +706,73 @@ function cnRunDBUpgrade()
 			
 			echo '<ul>';
 				
-				echo '<li>Adding Column "image" to the links table' . "</li>\n";
+				echo '<li>Adding column "image" to the links table.' . "</li>\n";
 				if (cnAddTableColumn(CN_ENTRY_LINK_TABLE, 'image', "tinyint unsigned NOT NULL default '0' AFTER follow")) echo '<ul><li>SUCCESS</li></ul>';
 				
-				echo '<li>Adding Column "logo" to the links table' . "</li>\n";
+				echo '<li>Adding column "logo" to the links table.' . "</li>\n";
 				if (cnAddTableColumn(CN_ENTRY_LINK_TABLE, 'logo', "tinyint unsigned NOT NULL default '0' AFTER image")) echo '<ul><li>SUCCESS</li></ul>';
 				
 			echo '</ul>';
 			
 			$connections->options->setDBVersion('0.1.7');
+		}
+		
+		if (version_compare($dbVersion, '0.1.8', '<'))
+		{
+			$fields['fields_entry'] = array( 'family_name' ,
+											'first_name' ,
+											'middle_name' ,
+											'last_name' ,
+											'title' ,
+											'organization' ,
+											'department' ,
+											'contact_first_name' ,
+											'contact_last_name' ,
+											'bio' ,
+											'notes' );
+			$fields['fields_address'] = array( 'line_1' ,
+											'line_2' ,
+											'line_3' ,
+											'city' ,
+											'state' ,
+											'zipcode' ,
+											'country' );
+			$fields['fields_phone'] = array( 'number' );
+			
+			echo '<h4>Upgrade from database version ' . $connections->options->getDBVersion() . ' to database version ' . CN_DB_VERSION . ".</h4>\n";
+			
+			echo '<p><strong>NOTE:</strong> You might receive this error: "The used table type doesn\'t support FULLTEXT indexes".</p>';
+			
+			echo '<p>This is not a critical error. What this means is that the database does not support FULLTEXT query statments. 
+				  Connections will perform a secondary search query in order to return search results.</p>';
+			
+			echo '<ul>';
+				
+				echo '<li>Adding FULLTEXT to ' . CN_ENTRY_TABLE . ' ' . "</li>\n";
+				$wpdb->query('ALTER TABLE ' . CN_ENTRY_TABLE . ' ADD FULLTEXT (' . implode(',', $fields['fields_entry']) . ')');
+				
+				echo '<li>Adding FULLTEXT to ' . CN_ENTRY_ADDRESS_TABLE . ' ' . "</li>\n";
+				$wpdb->query('ALTER TABLE ' . CN_ENTRY_ADDRESS_TABLE . ' ADD FULLTEXT (' . implode(',', $fields['fields_address']) . ')');
+				
+				echo '<li>Adding FULLTEXT to ' . CN_ENTRY_PHONE_TABLE . ' ' . "</li>\n";
+				$wpdb->query('ALTER TABLE ' . CN_ENTRY_PHONE_TABLE . ' ADD FULLTEXT (' . implode(',', $fields['fields_phone']) . ')');
+				
+			echo '</ul>';
+			
+			echo '<p>The activate action for Connections 0.7.2.2 was not properly updated which created a fatal bug for new installations of Connections. 
+					 Checking for the missing table columns in the Links table and adding them if missing.</p>';
+			
+			echo '<ul>';
+				
+				echo '<li>Adding, if missing, column "image" to the links table.' . "</li>\n";
+				if (cnAddTableColumn(CN_ENTRY_LINK_TABLE, 'image', "tinyint unsigned NOT NULL default '0' AFTER follow")) echo '<ul><li>SUCCESS</li></ul>';
+				
+				echo '<li>Adding, if missing, column "logo" to the links table.' . "</li>\n";
+				if (cnAddTableColumn(CN_ENTRY_LINK_TABLE, 'logo', "tinyint unsigned NOT NULL default '0' AFTER image")) echo '<ul><li>SUCCESS</li></ul>';
+				
+			echo '</ul>';
+			
+			$connections->options->setDBVersion('0.1.8');
 		}
 		
 		/*echo '<h4>Updating entries to the new database stucture.' . "</h4>\n";

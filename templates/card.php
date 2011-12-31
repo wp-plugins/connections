@@ -1,20 +1,20 @@
-<div class="cn-entry" style="-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; margin:8px 0px; padding:6px; position: relative;">
+<div class="cn-entry" style="-moz-border-radius:4px; background-color:#FFFFFF; border:1px solid #E3E3E3; color: #000000; margin:8px 0px; padding:6px; position: relative;">
 	<div style="width:49%; float:left">
 		<?php $entry->getImage() ?>
 		<div style="clear:both;"></div>
 		<div style="margin-bottom: 10px;">
-			<span style="font-size:larger;font-variant: small-caps"><strong><?php echo $entry->getNameBlock() ?></strong></span><br />
+			<span style="font-size:larger;font-variant: small-caps"><strong><?php echo $entry->getNameBlock() ?></strong></span>
 			
-			<?php echo $entry->getOrgUnitBlock() ?>
+			<?php $entry->getOrgUnitBlock() ?>
 			
 		</div>
 			
-			<?php echo $entry->getAddressBlock() ?>
+			<?php $entry->getAddressBlock() ?>
 	</div>
 		
 	<div align="right">
 	
-		<?php $entry->getConnectionGroupBlock() ?>
+		<?php $entry->getFamilyMemberBlock() ?>
 		<?php $entry->getPhoneNumberBlock() ?>
 		<?php $entry->getEmailAddressBlock() ?>
 		<?php $entry->getImBlock() ?>
