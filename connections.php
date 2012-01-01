@@ -67,7 +67,7 @@ Author URI: http://connections-pro.com/
  * http://www.wpzoom.com/wpzoom/500-free-icons-wpzoom-social-networking-icon-set/
  * License CC BY-SA 3.0  http://creativecommons.org/licenses/by-sa/3.0/
  * 
- * iTunes icon by  Paul Robert Lloyd
+ * iTunes icon by Paul Robert Lloyd
  * http://www.iconfinder.com/icondetails/43155/48/itunes_icon
  * http://paulrobertlloyd.com/
  * License Attribution-ShareAlike 2.0 UK: England & Wales (CC BY-SA 2.0)
