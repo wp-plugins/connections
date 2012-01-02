@@ -4,7 +4,7 @@ Donate link: http://connections-pro.com/
 Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, business directory, business-directory, church, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, staff, user, users, vcard
 Requires at least: 3.2
 Tested up to: 3.3
-Stable tag: 0.7.2.2
+Stable tag: 0.7.2.3
 Connections is a simple to use directory manager which can be used to create an addressbook, business, staff or church directory.
 
 == Description ==
@@ -85,7 +85,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 
 == Changelog ==
 
-= 0.7.2.3 12/XX/11 =
+= 0.7.2.3 01/01/12 =
 * FEATURE: Added TripAdvisor to the social media networks per user request.
 * BUG: Fixed critical table creation error for the links table on new installs. Upgrades are ok.
 * BUG: Fixed bug in getWebsiteBlock(). Would not return entries with the legacy type of 'personal'.
