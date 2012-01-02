@@ -2178,18 +2178,6 @@ class cnEntry
 				 */
 				if ( ! empty($type) && ! is_array($type) ) $type = explode( ',' , trim($type) );
 				
-				if ( ! empty($type) )
-				{
-					if ( ! is_array($type) )
-					{
-						// Trim the space characters if present.
-						$type = str_replace(' ', '', $type);
-						
-						// Convert to array.
-						$type = explode(',', $type);
-					}
-				}
-				
 				foreach ( (array) $links as $key => $link )
 				{
 					$row = new stdClass();
