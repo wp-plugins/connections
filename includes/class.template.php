@@ -109,9 +109,10 @@ class cnTemplate
 			if ( ! is_dir($templatePath . '/') && ! is_readable($templatePath . '/') ) continue;
 			
 			if ( ! $templateDirectories = opendir($templatePath) ) continue;
+			//var_dump($templatePath);
 			
 			//$templateDirectories = opendir($templatePath);
-			
+						
 			while ( ( $templateDirectory = readdir($templateDirectories) ) !== FALSE )
 			{
 				if ( is_dir($templatePath . '/' . $templateDirectory) && is_readable($templatePath . '/' . $templateDirectory) )
@@ -132,9 +133,9 @@ class cnTemplate
 						$templates->{$template->type}->{$template->slug}->version = $template->version;
 						$templates->{$template->type}->{$template->slug}->uri = 'http://' . $template->uri;
 						$templates->{$template->type}->{$template->slug}->author = $template->author;
-						$templates->{$template->type}->{$template->slug}->description = $template->description;
+						( isset($template->description) ) ? $templates->{$template->type}->{$template->slug}->description = $template->description : $templates->{$template->type}->{$template->slug}->description = '';
 						
-						( !isset($template->legacy) ) ? $templates->{$template->type}->{$template->slug}->legacy = TRUE : $templates->{$template->type}->{$template->slug}->legacy = $template->legacy;
+						( ! isset($template->legacy) ) ? $templates->{$template->type}->{$template->slug}->legacy = TRUE : $templates->{$template->type}->{$template->slug}->legacy = $template->legacy;
 						$templates->{$template->type}->{$template->slug}->slug = $template->slug;
 						$templates->{$template->type}->{$template->slug}->custom = ( $templatePath === CN_TEMPLATE_PATH ) ? FALSE : TRUE;
 						$templates->{$template->type}->{$template->slug}->path = $templatePath . '/' . $templateDirectory;
@@ -165,7 +166,8 @@ class cnTemplate
 				}
 			}
 			
-			closedir($templatePath);
+			//var_dump($templateDirectories);
+			closedir($templateDirectories);
 		}
 		/**
 		 * --> END <-- Find the available templates

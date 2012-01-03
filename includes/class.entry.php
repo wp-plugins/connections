@@ -848,20 +848,20 @@ class cnEntry
 					
 					$row = new stdClass();
 					
-					$row->id = (int) $address['id'];
-					$row->order = (int) $address['order'];
-					$row->preferred = (bool) $address['preferred'];
-					$row->type = $this->format->sanitizeString($address['type']);
-					$row->line_1 = $this->format->sanitizeString($address['line_1']);
-					$row->line_2 = $this->format->sanitizeString($address['line_2']);
-					$row->line_3 = $this->format->sanitizeString($address['line_3']);
-					$row->city = $this->format->sanitizeString($address['city']);
-					$row->state = $this->format->sanitizeString($address['state']);
-					$row->zipcode = $this->format->sanitizeString($address['zipcode']);
-					$row->country = $this->format->sanitizeString($address['country']);
-					$row->latitude = (float) $address['latitude'];
-					$row->longitude = (float) $address['longitude'];
-					$row->visibility = $this->format->sanitizeString($address['visibility']);
+					( isset( $address['id'] ) ) ? $row->id = (int) $address['id'] : $row->id = 0;
+					( isset( $address['order'] ) ) ? $row->order = (int) $address['order'] : $row->order = 0;
+					( isset( $address['preferred'] ) ) ? $row->preferred = (bool) $address['preferred'] : $row->preferred = FALSE;
+					( isset( $address['type'] ) ) ? $row->type = $this->format->sanitizeString($address['type']) : $row->type = '';
+					( isset( $address['line_1'] ) ) ? $row->line_1 = $this->format->sanitizeString($address['line_1']) : $row->line_1 = '';
+					( isset( $address['line_2'] ) ) ? $row->line_2 = $this->format->sanitizeString($address['line_2']) : $row->line_2 = '';
+					( isset( $address['line_3'] ) ) ? $row->line_3 = $this->format->sanitizeString($address['line_3']) : $row->line_3 = '';
+					( isset( $address['city'] ) ) ? $row->city = $this->format->sanitizeString($address['city']) : $row->city = '';
+					( isset( $address['state'] ) ) ? $row->state = $this->format->sanitizeString($address['state']) : $row->state = '';
+					( isset( $address['zipcode'] ) ) ? $row->zipcode = $this->format->sanitizeString($address['zipcode']) : $row->zipcode = '';
+					( isset( $address['country'] ) ) ? $row->country = $this->format->sanitizeString($address['country']) : $row->country = '';
+					( isset( $address['latitude'] ) ) ? $row->latitude = (float) $address['latitude'] : $row->latitude = NULL;
+					( isset( $address['longitude'] ) ) ? $row->longitude = (float) $address['longitude'] : $row->longitude = NULL;
+					( isset( $address['visibility'] ) ) ? $row->visibility = $this->format->sanitizeString($address['visibility']) : $row->visibility = '';
 					
 					/*
 					 * Set the address name based on the address type.
@@ -1138,12 +1138,12 @@ class cnEntry
 				{
 					$row = new stdClass();
 					
-					$row->id = (int) $number['id'];
-					$row->order = (int) $number['order'];
-					$row->preferred = (bool) $number['preferred'];
-					$row->type = $this->format->sanitizeString($number['type']);
-					$row->number = $this->format->sanitizeString($number['number']);
-					$row->visibility = $this->format->sanitizeString($number['visibility']);
+					( isset( $number['id'] ) ) ? $row->id = (int) $number['id'] : $row->id = 0;
+					( isset( $number['order'] ) ) ? $row->order = (int) $number['order'] : $row->order = 0;
+					( isset( $number['preferred'] ) ) ? $row->preferred = (bool) $number['preferred'] : $row->preferred = FALSE;
+					( isset( $number['type'] ) ) ? $row->type = $this->format->sanitizeString($number['type']) : $row->type = 'homephone';
+					( isset( $number['number'] ) ) ? $row->number = $this->format->sanitizeString($number['number']) : $row->number = '';
+					( isset( $number['visibility'] ) ) ? $row->visibility = $this->format->sanitizeString($number['visibility']) : $row->visibility = '';
 					
 					/*
 					 * // START -- Compatibility for previous versions.
@@ -1151,16 +1151,16 @@ class cnEntry
 					switch ( $row->type )
 					{
 						case 'home':
-							$row->type = "homephone";
+							$row->type = 'homephone';
 							break;
 						case 'cell':
-							$row->type = "cellphone";
+							$row->type = 'cellphone';
 							break;
 						case 'work':
-							$row->type = "workphone";
+							$row->type = 'workphone';
 							break;
 						case 'fax':
-							$row->type = "workfax";
+							$row->type = 'workfax';
 							break;
 					}
 					
@@ -2182,24 +2182,24 @@ class cnEntry
 				{
 					$row = new stdClass();
 					
-					$row->id = (int) $link['id'];
-					$row->order = (int) $link['order'];
-					$row->preferred = (bool) $link['preferred'];
-					$row->type = $this->format->sanitizeString($link['type']);
-					$row->title = $this->format->sanitizeString($link['title']);
-					$row->address = $this->format->sanitizeString($link['address']);
-					$row->url = $this->format->sanitizeString($link['url']);
-					$row->target = $this->format->sanitizeString($link['target']);
-					$row->follow = (bool) $link['follow'];
-					$row->image = (bool) $link['image'];
-					$row->logo = (bool) $link['logo'];
-					$row->visibility = $this->format->sanitizeString($link['visibility']);
+					( isset( $link['id'] ) ) ? $row->id = (int) $link['id'] : $row->id = 0;
+					( isset( $link['order'] ) ) ? $row->order = (int) $link['order'] : $row->order = 0;
+					( isset( $link['preferred'] ) ) ? $row->preferred = (bool) $link['preferred'] : $row->preferred = FALSE;
+					( isset( $link['type'] ) ) ? $row->type = $this->format->sanitizeString($link['type']) : $row->type = 'website';
+					( isset( $link['title'] ) ) ? $row->title = $this->format->sanitizeString($link['title']) : $row->title = '';
+					( isset( $link['address'] ) ) ? $row->address = $this->format->sanitizeString($link['address']) : $row->address = NULL;
+					( isset( $link['url'] ) ) ? $row->url = $this->format->sanitizeString($link['url']) : $row->url = '';
+					( isset( $link['target'] ) ) ? $row->target = $this->format->sanitizeString($link['target']) : $row->target = '_blank';
+					( isset( $link['follow'] ) ) ? $row->follow = (bool) $link['follow'] : $row->follow = FALSE;
+					( isset( $link['image'] ) ) ? $row->image = (bool) $link['image'] : $row->image = FALSE;
+					( isset( $link['logo'] ) ) ? $row->logo = (bool) $link['logo'] : $row->logo = FALSE;
+					( isset( $link['visibility'] ) ) ? $row->visibility = $this->format->sanitizeString($link['visibility']) : $row->visibility = '';
 					
 					/*
 					 * Set the Link name based on type.
 					 */
 					$linkTypes = $connections->options->getDefaultLinkValues();
-					$row->name = $linkTypes[$row->type];
+					( empty( $row->type ) ) ? $row->name = $linkTypes['website'] : $row->name = $linkTypes[$row->type];
 					
 					/*
 					 * // START -- Compatibility for previous versions.
