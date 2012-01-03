@@ -1939,12 +1939,12 @@ class cnEntry
 				{
 					$row = new stdClass();
 					
-					$row->id = (int) $network['id'];
-					$row->order = (int) $network['order'];
-					$row->preferred = (bool) $network['preferred'];
+					( isset( $network['id'] ) ) ? $row->id = (int) $network['id'] : $row->id = 0;
+					( isset( $network['order'] ) ) ? $row->order = (int) $network['order'] : $row->order = 0;
+					( isset( $network['preferred'] ) ) ? $row->preferred = (bool) $network['preferred'] : $row->preferred = FALSE;
 					$row->type = $this->format->sanitizeString($network['type']);
 					$row->url = $this->format->sanitizeString($network['url']);
-					$row->visibility = $this->format->sanitizeString($network['visibility']);
+					( isset( $link['visibility'] ) ) ? $row->visibility = $this->format->sanitizeString($network['visibility']) : $row->visibility = '';
 					
 					/*
 					 * Set the social network name based on type.

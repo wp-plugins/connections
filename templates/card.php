@@ -3,33 +3,33 @@
 		<?php $entry->getImage() ?>
 		<div style="clear:both;"></div>
 		<div style="margin-bottom: 10px;">
-			<span style="font-size:larger;font-variant: small-caps"><strong><?php echo $entry->getNameBlock() ?></strong></span>
+			<span style="font-size:larger;font-variant: small-caps"><strong><?php echo $entry->getNameBlock(); ?></strong></span>
 			
-			<?php $entry->getOrgUnitBlock() ?>
-			
+			<?php $entry->getOrgUnitBlock(); ?>
+			<?php $entry->getContactNameBlock(); ?>
 		</div>
 			
-			<?php $entry->getAddressBlock() ?>
+			<?php $entry->getAddressBlock(); ?>
 	</div>
 		
 	<div align="right">
 	
-		<?php $entry->getFamilyMemberBlock() ?>
-		<?php $entry->getPhoneNumberBlock() ?>
-		<?php $entry->getEmailAddressBlock() ?>
-		<?php $entry->getImBlock() ?>
-		<?php $entry->getSocialMediaBlock() ?>
-		<?php $entry->getLinkBlock() ?>
+		<?php $entry->getFamilyMemberBlock(); ?>
+		<?php $entry->getPhoneNumberBlock(); ?>
+		<?php $entry->getEmailAddressBlock(); ?>
+		<?php $entry->getImBlock(); ?>
+		<?php $entry->getSocialMediaBlock(); ?>
+		<?php $entry->getLinkBlock(); ?>
 		
-		<?php echo $entry->getBirthdayBlock('F j') ?>
-		<?php echo $entry->getAnniversaryBlock() ?>
+		<?php echo $entry->getBirthdayBlock('F j'); ?>
+		<?php echo $entry->getAnniversaryBlock(); ?>
 		
 	</div>
 	
 	<div style="clear:both"></div>
 	<div class="cn-meta" align="left" style="margin-top: 6px">
 		<span style="display: block; margin-bottom: 8px;"><?php $entry->getCategoryBlock( array('separator' => ', ', 'before' => '<span>', 'after' => '</span>') ); ?></span>
-		<span><?php echo $vCard->download() ?></span>
+		<span><?php echo $vCard->download(); ?></span>
 		<span style="<?php echo $entry->getLastUpdatedStyle() ?>; font-size:x-small; font-variant: small-caps; position: absolute; right: 26px; bottom: 8px;">Updated <?php echo $entry->getHumanTimeDiff() ?> ago</span><span style="position: absolute; right: 3px; bottom: 5px;"><?php echo $entry->returnToTopAnchor() ?></span><br />
 	</div>
 	
