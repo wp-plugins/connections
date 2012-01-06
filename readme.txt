@@ -85,6 +85,11 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 
 == Changelog ==
 
+= 0.7.2.4 01/XX/12 =
+* BUG: Fixed the Profile template so it would properly echo the bio field copy.
+* OTHER: Optimize and Smush.it all of the social media icons. Resulted in a significant file size reductions.
+* OTHER: Fix PHP warnings when WP_DEBUG is enabled.
+
 = 0.7.2.3 01/01/12 =
 * FEATURE: Added TripAdvisor to the social media networks per user request.
 * BUG: Fixed critical table creation error for the links table on new installs. Upgrades are ok.

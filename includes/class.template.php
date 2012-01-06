@@ -108,7 +108,7 @@ class cnTemplate
 		{
 			if ( ! is_dir($templatePath . '/') && ! is_readable($templatePath . '/') ) continue;
 			
-			if ( ! $templateDirectories = opendir($templatePath) ) continue;
+			if ( ! $templateDirectories = @opendir($templatePath) ) continue;
 			//var_dump($templatePath);
 			
 			//$templateDirectories = opendir($templatePath);
@@ -167,7 +167,7 @@ class cnTemplate
 			}
 			
 			//var_dump($templateDirectories);
-			closedir($templateDirectories);
+			@closedir($templateDirectories);
 		}
 		/**
 		 * --> END <-- Find the available templates

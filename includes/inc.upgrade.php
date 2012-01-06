@@ -665,37 +665,37 @@ function cnRunDBUpgrade()
 			if ( file_exists(ABSPATH . 'download.vCard.php') ) @unlink( ABSPATH . 'download.vCard.php' );
 			
 			// Create the cache folder.
-			if ( ! file_exists( CN_CACHE_PATH ) ) @mkdir( CN_CACHE_PATH );
-			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0746' );
-			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0747' );
-			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0756' );
-			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0757' );
-			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0764' );
-			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0765' );
-			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0766' );
-			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , '0767' );
+			wp_mkdir_p( CN_CACHE_PATH );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0746 );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0747 );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0756 );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0757 );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0764 );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0765 );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0766 );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0767 );
 			
 			// Create the images folder.
-			if ( ! file_exists( CN_IMAGE_PATH ) ) @mkdir( CN_IMAGE_PATH );
-			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0746' );
-			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0747' );
-			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0756' );
-			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0757' );
-			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0764' );
-			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0765' );
-			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0766' );
-			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , '0767' );
+			wp_mkdir_p( CN_IMAGE_PATH );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0746 );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0747 );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0756 );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0757 );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0764 );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0765 );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0766 );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0767 );
 			
 			// Create the custom template folder.
-			if ( ! file_exists( CN_CUSTOM_TEMPLATE_PATH ) ) @mkdir( CN_CUSTOM_TEMPLATE_PATH );
-			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0746' );
-			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0747' );
-			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0756' );
-			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0757' );
-			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0764' );
-			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0765' );
-			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0766' );
-			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0767' );
+			wp_mkdir_p( CN_CUSTOM_TEMPLATE_PATH );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0746 );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0747 );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0756 );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0757 );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0764 );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0765 );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0766 );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0767 );
 			
 			$connections->options->setDBVersion('0.1.6');
 		}
