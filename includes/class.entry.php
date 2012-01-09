@@ -1412,12 +1412,12 @@ class cnEntry
 				{
 					$row = new stdClass();
 					
-					$row->id = (int) $email['id'];
-					$row->order = (int) $email['order'];
-					$row->preferred = (bool) $email['preferred'];
-					$row->type = $this->format->sanitizeString($email['type']);
-					$row->address = $this->format->sanitizeString($email['address']);
-					$row->visibility = $this->format->sanitizeString($email['visibility']);
+					( isset( $email['id'] ) ) ? $row->id = (int) $email['id'] : $row->id = 0;
+					( isset( $email['order'] ) ) ? $row->order = (int) $email['order'] : $row->order = 0;
+					( isset( $email['preferred'] ) ) ? $row->preferred = (bool) $email['preferred'] : $row->preferred = FALSE;
+					( isset( $email['type'] ) ) ? $row->type = $this->format->sanitizeString($email['type']) : $row->type = '';
+					( isset( $email['address'] ) ) ? $row->address = $this->format->sanitizeString($email['address']) : $row->address = '';
+					( isset( $email['visibility'] ) ) ? $row->visibility = $this->format->sanitizeString($email['visibility']) : $row->visibility = '';
 					
 					/*
 					 * Set the email name based on type.
@@ -1654,16 +1654,16 @@ class cnEntry
 					$row = new stdClass();
 					
 					// This stores the table `id` value.
-					$row->uid = (int) $network['uid']; 
+					( isset( $network['uid'] ) ) ? $row->uid = (int) $network['uid'] : $row->uid = 0; 
 					
-					$row->order = (int) $network['order'];
-					$row->preferred = (bool) $network['preferred'];
-					$row->type = $this->format->sanitizeString($network['type']);
+					( isset( $network['order'] ) ) ? $row->order = (int) $network['order'] : $row->order = 0;
+					( isset( $network['preferred'] ) ) ? $row->preferred = (bool) $network['preferred'] : $row->preferred = FALSE;
+					( isset( $network['type'] ) ) ? $row->type = $this->format->sanitizeString($network['type']) : $row->type = '';
 					
-					 // Unlike the other entry contact details, this actually stores the user id and not the table `id` value.
-					$row->id = $this->format->sanitizeString($network['id']);
+					 // Unlike the other entry contact details, this actually stores the user IM id and not the table `id` value.
+					( isset( $network['id'] ) ) ? $row->id = $this->format->sanitizeString($network['id']) : $row->id = 0;
 					
-					$row->visibility = $this->format->sanitizeString($network['visibility']);
+					( isset( $network['visibility'] ) ) ? $row->visibility = $this->format->sanitizeString($network['visibility']) : $row->visibility = '';
 					
 					/*
 					 * Set the IM name based on type.
@@ -1942,8 +1942,8 @@ class cnEntry
 					( isset( $network['id'] ) ) ? $row->id = (int) $network['id'] : $row->id = 0;
 					( isset( $network['order'] ) ) ? $row->order = (int) $network['order'] : $row->order = 0;
 					( isset( $network['preferred'] ) ) ? $row->preferred = (bool) $network['preferred'] : $row->preferred = FALSE;
-					$row->type = $this->format->sanitizeString($network['type']);
-					$row->url = $this->format->sanitizeString($network['url']);
+					( isset( $network['type'] ) ) ? $row->type = $this->format->sanitizeString($network['type']) : $row->type = '';
+					( isset( $network['url'] ) ) ? $row->url = $this->format->sanitizeString($network['url']) : $row->url = '';
 					( isset( $link['visibility'] ) ) ? $row->visibility = $this->format->sanitizeString($network['visibility']) : $row->visibility = '';
 					
 					/*
@@ -2313,7 +2313,7 @@ class cnEntry
 				/*
 				 * Set the link target string
 				 */
-				switch ( $row->target )
+				switch ( $link->target )
 				{
 					case 'same':
 						$row->target = '_self';

@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.2.3
+Version: 0.7.2.4
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 
@@ -184,7 +184,7 @@ if (!class_exists('connectionsLoad'))
 			
 			define('CN_LOG', FALSE);
 			
-			define('CN_CURRENT_VERSION', '0.7.2.3');
+			define('CN_CURRENT_VERSION', '0.7.2.4');
 			define('CN_DB_VERSION', '0.1.8');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
@@ -1517,8 +1517,8 @@ if (!class_exists('connectionsLoad'))
 								check_admin_referer('filter');
 								processSetUserFilter();
 								//wp_redirect('admin.php?page=connections_manage');
-								wp_redirect( add_query_arg( 's' , urlencode( $_GET['s'] ) , 'admin.php?page=connections_manage' ) );
-								wp_redirect( add_query_arg( array( 's' => urlencode( $_POST['s'] ) , 'display_messages' => 'true' ) , 'admin.php?page=connections_manage' ) );
+								//wp_redirect( add_query_arg( 's' , urlencode( $_GET['s'] ) , 'admin.php?page=connections_manage' ) );
+								wp_redirect( add_query_arg( array( 's' => ( ( isset( $_POST['s'] ) ) ? urlencode( $_POST['s'] ) : '' ) , 'display_messages' => 'true' ) , 'admin.php?page=connections_manage' ) );
 							break;
 							
 							case 'do':
