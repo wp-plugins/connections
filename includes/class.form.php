@@ -664,7 +664,7 @@ class cnFormObjects
 		else $xml = __('No', 'connections');
 			
 		?>
-			<h4>Server Configuration</h4>
+			<h4><strong>Server Configuration</strong></h4>
 			
 			<ul class="settings">
 				<li><?php _e('Operating System', 'connections'); ?> : <span><?php echo PHP_OS; ?>&nbsp;(<?php echo (PHP_INT_SIZE * 8) ?>&nbsp;Bit)</span></li>
@@ -685,7 +685,7 @@ class cnFormObjects
 				<li><?php _e('PHP XML support', 'connections'); ?> : <span><?php echo $xml; ?></span></li>
 			</ul>
 			
-			<h4><strong><?php _e('Graphic Library', 'nggallery'); ?></strong></h4>
+			<h4><strong>Graphic Library</strong></h4>
             
 		<?php
 		
@@ -710,7 +710,7 @@ class cnFormObjects
 		
 		?>
 		
-		<h4>Folder Permissions</h4>
+		<h4><strong>Folder Permissions</strong></h4>
 		
 		<?php
 		

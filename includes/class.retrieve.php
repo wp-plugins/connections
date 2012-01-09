@@ -1315,6 +1315,7 @@ class cnRetrieve
 		
 		$validate = new cnValidate();
 		$results = array();
+		$like = array();
 		
 		/*
 		 * // START -- Set the default attributes array. \\
@@ -1357,6 +1358,7 @@ class cnRetrieve
 		
 		// Convert the search terms to a string adding the wild card to the end of each term to allow wider search results.
 		$searchTerms = implode( '* ' , $atts['search'] ) . '*';
+		//$searchTerms = implode( ' ' , $atts['search'] );
 		
 		$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_TABLE . '.id 
 								FROM ' . CN_ENTRY_TABLE . ' 
@@ -1368,8 +1370,47 @@ class cnRetrieve
 								$searchTerms , $searchTerms , $searchTerms );
 		//print_r($sql);
 			
-		$results = $wpdb->get_col($sql);
+		$results = $wpdb->get_col($sql); // NOTE: If DB does not support FULLTEXT the query will fail and the $results will be an empty array.
 		//print_r($results);
+		
+		
+		// NOTE: The following is the error reported by MySQL when DB does not support FULLTEXT:  'The used table type doesn't support FULLTEXT indexes'
+		//print_r($wpdb->last_error);
+		
+		
+		/*
+		 * If no results are found, perhaps to the way MySQL performs FULLTEXT queries 
+		 * or the DB not supporting FULLTEXT, we'll run a LIKE query.
+		 */
+		if ( empty($results) )
+		{
+			// Merge all the columns that will me searched.
+			$columns = array_merge( $defaultAttr['fields_entry'] , $defaultAttr['fields_address'] , $defaultAttr['fields_phone'] );
+			
+			foreach ( $atts['search'] as $term )
+			{
+				/*
+				 * Attempt to secure the query using $wpdb->prepare() and like_escape()
+				 * 
+				 * Since $wpdb->prepare() required var for each directive in the query string we'll use array_fill 
+				 * where the count based on the number of columns that will be searched.
+				 */
+				$like[] = $wpdb->prepare( implode( ' LIKE %s OR ' , $columns ) . ' LIKE %s ' , array_fill( 0 , count($columns) , '%' . like_escape($term) . "%" ) );
+			}
+			
+			//var_dump($like);
+			//print_r( implode( ' ' , $like) );
+			
+			$sql =  'SELECT ' . CN_ENTRY_TABLE . '.id 
+								FROM ' . CN_ENTRY_TABLE . ' 
+								LEFT JOIN ' . CN_ENTRY_ADDRESS_TABLE . ' ON ( ' . CN_ENTRY_TABLE . '.id = ' . CN_ENTRY_ADDRESS_TABLE . '.entry_id ) 
+								LEFT JOIN ' . CN_ENTRY_PHONE_TABLE . ' ON ( ' . CN_ENTRY_TABLE . '.id = ' . CN_ENTRY_PHONE_TABLE . '.entry_id ) 
+								WHERE ' . implode( ' OR ' , $like) ;
+			//print_r($sql);
+				
+			$results = $wpdb->get_col($sql);
+			//print_r($results);
+		}
 		
 		return $results;
 	}

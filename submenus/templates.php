@@ -38,7 +38,7 @@ function connectionsShowTemplatesPage()
 		        <br>
 		    </div>
 			
-			<h2>Connections : Templates <a class="button add-new-h2" href="http://connections-pro.com/?page_id=419" target="_blank">Get More</a></h2>
+			<h2>Connections : Templates <a class="button add-new-h2" href="http://connections-pro.com/templates/" target="_blank">Get More</a></h2>
 			
 			<ul class="subsubsub">
 				<li><a <?php if ($type === 'all') echo 'class="current" ' ?>href="admin.php?page=connections_templates&type=all">All</a> | </li>

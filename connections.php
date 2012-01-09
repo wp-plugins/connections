@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.2.2
+Version: 0.7.2.4
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 
@@ -67,9 +67,10 @@ Author URI: http://connections-pro.com/
  * http://www.wpzoom.com/wpzoom/500-free-icons-wpzoom-social-networking-icon-set/
  * License CC BY-SA 3.0  http://creativecommons.org/licenses/by-sa/3.0/
  * 
- * iTunes icon by isabi3
- * http://www.softicons.com/free-icons/application-icons/isabi3-icons-by-barrymieny/apple-itunes-icon
- * License CC BY-NC-SA 3.0  http://creativecommons.org/licenses/by-nc-sa/3.0/
+ * iTunes icon by Paul Robert Lloyd
+ * http://www.iconfinder.com/icondetails/43155/48/itunes_icon
+ * http://paulrobertlloyd.com/
+ * License Attribution-ShareAlike 2.0 UK: England & Wales (CC BY-SA 2.0)
  * 
  * Podcast icon by schollidesign
  * http://findicons.com/icon/94188/podcast_new)
@@ -137,7 +138,7 @@ if (!class_exists('connectionsLoad'))
 			get_currentuserinfo();
 			$this->currentUser->setID($current_user->ID);
 			
-			//$this->options->setDBVersion('0.1.5');
+			//$this->options->setDBVersion('0.1.7');
 			
 			// Register Common scripts
 			add_action( 'init', array(&$this, 'registerScripts' ) );
@@ -183,8 +184,8 @@ if (!class_exists('connectionsLoad'))
 			
 			define('CN_LOG', FALSE);
 			
-			define('CN_CURRENT_VERSION', '0.7.2.2');
-			define('CN_DB_VERSION', '0.1.7');
+			define('CN_CURRENT_VERSION', '0.7.2.4');
+			define('CN_DB_VERSION', '0.1.8');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
 			
@@ -732,6 +733,8 @@ if (!class_exists('connectionsLoad'))
 					`url` tinytext NOT NULL,
 					`target` tinytext NOT NULL,
 					`follow` tinyint unsigned NOT NULL default '0',
+					`image` tinyint unsigned NOT NULL default '0',
+					`logo` tinyint unsigned NOT NULL default '0',
 					`visibility` tinytext NOT NULL,
 					PRIMARY KEY (`id`, `entry_id`)
 			    ) $charsetCollate";
@@ -741,16 +744,50 @@ if (!class_exists('connectionsLoad'))
 			
 			
 			// Create the cache folder.
-			if ( ! file_exists( CN_CACHE_PATH ) ) @mkdir( CN_CACHE_PATH );
-			if ( file_exists( CN_CACHE_PATH ) ) @chmod( CN_CACHE_PATH , '0755' );
+			wp_mkdir_p( CN_CACHE_PATH );
+			//if ( ! file_exists( CN_CACHE_PATH ) ) wp_mkdir_p( CN_CACHE_PATH );
+			
+			/*
+			 * Attempt to set the folder writeable per http://codex.wordpress.org/Changing_File_Permissions#Using_the_Command_Line
+			 */
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0746 );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0747 );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0756 );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0757 );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0764 );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0765 );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0766 );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) @chmod( CN_CACHE_PATH , 0767 );
 			
 			// Create the images folder.
-			if ( ! file_exists( CN_IMAGE_PATH ) ) @mkdir( CN_IMAGE_PATH );
-			if ( file_exists( CN_IMAGE_PATH ) ) @chmod( CN_IMAGE_PATH , '0755' );
+			wp_mkdir_p( CN_IMAGE_PATH );
+			
+			/*
+			 * Attempt to set the folder writeable per http://codex.wordpress.org/Changing_File_Permissions#Using_the_Command_Line
+			 */
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0746 );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0747 );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0756 );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0757 );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0764 );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0765 );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0766 );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) @chmod( CN_IMAGE_PATH , 0767 );
 			
 			// Create the custom template folder.
-			if ( ! file_exists( CN_CUSTOM_TEMPLATE_PATH ) ) @mkdir( CN_CUSTOM_TEMPLATE_PATH );
-			if ( file_exists( CN_CUSTOM_TEMPLATE_PATH ) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , '0755' );
+			wp_mkdir_p( CN_CUSTOM_TEMPLATE_PATH );
+			
+			/*
+			 * Attempt to set the folder writeable per http://codex.wordpress.org/Changing_File_Permissions#Using_the_Command_Line
+			 */
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0746 );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0747 );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0756 );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0757 );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0764 );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0765 );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0766 );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) @chmod( CN_CUSTOM_TEMPLATE_PATH , 0767 );
 			
 			$this->initOptions();
 			
@@ -852,12 +889,13 @@ if (!class_exists('connectionsLoad'))
 			/*
 			 * Add admin notices if required directories are not present or not writeable.
 			 */
-			if ( ! is_dir(CN_IMAGE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connection_images does not seem to exist. Please try deactivating and reactivating Connections.</p></div>\';' ) );
-			if ( is_dir(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connection_images does not seem to be writeable.</p></div>\';' ) );
-			if ( ! is_dir(CN_CUSTOM_TEMPLATE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connections_templates does not seem to exist. Please try deactivating and reactivating Connections.</p></div>\';' ) );
-			if ( is_dir(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connections_templates does not seem to be writeable.</p></div>\';' ) );
-			if ( ! is_dir(CN_CACHE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/plugins/connections/cache does not seem to exist. Please try deactivating and reactivating Connections.</p></div>\';' ) );
-			if ( is_dir(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/plugins/connections/cache does not seem to be writeable.</p></div>\';' ) );
+			
+			if ( ! file_exists(CN_IMAGE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connection_images does not seem to exist. Please try deactivating and reactivating Connections.</p></div>\';' ) );
+			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connection_images does not seem to be writeable.</p></div>\';' ) );
+			if ( ! file_exists(CN_CUSTOM_TEMPLATE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connections_templates does not seem to exist. Please try deactivating and reactivating Connections.</p></div>\';' ) );
+			if ( file_exists(CN_CUSTOM_TEMPLATE_PATH) && ! is_writeable(CN_CUSTOM_TEMPLATE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connections_templates does not seem to be writeable.</p></div>\';' ) );
+			if ( ! file_exists(CN_CACHE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/plugins/connections/cache does not seem to exist. Please try deactivating and reactivating Connections.</p></div>\';' ) );
+			if ( file_exists(CN_CACHE_PATH) && ! is_writeable(CN_CACHE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/plugins/connections/cache does not seem to be writeable.</p></div>\';' ) );
 			
 			// Calls the methods to load the admin scripts and CSS.
 			add_action('admin_print_scripts', array(&$this, 'loadAdminScripts') );
@@ -1479,8 +1517,8 @@ if (!class_exists('connectionsLoad'))
 								check_admin_referer('filter');
 								processSetUserFilter();
 								//wp_redirect('admin.php?page=connections_manage');
-								wp_redirect( add_query_arg( 's' , urlencode( $_GET['s'] ) , 'admin.php?page=connections_manage' ) );
-								wp_redirect( add_query_arg( array( 's' => urlencode( $_POST['s'] ) , 'display_messages' => 'true' ) , 'admin.php?page=connections_manage' ) );
+								//wp_redirect( add_query_arg( 's' , urlencode( $_GET['s'] ) , 'admin.php?page=connections_manage' ) );
+								wp_redirect( add_query_arg( array( 's' => ( ( isset( $_POST['s'] ) ) ? urlencode( $_POST['s'] ) : '' ) , 'display_messages' => 'true' ) , 'admin.php?page=connections_manage' ) );
 							break;
 							
 							case 'do':
