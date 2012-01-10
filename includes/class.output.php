@@ -689,7 +689,7 @@ class cnOutput extends cnEntry
 			$defaultAttr['country'] = NULL;
 			$defaultAttr['coordinates'] = array();
 			//$defaultAttr['format'] = '%label%|%line1%|%line2%|%line3%|%city%, %state%  %zipcode%|%geo%';
-			$defaultAttr['format'] = '%label% %line1% %line2% %line3% %city%, %state%  %zipcode%';
+			$defaultAttr['format'] = '%label% %line1% %line2% %line3% %city%, %state%  %zipcode% %country%';
 			$defaultAttr['before'] = '';
 			$defaultAttr['after'] = '';
 			$defaultAttr['return'] = FALSE;
@@ -1313,7 +1313,7 @@ class cnOutput extends cnEntry
 		/*
 		 * Set some defaults so the result resembles how the previous rendered.
 		 */
-		return $this->getLinkBlock( array( 'format' => '%label%: %url%' , 'type' => 'website' , 'return' => TRUE ) );
+		return $this->getLinkBlock( array( 'format' => '%label%: %url%' , 'type' => array('personal', 'website') , 'return' => TRUE ) );
 	}
 	
 	/**

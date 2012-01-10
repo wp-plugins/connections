@@ -107,6 +107,7 @@ class cnOptions
 											 'reverbnation' => 'ReverbNation',
 											 'rss' => 'RSS',
 											 'technorati' => 'Technorati',
+											 'tripadvisor' => 'TripAdvisor',
 											 'twitter' => 'Twitter',
 											 'soundcloud' => 'SoundCloud',
 											 'youtube' => 'YouTube'

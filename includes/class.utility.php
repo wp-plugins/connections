@@ -402,8 +402,8 @@ class cnValidate
 			if ( $visibilty == 'unlisted' ) return FALSE;
 			
 			if ( $connections->options->getAllowPublic() && $visibilty == 'public' ) return TRUE;
-			if ( ( $atts['allow_public_override'] == TRUE && $connections->options->getAllowPublicOverride() ) && $visibilty == 'public' ) return TRUE;
-			if ( ( $atts['private_override'] == TRUE && $connections->options->getAllowPrivateOverride() ) && $visibilty == 'private' ) return TRUE;
+			if ( $connections->options->getAllowPublicOverride() && $visibilty == 'public' ) return TRUE;
+			if ( $connections->options->getAllowPrivateOverride() && $visibilty == 'private' ) return TRUE;
 			
 			// If we get here, return FALSE
 			return FALSE;
