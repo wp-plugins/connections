@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.2.4
+Version: 0.7.2.5
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 
@@ -184,7 +184,7 @@ if (!class_exists('connectionsLoad'))
 			
 			define('CN_LOG', FALSE);
 			
-			define('CN_CURRENT_VERSION', '0.7.2.4');
+			define('CN_CURRENT_VERSION', '0.7.2.5');
 			define('CN_DB_VERSION', '0.1.8');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
@@ -1202,7 +1202,6 @@ if (!class_exists('connectionsLoad'))
 			if ( in_array($_GET['page'], $adminPages) )
 			{
 				wp_enqueue_style('connections-admin', CN_URL . '/css/cn-admin.css', array(), CN_CURRENT_VERSION);
-				//wp_enqueue_style('connections-common', CN_URL . '/css/cn-common.css', array(), CN_CURRENT_VERSION);
 			}
 			
 			/*
@@ -1211,10 +1210,8 @@ if (!class_exists('connectionsLoad'))
 			$adminPageEntryEdit = array('connections_manage','connections_add');
 			if ( in_array($_GET['page'], $adminPageEntryEdit) )
 			{
-				//echo get_admin_url();
-				wp_enqueue_style( 'connections-admin-widgets', get_admin_url() . 'css/widgets.css' );
+				if( version_compare($GLOBALS['wp_version'], '3.2.999', '<') ) wp_enqueue_style( 'connections-admin-widgets', get_admin_url() . 'css/widgets.css' );
 				wp_enqueue_style('connections-chosen', CN_URL . '/css/chosen.css', array(), '0.9.5');
-				//if ( $is_IE ) wp_enqueue_style( 'connections-ie', get_admin_url() . 'css/ie.css' );
 			}
 		}
 		

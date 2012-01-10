@@ -85,6 +85,10 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 
 == Changelog ==
 
+= 0.7.2.5 01/09/12 =
+* BUG: Fix an issue that would prevent the social media icons from showing.
+* BUG: Made sure the widget.css file was only enqueued in WP < 3.2 since it is not required [or exists] in WP >= 3.3.
+
 = 0.7.2.4 01/08/12 =
 * BUG: Fixed the Profile template so it would properly echo the bio field copy.
 * OTHER: Optimize and Smush.it all of the social media icons. Resulted in a significant file size reductions and overall zip file size reduction.
@@ -455,3 +459,6 @@ This is a major update. It would be advisable to backup the Connections tables i
 
 = 0.7.2.2 =
 Bug fixes.
+
+= 0.7.2.5 =
+A couple bug fixes. Should be the last one.

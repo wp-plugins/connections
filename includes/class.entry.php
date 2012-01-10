@@ -1944,7 +1944,7 @@ class cnEntry
 					( isset( $network['preferred'] ) ) ? $row->preferred = (bool) $network['preferred'] : $row->preferred = FALSE;
 					( isset( $network['type'] ) ) ? $row->type = $this->format->sanitizeString($network['type']) : $row->type = '';
 					( isset( $network['url'] ) ) ? $row->url = $this->format->sanitizeString($network['url']) : $row->url = '';
-					( isset( $link['visibility'] ) ) ? $row->visibility = $this->format->sanitizeString($network['visibility']) : $row->visibility = '';
+					( isset( $network['visibility'] ) ) ? $row->visibility = $this->format->sanitizeString($network['visibility']) : $row->visibility = '';
 					
 					/*
 					 * Set the social network name based on type.
