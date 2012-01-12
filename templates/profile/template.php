@@ -5,6 +5,7 @@
 		<div style="margin-left: 10px;">
 			<span style="font-size:larger;font-variant: small-caps"><strong><?php $entry->getNameBlock(); ?></strong></span>
 			<div style="margin-bottom: 20px;">
+				<?php $entry->getTitleBlock() ?>
 				<?php $entry->getOrgUnitBlock(); ?>
 			</div>
 			<?php echo $entry->getBioBlock(); ?>
