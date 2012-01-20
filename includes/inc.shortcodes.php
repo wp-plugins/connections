@@ -141,6 +141,7 @@ function _connections_list($atts, $content = NULL)
 							'show_alphahead' => 'false',
 							'list_type' => NULL,
 							'order_by' => NULL,
+							'limit' => NULL,
 							'family_name' => NULL,
 							'last_name' => NULL,
 							'title' => NULL,

@@ -85,6 +85,12 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 
 == Changelog ==
 
+= 0.7.2.6 01/XX/12 =
+* FEATURE: Add a limit option to the [connetions] shortcode.
+* OTHER: Add the entry Title field to the Profile template.
+* OTHER: Add wptexturize and wp_autop to the bio and notes fields via the cnUtility::sanitizeString method.
+* OTHER: Slight tweak to the admin CSS to be standards compliant.
+
 = 0.7.2.5 01/09/12 =
 * BUG: Fix an issue that would prevent the social media icons from showing.
 * BUG: Made sure the widget.css file was only enqueued in WP < 3.2 since it is not required [or exists] in WP >= 3.3.

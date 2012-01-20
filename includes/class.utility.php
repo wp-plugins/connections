@@ -74,7 +74,7 @@ class cnFormatting
 			 * 
 			 * http://ottopress.com/2010/wp-quickie-kses/
 			 */
-			return make_clickable( wp_kses_post($strippedText) );
+			return wptexturize( wpautop( make_clickable( wp_kses_post($strippedText) ) ) );
 		}
 		
 	}
