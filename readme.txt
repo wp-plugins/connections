@@ -44,7 +44,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * Gravatar support
 * Backup
 * ...and any suggestions that I may receive...
-
+ 
 
 
 
