@@ -494,8 +494,7 @@ class cnOutput extends cnEntry
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-		$defaultAtts = array( 'format' => '%prefix% %first% %middle% %last% %suffix%',
-							  'before' => '',
+		$defaultAtts = array( 'before' => '',
 							  'after' => '',
 							  'return' => FALSE
 							);

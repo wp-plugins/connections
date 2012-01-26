@@ -189,6 +189,36 @@ if (!class_exists('connectionsLoad'))
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
 			
+			
+			/*
+			 * Enable for multi-site support.
+			 * 
+			 * The plugin path and url will like need changed to support multisite too.
+			 * 
+			 * The table prefixes will definitely need to be change to support the multisite db naming scheme
+			 * 
+			 * NOTE: Per codex the constants shouldn't be used, which contradicts all the net tutorials. I'll have to look into this.
+			 * http://codex.wordpress.org/Determining_Plugin_and_Content_Directories#Available_Functions
+			 * 
+			 * There are functions. I wonder if the automatically resolve correctly for multisite.
+			 */
+			/*if( is_multisite() )
+			{
+				define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/blogs.dir/' . $blog_id . '/connection_images/');
+				define('CN_IMAGE_BASE_URL', network_site_url('/wp-content/blogs.dir/' . $blog_id . '/connection_images/'));
+			} else {
+				define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
+				define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
+			}
+			
+			if(is_multisite()){
+				define('CN_CUSTOM_TEMPLATE_PATH', WP_CONTENT_DIR . '/blogs.dir/' . $blog_id . '/connections_templates');
+				define('CN_CUSTOM_TEMPLATE_URL', network_site_url('/wp-content/blogs.dir/' . $blog_id . '/connections_templates/'));
+			} else {
+				define('CN_CUSTOM_TEMPLATE_PATH', WP_CONTENT_DIR . '/connections_templates');
+				define('CN_CUSTOM_TEMPLATE_URL', WP_CONTENT_URL . '/connections_templates');
+			}*/
+			
 			define('CN_ENTRY_TABLE', $wpdb->prefix . 'connections');
 			define('CN_ENTRY_ADDRESS_TABLE', $wpdb->prefix . 'connections_address');
 			define('CN_ENTRY_PHONE_TABLE', $wpdb->prefix . 'connections_phone');
