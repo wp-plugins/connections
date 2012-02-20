@@ -843,7 +843,16 @@ class cnEntry
 					 * Previous versions stored empty arrays for addresses, check for them, continue if found.
 					 * NOTE: Checking only the fields available in the previous versions.
 					 */
-					if ( empty($address['line_1']) && empty($address['line_2']) && empty($address['city']) && empty($address['state']) && empty($address['zipcode']) ) continue;
+					if ( empty($address['line_1']) && 
+						 empty($address['line_2']) && 
+						 empty($address['address_line1']) && 
+						 empty($address['address_line2']) && 
+						 empty($address['city']) && 
+						 empty($address['state']) && 
+						 empty($address['zipcode']) &&
+						 ! empty($address['country']) &&
+						 ! empty($address['latitude']) &&
+						 ! empty($address['longitude']) ) continue;
 					
 					
 					$row = new stdClass();

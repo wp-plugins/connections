@@ -1210,8 +1210,9 @@ if (!class_exists('connectionsLoad'))
 			 * http://scribu.net/wordpress/optimal-script-loading.html
 			 */
 			
-			wp_enqueue_script('cn-ui', WP_PLUGIN_URL . '/connections/js/cn-user.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
-			wp_enqueue_script('jquery-preloader');
+			//wp_enqueue_script('jquery-preloader');
+			wp_enqueue_script('cn-ui', WP_PLUGIN_URL . '/connections/js/cn-user.js', array('jquery','jquery-preloader'), CN_CURRENT_VERSION, TRUE);
+			
 		}
 		
 		/**

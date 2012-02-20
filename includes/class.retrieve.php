@@ -49,6 +49,7 @@ class cnRetrieve
 			$defaultAttr['offset'] = NULL;
 			$defaultAttr['allow_public_override'] = FALSE;
 			$defaultAttr['private_override'] = FALSE;
+			$defaultAttr['search_terms'] = NULL;
 			
 			$atts = $validate->attributesArray($defaultAttr, $suppliedAttr);
 		/*
@@ -142,9 +143,9 @@ class cnRetrieve
 		}
 		
 		// Convert the supplied category IDs $atts['category_in'] to an array.
-		if ( !empty($atts['category_in']) )
+		if ( ! empty($atts['category_in']) )
 		{
-			if ( !is_array($atts['category_in']) )
+			if ( ! is_array($atts['category_in']) )
 			{
 				// Trim the space characters if present.
 				$atts['category_in'] = str_replace(' ', '', $atts['category_in']);
@@ -166,20 +167,23 @@ class cnRetrieve
 			 * Leave it for now since it works and I need to more time for testing than I have if I change it now.
 			 */
 			// Store the entryIDs that exist on all of the supplied category IDs
-			$results = $wpdb->get_results($sql);
+			//$results = $wpdb->get_results($sql);
+			//print_r($results);
+			$results = $wpdb->get_col($sql);
 			//print_r($results);
 			
 			if ( ! empty($results) )
 			{
-				foreach ( $results as $result )
+				$entryIDs = $results;
+				/*foreach ( $results as $result )
 				{
 					$entryIDs[] = $result->entry_id;
-				}
+				}*/
 			}
 			else
 			{
 				/**
-				 * @todo This is hack. This is being set because if no results are returned then this will not pass
+				 * @TODO This is hack. This is being set because if no results are returned then this will not pass
 				 * the empty() check for the entry IDs and then the main query will return all entries. Maybe it would
 				 * be best to just return an empty array. Let's sleep on it.
 				 */
@@ -225,18 +229,34 @@ class cnRetrieve
 		 * // START --> Set up the query to only return the entries that match the supplied IDs.
 		 *    NOTE: This includes the entry IDs returned for category_in.
 		 */
-			// Convert the supplied IDs $atts['id'] to an array.
-			if ( ! is_array($atts['id']) && ! empty($atts['id']))
+			// Convert the supplied IDs $atts['id'] to an array if it was not supplied as an array.
+			if ( ! empty( $atts['id'] ) && ! is_array( $atts['id'] ) ) $atts['id'] = explode( ',' , trim( $atts['id'] ) );
+			
+			if ( empty( $atts['search_terms'] ) )
 			{
-				// Trim the space characters if present.
-				$atts['id'] = str_replace(' ', '', $atts['id']);
+				// Merge the entries found when using category_in and the supplied entry IDs.
+				$atts['id'] = array_unique( array_merge( (array) $atts['id'], (array) $entryIDs ) );
+			}
+			else
+			{
+				$searchResults = $this->search( array('search' => $atts['search_terms']) );
+				//print_r($searchResults);
 				
-				// Convert to array.
-				$atts['id'] = explode(',', $atts['id']);
+				// If there were no results, set the $atts['id'] to NONE. When the main query is run, no results will return because no entries will have an ID of NONE.
+				// @todo Fix this hack.
+				if ( empty($searchResults) )
+				{
+					$atts['id'] =  array('NONE');
+				}
+				else
+				{
+					// Set the entry IDs to be the search results.
+					$atts['id'] = array_unique( $searchResults );
+				}
 			}
 			
 			// Set query string to return specific entries.
-			if ( ! empty($atts['id']) || ! empty($entryIDs) ) $where[] = 'AND `id` IN (\'' . implode("', '", array_unique( array_merge( (array) $atts['id'], (array) $entryIDs ) ) ) . '\')';
+			if ( ! empty($atts['id']) || ! empty($entryIDs) ) $where[] = 'AND `id` IN (\'' . implode("', '", $atts['id'] ) . '\')';
 		/*
 		 * // END --> Set up the query to only return the entries that match the supplied IDs.
 		 */

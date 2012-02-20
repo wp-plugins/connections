@@ -1331,7 +1331,6 @@ class cnOutput extends cnEntry
 	 * 			%url%
 	 * 			%image%
 	 * 	label (string) The label to be displayed for the links.
-	 * 	image (bool) If true, create a websot of the link and display it.
 	 * 	size (string) The valid image sizes. Valid values are: mcr || tny || vsm || sm || lg || xlg
 	 * 	before (string) HTML to output before the social media networks.
 	 * 	after (string) HTML to after before the social media networks.
@@ -1351,7 +1350,6 @@ class cnOutput extends cnEntry
 			$defaultAttr['type'] = NULL;
 			$defaultAttr['format'] = '%title%';
 			$defaultAttr['label'] = NULL;
-			$defaultAttr['image'] = FALSE;
 			$defaultAttr['size'] = 'lg';
 			$defaultAttr['before'] = '';
 			$defaultAttr['after'] = '';
@@ -1393,8 +1391,10 @@ class cnOutput extends cnEntry
 				( empty($link->title) ) ? $replace[] = '' : $replace[] = '<a class="url" href="' . $link->url . '"' . ( ( empty($link->target) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty($link->followString) ? '' : ' rel="' . $link->followString . '"' ) ) . '>' . $link->title . '</a>';
 				( empty($link->url) ) ? $replace[] = '' : $replace[] = '<a class="url" href="' . $link->url . '"' . ( ( empty($link->target) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty($link->followString) ? '' : ' rel="' . $link->followString . '"' ) ) . '>' . $link->url . '</a>';
 				
-				if ( $atts['image'] )
-				{
+				/*if ( $atts['image'] )
+				{*/
+					//
+					
 					// Set the image size; These string values match the valid size for http://www.shrinktheweb.com
 					switch ( $atts['size'] )
 					{
@@ -1445,11 +1445,11 @@ class cnOutput extends cnEntry
 					{
 						$replace[] = '';
 					}
-				}
+				/*}
 				else
 				{
 					$replace[] = '';
-				}
+				}*/
 				
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );
