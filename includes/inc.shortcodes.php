@@ -142,6 +142,7 @@ function _connections_list($atts, $content = NULL)
 							'list_type' => NULL,
 							'order_by' => NULL,
 							'limit' => NULL,
+							'offset' => NULL,
 							'family_name' => NULL,
 							'last_name' => NULL,
 							'title' => NULL,

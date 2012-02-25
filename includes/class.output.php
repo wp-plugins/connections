@@ -148,19 +148,19 @@ class cnOutput extends cnEntry
 						switch ( $atts['preset'])
 						{
 							case 'entry':
-								$atts['image_size'] = getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
+								$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
 								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameCard();
 								break;
 							case 'profile':
-								$atts['image_size'] = getimagesize( CN_IMAGE_PATH . $this->getImageNameProfile() );
+								$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameProfile() );
 								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameProfile();
 								break;
 							case 'thumbnail':
-								$atts['image_size'] = getimagesize( CN_IMAGE_PATH . $this->getImageNameThumbnail() );
+								$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameThumbnail() );
 								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameThumbnail();
 								break;
 							default:
-								$atts['image_size'] = getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
+								$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
 								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameCard();
 								break;
 						}
@@ -206,7 +206,7 @@ class cnOutput extends cnEntry
 					else
 					{
 						$atts['src'] = CN_IMAGE_BASE_URL . $this->getLogoName();
-						$atts['image_size'] = getimagesize( CN_IMAGE_PATH . $this->getLogoName() );
+						$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getLogoName() );
 						
 						if ( $atts['image_size'] !== FALSE )
 						{

@@ -86,7 +86,6 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 == Changelog ==
 
 = 0.7.2.6 01/XX/12 =
-* FEATURE: Add a limit option to the [connections] shortcode.
 * BUG: Changed jQuery to $ in the cn-user.js file on line 2.
 * BUG: Correct term relationships db. Refer to this changeset:  [http://plugins.trac.wordpress.org/changeset/495434/connections](http://plugins.trac.wordpress.org/changeset/495434/connections)
 * BUG: Correct a JavaScript dependency order issue for the jquery.preloader and the cn-ui JavaScripts for the front end.
@@ -95,6 +94,9 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * OTHER: Add wptexturize and wp_autop to the bio and notes fields via the cnUtility::sanitizeString method.
 * OTHER: Slight tweak to the admin CSS to be standards compliant.
 * OTHER: Remove the image attribute from the getLinkBlock() method as it was unnecessary.
+* OTHER: Add error suppression to getimagesize in the getImage() method in the cnOutput class.
+* OTHER: Add a limit option to the [connections] shortcode.
+* OTHER: Add a offset option to the [connections] shortcode.
 
 = 0.7.2.5 01/09/12 =
 * BUG: Fix an issue that would prevent the social media icons from showing.
