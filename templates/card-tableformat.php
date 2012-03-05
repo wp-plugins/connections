@@ -7,7 +7,6 @@
 			<div style="clear:both; margin: 0 5px;">
 				<div style="margin-bottom: 10px;">
 					<span style="font-size:larger;font-variant: small-caps"><strong><?php echo $entry->getNameBlock(); ?></strong></span>
-					
 					<?php $entry->getTitleBlock(); ?>
 					<?php $entry->getOrgUnitBlock(); ?>
 					<?php $entry->getContactNameBlock(); ?>

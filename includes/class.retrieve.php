@@ -256,7 +256,7 @@ class cnRetrieve
 			}
 			
 			// Set query string to return specific entries.
-			if ( ! empty($atts['id']) || ! empty($entryIDs) ) $where[] = 'AND `id` IN (\'' . implode("', '", $atts['id'] ) . '\')';
+			if ( ! empty($atts['id']) || ! empty($entryIDs) ) $where[] = 'AND ' . CN_ENTRY_TABLE . '.id IN (\'' . implode("', '", $atts['id'] ) . '\')';
 		/*
 		 * // END --> Set up the query to only return the entries that match the supplied IDs.
 		 */

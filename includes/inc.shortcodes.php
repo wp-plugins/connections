@@ -70,7 +70,7 @@ function _connections_list($atts, $content = NULL)
 				'list_type' => NULL,
 				'template' => NULL, /** @since version 0.7.1.0 */
 				'template_name' => NULL /** @deprecated since version 0.7.0.4 */
-				), $preLoadAtts ) ;
+				), $preLoadAtts );
 	
 	
 	if ( ! empty($preLoadAtts['list_type']) )

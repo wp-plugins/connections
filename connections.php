@@ -1123,6 +1123,7 @@ if (!class_exists('connectionsLoad'))
 			wp_register_script('jquery-preloader', WP_PLUGIN_URL . '/connections/js/jquery.preloader.js', array('jquery'), '1.1', TRUE);
 			wp_register_script('jquery-spin', WP_PLUGIN_URL . '/connections/js/jquery.spin.js', array('jquery'), '1.2.2', TRUE);
 			wp_register_script('jquery-chosen-min', WP_PLUGIN_URL . '/connections/js/jquery.chosen-0.9.5.min.js', array('jquery'), '0.9.5', TRUE);
+			wp_register_script('jquery-validate' , WP_PLUGIN_URL . '/connections/js/jquery.validate.min.js', array('jquery', 'jquery-form') , '1.9.0' , TRUE );
 		}
 		
 		/**
