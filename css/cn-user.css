@@ -61,7 +61,7 @@ div#cn-list span.tel span.phone-name { font-weight: bold; }
  * Email Styles
  */
 div#cn-list span.email-address-block { display: block; margin-bottom: 10px; }
-div#cn-list span.email { display: block; }
+div#cn-list span.email { background-image: none; display: block; }
 div#cn-list span.email span.email-name { font-weight: bold; }
 
 /*
@@ -70,13 +70,14 @@ div#cn-list span.email span.email-name { font-weight: bold; }
 div#cn-list span.im-network-block { display: block; margin-bottom: 10px; }
 div#cn-list span.im-network { display: block; }
 div#cn-list span.im-network span.im-name { font-weight: bold; }
+div#cn-list span.social-media-block img { width: auto; }
 
 /*
  * Social Media Network Styles
  */
 div#cn-list span.social-media-block { display: block; margin-bottom: 10px; }
 div#cn-list span.social-media-block a { margin: 0; padding: 0; }
-div#cn-list span.social-media-block img { margin: 0; padding: 0; }
+div#cn-list span.social-media-block img { margin: 0; padding: 0; width: auto; }
 div#cn-list span.social-media-network { display: inline-block; }
 
 /*
