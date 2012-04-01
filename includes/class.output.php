@@ -1642,7 +1642,7 @@ class cnOutput extends cnEntry
 	
 	public function returnToTopAnchor()
 	{
-		return '<a href="#cn-top" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" alt="Return to top."/></a>';
+		return '<a href="#cn-top" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" alt="Return to Top"/></a>';
 	}
 	
 }
