@@ -221,12 +221,12 @@ function _connections_list($atts, $content = NULL)
 			$out .= "\n" . '<div class="cn-list-head cn-clear" id="cn-list-head">' . "\n";
 			
 				ob_start();
-					do_action( 'cn_action_list_before' );
-					do_action( 'cn_action_list_before-' . $template->slug );
+					do_action( 'cn_action_list_before' , $results  );
+					do_action( 'cn_action_list_before-' . $template->slug , $results  );
 					$filterRegistry[] = 'cn_action_list_before-' . $template->slug;
 					
-					do_action( 'cn_action_list_both' );
-					do_action( 'cn_action_list_both-' . $template->slug );
+					do_action( 'cn_action_list_both' , $results  );
+					do_action( 'cn_action_list_both-' . $template->slug , $results  );
 					$filterRegistry[] = 'cn_action_list_both-' . $template->slug;
 					
 					$out .= ob_get_contents();
@@ -350,12 +350,12 @@ function _connections_list($atts, $content = NULL)
 				$filterRegistry[] = 'cn_list_after-' . $template->slug;
 				
 				ob_start();
-					do_action( 'cn_action_list_after' );
-					do_action( 'cn_action_list_after-' . $template->slug );
+					do_action( 'cn_action_list_after' , $results  );
+					do_action( 'cn_action_list_after-' . $template->slug , $results  );
 					$filterRegistry[] = 'cn_action_list_after-' . $template->slug;
 					
-					do_action( 'cn_action_list_both' );
-					do_action( 'cn_action_list_both-' . $template->slug );
+					do_action( 'cn_action_list_both' , $results  );
+					do_action( 'cn_action_list_both-' . $template->slug , $results  );
 					$filterRegistry[] = 'cn_action_list_both-' . $template->slug;
 					
 					$out .= ob_get_contents();
