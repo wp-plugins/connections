@@ -3,7 +3,7 @@ jQuery(document).ready(function($) {
 		delay:200,
 		imgSelector:'.cn-image img.photo, .cn-image img.logo, .cn-image img.map, .cn-image img.screenshot',
 		beforeShow:function(){
-			jQuery(this).closest('.cn-image img').css('visibility','hidden');
+			$(this).closest('.cn-image img').css('visibility','hidden');
 		},
 		afterShow:function(){
 			//var image = $(this).closest('.cn-image');
