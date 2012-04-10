@@ -1030,6 +1030,52 @@ class cnEntry
 				// Permit only the valid fields.
 				$address[$key] = $this->validate->attributesArray($validFields, $address);
 				
+				/*
+				 * Geocode the address using Google Geocoding API
+				 * 
+				 * http://www.cssbakery.com/2010/10/google-geocoding-from-php-with-curl.html
+				 * http://erlycoder.com/45/php-server-side-geocoding-with-google-maps-api-v3
+				 */
+				if ( empty($address['latitude']) || empty($address['longitude']) )
+				{
+					$addr = array();
+					$geo = array();
+					
+					if ( ! empty($address['line_1']) ) $addr[] = trim($address['line_1']);
+					if ( ! empty($address['line_2']) ) $addr[] = trim($address['line_2']);
+					if ( ! empty($address['line_3']) ) $addr[] = trim($address['line_3']);
+					if ( ! empty($address['city']) ) $addr[] = trim($address['city']);
+					if ( ! empty($address['state']) ) $addr[] = trim($address['state']);
+					if ( ! empty($address['zipcode']) ) $addr[] = trim($address['zipcode']);
+					if ( ! empty($address['country']) ) $addr[] = trim($address['country']);
+					
+					// Convert the array to a string for the URL
+					$addrString = implode( ',' , $addr );
+					
+					// Remove non alpha numeric chars such as extra spaces and replace w/ a plus.
+					//$addr = preg_replace("[^A-Za-z0-9]", '+', $addr );
+					$addrString = urlencode( utf8_encode( str_replace(' ', '+', $addrString) ) );
+					echo $addrString;
+					
+					$geoURL = "http://maps.googleapis.com/maps/api/geocode/json?address=$addrString&sensor=false";
+					
+					$getResult = file_get_contents($geoURL);
+					
+					if ( $getResult )
+					{
+						$jsonResult = json_decode( $getResult );
+						//echo file_get_contents($geoURL);
+						//echo $jsonResult->{'status'};
+						
+						if ( $jsonResult->{'status'} === 'OK' )
+						{
+							$addresses[$key]['latitude'] = $jsonResult->{'results'}[0]->{'geometry'}->{'location'}->{'lat'};
+							$addresses[$key]['longitude'] = $jsonResult->{'results'}[0]->{'geometry'}->{'location'}->{'lng'};
+						}
+					}
+					
+				}
+				
 				// Store the order attribute as supplied in the addresses array.
 				$addresses[$key]['order'] = $order;
 				
