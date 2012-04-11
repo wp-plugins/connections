@@ -277,6 +277,9 @@ if (!class_exists('connectionsLoad'))
 			//builds vCard
 			require_once(WP_PLUGIN_DIR . '/connections/includes/class.vcard.php'); // Required for front end
 			
+			// geocoding
+			require_once(WP_PLUGIN_DIR . '/connections/includes/class.geo.php'); // Required
+			
 			//shortcodes
 			require_once(WP_PLUGIN_DIR . '/connections/includes/inc.shortcodes.php'); // Required for front end
 			
@@ -1119,8 +1122,8 @@ if (!class_exists('connectionsLoad'))
 		public function registerScripts()
 		{
 			wp_register_script('cn-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, TRUE);
-			wp_register_script('jquery-gomap-min', WP_PLUGIN_URL . '/connections/js/jquery.gomap-1.3.2.js', array('jquery' , 'cn-google-maps-api' ), '1.3.2', TRUE);
-			wp_register_script('jquery-markerclusterer-min', WP_PLUGIN_URL . '/connections/js/jquery.markerclusterer-1.0.js', array('jquery' , 'cn-google-maps-api' , 'jquery-gomap-min' ), '1.0', TRUE);
+			wp_register_script('jquery-gomap-min', WP_PLUGIN_URL . '/connections/js/jquery.gomap-1.3.2.min.js', array('jquery' , 'cn-google-maps-api' ), '1.3.2', TRUE);
+			wp_register_script('jquery-markerclusterer-min', WP_PLUGIN_URL . '/connections/js/jquery.markerclusterer-2.0.10.min.js', array('jquery' , 'cn-google-maps-api' , 'jquery-gomap-min' ), '2.0.10', TRUE);
 			
 			wp_register_script('jquery-qtip', WP_PLUGIN_URL . '/connections/js/jquery.qtip.min.js', array('jquery'), 'nightly', TRUE);
 			wp_register_script('jquery-preloader', WP_PLUGIN_URL . '/connections/js/jquery.preloader.js', array('jquery'), '1.1', TRUE);

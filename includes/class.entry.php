@@ -1038,7 +1038,7 @@ class cnEntry
 				 */
 				if ( empty($address['latitude']) || empty($address['longitude']) )
 				{
-					$addr = array();
+					/*$addr = array();
 					$geo = array();
 					
 					if ( ! empty($address['line_1']) ) $addr[] = trim($address['line_1']);
@@ -1055,7 +1055,7 @@ class cnEntry
 					// Remove non alpha numeric chars such as extra spaces and replace w/ a plus.
 					//$addr = preg_replace("[^A-Za-z0-9]", '+', $addr );
 					$addrString = urlencode( utf8_encode( str_replace(' ', '+', $addrString) ) );
-					echo $addrString;
+					//echo $addrString;
 					
 					$geoURL = "http://maps.googleapis.com/maps/api/geocode/json?address=$addrString&sensor=false";
 					
@@ -1072,6 +1072,15 @@ class cnEntry
 							$addresses[$key]['latitude'] = $jsonResult->{'results'}[0]->{'geometry'}->{'location'}->{'lat'};
 							$addresses[$key]['longitude'] = $jsonResult->{'results'}[0]->{'geometry'}->{'location'}->{'lng'};
 						}
+					}*/
+					
+					$process = new cnGeo();
+					$result = $process->geocode($address);
+					
+					if ( ! empty($result) )
+					{
+						$addresses[$key]['latitude'] = $result->latitude;
+						$addresses[$key]['longitude'] = $result->longitude;
 					}
 					
 				}
