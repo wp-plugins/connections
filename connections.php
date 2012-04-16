@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.2.5
+Version: 0.7.2.6
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 
@@ -187,7 +187,7 @@ if (!class_exists('connectionsLoad'))
 			
 			define('CN_LOG', FALSE);
 			
-			define('CN_CURRENT_VERSION', '0.7.2.5');
+			define('CN_CURRENT_VERSION', '0.7.2.6');
 			define('CN_DB_VERSION', '0.1.8');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
@@ -342,6 +342,10 @@ if (!class_exists('connectionsLoad'))
 			
 			if ( $this->options->getDebug() === NULL ) $this->options->setDebug(FALSE);
 			
+			if ( $this->options->getGoogleMapsAPI() === NULL ) $this->options->setGoogleMapsAPI(TRUE);
+			
+			if ( $this->options->getJavaScriptFooter() === NULL ) $this->options->setJavaScriptFooter(TRUE);
+						
 			$this->options->saveOptions();
 		}
 		
@@ -1121,15 +1125,15 @@ if (!class_exists('connectionsLoad'))
 		 */
 		public function registerScripts()
 		{
-			wp_register_script('cn-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, TRUE);
-			wp_register_script('jquery-gomap-min', WP_PLUGIN_URL . '/connections/js/jquery.gomap-1.3.2.min.js', array('jquery' , 'cn-google-maps-api' ), '1.3.2', TRUE);
-			wp_register_script('jquery-markerclusterer-min', WP_PLUGIN_URL . '/connections/js/jquery.markerclusterer-2.0.10.min.js', array('jquery' , 'cn-google-maps-api' , 'jquery-gomap-min' ), '2.0.10', TRUE);
+			if ( $this->options->getGoogleMapsAPI() ) wp_register_script('cn-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, $this->options->getJavaScriptFooter() );
+			wp_register_script('jquery-gomap-min', WP_PLUGIN_URL . '/connections/js/jquery.gomap-1.3.2.min.js', array('jquery' , 'cn-google-maps-api' ), '1.3.2', $this->options->getJavaScriptFooter() );
+			wp_register_script('jquery-markerclusterer-min', WP_PLUGIN_URL . '/connections/js/jquery.markerclusterer-2.0.10.min.js', array('jquery' , 'cn-google-maps-api' , 'jquery-gomap-min' ), '2.0.10', $this->options->getJavaScriptFooter() );
 			
-			wp_register_script('jquery-qtip', WP_PLUGIN_URL . '/connections/js/jquery.qtip.min.js', array('jquery'), 'nightly', TRUE);
-			wp_register_script('jquery-preloader', WP_PLUGIN_URL . '/connections/js/jquery.preloader.js', array('jquery'), '1.1', TRUE);
-			wp_register_script('jquery-spin', WP_PLUGIN_URL . '/connections/js/jquery.spin.js', array('jquery'), '1.2.2', TRUE);
-			wp_register_script('jquery-chosen-min', WP_PLUGIN_URL . '/connections/js/jquery.chosen-0.9.5.min.js', array('jquery'), '0.9.5', TRUE);
-			wp_register_script('jquery-validate' , WP_PLUGIN_URL . '/connections/js/jquery.validate.min.js', array('jquery', 'jquery-form') , '1.9.0' , TRUE );
+			wp_register_script('jquery-qtip', WP_PLUGIN_URL . '/connections/js/jquery.qtip.min.js', array('jquery'), 'nightly', $this->options->getJavaScriptFooter() );
+			wp_register_script('jquery-preloader', WP_PLUGIN_URL . '/connections/js/jquery.preloader.js', array('jquery'), '1.1', $this->options->getJavaScriptFooter() );
+			wp_register_script('jquery-spin', WP_PLUGIN_URL . '/connections/js/jquery.spin.js', array('jquery'), '1.2.5', $this->options->getJavaScriptFooter() );
+			wp_register_script('jquery-chosen-min', WP_PLUGIN_URL . '/connections/js/jquery.chosen-0.9.8.min.js', array('jquery'), '0.9.8', $this->options->getJavaScriptFooter() );
+			wp_register_script('jquery-validate' , WP_PLUGIN_URL . '/connections/js/jquery.validate.min.js', array('jquery', 'jquery-form') , '1.9.0' , $this->options->getJavaScriptFooter() );
 		}
 		
 		/**
@@ -1218,7 +1222,7 @@ if (!class_exists('connectionsLoad'))
 			 */
 			
 			//wp_enqueue_script('jquery-preloader');
-			wp_enqueue_script('cn-ui', WP_PLUGIN_URL . '/connections/js/cn-user.js', array('jquery','jquery-preloader'), CN_CURRENT_VERSION, TRUE);
+			wp_enqueue_script('cn-ui', WP_PLUGIN_URL . '/connections/js/cn-user.js', array('jquery','jquery-preloader'), CN_CURRENT_VERSION, $this->options->getJavaScriptFooter() );
 			
 		}
 		

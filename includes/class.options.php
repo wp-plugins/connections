@@ -173,6 +173,10 @@ class cnOptions
 	
 	private $debug;
 	
+	private $googleMapsAPI;
+	
+	private $javaScriptFooter;
+	
 	/**
 	 * Current time as reported by PHP in Unix timestamp format.
 	 * 
@@ -253,7 +257,10 @@ class cnOptions
 		
 		$this->defaultTemplatesSet = $this->options['settings']['template']['defaults_set'];
 		$this->activeTemplates = (array) $this->options['settings']['template']['active'];
-				
+		
+		$this->googleMapsAPI = $this->options['settings']['advanced']['load_google_maps_api'];
+		$this->javaScriptFooter = $this->options['settings']['advanced']['load_javascript_footer'];
+		
 		$this->wpCurrentTime = current_time('timestamp');
 		$this->currentTime = date('U');
 		
@@ -317,6 +324,10 @@ class cnOptions
 		
 		$this->options['settings']['template']['defaults_set'] = $this->defaultTemplatesSet;
 		$this->options['settings']['template']['active'] = $this->activeTemplates;
+		
+		$this->options['settings']['advanced']['load_google_maps_api'] = $this->googleMapsAPI;
+		$this->options['settings']['advanced']['load_javascript_footer'] = $this->javaScriptFooter;
+		
 		
 		update_option('connections_options', $this->options);
 	}
@@ -1184,6 +1195,45 @@ class cnOptions
 	{
 		return $this->debug;
 	}
+    
+    /**
+     * Returns $googleMapsAPI.
+     *
+     * @see cnOptions::$googleMapsAPI
+     */
+    public function getGoogleMapsAPI() {
+        return $this->googleMapsAPI;
+    }
+    
+    /**
+     * Sets $googleMapsAPI.
+     *
+     * @param object $googleMapsAPI
+     * @see cnOptions::$googleMapsAPI
+     */
+    public function setGoogleMapsAPI($googleMapsAPI) {
+        $this->googleMapsAPI = $googleMapsAPI;
+    }
+    
+    /**
+     * Returns $javaScriptFooter.
+     *
+     * @see cnOptions::$javaScriptFooter
+     */
+    public function getJavaScriptFooter() {
+        return $this->javaScriptFooter;
+    }
+    
+    /**
+     * Sets $javaScriptHeader.
+     *
+     * @param object $javaScriptFooter
+     * @see cnOptions::$javaScriptFooter
+     */
+    public function setJavaScriptFooter($javaScriptFooter) {
+        $this->javaScriptFooter = $javaScriptFooter;
+    }
+    
     
     /**
      * Returns $options.

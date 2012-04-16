@@ -319,6 +319,48 @@ function connectionsShowSettingsPage()
 						</table>
 					</div>
 					
+					
+					<div class="form-field">
+						<h3>Advanced</h3>
+						<table class="form-table">
+							<tbody>
+								
+								<tr valign="top">
+									<th scope="row">
+										Google Maps API v3
+									</th>
+									<td>
+										<label>
+											<input type="checkbox" value="true" name="settings[advanced][google_maps_api]" id="google-maps-api" 
+												<?php if ( $connections->options->getGoogleMapsAPI() ) echo 'CHECKED ' ?>
+											/>
+											If the current active theme or another plugin loads the Google Maps API v3 check this to prevent Connections from loading the API. This will prevent potential conflicts.
+										</label>
+									</td>
+								</tr>
+								
+								<tr valign="top">
+									<th scope="row">
+										JavaScript
+									</th>
+									<td>
+										<label>
+											<input type="checkbox" value="true" name="settings[advanced][javascript_footer]" id="javascript-footer" 
+												<?php if ( $connections->options->getJavaScriptFooter() ) echo 'CHECKED ' ?>
+											/>
+											By default Connections loads it's JavaScripts in the page footer uncheck this box to load them in the page header.<br />
+											<small><strong>NOTE: </strong>This will not affect JavaScript files loaded by Connections templates.</small>
+										</label>
+										
+										<?php //var_dump($connections->options); ?>
+									</td>
+								</tr>
+								
+							</tbody>
+						</table>
+					</div>
+					
+					
 					<div class="form-field">
 						<h3>Debug Messages</h3>
 						<table class="form-table">
@@ -340,6 +382,8 @@ function connectionsShowSettingsPage()
 							</tbody>
 						</table>
 					</div>
+					
+					
 				</div>
 			
 			<p class="submit"><input class="button-primary" type="submit" value="Save Changes" name="save" /></p>

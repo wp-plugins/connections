@@ -893,6 +893,24 @@ function updateSettings()
 		$connections->options->setDebug(FALSE);
 	}
 	
+	if ( isset($_POST['settings']['advanced']['google_maps_api']) && $_POST['settings']['advanced']['google_maps_api'] === 'true' )
+	{
+		$connections->options->setGoogleMapsAPI(TRUE);
+	}
+	else
+	{
+		$connections->options->setGoogleMapsAPI(FALSE);
+	}
+	
+	if ( isset($_POST['settings']['advanced']['javascript_footer']) && $_POST['settings']['advanced']['javascript_footer'] === 'true' )
+	{
+		$connections->options->setJavaScriptFooter(TRUE);
+	}
+	else
+	{
+		$connections->options->setJavaScriptFooter(FALSE);
+	}
+	
 	$connections->options->saveOptions();
 	$connections->setSuccessMessage('settings_updated');
 }
