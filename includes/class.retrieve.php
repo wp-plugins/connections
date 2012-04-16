@@ -49,6 +49,7 @@ class cnRetrieve
 			$defaultAttr['offset'] = NULL;
 			$defaultAttr['allow_public_override'] = FALSE;
 			$defaultAttr['private_override'] = FALSE;
+			$defaultAttr['search_terms'] = NULL;
 			
 			$atts = $validate->attributesArray($defaultAttr, $suppliedAttr);
 		/*
@@ -142,9 +143,9 @@ class cnRetrieve
 		}
 		
 		// Convert the supplied category IDs $atts['category_in'] to an array.
-		if ( !empty($atts['category_in']) )
+		if ( ! empty($atts['category_in']) )
 		{
-			if ( !is_array($atts['category_in']) )
+			if ( ! is_array($atts['category_in']) )
 			{
 				// Trim the space characters if present.
 				$atts['category_in'] = str_replace(' ', '', $atts['category_in']);
@@ -166,20 +167,23 @@ class cnRetrieve
 			 * Leave it for now since it works and I need to more time for testing than I have if I change it now.
 			 */
 			// Store the entryIDs that exist on all of the supplied category IDs
-			$results = $wpdb->get_results($sql);
+			//$results = $wpdb->get_results($sql);
+			//print_r($results);
+			$results = $wpdb->get_col($sql);
 			//print_r($results);
 			
 			if ( ! empty($results) )
 			{
-				foreach ( $results as $result )
+				$entryIDs = $results;
+				/*foreach ( $results as $result )
 				{
 					$entryIDs[] = $result->entry_id;
-				}
+				}*/
 			}
 			else
 			{
 				/**
-				 * @todo This is hack. This is being set because if no results are returned then this will not pass
+				 * @TODO This is hack. This is being set because if no results are returned then this will not pass
 				 * the empty() check for the entry IDs and then the main query will return all entries. Maybe it would
 				 * be best to just return an empty array. Let's sleep on it.
 				 */
@@ -225,18 +229,34 @@ class cnRetrieve
 		 * // START --> Set up the query to only return the entries that match the supplied IDs.
 		 *    NOTE: This includes the entry IDs returned for category_in.
 		 */
-			// Convert the supplied IDs $atts['id'] to an array.
-			if ( ! is_array($atts['id']) && ! empty($atts['id']))
+			// Convert the supplied IDs $atts['id'] to an array if it was not supplied as an array.
+			if ( ! empty( $atts['id'] ) && ! is_array( $atts['id'] ) ) $atts['id'] = explode( ',' , trim( $atts['id'] ) );
+			
+			if ( empty( $atts['search_terms'] ) )
 			{
-				// Trim the space characters if present.
-				$atts['id'] = str_replace(' ', '', $atts['id']);
+				// Merge the entries found when using category_in and the supplied entry IDs.
+				$atts['id'] = array_unique( array_merge( (array) $atts['id'], (array) $entryIDs ) );
+			}
+			else
+			{
+				$searchResults = $this->search( array('search' => $atts['search_terms']) );
+				//print_r($searchResults);
 				
-				// Convert to array.
-				$atts['id'] = explode(',', $atts['id']);
+				// If there were no results, set the $atts['id'] to NONE. When the main query is run, no results will return because no entries will have an ID of NONE.
+				// @todo Fix this hack.
+				if ( empty($searchResults) )
+				{
+					$atts['id'] =  array('NONE');
+				}
+				else
+				{
+					// Set the entry IDs to be the search results.
+					$atts['id'] = array_unique( $searchResults );
+				}
 			}
 			
 			// Set query string to return specific entries.
-			if ( ! empty($atts['id']) || ! empty($entryIDs) ) $where[] = 'AND `id` IN (\'' . implode("', '", array_unique( array_merge( (array) $atts['id'], (array) $entryIDs ) ) ) . '\')';
+			if ( ! empty($atts['id']) || ! empty($entryIDs) ) $where[] = 'AND ' . CN_ENTRY_TABLE . '.id IN (\'' . implode("', '", $atts['id'] ) . '\')';
 		/*
 		 * // END --> Set up the query to only return the entries that match the supplied IDs.
 		 */
@@ -1315,6 +1335,7 @@ class cnRetrieve
 		
 		$validate = new cnValidate();
 		$results = array();
+		$like = array();
 		
 		/*
 		 * // START -- Set the default attributes array. \\
@@ -1357,6 +1378,7 @@ class cnRetrieve
 		
 		// Convert the search terms to a string adding the wild card to the end of each term to allow wider search results.
 		$searchTerms = implode( '* ' , $atts['search'] ) . '*';
+		//$searchTerms = implode( ' ' , $atts['search'] );
 		
 		$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_TABLE . '.id 
 								FROM ' . CN_ENTRY_TABLE . ' 
@@ -1368,8 +1390,47 @@ class cnRetrieve
 								$searchTerms , $searchTerms , $searchTerms );
 		//print_r($sql);
 			
-		$results = $wpdb->get_col($sql);
+		$results = $wpdb->get_col($sql); // NOTE: If DB does not support FULLTEXT the query will fail and the $results will be an empty array.
 		//print_r($results);
+		
+		
+		// NOTE: The following is the error reported by MySQL when DB does not support FULLTEXT:  'The used table type doesn't support FULLTEXT indexes'
+		//print_r($wpdb->last_error);
+		
+		
+		/*
+		 * If no results are found, perhaps to the way MySQL performs FULLTEXT queries 
+		 * or the DB not supporting FULLTEXT, we'll run a LIKE query.
+		 */
+		if ( empty($results) )
+		{
+			// Merge all the columns that will me searched.
+			$columns = array_merge( $defaultAttr['fields_entry'] , $defaultAttr['fields_address'] , $defaultAttr['fields_phone'] );
+			
+			foreach ( $atts['search'] as $term )
+			{
+				/*
+				 * Attempt to secure the query using $wpdb->prepare() and like_escape()
+				 * 
+				 * Since $wpdb->prepare() required var for each directive in the query string we'll use array_fill 
+				 * where the count based on the number of columns that will be searched.
+				 */
+				$like[] = $wpdb->prepare( implode( ' LIKE %s OR ' , $columns ) . ' LIKE %s ' , array_fill( 0 , count($columns) , '%' . like_escape($term) . "%" ) );
+			}
+			
+			//var_dump($like);
+			//print_r( implode( ' ' , $like) );
+			
+			$sql =  'SELECT ' . CN_ENTRY_TABLE . '.id 
+								FROM ' . CN_ENTRY_TABLE . ' 
+								LEFT JOIN ' . CN_ENTRY_ADDRESS_TABLE . ' ON ( ' . CN_ENTRY_TABLE . '.id = ' . CN_ENTRY_ADDRESS_TABLE . '.entry_id ) 
+								LEFT JOIN ' . CN_ENTRY_PHONE_TABLE . ' ON ( ' . CN_ENTRY_TABLE . '.id = ' . CN_ENTRY_PHONE_TABLE . '.entry_id ) 
+								WHERE ' . implode( ' OR ' , $like) ;
+			//print_r($sql);
+				
+			$results = $wpdb->get_col($sql);
+			//print_r($results);
+		}
 		
 		return $results;
 	}

@@ -148,19 +148,19 @@ class cnOutput extends cnEntry
 						switch ( $atts['preset'])
 						{
 							case 'entry':
-								$atts['image_size'] = getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
+								$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
 								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameCard();
 								break;
 							case 'profile':
-								$atts['image_size'] = getimagesize( CN_IMAGE_PATH . $this->getImageNameProfile() );
+								$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameProfile() );
 								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameProfile();
 								break;
 							case 'thumbnail':
-								$atts['image_size'] = getimagesize( CN_IMAGE_PATH . $this->getImageNameThumbnail() );
+								$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameThumbnail() );
 								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameThumbnail();
 								break;
 							default:
-								$atts['image_size'] = getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
+								$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
 								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameCard();
 								break;
 						}
@@ -206,7 +206,7 @@ class cnOutput extends cnEntry
 					else
 					{
 						$atts['src'] = CN_IMAGE_BASE_URL . $this->getLogoName();
-						$atts['image_size'] = getimagesize( CN_IMAGE_PATH . $this->getLogoName() );
+						$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getLogoName() );
 						
 						if ( $atts['image_size'] !== FALSE )
 						{
@@ -494,8 +494,7 @@ class cnOutput extends cnEntry
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-		$defaultAtts = array( 'format' => '%prefix% %first% %middle% %last% %suffix%',
-							  'before' => '',
+		$defaultAtts = array( 'before' => '',
 							  'after' => '',
 							  'return' => FALSE
 							);
@@ -689,7 +688,7 @@ class cnOutput extends cnEntry
 			$defaultAttr['country'] = NULL;
 			$defaultAttr['coordinates'] = array();
 			//$defaultAttr['format'] = '%label%|%line1%|%line2%|%line3%|%city%, %state%  %zipcode%|%geo%';
-			$defaultAttr['format'] = '%label% %line1% %line2% %line3% %city%, %state%  %zipcode%';
+			$defaultAttr['format'] = '%label% %line1% %line2% %line3% %city%, %state%  %zipcode% %country%';
 			$defaultAttr['before'] = '';
 			$defaultAttr['after'] = '';
 			$defaultAttr['return'] = FALSE;
@@ -1313,7 +1312,7 @@ class cnOutput extends cnEntry
 		/*
 		 * Set some defaults so the result resembles how the previous rendered.
 		 */
-		return $this->getLinkBlock( array( 'format' => '%label%: %url%' , 'type' => 'website' , 'return' => TRUE ) );
+		return $this->getLinkBlock( array( 'format' => '%label%: %url%' , 'type' => array('personal', 'website') , 'return' => TRUE ) );
 	}
 	
 	/**
@@ -1332,7 +1331,6 @@ class cnOutput extends cnEntry
 	 * 			%url%
 	 * 			%image%
 	 * 	label (string) The label to be displayed for the links.
-	 * 	image (bool) If true, create a websot of the link and display it.
 	 * 	size (string) The valid image sizes. Valid values are: mcr || tny || vsm || sm || lg || xlg
 	 * 	before (string) HTML to output before the social media networks.
 	 * 	after (string) HTML to after before the social media networks.
@@ -1352,7 +1350,6 @@ class cnOutput extends cnEntry
 			$defaultAttr['type'] = NULL;
 			$defaultAttr['format'] = '%title%';
 			$defaultAttr['label'] = NULL;
-			$defaultAttr['image'] = FALSE;
 			$defaultAttr['size'] = 'lg';
 			$defaultAttr['before'] = '';
 			$defaultAttr['after'] = '';
@@ -1394,8 +1391,10 @@ class cnOutput extends cnEntry
 				( empty($link->title) ) ? $replace[] = '' : $replace[] = '<a class="url" href="' . $link->url . '"' . ( ( empty($link->target) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty($link->followString) ? '' : ' rel="' . $link->followString . '"' ) ) . '>' . $link->title . '</a>';
 				( empty($link->url) ) ? $replace[] = '' : $replace[] = '<a class="url" href="' . $link->url . '"' . ( ( empty($link->target) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty($link->followString) ? '' : ' rel="' . $link->followString . '"' ) ) . '>' . $link->url . '</a>';
 				
-				if ( $atts['image'] )
-				{
+				/*if ( $atts['image'] )
+				{*/
+					//
+					
 					// Set the image size; These string values match the valid size for http://www.shrinktheweb.com
 					switch ( $atts['size'] )
 					{
@@ -1446,11 +1445,11 @@ class cnOutput extends cnEntry
 					{
 						$replace[] = '';
 					}
-				}
+				/*}
 				else
 				{
 					$replace[] = '';
-				}
+				}*/
 				
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );
@@ -1643,7 +1642,7 @@ class cnOutput extends cnEntry
 	
 	public function returnToTopAnchor()
 	{
-		return '<a href="#cn-top" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" alt="Return to top."/></a>';
+		return '<a href="#cn-top" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" alt="Return to Top"/></a>';
 	}
 	
 }

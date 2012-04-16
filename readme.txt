@@ -4,28 +4,28 @@ Donate link: http://connections-pro.com/
 Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, business directory, business-directory, church, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, staff, user, users, vcard
 Requires at least: 3.2
 Tested up to: 3.3
-Stable tag: 0.7.2.2
+Stable tag: 0.7.2.6
 Connections is a simple to use directory manager which can be used to create an addressbook, business, staff or church directory.
 
 == Description ==
 
-[Plugin Homepage](http://connections-pro.com/) | [Documentation](http://connections-pro.com/documentation/plugin/) | [Premium Templates](http://connections-pro.com/connections/templates/) | [Pro Addons](http://connections-pro.com/connections/pro-module/)
+[Plugin Homepage](http://connections-pro.com/) | [Documentation](http://connections-pro.com/documentation/plugin/) | [Showcase](http://connections-pro.com/showcase/) | [Premium Templates](http://connections-pro.com/templates/) | [Pro Addons](http://connections-pro.com/pro-module/)
 
 Quite simply, Connections is the best directory plugin available for WordPress. Its simplicity in design and function, vast array of unique features and versatility are the reasons more and more people are turning to Connections for their directory needs. You can use Connections to create a simple address book, maintain a staff directory and even run a business or link directory. Connections was built bottom up to be as configurable as possible while providing the features you need. Read on to learn about some of the best features Connections has to offer...
 
 = Features =
 * Seamless integration with the WordPress admin.
-* A Dashboard admin page where you can keep up to date with Connections related news, such as updates notices for [templates](http://connections-pro.com/connections/templates/) and the [pro addons](http://connections-pro.com/connections/pro-module/). Also see at a glance today's anniversaries and birthdays as well as any upcoming anniversaries and birthdays.
+* A Dashboard admin page where you can keep up to date with Connections related news, such as updates notices for [templates](http://connections-pro.com/templates/) and the [pro addons](http://connections-pro.com/pro-module/). Also see at a glance today's anniversaries and birthdays as well as any upcoming anniversaries and birthdays.
 * When inputting an entry there are multiple entry types from which to choose. They are individual, organization and family. The family entry type is unique to Connections. This entry type allows you to group individuals together as a family which makes Connections ideally suited for creating church directories.
 * You control which entries are viewable to the public and which entries are private, viewable for logged in users only. You can even have entries set as unlisted so only admins can view them.
 * Fields, fields and more fields... no other directory plugin offers more. There are fields for addresses, phone numbers, email addresses, IM, social networks, an image, a logo, bio, notes and more. Want more? Many fields, such as addresses and phone numbers, you can assign as many as you need. Wait, I'm not done yet... want to be able to list the business phone but keep that cell phone number private? You can do that, too. Most of the fields have selectable visibility. What this means is you can have an entry set as public but keep personal details private or even unlisted so only them admin can view it.
 * Connections is being used to manage directories which contain thousands of entries so the ability to manage them easily is a must- a task which Connections stands and delivers. You can filter the entries list by category, entry type and visibility. You can search for entries. You can even search within the filtered entries. Of course Connections doesn't stop there, there are several bulk actions available to make changes a breeze.
 * Category support. This feature was modeled after the category feature for WordPress posts. So if you know how to add and manage categories for posts, you know how they work for Connections. Categories can be hierarchical and entries can be assigned to any number of categories.
 * Extensive role support. For your users that have access to the WordPress admin, there is extensive role support. You can define which roles can perform tasks to manage entries in Connections.
-* Unrivaled customability with templates. Connections comes with many basic templates to get you started. For many, these meet their needs. But if you need more than these basic templates provide, check out these great [premium templates](http://connections-pro.com/connections/templates/).
+* Unrivaled customability with templates. Connections comes with many basic templates to get you started. For many, these meet their needs. But if you need more than these basic templates provide, check out these great [premium templates](http://connections-pro.com/templates/).
 * Displaying your entries on the front end is as simple as putting a shortcode on a page. Don't let this simplicity fool you. The Connections shortcode provides almost a dizzying array of options that are just too numerous to list. But if you want to know more, you can find it [here](http://connections-pro.com/documentation/plugin/shortcodes/).
 * Even a bit of SEO was sprinkled in. Every entry outputs following the [hCard](http://microformats.org/wiki/hcard) spec.
-* One last item. [Extensibility](http://connections-pro.com/connections/pro-module/).
+* One last item. [Extensibility](http://connections-pro.com/pro-module/).
 
 = New features this version: =
 * A Dashboard admin page with an array of widgets.
@@ -60,11 +60,14 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * Screen Options class by [Janis Elsts](http://w-shadow.com/blog/2010/06/29/adding-stuff-to-wordpress-screen-options/).
 * spin.js by [Felix Gnass](http://fgnass.github.com/spin.js/).
 * $.goMap() jQuery Google Maps Plugin by [Jevgenijs Shtrauss](http://www.pittss.lv/jquery/gomap/).
-* MarkerClusterer jQuery Google Maps Marker Clustering Plugin by [Xiaoxi Wu](http://gmaps-utility-library-dev.googlecode.com/svn/tags/markerclusterer/).
+* MarkerClustererPlus jQuery Google Maps Marker Clustering Plugin by [Gary Little](http://gmaps-utility-library-dev.googlecode.com/svn/tags/markerclusterer/).
+* Validation jQuery plugin by [Jörn Zaefferer](http://bassistance.de/jquery-plugins/jquery-plugin-validation/).
+* Chosen jQuery plugin by [Harvest](https://github.com/harvesthq/chosen/).
+* qTip jQuery plugin by [Craig Thompson](http://craigsworks.com/projects/qtip2/).
 * Preloading GIF generated by [Preloaders.net](http://www.preloaders.net/).
 * Email and URL validation methods by [Gizmo Digital Fusion](http://wpcodesnippets.info/blog/two-useful-php-validation-functions.html).
 * Social media icons by [WPZOOM.com](http://www.wpzoom.com/wpzoom/500-free-icons-wpzoom-social-networking-icon-set/); license [CC BY-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/).
-* iTunes icon by [isabi3](http://www.softicons.com/free-icons/application-icons/isabi3-icons-by-barrymieny/apple-itunes-icon); license [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/).
+* iTunes icon by [Paul Robert Lloyd](http://paulrobertlloyd.com/); license [Attribution-ShareAlike 2.0 UK: England & Wales (CC BY-SA 2.0)](http://creativecommons.org/licenses/by-sa/2.0/uk/).
 * Podcast icon by [schollidesign](http://findicons.com/icon/94188/podcast_new); license GNU/GPL.
 
 == Screenshots ==
@@ -84,6 +87,52 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 [FAQs can be found here.](http://connections-pro.com/connections/faq/)
 
 == Changelog ==
+
+= 0.7.2.6 04/15/12 =
+* BUG: Fixed a bug that cause a bad query when using custom ordering and performing a search.
+* BUG: Changed jQuery to $ in the cn-user.js file on line 2.
+* BUG: Correct term relationships db. Refer to this changeset:  [http://plugins.trac.wordpress.org/changeset/495434/connections](http://plugins.trac.wordpress.org/changeset/495434/connections)
+* BUG: Correct a JavaScript dependency order issue for the jquery.preloader and the cn-ui JavaScripts for the front end.
+* BUG: Adjust logic to detect empty addresses so addresses can be only a country and/or latitude and longitude.
+* BUG: Add the Title field back to all the templates.
+* OTHER: Add the entry Title field to the Profile template.
+* OTHER: Add wptexturize and wp_autop to the bio and notes fields via the cnUtility::sanitizeString method.
+* OTHER: Slight tweak to the admin CSS to be standards compliant.
+* OTHER: Remove the image attribute from the getLinkBlock() method as it was unnecessary.
+* OTHER: Add error suppression to getimagesize in the getImage() method in the cnOutput class.
+* OTHER: Add a limit option to the [connections] shortcode.
+* OTHER: Add a offset option to the [connections] shortcode.
+* OTHER: Bundle the jQuery plugin [Validation](http://bassistance.de/jquery-plugins/jquery-plugin-validation/)
+* OTHER: Update [Timthumb](http://code.google.com/p/timthumb/) to 2.8.10.
+* OTHER: Remove MarkerClusterer jQuery Google Maps Marker Clustering Plugin by [Xiaoxi Wu](http://gmaps-utility-library-dev.googlecode.com/svn/tags/markerclusterer/) and replace it with MarkerClustererPlus jQuery Google Maps Marker Clustering Plugin by [Gary Little](http://gmaps-utility-library-dev.googlecode.com/svn/tags/markerclusterer/).
+* OTHER: Update Chosen jQuery plugin by [Harvest](https://github.com/harvesthq/chosen/) to 0.9.8.
+* OTHER: Update qTip 2 by [Craig Thompson](http://craigsworks.com/projects/qtip2/) to the latest nightly build.
+* OTHER: Update spin.js by [Felix Gnass](http://fgnass.github.com/spin.js/) to 1.2.5.
+* OTHER: Added option to disable the enqueueing of the Google Maps API for compatibility with themes and plugins that load it.
+* OTHER: Added option to move some of the JavaScript files to the page header rather than the page footer.
+
+= 0.7.2.5 01/09/12 =
+* BUG: Fix an issue that would prevent the social media icons from showing.
+* BUG: Made sure the widget.css file was only enqueued in WP < 3.2 since it is not required [or exists] in WP >= 3.3.
+
+= 0.7.2.4 01/08/12 =
+* BUG: Fixed the Profile template so it would properly echo the bio field copy.
+* OTHER: Optimize and Smush.it all of the social media icons. Resulted in a significant file size reductions and overall zip file size reduction.
+* OTHER: Fix PHP warnings when WP_DEBUG is enabled.
+
+= 0.7.2.3 01/01/12 =
+* FEATURE: Added TripAdvisor to the social media networks per user request.
+* BUG: Fixed critical table creation error for the links table on new installs. Upgrades are ok.
+* BUG: Fixed bug in getWebsiteBlock(). Would not return entries with the legacy type of 'personal'.
+* BUG: Make sure a boolean can not be passed to the opendir() function in class.template.php.
+* OTHER: If critical Connections folders are not writable, attempt to increment permissions until they are writable. NOTE: This occurs only during plugin activation and upgrading from a previous version.
+* OTHER: Update the default templates to use the new output methods.
+* OTHER: Removed the unused code in cnEntry::getLinks() to convert a string to an array. It was being done twice, two differnet ways.
+* OTHER: Increase the TimThumb FILE_CACHE_MAX_FILE_AGE to 7 days.
+* OTHER: Add an "Add New" button next to the H2 on the Connections : Manage admin page.
+* OTHER: Add FULLTEXT to several of the Connections tables.
+* OTHER: Add a secondary LIKE search if the FULLTEXT search returns no results OR for when the users DB does not support FULLTEXT.
+* OTHER: Update the iTunes icons with a better version which also has a more permissive lisense.
 
 = 0.7.2.2 12/25/11 =
 * FEATURE: Added option to the links to be able to assign them to either the image or logo.
@@ -436,3 +485,9 @@ This is a major update. It would be advisable to backup the Connections tables i
 
 = 0.7.2.2 =
 Bug fixes.
+
+= 0.7.2.5 =
+A couple bug fixes. Should be the last one.
+
+= 0.7.2.6 =
+Bug fixes and updates to third party jQuery plugins and PHP classes. It is highly recommended to update.

@@ -17,8 +17,9 @@ table.connections tr.unapproved { background-color: #FFFFE0; }
 table.connections tr.entrydetails td {border-color:transparent #DFDFDF;}
 table.connections tr.entrynotes td {border-color:transparent #DFDFDF #DFDFDF;}
 table.connections span.cn-image-style {
-	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
 	background: #f1f1f1; /* Old browsers */
 	background: -moz-linear-gradient(top, #f1f1f1 0%, #e3e3e3 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f1f1f1), color-stop(100%,#e3e3e3)); /* Chrome,Safari4+ */

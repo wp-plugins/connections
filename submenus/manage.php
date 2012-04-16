@@ -234,7 +234,7 @@ function connectionsShowViewPage( $action = NULL )
 			
 			echo '<div class="wrap">
 					<div class="icon32" id="icon-connections"><br/></div>
-					<h2>Connections : Manage</h2>';
+					<h2>Connections : Manage <a class="button add-new-h2" href="admin.php?page=connections_add">Add New</a></h2>';
 			
 			/*
 			 * Check whether user can view the entry list

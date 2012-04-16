@@ -70,7 +70,7 @@ function _connections_list($atts, $content = NULL)
 				'list_type' => NULL,
 				'template' => NULL, /** @since version 0.7.1.0 */
 				'template_name' => NULL /** @deprecated since version 0.7.0.4 */
-				), $preLoadAtts ) ;
+				), $preLoadAtts );
 	
 	
 	if ( ! empty($preLoadAtts['list_type']) )
@@ -115,7 +115,7 @@ function _connections_list($atts, $content = NULL)
 		}
 	}
 	
-	//$out .= print_r($template , TRUE);
+	//$out .= '<pre style="display: none;">' . print_r($template , TRUE) . '</pre>';
 	
 	// If no template was found, exit return an error message.
 	if ( ! isset($template->file) || empty($template->file) || ! is_file($template->file) )
@@ -141,6 +141,8 @@ function _connections_list($atts, $content = NULL)
 							'show_alphahead' => 'false',
 							'list_type' => NULL,
 							'order_by' => NULL,
+							'limit' => NULL,
+							'offset' => NULL,
 							'family_name' => NULL,
 							'last_name' => NULL,
 							'title' => NULL,
@@ -219,12 +221,12 @@ function _connections_list($atts, $content = NULL)
 			$out .= "\n" . '<div class="cn-list-head cn-clear" id="cn-list-head">' . "\n";
 			
 				ob_start();
-					do_action( 'cn_action_list_before' );
-					do_action( 'cn_action_list_before-' . $template->slug );
+					do_action( 'cn_action_list_before' , $results  );
+					do_action( 'cn_action_list_before-' . $template->slug , $results  );
 					$filterRegistry[] = 'cn_action_list_before-' . $template->slug;
 					
-					do_action( 'cn_action_list_both' );
-					do_action( 'cn_action_list_both-' . $template->slug );
+					do_action( 'cn_action_list_both' , $results  );
+					do_action( 'cn_action_list_both-' . $template->slug , $results  );
 					$filterRegistry[] = 'cn_action_list_both-' . $template->slug;
 					
 					$out .= ob_get_contents();
@@ -348,12 +350,12 @@ function _connections_list($atts, $content = NULL)
 				$filterRegistry[] = 'cn_list_after-' . $template->slug;
 				
 				ob_start();
-					do_action( 'cn_action_list_after' );
-					do_action( 'cn_action_list_after-' . $template->slug );
+					do_action( 'cn_action_list_after' , $results  );
+					do_action( 'cn_action_list_after-' . $template->slug , $results  );
 					$filterRegistry[] = 'cn_action_list_after-' . $template->slug;
 					
-					do_action( 'cn_action_list_both' );
-					do_action( 'cn_action_list_both-' . $template->slug );
+					do_action( 'cn_action_list_both' , $results  );
+					do_action( 'cn_action_list_both-' . $template->slug , $results  );
 					$filterRegistry[] = 'cn_action_list_both-' . $template->slug;
 					
 					$out .= ob_get_contents();
