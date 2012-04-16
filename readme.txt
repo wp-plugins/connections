@@ -3,7 +3,7 @@ Contributors: shazahm1@hotmail.com
 Donate link: http://connections-pro.com/
 Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, business directory, business-directory, church, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, staff, user, users, vcard
 Requires at least: 3.2
-Tested up to: 3.3
+Tested up to: 3.3.1
 Stable tag: 0.7.2.6
 Connections is a simple to use directory manager which can be used to create an addressbook, business, staff or church directory.
 
