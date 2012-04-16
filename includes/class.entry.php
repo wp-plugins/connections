@@ -1075,7 +1075,7 @@ class cnEntry
 					}*/
 					
 					$process = new cnGeo();
-					//$result = $process->geocode($address);
+					$result = $process->geocode($address);
 					
 					if ( ! empty($result) )
 					{
