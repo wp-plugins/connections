@@ -76,22 +76,9 @@ class cnOptions
 											'wife' =>"Wife"
 											);
 	
-	private $defaultAddressValues	=	array
-											(
-												'home'=>'Home',
-												'work'=>'Work',
-												'school'=>'School',
-												'other'=>'Other'
-											);
 	
-	private $defaultPhoneNumberValues	=	array
-											(
-												'homephone'=>'Home Phone',
-												'homefax'=>'Home Fax',
-												'cellphone'=>'Cell Phone',
-												'workphone'=>'Work Phone',
-												'workfax'=>'Work Fax'
-											);
+	
+	
 	
 	private $defaultSocialMediaValues = array(
 											 'delicious' => 'delicious',
@@ -123,17 +110,9 @@ class cnOptions
 										'icq' => 'ICQ'
 									);
 	
-	private $defaultEmailValues  =   array
-									(
-										'personal'=>'Personal Email',
-										'work'=>'Work Email'
-									);
 	
-	private $defaultLinkValues  =   array
-									(
-										'website'=>'Website',
-										'blog' => 'Blog'
-									);
+	
+	
 									
 	private $allowPublic;
 	private $allowPublicOverride;
@@ -1129,8 +1108,17 @@ class cnOptions
      *
      * @see cnOptions::$defaultAddressValues
      */
-    public function getDefaultAddressValues() {
-        return $this->defaultAddressValues;
+    public function getDefaultAddressValues()
+	{
+        $defaultAddressValues	=	array
+											(
+												'home' => __( 'Home' , 'connections' ),
+												'work' => __( 'Work' , 'connections' ),
+												'school' => __( 'School' , 'connections' ),
+												'other' => __( 'Other' , 'connections' )
+											);
+		
+		return $defaultAddressValues;
     }
     
     
@@ -1139,8 +1127,18 @@ class cnOptions
      *
      * @see cnOptions::$defaultPhoneNumberValues
      */
-    public function getDefaultPhoneNumberValues() {
-        return $this->defaultPhoneNumberValues;
+    public function getDefaultPhoneNumberValues()
+	{
+        $defaultPhoneNumberValues	=	array
+											(
+												'homephone' => __( 'Home Phone' , 'connections' ),
+												'homefax' => __( 'Home Fax' , 'connections' ),
+												'cellphone' => __( 'Cell Phone' , 'connections' ),
+												'workphone' => __( 'Work Phone' , 'connections' ),
+												'workfax' => __( 'Work Fax' , 'connections' )
+											);
+		
+		return $defaultPhoneNumberValues;
     }
     
 	
@@ -1163,8 +1161,15 @@ class cnOptions
      *
      * @see cnOptions::$defaultEmailValues
      */
-    public function getDefaultEmailValues() {
-        return $this->defaultEmailValues;
+    public function getDefaultEmailValues()
+	{
+        $defaultEmailValues  =   array
+									(
+										'personal' => __( 'Personal Email' , 'connections' ),
+										'work' => __( 'Work Email' , 'connections' )
+									);
+		
+		return $defaultEmailValues;
     }
     
     /**
@@ -1172,8 +1177,15 @@ class cnOptions
      *
      * @see cnOptions::$defaultLinkValues
      */
-    public function getDefaultLinkValues() {
-        return $this->defaultLinkValues;
+    public function getDefaultLinkValues()
+	{
+        $defaultLinkValues  =   array
+									(
+										'website' => __( 'Website' , 'connections' ),
+										'blog' => __( 'Blog' , 'connections' )
+									);
+		
+		return $defaultLinkValues;
     }
     
     /**

@@ -418,7 +418,7 @@ class cnFormObjects
 			    		$link = esc_url(strip_tags($link));
 			    		$title = esc_attr(strip_tags($item->get_title()));
 			    		if ( empty($title) )
-			    			$title = __('Untitled');
+			    			$title = __('Untitled', 'connections');
 			    
 			    		$desc = str_replace( array("\n", "\r"), ' ', esc_attr( strip_tags( @html_entity_decode( $item->get_description(), ENT_QUOTES, get_option('blog_charset') ) ) ) );
 			    		$desc = wp_html_excerpt( $desc, 360 );
@@ -651,7 +651,7 @@ class cnFormObjects
 		if(ini_get('memory_limit')) $memory_limit = $connections->phpMemoryLimit;
 		else $memory_limit = __('N/A', 'connections');
 		// Get actual memory_get_usage
-		if (function_exists('memory_get_usage')) $memory_usage = round(memory_get_usage() / 1024 / 1024, 2) . __(' MByte', 'connections');
+		if (function_exists('memory_get_usage')) $memory_usage = round(memory_get_usage() / 1024 / 1024, 2) . ' ' . __('MByte', 'connections');
 		else $memory_usage = __('N/A', 'connections');
 		// required for EXIF read
 		if (is_callable('exif_read_data')) $exif = __('Yes', 'connections'). " ( V" . substr(phpversion('exif'),0,4) . ")" ;

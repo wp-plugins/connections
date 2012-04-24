@@ -91,3 +91,10 @@ div#cn-list span.link span.link-name { font-weight: bold; }
  * Anniversary/Birthday vEvent Styles
  */
 div#cn-list div.vevent abbr{ border: 0; cursor: default; text-transform: none; letter-spacing: normal; }
+
+/*
+ * A few style style from Chosen with the selectors more specific so the theme's don't
+ * easily override them. I'm sure I'll have to add to this list as I run accross theme conflicts.
+ */
+div#cn-list .chzn-container .chzn-results .active-result { background: none !important; }
+div#cn-list .chzn-container .chzn-results .highlighted { background: #3875d7 !important; color: #FFFFFF; }
