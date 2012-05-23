@@ -19,8 +19,7 @@ jQuery(document).ready(function($){
 		}
 	});
 	
-	jQuery(function()
-	{
+	jQuery(function() {
 		jQuery('a.detailsbutton')
 			.css("cursor","pointer")
 			.attr("title","Click to show details.")
@@ -300,10 +299,69 @@ jQuery(document).ready(function($){
 		}
 	);
 	
+	/*
+	 * Add jQuery Chosen to the family name and relation fields.
+	 */
 	if ($.fn.chosen) {
 		$('.family-member-name').chosen();
 		$('.family-member-relation').chosen();
 	}
+	
+	/*
+	 * Geocode the address
+	 */
+	$('a.geocode.button').live('click', function() {
+		var address = new Object();
+		var $this = $(this);
+		var lat;
+		var lng;
+		
+		var uid = $this.attr('data-uid');
+		//console.log(uid);
+		
+		//var address = $('input[name^=address\\[' + uid + '\\]]').map(function(){return $(this).val();}).get();
+		//var address = $('input[name^=address\\[' + uid + '\\]]').serializeArray();
+		
+		address.line_1 = $('input[name=address\\[' + uid + '\\]\\[line_1\\]]').val();
+		address.line_2 = $('input[name=address\\[' + uid + '\\]\\[line_2\\]]').val();
+		address.line_3 = $('input[name=address\\[' + uid + '\\]\\[line_3\\]]').val();
+		
+		address.city = $('input[name=address\\[' + uid + '\\]\\[city\\]]').val();
+		address.state = $('input[name=address\\[' + uid + '\\]\\[state\\]]').val();
+		address.zipcode = $('input[name=address\\[' + uid + '\\]\\[zipcode\\]]').val();
+		
+		address.country = $('input[name=address\\[' + uid + '\\]\\[country\\]]').val();
+		
+		//console.log(address);
+		
+		$( '#map-' + uid ).fadeIn('fast' , function() {
+			$( '#map-' + uid ).goMap({
+				maptype: 'ROADMAP'/*,
+				latitude: 40.366502,
+				longitude: -75.887637,
+				zoom: 14*/
+			});
+			
+			$.goMap.createMarker({
+				address: '\'' + address.line_1 + ', ' + address.city + ', ' + address.state + ', ' + address.zipcode + ', ' +  '\'' , id: 'baseMarker' , draggable: true
+			});
+			
+			$.goMap.setMap({ address: '\'' + address.line_1 + ', ' + address.city + ', ' + address.state + ', ' + address.zipcode + ', ' +  '\'' , zoom: 18 });
+			
+			$.goMap.createListener( {type:'marker', marker:'baseMarker'} , 'dragend', function(event) {
+				var lat = event.latLng.lat();
+				var lng = event.latLng.lng();
+				
+				console.log(lat);
+				console.log(lng);
+			});
+			
+		});
+		
+		return false;
+	});
+	
+	
 });
 
 function removeEntryRow(id)

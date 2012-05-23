@@ -360,6 +360,147 @@ function connectionsShowSettingsPage()
 						</table>
 					</div>
 					
+					<div class="form-field">
+						<h3>Search</h3>
+						<table class="form-table">
+							<tbody>
+								
+								<tr valign="top">
+									<th scope="row">
+										Search Fields
+									</th>
+									<td>
+										<p>The selected fields will be searched.</p>
+										<small><strong>NOTE: </strong>This only applied to search in the the Connections admin and premium templates that enable search in the front end.</small>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][family-name]" id="search-field-family-name" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Family Name
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][first-name]" id="search-field-first-name" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>First Name
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][last-name]" id="search-field-last-name" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Last Name
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][title]" id="search-field-title" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Title
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][organization]" id="search-field-organization" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Organization
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][department]" id="search-field-department" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Department
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][contact-first-name]" id="search-field-contact-first-name" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Contact First Name
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][contact-last-name]" id="search-field-contact-last-name" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Contact Last Name
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][bio]" id="search-field-bio" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Biography
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][notes]" id="search-field-notes" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Notes
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][address-line-1]" id="search-field-address-line-1" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Address Line One
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][address-line-2]" id="search-field-address-line-2" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Address Line Two
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][address-line-3]" id="search-field-address-line-3" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Address Line Three
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][address-city]" id="search-field-address-city" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Address City
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][address-state]" id="search-field-address-state" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Address State
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][address-zipcode]" id="search-field-address-zipcode" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Address Zipcode
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][address-country]" id="search-field-address-country" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Address Country
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][phone-number]" id="search-field-phone-number" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>Phone Number
+										</label>
+										
+									</td>
+								</tr>
+								
+								<tr valign="top">
+									<th scope="row">
+										Disable FULLTEXT support.
+									</th>
+									<td>
+										<label>
+											<input type="checkbox" value="true" name="settings[search][fulltext]" id="search-fulltext" 
+												<?php if ( TRUE ) echo 'CHECKED ' ?>
+											/>
+											If you do not know what this means, please do not change it.
+										</label>
+									</td>
+								</tr>
+								
+							</tbody>
+						</table>
+					</div>
 					
 					<div class="form-field">
 						<h3>Debug Messages</h3>

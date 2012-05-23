@@ -1170,6 +1170,8 @@ if (!class_exists('connectionsLoad'))
 			{
 				global $concatenate_scripts, $compress_scripts, $compress_css;
 				
+				wp_enqueue_script('jquery-gomap-min');
+				
 				if( version_compare($GLOBALS['wp_version'], '3.2.999', '<') )
 				{
 					$compress_scripts = FALSE; // If the script are compress the TinyMCE doesn't seem to function.
@@ -1266,7 +1268,7 @@ if (!class_exists('connectionsLoad'))
 		public function loadStyles()
 		{
 			wp_enqueue_style('connections-user', CN_URL . '/css/cn-user.css', array(), CN_CURRENT_VERSION);
-			wp_enqueue_style('connections-chosen', CN_URL . '/css/chosen.css', array(), '0.9.5');
+			wp_enqueue_style('connections-chosen', CN_URL . '/css/chosen.css', array(), '0.9.8');
 			wp_enqueue_style('connections-qtip', CN_URL . '/css/jquery.qtip.min.css', array(), 'nightly');
 		}
 		

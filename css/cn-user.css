@@ -15,8 +15,11 @@ div#cn-list span.cn-image {
 }
 div#cn-list span.cn-image img {
 	border: none !important;
+	left: 0 !important;
 	margin: 0 !important;
 	padding: 0 !important;
+	position: relative !important;
+	top: 0 !important;
 	visibility: hidden;
 }
 div#cn-list span.cn-image-style {
@@ -61,7 +64,7 @@ div#cn-list span.tel span.phone-name { font-weight: bold; }
  * Email Styles
  */
 div#cn-list span.email-address-block { display: block; margin-bottom: 10px; }
-div#cn-list span.email { background-image: none; display: block; }
+div#cn-list span.email { background-image: none; display: block; float: none; margin: 0; }
 div#cn-list span.email span.email-name { font-weight: bold; }
 
 /*
@@ -93,8 +96,15 @@ div#cn-list span.link span.link-name { font-weight: bold; }
 div#cn-list div.vevent abbr{ border: 0; cursor: default; text-transform: none; letter-spacing: normal; }
 
 /*
+ * Bio/Notes Styles
+ */
+div#cn-list div.bio, div#cn-list div.note { text-align: left; }
+
+
+/*
  * A few style style from Chosen with the selectors more specific so the theme's don't
  * easily override them. I'm sure I'll have to add to this list as I run accross theme conflicts.
  */
 div#cn-list .chzn-container .chzn-results .active-result { background: none !important; }
 div#cn-list .chzn-container .chzn-results .highlighted { background: #3875d7 !important; color: #FFFFFF; }
+div#cn-list .chzn-container .chzn-results li { background-image: none !important; }

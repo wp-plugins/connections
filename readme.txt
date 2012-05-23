@@ -5,13 +5,13 @@ Tags: addresses, address book, addressbook, bio, bios, biographies, business, bu
 Requires at least: 3.2
 Tested up to: 3.3.1
 Stable tag: 0.7.2.6
-Connections is a simple to use directory manager which can be used to create an addressbook, business, staff or church directory.
+Connections is a simple to use directory manager which can be used to create an addressbook, business directory, staff directory or church directory.
 
 == Description ==
 
 [Plugin Homepage](http://connections-pro.com/) | [Documentation](http://connections-pro.com/documentation/plugin/) | [Showcase](http://connections-pro.com/showcase/) | [Premium Templates](http://connections-pro.com/templates/) | [Pro Addons](http://connections-pro.com/pro-module/)
 
-Quite simply, Connections is the best directory plugin available for WordPress. Its simplicity in design and function, vast array of unique features and versatility are the reasons more and more people are turning to Connections for their directory needs. You can use Connections to create a simple address book, maintain a staff directory and even run a business or link directory. Connections was built bottom up to be as configurable as possible while providing the features you need. Read on to learn about some of the best features Connections has to offer...
+Quite simply, Connections is the best directory plugin available for WordPress. Its simplicity in design and function, vast array of unique features and versatility are the reasons more and more people are turning to Connections for their directory needs. You can use Connections to create a simple address book, maintain a staff directory and even run a business directory or link directory. Connections was built bottom up to be as configurable as possible while providing the features you need. Read on to learn about some of the best features Connections has to offer...
 
 = Features =
 * Seamless integration with the WordPress admin.
@@ -28,17 +28,12 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * One last item. [Extensibility](http://connections-pro.com/pro-module/).
 
 = New features this version: =
-* A Dashboard admin page with an array of widgets.
-* Search in the admin.
-* Moderation.
-* Improved pagination on the Manage admin page. The number of entries to display is now user definable.
-* General improvements throughout which are too many to list. See the change log for more details.
+* Geocoding of addresses.
 
 
 = Upcoming features: =
 * Localization
 * Pretty (permalink) support
-* Geocoding of addresses.
 * Landing pages
 * Integration with WP users to permit registered users to maintain their own info with optional moderation.
 * Gravatar support
@@ -71,9 +66,9 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * Podcast icon by [schollidesign](http://findicons.com/icon/94188/podcast_new); license GNU/GPL.
 
 == Screenshots ==
-[Screenshots can be found here.](http://connections-pro.com/connections/screenshots/)
+[Screenshots can be found here.](http://connections-pro.com/screenshots/)
 
-[Connections running on live websites can be found here.](http://connections-pro.com/connections/live-samples/)
+[Connections running on live websites can be found here.](http://connections-pro.com/live-samples/)
 
 == Installation ==
 [Installation instructions can be found here.](http://connections-pro.com/documentation/plugin/install/)
@@ -84,9 +79,15 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * **NOTE:** Upgrading from version 0.6.1 and newer is supported. Previous version must upgrade to 0.6.1 before upgrading to the current version.
 
 == Frequently Asked Questions ==
-[FAQs can be found here.](http://connections-pro.com/connections/faq/)
+[FAQs can be found here.](http://connections-pro.com/faq/)
 
 == Changelog ==
+
+= 0.7.x.x xx/xx/12 =
+* FEATURE: Added Auto and manual geocoding of addresses.
+* BUG: Use character entity codes for the page forward / page backward buttons.
+* OTHER: Update Chosen CSS version query string.
+* OTHER: Added some additional CSS to keep theme's from breaking Connections layout.
 
 = 0.7.2.7 04/23/12 =
 * OTHER: Started to internationalize.

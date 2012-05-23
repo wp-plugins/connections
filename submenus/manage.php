@@ -366,13 +366,13 @@ function connectionsShowViewPage( $action = NULL )
 										
 										echo '<span class="page-navigation" id="page-input">';
 											
-											echo '<a href="' . $pageFilterURL['first_page'] . '" title="Go to the first page" class="first-page' , $pageDisabled['first_page'] , '">«</a> ';
-											echo '<a href="' . $pageFilterURL['previous_page'] . '" title="Go to the previous page" class="prev-page' , $pageDisabled['previous_page'] , '">‹</a> ';
+											echo '<a href="' . $pageFilterURL['first_page'] . '" title="Go to the first page" class="first-page' , $pageDisabled['first_page'] , '">&laquo;</a> ';
+											echo '<a href="' . $pageFilterURL['previous_page'] . '" title="Go to the previous page" class="prev-page' , $pageDisabled['previous_page'] , '">&lsaquo;</a> ';
 											
 											echo '<span class="paging-input"><input type="text" size="2" value="' . $page->current . '" name="pg" title="Current page" class="current-page"> of <span class="total-pages">' . $pageCount . '</span></span> ';
 											
-											echo '<a href="' . $pageFilterURL['next_page'] . '" title="Go to the next page" class="next-page' , $pageDisabled['next_page'] , '">›</a> ';
-											echo '<a href="' . $pageFilterURL['last_page'] . '" title="Go to the last page" class="last-page' , $pageDisabled['last_page'] , '">»</a>';
+											echo '<a href="' . $pageFilterURL['next_page'] . '" title="Go to the next page" class="next-page' , $pageDisabled['next_page'] , '">&rsaquo;</a> ';
+											echo '<a href="' . $pageFilterURL['last_page'] . '" title="Go to the last page" class="last-page' , $pageDisabled['last_page'] , '">&raquo;</a>';
 											
 										echo '</span>';
 									}

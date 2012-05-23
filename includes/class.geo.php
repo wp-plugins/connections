@@ -11,7 +11,7 @@ class cnGeo
 		//@todo Set provider based on option
 	}
 	
-	public function geocode( $address , $options = array() )
+	public function address( $address , $options = array() )
 	{
 		$result = new stdClass();
 		

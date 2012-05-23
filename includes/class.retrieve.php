@@ -11,7 +11,7 @@ class cnRetrieve
 		
 		get_currentuserinfo();
 		
-		$entryIDs = array();
+		//$entryIDs = array();
 		$validate = new cnValidate();
 		$select[] = CN_ENTRY_TABLE . '.*';
 		$from[] = CN_ENTRY_TABLE;
@@ -162,33 +162,24 @@ class cnRetrieve
 					INNER JOIN ' . CN_TERM_TAXONOMY_TABLE . ' AS tt ON (tr.term_taxonomy_id = tt.term_taxonomy_id) 
 					WHERE 1=1 AND tt.term_id IN (\'' . implode("', '", $atts['category_in']) . '\') GROUP BY tr.entry_id HAVING COUNT(*) = ' . count($atts['category_in']) . ' ORDER BY tr.entry_id';
 			
-			/*
-			 * @todo What was I thinking here? I should have used $wpdb->get_col() so the results do not need looped thru for the entry ID.
-			 * Leave it for now since it works and I need to more time for testing than I have if I change it now.
-			 */
 			// Store the entryIDs that exist on all of the supplied category IDs
-			//$results = $wpdb->get_results($sql);
-			//print_r($results);
 			$results = $wpdb->get_col($sql);
 			//print_r($results);
 			
 			if ( ! empty($results) )
 			{
-				$entryIDs = $results;
-				/*foreach ( $results as $result )
-				{
-					$entryIDs[] = $result->entry_id;
-				}*/
+				//$entryIDs = $results;
+				$where[] = 'AND ' . CN_ENTRY_TABLE . '.id IN (\'' . implode("', '", $results ) . '\')';
 			}
-			else
-			{
+			//else
+			//{
 				/**
 				 * @TODO This is hack. This is being set because if no results are returned then this will not pass
 				 * the empty() check for the entry IDs and then the main query will return all entries. Maybe it would
 				 * be best to just return an empty array. Let's sleep on it.
 				 */
-				$entryIDs = array('NONE');
-			}
+				//$entryIDs = array('NONE');
+			//}
 			
 			/*
 			 * This is the query to use to return entry IDs that are in the same categories. The COUNT value
@@ -232,13 +223,23 @@ class cnRetrieve
 			// Convert the supplied IDs $atts['id'] to an array if it was not supplied as an array.
 			if ( ! empty( $atts['id'] ) && ! is_array( $atts['id'] ) ) $atts['id'] = explode( ',' , trim( $atts['id'] ) );
 			
-			if ( empty( $atts['search_terms'] ) )
+			// Set query string to return specific entries.
+			if ( ! empty($atts['id']) ) $where[] = 'AND ' . CN_ENTRY_TABLE . '.id IN (\'' . implode("', '", $atts['id'] ) . '\')';
+		/*
+		 * // END --> Set up the query to only return the entries that match the supplied IDs.
+		 */
+		
+		
+		/*
+		 * // START --> Set up the query to only return the entries that match the supplied search terms.
+		 */
+			if ( ! empty( $atts['search_terms'] ) )
 			{
 				// Merge the entries found when using category_in and the supplied entry IDs.
-				$atts['id'] = array_unique( array_merge( (array) $atts['id'], (array) $entryIDs ) );
-			}
-			else
-			{
+				//$atts['id'] = array_unique( array_merge( (array) $atts['id'], (array) $entryIDs ) );
+			//}
+			//else
+			//{
 				$searchResults = $this->search( array('search' => $atts['search_terms']) );
 				//print_r($searchResults);
 				
@@ -246,21 +247,23 @@ class cnRetrieve
 				// @todo Fix this hack.
 				if ( empty($searchResults) )
 				{
-					$atts['id'] =  array('NONE');
+					//$atts['id'] =  array('NONE');
+					
+					// @todo If returning an emtpy array works make sure to set the result counts.
+					return array();
 				}
 				else
 				{
 					// Set the entry IDs to be the search results.
-					$atts['id'] = array_unique( $searchResults );
+					//$atts['id'] = array_unique( $searchResults );
+					$where[] = 'AND ' . CN_ENTRY_TABLE . '.id IN (\'' . implode("', '", $searchResults ) . '\')';
 				}
 			}
-			
-			// Set query string to return specific entries.
-			if ( ! empty($atts['id']) || ! empty($entryIDs) ) $where[] = 'AND ' . CN_ENTRY_TABLE . '.id IN (\'' . implode("', '", $atts['id'] ) . '\')';
 		/*
-		 * // END --> Set up the query to only return the entries that match the supplied IDs.
+		 * // END --> Set up the query to only return the entries that match the supplied search terms.
 		 */
 		
+				
 		/*
 		 * // START --> Set up the query to only return the entry that matches the supplied slug.
 		 */
@@ -1380,19 +1383,23 @@ class cnRetrieve
 		$searchTerms = implode( '* ' , $atts['search'] ) . '*';
 		//$searchTerms = implode( ' ' , $atts['search'] );
 		
-		$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_TABLE . '.id 
+		/*$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_TABLE . '.id 
 								FROM ' . CN_ENTRY_TABLE . ' 
 								LEFT JOIN ' . CN_ENTRY_ADDRESS_TABLE . ' ON ( ' . CN_ENTRY_TABLE . '.id = ' . CN_ENTRY_ADDRESS_TABLE . '.entry_id ) 
 								LEFT JOIN ' . CN_ENTRY_PHONE_TABLE . ' ON ( ' . CN_ENTRY_TABLE . '.id = ' . CN_ENTRY_PHONE_TABLE . '.entry_id ) 
 								WHERE MATCH (' . implode( ', ' , $atts['fields_entry'] ) . ') AGAINST (%s IN BOOLEAN MODE) 
 								OR MATCH (' . implode( ', ' , $atts['fields_address'] ) . ') AGAINST (%s IN BOOLEAN MODE) 
 								OR MATCH (' . implode( ', ' , $atts['fields_phone'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , 
-								$searchTerms , $searchTerms , $searchTerms );
+								$searchTerms , $searchTerms , $searchTerms );*/
+		
+		$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_TABLE . '.id 
+								FROM ' . CN_ENTRY_TABLE . ' 
+								WHERE MATCH (' . implode( ', ' , $atts['fields_entry'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $searchTerms );
+		
 		//print_r($sql);
 			
 		$results = $wpdb->get_col($sql); // NOTE: If DB does not support FULLTEXT the query will fail and the $results will be an empty array.
 		//print_r($results);
-		
 		
 		// NOTE: The following is the error reported by MySQL when DB does not support FULLTEXT:  'The used table type doesn't support FULLTEXT indexes'
 		//print_r($wpdb->last_error);
@@ -1428,7 +1435,7 @@ class cnRetrieve
 								WHERE ' . implode( ' OR ' , $like) ;
 			//print_r($sql);
 				
-			$results = $wpdb->get_col($sql);
+			//$results = $wpdb->get_col($sql);
 			//print_r($results);
 		}
 		

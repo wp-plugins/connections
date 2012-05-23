@@ -238,7 +238,7 @@ function _connections_list($atts, $content = NULL)
 				
 				/*
 				 * The alpha index is only displayed if set set to true and not set to repeat using the shortcode attributes.
-				 * If a alpha index is set to repeat, that is handled separately.
+				 * If alpha index is set to repeat, that is handled separately.
 				 */
 				if ( $atts['show_alphaindex'] && ! $atts['repeat_alphaindex'] )
 				{

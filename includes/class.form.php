@@ -1059,9 +1059,15 @@ class cnFormObjects
 							echo  '<label for="longitude">Longitude</label>';
 							echo  '<input type="text" name="address[::FIELD::][longitude]" value="">';
 						echo  '</div>';
+						
+						echo '<a class="geocode button" data-uid="::FIELD::" href="#">Geocode</a>';
+						
 					echo  '</div>';
 					
 					echo  '<div class="clear"></div>';
+					
+					echo '<div class="map" id="map-::FIELD::" data-map-id="::FIELD::" style="display: none; height: 400px; width: 100%">Geocode</div>';
+					
 					echo  '<br>';
 					echo  '<p class="remove-button"><a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#address_row_::FIELD::\'); return false;">Remove</a></p>';
 				
