@@ -136,15 +136,18 @@ if (!class_exists('connectionsLoad'))
 		
 		public function start()
 		{
-			global $wpdb, $current_user;
+			global $wpdb;
 		
-			get_currentuserinfo();
-			$this->currentUser->setID($current_user->ID);
+			/*get_currentuserinfo();
+			$this->currentUser->setID($current_user->ID);*/
 			
 			// Load the translation files.
 			load_plugin_textdomain( 'connections' , false , CN_DIR_NAME . '/lang' );
 			
 			//$this->options->setDBVersion('0.1.7');
+			
+			// Setup the current user object
+			add_action( 'init', array(&$this, 'setupCurrentUser' ) );
 			
 			// Register Common scripts
 			add_action( 'init', array(&$this, 'registerScripts' ) );
@@ -348,8 +351,44 @@ if (!class_exists('connectionsLoad'))
 			if ( $this->options->getGoogleMapsAPI() === NULL ) $this->options->setGoogleMapsAPI(TRUE);
 			
 			if ( $this->options->getJavaScriptFooter() === NULL ) $this->options->setJavaScriptFooter(TRUE);
-						
+			
+			// Set the default search field settings.
+			$search = $this->options->getSearchFields();
+			//var_dump($search);
+			( ! isset( $search->family_name ) ) ? $field['family_name'] = TRUE : $field['family_name'] = $search->family_name;
+			( ! isset( $search->first_name ) ) ? $field['first_name'] = TRUE : $field['first_name'] = $search->first_name;
+			( ! isset( $search->last_name ) ) ? $field['last_name'] = TRUE : $field['last_name'] = $search->last_name;
+			( ! isset( $search->title ) ) ? $field['title'] = TRUE : $field['title'] = $search->title;
+			( ! isset( $search->organization ) ) ? $field['organization'] = TRUE : $field['organization'] = $search->organization;
+			( ! isset( $search->department ) ) ? $field['department'] = TRUE : $field['department'] = $search->department;
+			( ! isset( $search->contact_first_name ) ) ? $field['contact_first_name'] = TRUE : $field['contact_first_name'] = $search->contact_first_name;
+			( ! isset( $search->contact_last_name ) ) ? $field['contact_last_name'] = TRUE : $field['contact_last_name'] = $search->contact_last_name;
+			( ! isset( $search->bio ) ) ? $field['bio'] = TRUE : $field['bio'] = $search->bio ;
+			( ! isset( $search->notes ) ) ? $field['notes'] = TRUE : $field['notes'] = $search->notes;
+			( ! isset( $search->address_line_1 ) ) ? $field['address_line_1'] = TRUE : $field['address_line_1'] = $search->address_line_1;
+			( ! isset( $search->address_line_2 ) ) ? $field['address_line_2'] = TRUE : $field['address_line_2'] = $search->address_line_2;
+			( ! isset( $search->address_line_3 ) ) ? $field['address_line_3'] = TRUE : $field['address_line_3'] = $search->address_line_3;
+			( ! isset( $search->address_city ) ) ? $field['address_city'] = TRUE : $field['address_city'] = $search->address_city;
+			( ! isset( $search->address_state ) ) ? $field['address_state'] = TRUE : $field['address_state'] = $search->address_state;
+			( ! isset( $search->address_zipcode ) ) ? $field['address_zipcode'] = TRUE : $field['address_zipcode'] = $search->address_zipcode;
+			( ! isset( $search->address_country ) ) ? $field['address_country'] = TRUE : $field['address_country'] = $search->address_country;
+			( ! isset( $search->phone_number ) ) ? $field['phone_number'] = TRUE : $field['phone_number'] = $search->phone_number;
+			
+			$this->options->setSearchFields($field);
+			
+			// Save the default options
 			$this->options->saveOptions();
+		}
+		
+		/**
+		 * Register the current user ID.
+		 * 
+		 * @return NULL
+		 */
+		public function setupCurrentUser()
+		{
+			$current_user = wp_get_current_user();
+			$this->currentUser->setID($current_user->ID);
 		}
 		
 		public function displayMessages()

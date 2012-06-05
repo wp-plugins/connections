@@ -911,6 +911,10 @@ function updateSettings()
 		$connections->options->setJavaScriptFooter(FALSE);
 	}
 	
+	// Save the search field choices.
+	
+	$connections->options->setSearchFields( $_POST['settings']['search']['field'] );
+	
 	$connections->options->saveOptions();
 	$connections->setSuccessMessage('settings_updated');
 }

@@ -254,7 +254,7 @@ function connectionsShowViewPage( $action = NULL )
 						
 						if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) )
 						{
-							$searchResults = $connections->retrieve->search( array( 'search' => $_GET['s'] ) );
+							$searchResults = $connections->retrieve->search( array( 'terms' => $_GET['s'] ) );
 							//print_r($searchResults);
 							
 							$retrieveAttr['id'] = $searchResults;

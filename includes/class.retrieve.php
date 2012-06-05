@@ -240,7 +240,7 @@ class cnRetrieve
 			//}
 			//else
 			//{
-				$searchResults = $this->search( array('search' => $atts['search_terms']) );
+				$searchResults = $this->search( array('terms' => $atts['search_terms']) );
 				//print_r($searchResults);
 				
 				// If there were no results, set the $atts['id'] to NONE. When the main query is run, no results will return because no entries will have an ID of NONE.
@@ -249,7 +249,7 @@ class cnRetrieve
 				{
 					//$atts['id'] =  array('NONE');
 					
-					// @todo If returning an emtpy array works make sure to set the result counts.
+					// @todo If returning an empty array works make sure to set the result counts.
 					return array();
 				}
 				else
@@ -1343,7 +1343,7 @@ class cnRetrieve
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['search'] = array();
+			$defaultAttr['terms'] = array();
 			$defaultAttr['fields_entry'] = array( 'family_name' ,
 											'first_name' ,
 											'middle_name' ,
@@ -1371,50 +1371,102 @@ class cnRetrieve
 		 */
 		
 		// If no search terms were entered, return an empty array.
-		if ( empty( $atts['search'] ) ) return array();
+		if ( empty( $atts['terms'] ) ) return array();
 		
 		// If value is a string, string the white space and covert to an array.
-		if ( ! is_array( $atts['search'] ) ) $atts['search'] = explode( ' ' , trim( $atts['search'] ) );
+		if ( ! is_array( $atts['terms'] ) ) $atts['terms'] = explode( ' ' , trim( $atts['terms'] ) );
 		
 		// Trim any white space from around the terms in the array.
-		array_walk( $atts['search'] , 'trim' );
-		
-		// Convert the search terms to a string adding the wild card to the end of each term to allow wider search results.
-		$searchTerms = implode( '* ' , $atts['search'] ) . '*';
-		//$searchTerms = implode( ' ' , $atts['search'] );
-		
-		/*$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_TABLE . '.id 
-								FROM ' . CN_ENTRY_TABLE . ' 
-								LEFT JOIN ' . CN_ENTRY_ADDRESS_TABLE . ' ON ( ' . CN_ENTRY_TABLE . '.id = ' . CN_ENTRY_ADDRESS_TABLE . '.entry_id ) 
-								LEFT JOIN ' . CN_ENTRY_PHONE_TABLE . ' ON ( ' . CN_ENTRY_TABLE . '.id = ' . CN_ENTRY_PHONE_TABLE . '.entry_id ) 
-								WHERE MATCH (' . implode( ', ' , $atts['fields_entry'] ) . ') AGAINST (%s IN BOOLEAN MODE) 
-								OR MATCH (' . implode( ', ' , $atts['fields_address'] ) . ') AGAINST (%s IN BOOLEAN MODE) 
-								OR MATCH (' . implode( ', ' , $atts['fields_phone'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , 
-								$searchTerms , $searchTerms , $searchTerms );*/
-		
-		$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_TABLE . '.id 
-								FROM ' . CN_ENTRY_TABLE . ' 
-								WHERE MATCH (' . implode( ', ' , $atts['fields_entry'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $searchTerms );
-		
-		//print_r($sql);
-			
-		$results = $wpdb->get_col($sql); // NOTE: If DB does not support FULLTEXT the query will fail and the $results will be an empty array.
-		//print_r($results);
-		
-		// NOTE: The following is the error reported by MySQL when DB does not support FULLTEXT:  'The used table type doesn't support FULLTEXT indexes'
-		//print_r($wpdb->last_error);
+		array_walk( $atts['terms'] , 'trim' );
 		
 		
 		/*
-		 * If no results are found, perhaps to the way MySQL performs FULLTEXT queries 
-		 * or the DB not supporting FULLTEXT, we'll run a LIKE query.
+		 * Perform search using FULLTEXT if enabled.
+		 * 
+		 * NOTE: The following is the error reported by MySQL when DB does not support FULLTEXT:  'The used table type doesn't support FULLTEXT indexes'
+		 * NOTE: If DB does not support FULLTEXT the query will fail and the $results will be an empty array.
 		 */
-		if ( empty($results) )
+		if ( TRUE )
+		{
+			$entryResults = array();
+			$addressResults = array();
+			$phoneResults = array();
+			
+			// Convert the search terms to a string adding the wild card to the end of each term to allow wider search results.
+			//$searchTerms = implode( '* ' , $atts['search'] ) . '*';
+			//$searchTerms = implode( ' ' , $atts['search'] );
+			
+			foreach ( $atts['terms'] as $term )
+			{
+				/*
+				 * --> START <--  Search the entry table.
+				 */
+				$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_TABLE . '.id 
+										FROM ' . CN_ENTRY_TABLE . ' 
+										WHERE MATCH (' . implode( ', ' , $atts['fields_entry'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $term );
+				
+				//print_r($sql);
+					
+				$entryResults = array_merge( $entryResults , $wpdb->get_col($sql) );
+				//print_r($entryResults);
+				
+				/*
+				 * --> END <--  Search the entry table.
+				 */
+				
+				/*
+				 * --> START <--  Search the address table.
+				 */
+				$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_ADDRESS_TABLE . '.entry_id 
+										FROM ' . CN_ENTRY_ADDRESS_TABLE . ' 
+										WHERE MATCH (' . implode( ', ' , $atts['fields_address'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $term );
+				
+				//print_r($sql);
+					
+				$addressResults = array_merge( $addressResults , $wpdb->get_col($sql) );
+				//print_r($addressResults);
+				
+				/*
+				 * --> END <--  Search the address table.
+				 */
+				
+				/*
+				 * --> START <--  Search the phone table.
+				 */
+				$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_PHONE_TABLE . '.entry_id 
+										FROM ' . CN_ENTRY_PHONE_TABLE . ' 
+										WHERE MATCH (' . implode( ', ' , $atts['fields_phone'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $term );
+				
+				//print_r($sql);
+					
+				$phoneResults = array_merge( $phoneResults , $wpdb->get_col($sql) );
+				//print_r($phoneResults);
+				
+				/*
+				 * --> END <--  Search the phone table.
+				 */
+			}
+				
+			
+			$mergedResults = array_unique( array_merge( $entryResults , $addressResults , $phoneResults ) );
+			print_r( array_unique( array_merge( $entryResults , $addressResults , $phoneResults ) ) );
+			
+			foreach ( $mergedResults as $id )
+			{
+				if ( in_array($id , $entryResults) && in_array($id , $addressResults) && in_array($id , $phoneResults) ) $results[] = $id;
+			}
+		}
+		
+		/*
+		 * If no results are found, perhaps to the way MySQL performs FULLTEXT queries, FULLText search being disabled 
+		 * or the DB not supporting FULLTEXT, run a LIKE search.
+		 */
+		if ( FALSE )
 		{
 			// Merge all the columns that will me searched.
 			$columns = array_merge( $defaultAttr['fields_entry'] , $defaultAttr['fields_address'] , $defaultAttr['fields_phone'] );
 			
-			foreach ( $atts['search'] as $term )
+			foreach ( $atts['terms'] as $term )
 			{
 				/*
 				 * Attempt to secure the query using $wpdb->prepare() and like_escape()
@@ -1439,7 +1491,7 @@ class cnRetrieve
 			//print_r($results);
 		}
 		
-		return $results;
+		return array_unique($results);
 	}
 	
 	/**
