@@ -85,9 +85,13 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 
 = 0.7.x.x xx/xx/12 =
 * FEATURE: Added Auto and manual geocoding of addresses.
+* FEATURE: Which fields to search can now be defined in the settings.
 * BUG: Use character entity codes for the page forward / page backward buttons.
+* BUG: Add the missing queries to enable FULLTEXT index for the default search fields.
 * OTHER: Update Chosen CSS version query string.
 * OTHER: Added some additional CSS to keep theme's from breaking Connections layout.
+* OTHER: Improve search results.
+* OTHER: Improve search scalability.
 
 = 0.7.2.7 04/23/12 =
 * OTHER: Started to internationalize.

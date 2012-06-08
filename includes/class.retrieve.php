@@ -1383,8 +1383,20 @@ class cnRetrieve
 		/*
 		 * Perform search using FULLTEXT if enabled.
 		 * 
-		 * NOTE: The following is the error reported by MySQL when DB does not support FULLTEXT:  'The used table type doesn't support FULLTEXT indexes'
-		 * NOTE: If DB does not support FULLTEXT the query will fail and the $results will be an empty array.
+		 * NOTES:
+		 * 	The following is the error reported by MySQL when DB does not support FULLTEXT:  'The used table type doesn't support FULLTEXT indexes'
+		 * 	If DB does not support FULLTEXT the query will fail and the $results will be an empty array.
+		 * 
+		 * 	FULLTEXT Restrictions as noted here: http://onlamp.com/onlamp/2003/06/26/fulltext.html
+		 * 
+		 * 		Some of the default behaviors of these restrictions can be changed in your my.cnf or using the SET command
+		 * 
+		 * 		FULLTEXT indices are NOT supported in InnoDB tables.
+		 * 		MySQL requires that you have at least three rows of data in your result set before it will return any results.
+		 * 		By default, if a search term appears in more than 50% of the rows then MySQL will not return any results.
+		 * 		By default, your search query must be at least four characters long and may not exceed 254 characters.
+		 * 		MySQL has a default stopwords file that has a list of common words (i.e., the, that, has) which are not returned in your search. In other words, searching for the will return zero rows.
+		 * 		According to MySQL's manual, the argument to AGAINST() must be a constant string. In other words, you cannot search for values returned within the query.
 		 */
 		if ( TRUE )
 		{
@@ -1393,68 +1405,36 @@ class cnRetrieve
 			$phoneResults = array();
 			
 			// Convert the search terms to a string adding the wild card to the end of each term to allow wider search results.
-			//$searchTerms = implode( '* ' , $atts['search'] ) . '*';
-			//$searchTerms = implode( ' ' , $atts['search'] );
+			//$terms = implode( '* ' , $atts['terms'] ) . '*';
+			$terms = '+' . implode( ' +' , $atts['terms'] );
+			//$terms = implode( ' ' , $atts['terms'] );
 			
-			foreach ( $atts['terms'] as $term )
-			{
-				/*
-				 * --> START <--  Search the entry table.
-				 */
-				$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_TABLE . '.id 
+						
+			$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_TABLE . '.id 
 										FROM ' . CN_ENTRY_TABLE . ' 
-										WHERE MATCH (' . implode( ', ' , $atts['fields_entry'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $term );
-				
-				//print_r($sql);
-					
-				$entryResults = array_merge( $entryResults , $wpdb->get_col($sql) );
-				//print_r($entryResults);
-				
-				/*
-				 * --> END <--  Search the entry table.
-				 */
-				
-				/*
-				 * --> START <--  Search the address table.
-				 */
-				$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_ADDRESS_TABLE . '.entry_id 
-										FROM ' . CN_ENTRY_ADDRESS_TABLE . ' 
-										WHERE MATCH (' . implode( ', ' , $atts['fields_address'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $term );
-				
-				//print_r($sql);
-					
-				$addressResults = array_merge( $addressResults , $wpdb->get_col($sql) );
-				//print_r($addressResults);
-				
-				/*
-				 * --> END <--  Search the address table.
-				 */
-				
-				/*
-				 * --> START <--  Search the phone table.
-				 */
-				$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_PHONE_TABLE . '.entry_id 
-										FROM ' . CN_ENTRY_PHONE_TABLE . ' 
-										WHERE MATCH (' . implode( ', ' , $atts['fields_phone'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $term );
-				
-				//print_r($sql);
-					
-				$phoneResults = array_merge( $phoneResults , $wpdb->get_col($sql) );
-				//print_r($phoneResults);
-				
-				/*
-				 * --> END <--  Search the phone table.
-				 */
-			}
-				
+										WHERE MATCH (' . implode( ', ' , $atts['fields_entry'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $terms );
+			print_r($sql);
+			$results = $wpdb->get_col($sql);
 			
-			$mergedResults = array_unique( array_merge( $entryResults , $addressResults , $phoneResults ) );
+			$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_ADDRESS_TABLE . '.entry_id 
+										FROM ' . CN_ENTRY_ADDRESS_TABLE . ' 
+										WHERE MATCH (' . implode( ', ' , $atts['fields_address'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $terms );
+			print_r($sql);
+			$results = array_merge( $results, $wpdb->get_col($sql) );
+			
+			$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_PHONE_TABLE . '.entry_id 
+										FROM ' . CN_ENTRY_PHONE_TABLE . ' 
+										WHERE MATCH (' . implode( ', ' , $atts['fields_phone'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $terms );
+			print_r($sql);
+			$results = array_merge( $results, $wpdb->get_col($sql) );
+			
+			/*$mergedResults = array_unique( array_merge( $entryResults , $addressResults , $phoneResults ) );
 			print_r( array_unique( array_merge( $entryResults , $addressResults , $phoneResults ) ) );
 			
 			foreach ( $mergedResults as $id )
 			{
 				if ( in_array($id , $entryResults) && in_array($id , $addressResults) && in_array($id , $phoneResults) ) $results[] = $id;
-			}
+			}*/
 		}
 		
 		/*

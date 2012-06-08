@@ -338,7 +338,8 @@ function connectionsShowSettingsPage()
 									<td>
 										<p>The selected fields will be searched.</p>
 										<small><strong>NOTE: </strong>This only applied to search in the the Connections admin and premium templates that enable search in the front end.</small>
-										
+										<small><strong>NOTE: </strong>Only change when necessary. It can take seconds to many minutes to build the indexes.</small>
+
 										<label>
 											<input type="checkbox" value="true" name="settings[search][field][family_name]" id="search-field-family-name" 
 												<?php if ( $search->family_name ) echo 'CHECKED ' ?>
@@ -349,6 +350,12 @@ function connectionsShowSettingsPage()
 											<input type="checkbox" value="true" name="settings[search][field][first_name]" id="search-field-first-name" 
 												<?php if ( $search->first_name ) echo 'CHECKED ' ?>
 											/>First Name
+										</label>
+										
+										<label>
+											<input type="checkbox" value="true" name="settings[search][field][middle_name]" id="search-field-middle-name" 
+												<?php if ( $search->middle_name ) echo 'CHECKED ' ?>
+											/>Middle Name
 										</label>
 										
 										<label>

@@ -623,9 +623,11 @@ if (!class_exists('connectionsLoad'))
 					edited_by bigint(20) NOT NULL,
 					owner bigint(20) NOT NULL,
 					status varchar(20) NOT NULL,
-			        PRIMARY KEY  (id)
+			        PRIMARY KEY  (id),
+					FULLTEXT search (family_name, first_name, middle_name, last_name, title, organization, department, contact_first_name, contact_last_name, bio, notes)
 			    ) $charsetCollate";
 			    
+				// Create the table
 			    dbDelta($entryTable);
 			}
 			
@@ -641,6 +643,7 @@ if (!class_exists('connectionsLoad'))
 					INDEX name (name)
 			    ) $charsetCollate";
 			    
+				// Create the table
 			    dbDelta($termsTable);
 			}
 			
@@ -658,6 +661,7 @@ if (!class_exists('connectionsLoad'))
 					INDEX taxonomy (taxonomy)
 			    ) $charsetCollate";
 			    
+				// Create the table
 			    dbDelta($termTaxonomyTable);
 			}
 			
@@ -671,6 +675,7 @@ if (!class_exists('connectionsLoad'))
 					KEY term_taxonomy_id (term_taxonomy_id)
 			    ) $charsetCollate";
 			    
+				// Create the table
 			    dbDelta($termTermRelationshipTable);
 			}
 			
@@ -700,6 +705,7 @@ if (!class_exists('connectionsLoad'))
 					KEY meta_key (meta_key)
 			    ) $charsetCollate";
 			    
+				// Create the table
 			    dbDelta($entryTableMeta);
 			}
 			
@@ -723,10 +729,15 @@ if (!class_exists('connectionsLoad'))
 					`latitude` decimal(15,12) default NULL,
 					`longitude` decimal(15,12) default NULL,
 					`visibility` tinytext NOT NULL,
-					PRIMARY KEY (`id`, `entry_id`)
+					PRIMARY KEY (`id`, `entry_id`),
+					FULLTEXT search (line_1, line_2, line_3, city, state, zipcode, country)
 			    ) $charsetCollate";
 			    
+				// Create the table
 			    dbDelta($entryTableAddress);
+				
+				// Add the FULLTEXT index
+				$wpdb->query('ALTER TABLE ' . CN_ENTRY_ADDRESS_TABLE . ' ADD FULLTEXT (' . implode(',', $fields['fields_address']) . ')');
 			}
 			
 			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_ENTRY_PHONE_TABLE . "'") != CN_ENTRY_PHONE_TABLE)
@@ -741,10 +752,15 @@ if (!class_exists('connectionsLoad'))
 					`type` tinytext NOT NULL,
 					`number` tinytext NOT NULL,
 					`visibility` tinytext NOT NULL,
-					PRIMARY KEY (`id`, `entry_id`)
+					PRIMARY KEY (`id`, `entry_id`),
+					FULLTEXT search (phone)
 			    ) $charsetCollate";
 			    
+				// Create the table
 			    dbDelta($entryTablePhone);
+				
+				// Create the table
+				$wpdb->query('ALTER TABLE ' . CN_ENTRY_PHONE_TABLE . ' ADD FULLTEXT (' . implode(',', $fields['fields_phone']) . ')');
 			}
 			
 			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_ENTRY_EMAIL_TABLE . "'") != CN_ENTRY_EMAIL_TABLE)
@@ -762,6 +778,7 @@ if (!class_exists('connectionsLoad'))
 					PRIMARY KEY (`id`, `entry_id`)
 			    ) $charsetCollate";
 			    
+				// Create the table
 			    dbDelta($entryTableEmail);
 			}
 			
@@ -780,6 +797,7 @@ if (!class_exists('connectionsLoad'))
 					PRIMARY KEY (`id`, `entry_id`)
 			    ) $charsetCollate";
 			    
+				// Create the table
 			    dbDelta($entryTableMessenger);
 			}
 			
@@ -798,6 +816,7 @@ if (!class_exists('connectionsLoad'))
 					PRIMARY KEY (`id`, `entry_id`)
 			    ) $charsetCollate";
 			    
+				// Create the table
 			    dbDelta($entryTableSocialMedia);
 			}
 			
@@ -821,6 +840,7 @@ if (!class_exists('connectionsLoad'))
 					PRIMARY KEY (`id`, `entry_id`)
 			    ) $charsetCollate";
 			    
+				// Create the table
 			    dbDelta($entryTableLink);
 			}
 			

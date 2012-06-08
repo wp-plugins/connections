@@ -1261,13 +1261,46 @@ class cnOptions
 	
 	/**
 	 * Saves the user's search field choices
+	 * 
+	 * @TODO this will fail on tables that do not support FULLTEXT. Should somehow check before processing
+	 * and set FULLTEXT support to FALSE
 	 */
     public function setSearchFields($field)
 	{
-		//var_dump($field);
+		global $wpdb;
 		
-		( ! isset( $field['family_name'] ) ) ? $search['family_name'] = FALSE : $search['family_name'] = $field['family_name'];
+		$wpdb->show_errors();
+		
+		/*
+		 * The permitted fields that are supported for FULLTEXT searching.
+		 */
+		/*$permittedFields['entry'] = array( 'family_name' ,
+										'first_name' ,
+										'middle_name' ,
+										'last_name' ,
+										'title' ,
+										'organization' ,
+										'department' ,
+										'contact_first_name' ,
+										'contact_last_name' ,
+										'bio' ,
+										'notes' );
+		$permittedFields['address'] = array( 'line_1' ,
+										'line_2' ,
+										'line_3' ,
+										'city' ,
+										'state' ,
+										'zipcode' ,
+										'country' );
+		$permittedFields['phone'] = array( 'number' );*/
+		
+		
+		/*
+		 * Build the array to store the user preferences.
+		 */
+		/*( ! isset( $field['family_name'] ) ) ? $search['family_name'] = FALSE : $search['family_name'] = $field['family_name'];
 		( ! isset( $field['first_name'] ) ) ? $search['first_name'] = FALSE : $search['first_name'] = $field['first_name'];
+		( ! isset( $field['middle_name'] ) ) ? $search['middle_name'] = FALSE : $search['middle_name'] = $field['middle_name'];
 		( ! isset( $field['last_name'] ) ) ? $search['last_name'] = FALSE : $search['last_name'] = $field['last_name'];
 		( ! isset( $field['title'] ) ) ? $search['title'] = FALSE : $search['title'] = $field['title'];
 		( ! isset( $field['organization'] ) ) ? $search['organization'] = FALSE : $search['organization'] = $field['organization'];
@@ -1275,19 +1308,84 @@ class cnOptions
 		( ! isset( $field['contact_first_name'] ) ) ? $search['contact_first_name'] = FALSE : $search['contact_first_name'] = $field['contact_first_name'];
 		( ! isset( $field['contact_last_name'] ) ) ? $search['contact_last_name'] = FALSE : $search['contact_last_name'] = $field['contact_last_name'];
 		( ! isset( $field['bio'] ) ) ? $search['bio'] = FALSE : $search['bio'] = $field['bio'];
-		( ! isset( $field['notes'] ) ) ? $search['notes'] = FALSE : $search['notes'] = $field['notes'];
-		( ! isset( $field['address_line_1'] ) ) ? $search['address_line_1'] = FALSE : $search['address_line_1'] = $field['address_line_1'];
+		( ! isset( $field['notes'] ) ) ? $search['notes'] = FALSE : $search['notes'] = $field['notes'];*/
+		
+		/*( ! isset( $field['address_line_1'] ) ) ? $search['address_line_1'] = FALSE : $search['address_line_1'] = $field['address_line_1'];
 		( ! isset( $field['address_line_2'] ) ) ? $search['address_line_2'] = FALSE : $search['address_line_2'] = $field['address_line_2'];
 		( ! isset( $field['address_line_3'] ) ) ? $search['address_line_3'] = FALSE : $search['address_line_3'] = $field['address_line_3'];
 		( ! isset( $field['address_city'] ) ) ? $search['address_city'] = FALSE : $search['address_city'] = $field['address_city'];
 		( ! isset( $field['address_state'] ) ) ? $search['address_state'] = FALSE : $search['address_state'] = $field['address_state'];
 		( ! isset( $field['address_zipcode'] ) ) ? $search['address_zipcode'] = FALSE : $search['address_zipcode'] = $field['address_zipcode'];
 		( ! isset( $field['address_country'] ) ) ? $search['address_country'] = FALSE : $search['address_country'] = $field['address_country'];
-		( ! isset( $field['phone_number'] ) ) ? $search['phone_number'] = FALSE : $search['phone_number'] = $field['phone_number'];
 		
-		//var_dump($search);die;
+		( ! isset( $field['phone_number'] ) ) ? $search['phone_number'] = FALSE : $search['phone_number'] = $field['phone_number'];*/
+		
+		
+		$search['family_name'] = ( isset( $field['family_name'] ) && $field['family_name'] != FALSE ) ? TRUE : FALSE;
+		$search['first_name'] = ( isset( $field['first_name'] ) && $field['first_name'] != FALSE ) ? TRUE : FALSE;
+		$search['middle_name'] = ( isset( $field['middle_name'] ) && $field['middle_name'] != FALSE ) ? TRUE : FALSE;
+		$search['last_name'] = ( isset( $field['last_name'] ) && $field['last_name'] != FALSE ) ? TRUE : FALSE;
+		$search['title'] = ( isset( $field['title'] ) && $field['title'] != FALSE ) ? TRUE : FALSE;
+		$search['organization'] = ( isset( $field['organization'] ) && $field['organization'] != FALSE ) ? TRUE : FALSE;
+		$search['department'] = ( isset( $field['department'] ) && $field['department'] != FALSE ) ? TRUE : FALSE;
+		$search['contact_first_name'] = ( isset( $field['contact_first_name'] ) && $field['contact_first_name'] != FALSE ) ? TRUE : FALSE;
+		$search['contact_last_name'] = ( isset( $field['contact_last_name'] ) && $field['contact_last_name'] != FALSE ) ? TRUE : FALSE;
+		$search['bio'] = ( isset( $field['bio'] ) && $field['bio'] != FALSE ) ? TRUE : FALSE;
+		$search['notes'] = ( isset( $field['notes'] ) && $field['notes'] != FALSE ) ? TRUE : FALSE;
+		
+		$search['address_line_1'] = ( isset( $field['address_line_1'] ) && $field['address_line_1'] != FALSE ) ? TRUE : FALSE;
+		$search['address_line_2'] = ( isset( $field['address_line_2'] ) && $field['address_line_2'] != FALSE ) ? TRUE : FALSE;
+		$search['address_line_3'] = ( isset( $field['address_line_3'] ) && $field['address_line_3'] != FALSE ) ? TRUE : FALSE;
+		$search['address_city'] = ( isset( $field['address_city'] ) && $field['address_city'] != FALSE ) ? TRUE : FALSE;
+		$search['address_state'] = ( isset( $field['address_state'] ) && $field['address_state'] != FALSE ) ? TRUE : FALSE;
+		$search['address_zipcode'] = ( isset( $field['address_zipcode'] ) && $field['address_zipcode'] != FALSE ) ? TRUE : FALSE;
+		$search['address_country'] = ( isset( $field['address_country'] ) && $field['address_country'] != FALSE ) ? TRUE : FALSE;
+		
+		$search['phone_number'] = ( isset( $field['phone_number'] ) && $field['phone_number'] != FALSE ) ? TRUE : FALSE;
+		
+		/*
+		 * Drop the current FULLTEXT indexes.
+		 * @TODO indexes should only be dropped on tables that are changing.
+		 */
+		$wpdb->query('ALTER TABLE ' . CN_ENTRY_TABLE . ' DROP INDEX search');		
+		$wpdb->query('ALTER TABLE ' . CN_ENTRY_ADDRESS_TABLE . ' DROP INDEX search');		
+		$wpdb->query('ALTER TABLE ' . CN_ENTRY_PHONE_TABLE . ' DROP INDEX search');
+		
+		/*
+		 * Recreate the FULLTEXT indexes based on the user choices
+		 */
+		
+		// Build the arrays that will be imploded in the query statement.
+		if ( $search['family_name'] ) $column['entry'][] = 'family_name';
+		if ( $search['first_name'] ) $column['entry'][] = 'first_name';
+		if ( $search['middle_name'] ) $column['entry'][] = 'middle_name';
+		if ( $search['last_name'] ) $column['entry'][] = 'last_name';
+		if ( $search['title'] ) $column['entry'][] = 'title';
+		if ( $search['organization'] ) $column['entry'][] = 'organization';
+		if ( $search['department'] ) $column['entry'][] = 'department';
+		if ( $search['contact_first_name'] ) $column['entry'][] = 'contact_first_name';
+		if ( $search['contact_last_name'] ) $column['entry'][] = 'contact_last_name';
+		if ( $search['bio'] ) $column['entry'][] = 'bio';
+		if ( $search['notes'] ) $column['entry'][] = 'notes';
+		
+		if ( $search['address_line_1'] ) $column['address'][] = 'line_1';
+		if ( $search['address_line_2'] ) $column['address'][] = 'line_2';
+		if ( $search['address_line_3'] ) $column['address'][] = 'line_3';
+		if ( $search['address_city'] ) $column['address'][] = 'city';
+		if ( $search['address_state'] ) $column['address'][] = 'state';
+		if ( $search['address_zipcode'] ) $column['address'][] = 'zipcode';
+		if ( $search['address_country'] ) $column['address'][] = 'country';
+		
+		if ( $search['phone_number'] ) $column['phone'][] = 'number';
+		
+		// Add the FULLTEXT indexes.
+		if ( ! empty( $column['entry'] ) ) $wpdb->query('ALTER TABLE ' . CN_ENTRY_TABLE . ' ADD FULLTEXT search (' . implode(',', $column['entry']) . ')');				
+		if ( ! empty( $column['address'] ) ) $wpdb->query('ALTER TABLE ' . CN_ENTRY_ADDRESS_TABLE . ' ADD FULLTEXT search (' . implode(',', $column['address']) . ')');				
+		if ( ! empty( $column['phone'] ) ) $wpdb->query('ALTER TABLE ' . CN_ENTRY_PHONE_TABLE . ' ADD FULLTEXT search (' . implode(',', $column['phone']) . ')');
 		
 		$this->searchFields = $search;
+		
+		$wpdb->hide_errors();
 	}
 	
     /**
