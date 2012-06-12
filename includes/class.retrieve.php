@@ -1327,6 +1327,10 @@ class cnRetrieve
 	 * @todo Allow the fields for each table to be defined as a comma delimited list, convert an array and validate against of list of valid table fields.
 	 * @todo Add a filter to allow the search fields to be changed.
 	 * 
+	 * Resources used:
+	 * 	http://devzone.zend.com/26/using-mysql-full-text-searching/
+	 * 	http://onlamp.com/onlamp/2003/06/26/fulltext.html
+	 * 
 	 * @author Steven A. Zahm
 	 * @since 0.7.2.0
 	 * @param array $suppliedAttr [optional]
@@ -1339,33 +1343,38 @@ class cnRetrieve
 		$validate = new cnValidate();
 		$results = array();
 		$like = array();
+		$search = $connections->options->getSearchFields();
 		
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
 			$defaultAttr['terms'] = array();
-			$defaultAttr['fields_entry'] = array( 'family_name' ,
-											'first_name' ,
-											'middle_name' ,
-											'last_name' ,
-											'title' ,
-											'organization' ,
-											'department' ,
-											'contact_first_name' ,
-											'contact_last_name' ,
-											'bio' ,
-											'notes' );
-			$defaultAttr['fields_address'] = array( 'line_1' ,
-											'line_2' ,
-											'line_3' ,
-											'city' ,
-											'state' ,
-											'zipcode' ,
-											'country' );
-			$defaultAttr['fields_phone'] = array( 'number' );
+			
+			if ( $search->family_name ) $defaultAttr['fields_entry'][] = 'family_name';
+			if ( $search->first_name ) $defaultAttr['fields_entry'][] = 'first_name';
+			if ( $search->middle_name ) $defaultAttr['fields_entry'][] = 'middle_name';
+			if ( $search->last_name ) $defaultAttr['fields_entry'][] = 'last_name';
+			if ( $search->title ) $defaultAttr['fields_entry'][] = 'title';
+			if ( $search->organization ) $defaultAttr['fields_entry'][] = 'organization';
+			if ( $search->department ) $defaultAttr['fields_entry'][] = 'department';
+			if ( $search->contact_first_name ) $defaultAttr['fields_entry'][] = 'contact_first_name';
+			if ( $search->contact_last_name ) $defaultAttr['fields_entry'][] = 'contact_last_name';
+			if ( $search->bio ) $defaultAttr['fields_entry'][] = 'bio';
+			if ( $search->notes ) $defaultAttr['fields_entry'][] = 'notes';
+			
+			if ( $search->address_line_1 ) $defaultAttr['fields_address'][] = 'line_1';
+			if ( $search->address_line_2 ) $defaultAttr['fields_address'][] = 'line_2';
+			if ( $search->address_line_3 ) $defaultAttr['fields_address'][] = 'line_3';
+			if ( $search->address_city ) $defaultAttr['fields_address'][] = 'city';
+			if ( $search->address_state ) $defaultAttr['fields_address'][] = 'state';
+			if ( $search->address_country ) $defaultAttr['fields_address'][] = 'country';
+			
+			if ( $search->phone_number ) $defaultAttr['fields_phone'][] = 'number';
 			
 			$atts = $validate->attributesArray($defaultAttr, $suppliedAttr);
 			//print_r($atts);
+			
+			// @todo Validate each fiels array to ensure only permitted fields will be used.
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -1383,6 +1392,9 @@ class cnRetrieve
 		/*
 		 * Perform search using FULLTEXT if enabled.
 		 * 
+		 * Perform the search on each table individually because joining the tables doesn't scale when
+		 * there are a large number of entries.
+		 * 
 		 * NOTES:
 		 * 	The following is the error reported by MySQL when DB does not support FULLTEXT:  'The used table type doesn't support FULLTEXT indexes'
 		 * 	If DB does not support FULLTEXT the query will fail and the $results will be an empty array.
@@ -1398,12 +1410,8 @@ class cnRetrieve
 		 * 		MySQL has a default stopwords file that has a list of common words (i.e., the, that, has) which are not returned in your search. In other words, searching for the will return zero rows.
 		 * 		According to MySQL's manual, the argument to AGAINST() must be a constant string. In other words, you cannot search for values returned within the query.
 		 */
-		if ( TRUE )
+		if ( FALSE )
 		{
-			$entryResults = array();
-			$addressResults = array();
-			$phoneResults = array();
-			
 			// Convert the search terms to a string adding the wild card to the end of each term to allow wider search results.
 			//$terms = implode( '* ' , $atts['terms'] ) . '*';
 			$terms = '+' . implode( ' +' , $atts['terms'] );
@@ -1413,62 +1421,109 @@ class cnRetrieve
 			$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_TABLE . '.id 
 										FROM ' . CN_ENTRY_TABLE . ' 
 										WHERE MATCH (' . implode( ', ' , $atts['fields_entry'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $terms );
-			print_r($sql);
+			//print_r($sql);
 			$results = $wpdb->get_col($sql);
 			
 			$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_ADDRESS_TABLE . '.entry_id 
 										FROM ' . CN_ENTRY_ADDRESS_TABLE . ' 
 										WHERE MATCH (' . implode( ', ' , $atts['fields_address'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $terms );
-			print_r($sql);
+			//print_r($sql);
 			$results = array_merge( $results, $wpdb->get_col($sql) );
 			
 			$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_PHONE_TABLE . '.entry_id 
 										FROM ' . CN_ENTRY_PHONE_TABLE . ' 
 										WHERE MATCH (' . implode( ', ' , $atts['fields_phone'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $terms );
-			print_r($sql);
+			//print_r($sql);
 			$results = array_merge( $results, $wpdb->get_col($sql) );
-			
-			/*$mergedResults = array_unique( array_merge( $entryResults , $addressResults , $phoneResults ) );
-			print_r( array_unique( array_merge( $entryResults , $addressResults , $phoneResults ) ) );
-			
-			foreach ( $mergedResults as $id )
-			{
-				if ( in_array($id , $entryResults) && in_array($id , $addressResults) && in_array($id , $phoneResults) ) $results[] = $id;
-			}*/
 		}
 		
 		/*
-		 * If no results are found, perhaps to the way MySQL performs FULLTEXT queries, FULLText search being disabled 
-		 * or the DB not supporting FULLTEXT, run a LIKE search.
+		 * If no results are found, perhaps to the way MySQL performs FULLTEXT queries, FULLTEXT search being disabled 
+		 * or the DB not supporting FULLTEXT, run a LIKE query.
+		 * 
+		 * Perform the search on each table individually because joining the tables doesn't scale when
+		 * there are a large number of entries.
 		 */
-		if ( FALSE )
+		if ( TRUE )
 		{
-			// Merge all the columns that will me searched.
-			$columns = array_merge( $defaultAttr['fields_entry'] , $defaultAttr['fields_address'] , $defaultAttr['fields_phone'] );
-			
-			foreach ( $atts['terms'] as $term )
+			/*
+			 * Only search the primary records if at least one fields is selected to be searched.
+			 */
+			if ( ! empty( $defaultAttr['fields_entry'] ) )
 			{
-				/*
-				 * Attempt to secure the query using $wpdb->prepare() and like_escape()
-				 * 
-				 * Since $wpdb->prepare() required var for each directive in the query string we'll use array_fill 
-				 * where the count based on the number of columns that will be searched.
-				 */
-				$like[] = $wpdb->prepare( implode( ' LIKE %s OR ' , $columns ) . ' LIKE %s ' , array_fill( 0 , count($columns) , '%' . like_escape($term) . "%" ) );
+				foreach ( $atts['terms'] as $term )
+				{
+					/*
+					 * Attempt to secure the query using $wpdb->prepare() and like_escape()
+					 * 
+					 * Since $wpdb->prepare() required var for each directive in the query string we'll use array_fill 
+					 * where the count based on the number of columns that will be searched.
+					 */
+					$like[] = $wpdb->prepare( implode( ' LIKE %s OR ' , $defaultAttr['fields_entry'] ) . ' LIKE %s ' , array_fill( 0 , count( $defaultAttr['fields_entry'] ) , '%' . like_escape($term) . "%" ) );
+				}
+				
+				$sql =  'SELECT ' . CN_ENTRY_TABLE . '.id 
+									FROM ' . CN_ENTRY_TABLE . ' 
+									WHERE (' . implode( ') OR (' , $like) . ')';
+				//print_r($sql);
+					
+				$results = array_merge( $results, $wpdb->get_col($sql) );
+				//print_r($results);
+			}
+			/*
+			 * Only search the address records if at least one fields is selected to be searched.
+			 */
+			if ( ! empty( $defaultAttr['fields_address'] ) )
+			{
+				$like = array(); // Reset the like array.
+				
+				foreach ( $atts['terms'] as $term )
+				{
+					/*
+					 * Attempt to secure the query using $wpdb->prepare() and like_escape()
+					 * 
+					 * Since $wpdb->prepare() required var for each directive in the query string we'll use array_fill 
+					 * where the count based on the number of columns that will be searched.
+					 */
+					$like[] = $wpdb->prepare( implode( ' LIKE %s OR ' , $defaultAttr['fields_address'] ) . ' LIKE %s ' , array_fill( 0 , count( $defaultAttr['fields_address'] ) , '%' . like_escape($term) . "%" ) );
+				}
+				
+				$sql =  'SELECT ' . CN_ENTRY_ADDRESS_TABLE . '.entry_id 
+									FROM ' . CN_ENTRY_ADDRESS_TABLE . ' 
+									WHERE (' . implode( ') OR (' , $like) . ')';
+				//print_r($sql);
+					
+				$results = array_merge( $results, $wpdb->get_col($sql) );
+				//print_r($results);
 			}
 			
-			//var_dump($like);
-			//print_r( implode( ' ' , $like) );
-			
-			$sql =  'SELECT ' . CN_ENTRY_TABLE . '.id 
-								FROM ' . CN_ENTRY_TABLE . ' 
-								LEFT JOIN ' . CN_ENTRY_ADDRESS_TABLE . ' ON ( ' . CN_ENTRY_TABLE . '.id = ' . CN_ENTRY_ADDRESS_TABLE . '.entry_id ) 
-								LEFT JOIN ' . CN_ENTRY_PHONE_TABLE . ' ON ( ' . CN_ENTRY_TABLE . '.id = ' . CN_ENTRY_PHONE_TABLE . '.entry_id ) 
-								WHERE ' . implode( ' OR ' , $like) ;
-			//print_r($sql);
+			/*
+			 * Only search the phone records if thefield is selected to be search.
+			 */
+			if ( ! empty( $defaultAttr['fields_phone'] ) )
+			{
+				$like = array(); // Reset the like array.
 				
-			//$results = $wpdb->get_col($sql);
-			//print_r($results);
+				foreach ( $atts['terms'] as $term )
+				{
+					/*
+					 * Attempt to secure the query using $wpdb->prepare() and like_escape()
+					 * 
+					 * Since $wpdb->prepare() required var for each directive in the query string we'll use array_fill 
+					 * where the count based on the number of columns that will be searched.
+					 */
+					$like[] = $wpdb->prepare( implode( ' LIKE %s OR ' , $defaultAttr['fields_phone'] ) . ' LIKE %s ' , array_fill( 0 , count( $defaultAttr['fields_phone'] ) , '%' . like_escape($term) . "%" ) );
+				}
+				
+				$sql =  'SELECT ' . CN_ENTRY_PHONE_TABLE . '.entry_id 
+									FROM ' . CN_ENTRY_PHONE_TABLE . ' 
+									WHERE (' . implode( ') OR (' , $like) . ')';
+				//print_r($sql);
+					
+				$results = array_merge( $results, $wpdb->get_col($sql) );
+				//print_r($results);
+			}
+			
 		}
 		
 		return array_unique($results);

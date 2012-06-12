@@ -354,7 +354,7 @@ if (!class_exists('connectionsLoad'))
 			
 			// Set the default search field settings.
 			$search = $this->options->getSearchFields();
-			//var_dump($search);
+			
 			( ! isset( $search->family_name ) ) ? $field['family_name'] = TRUE : $field['family_name'] = $search->family_name;
 			( ! isset( $search->first_name ) ) ? $field['first_name'] = TRUE : $field['first_name'] = $search->first_name;
 			( ! isset( $search->last_name ) ) ? $field['last_name'] = TRUE : $field['last_name'] = $search->last_name;
