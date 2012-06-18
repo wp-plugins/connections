@@ -64,6 +64,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * Social media icons by [WPZOOM.com](http://www.wpzoom.com/wpzoom/500-free-icons-wpzoom-social-networking-icon-set/); license [CC BY-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/).
 * iTunes icon by [Paul Robert Lloyd](http://paulrobertlloyd.com/); license [Attribution-ShareAlike 2.0 UK: England & Wales (CC BY-SA 2.0)](http://creativecommons.org/licenses/by-sa/2.0/uk/).
 * Podcast icon by [schollidesign](http://findicons.com/icon/94188/podcast_new); license GNU/GPL.
+* CSS theme and image used for the jQuery UI Datepicker by [helenhousandi](https://github.com/helenhousandi/wp-admin-jquery-ui).
 
 == Screenshots ==
 [Screenshots can be found here.](http://connections-pro.com/screenshots/)
@@ -83,15 +84,18 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 
 == Changelog ==
 
-= 0.7.x.x xx/xx/12 =
+= 0.7.3.x xx/xx/12 =
+* FEATURE: Added a date meta field which uses the jQuery UI Datepicker for easy data entry.
 * FEATURE: Added Auto and manual geocoding of addresses.
 * FEATURE: Which fields to search can now be defined in the settings.
 * BUG: Use character entity codes for the page forward / page backward buttons.
 * BUG: Add the missing queries to enable FULLTEXT index for the default search fields.
+* BUG: Allow either http:// or https:// for both social media link and links.
 * OTHER: Update Chosen CSS version query string.
 * OTHER: Added some additional CSS to keep theme's from breaking Connections layout.
 * OTHER: Improve search results.
 * OTHER: Improve search scalability.
+* OTHER: IMprove the the add entry javascript functions to reduce redundant code.
 
 = 0.7.2.7 04/23/12 =
 * OTHER: Started to internationalize.

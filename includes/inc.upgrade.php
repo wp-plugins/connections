@@ -775,6 +775,40 @@ function cnRunDBUpgrade()
 			$connections->options->setDBVersion('0.1.8');
 		}
 		
+		if (version_compare($dbVersion, '0.1.9', '<'))
+		{
+			echo '<ul>';
+			
+			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_ENTRY_DATE_TABLE . "'") != CN_ENTRY_DATE_TABLE)
+			{
+				echo '<li>Add the entry date table.' , "</li>\n";
+				
+				$entryTableDate = "CREATE TABLE " . CN_ENTRY_DATE_TABLE . " (
+			        `id` bigint(20) unsigned NOT NULL auto_increment,
+					`entry_id` bigint(20) unsigned NOT NULL default '0',
+					`order` tinyint unsigned NOT NULL default '0',
+					`preferred` tinyint unsigned NOT NULL default '0',
+					`type` tinytext NOT NULL,
+					`date` date NOT NULL default '0000-00-00',
+					`visibility` tinytext NOT NULL,
+					PRIMARY KEY (`id`, `entry_id`)
+			    ) $charsetCollate";
+			    
+				// Create the table
+			    dbDelta($entryTableDate);
+			}
+			
+			echo '<li>Adding column "user"' . "</li>\n";
+			if (cnAddTableColumn(CN_ENTRY_TABLE, 'user', 'tinytext NOT NULL AFTER owner')) echo '<ul><li>SUCCESS</li></ul>';
+			
+			echo '<li>Adding column "dates"' . "</li>\n";
+			if (cnAddTableColumn(CN_ENTRY_TABLE, 'dates', 'longtext NOT NULL AFTER links')) echo '<ul><li>SUCCESS</li></ul>';
+			
+			echo '</ul>';
+			
+			$connections->options->setDBVersion('0.1.9');
+		}
+		
 		/*echo '<h4>Updating entries to the new database stucture.' . "</h4>\n";
 		
 		$results = $connections->retrieve->entries();

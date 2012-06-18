@@ -179,6 +179,9 @@ class cnEntry
 	private $addedBy;
 	private $editedBy;
 	
+	private $owner;
+	private $user;
+	
 	private $status;
 	
 	public $format;
@@ -218,6 +221,7 @@ class cnEntry
 			if ( isset($entry->im) ) $this->im = $entry->im;
 			if ( isset($entry->social) ) $this->socialMedia = $entry->social;
 			if ( isset($entry->links) ) $this->links = $entry->links;
+			if ( isset($entry->dates) ) $this->dates = $entry->dates;
 			
 			if ( isset($entry->birthday) ) (integer) $this->birthday = $entry->birthday;
 			if ( isset($entry->anniversary) ) (integer) $this->anniversary = $entry->anniversary;
@@ -265,6 +269,9 @@ class cnEntry
 			
 			if ( isset($entry->added_by) ) $this->addedBy = $entry->added_by;
 			if ( isset($entry->edited_by) ) $this->editedBy = $entry->edited_by;
+			
+			if ( isset($entry->owner) ) $this->owner = $entry->owner;
+			if ( isset($entry->user) ) $this->user = $entry->user;
 			
 			if ( isset($entry->status) ) $this->status = $entry->status;
 			
@@ -2125,7 +2132,7 @@ class cnEntry
 				if ( empty($network['url']) || $network['url'] == 'http://') continue;
 				
 				// if the http protocol is not part of the url, add it.
-				if ( mb_substr($network['url'], 0, 7) != 'http://' ) $socialNetworks[$key]['url'] = 'http://' . $network['url'];
+				if ( preg_match( "/https?/" , $network['url'] ) == 0 ) $socialNetworks[$key]['url'] = 'http://' . $network['url'];
 				
 				// Store the order attribute as supplied in the addresses array.
 				$socialNetworks[$key]['order'] = $order;
@@ -2491,7 +2498,8 @@ class cnEntry
 				if ( empty($link['url']) || $link['url'] == 'http://') continue;
 				
 				// if the http protocol is not part of the url, add it.
-				if ( mb_substr($link['url'], 0, 7) != 'http://' ) $links[$key]['url'] = 'http://' . $link['url'];
+				if ( preg_match( "/https?/" , $link['url'] ) == 0 ) $links[$key]['url'] = 'http://' . $link['url'];
+				
 				
 				// Store the order attribute as supplied in the addresses array.
 				$links[$key]['order'] = $order;
@@ -2572,6 +2580,251 @@ class cnEntry
 		
 		( ! empty($links) ) ? $this->links = serialize($links) : $this->links = NULL;
 		//print_r($links);
+    }
+	
+	/**
+	 * Returns as an array of objects containing the dates per the defined options for the current entry.
+	 * 
+	 * Accepted options for the $atts property are:
+	 *	preferred (bool) Retrieve the preferred entry date.
+	 * 	type (array) || (string) Retrieve specific date types.
+	 * 		Permitted Types:
+	 * 			baptism
+	 * 			certification
+	 * 			employment
+	 * 			membership
+	 * 			graduate_high_school
+	 * 			graduate_college
+	 * 			ordination
+	 * 
+	 * Filters:
+	 * 	cn_date_atts => (array) Set the method attributes.
+	 * 	cn_date_cached => (bool) Define if the returned dates should be from the object cache or queried from the db.
+	 *  cn_date => (object) Individual date as it is processed thru the loop.
+	 *  cn_dates => (array) All dates before they are returned.
+	 *  
+	 * @param array $suppliedAttr Accepted values as noted above.
+	 * @param bool $cached Returns the cached date data rather than querying the db.
+	 * @return array
+	 */
+    public function getDates( $suppliedAttr = array(), $cached = TRUE )
+    {
+        global $connections;
+		$dates = array();
+		$results = array();
+		
+		$suppliedAttr = apply_filters( 'cn_date_atts', $suppliedAttr );
+		$cached = apply_filters( 'cn_date_cached' , $cached );
+		
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+			$defaultAttr['preferred'] = FALSE;
+			$defaultAttr['type'] = NULL;
+			
+			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
+			$atts['id'] = $this->getId();
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		
+		if ( $cached )
+		{
+			if ( !empty($this->dates) )
+			{
+				$dates = unserialize($this->dates);
+				if ( empty($dates) ) return array();
+				
+				extract( $atts );
+				
+				/*
+				 * Covert to an array if it was supplied as a comma delimited string
+				 */
+				if ( ! empty($type) && ! is_array($type) ) $type = explode( ',' , trim($type) );
+								
+				foreach ( (array) $dates as $key => $date)
+				{
+					$row = new stdClass();
+					
+					( isset( $date['id'] ) ) ? $row->id = (int) $date['id'] : $row->id = 0;
+					( isset( $date['order'] ) ) ? $row->order = (int) $date['order'] : $row->order = 0;
+					( isset( $date['preferred'] ) ) ? $row->preferred = (bool) $date['preferred'] : $row->preferred = FALSE;
+					( isset( $date['type'] ) ) ? $row->type = $this->format->sanitizeString($date['type']) : $row->type = 'homephone';
+					( isset( $date['date'] ) ) ? $row->date = $this->format->sanitizeString($date['date']) : $row->date = '';
+					( isset( $date['visibility'] ) ) ? $row->visibility = $this->format->sanitizeString($date['visibility']) : $row->visibility = '';
+					
+					
+					/*
+					 * Set the date name based on the type.
+					 */
+					$dateTypes = $connections->options->getDateOptions();
+					$row->name = $dateTypes[$row->type];
+					
+					/*
+					 * // START -- Do not return dates that do not match the supplied $atts.
+					 */
+					if ( $preferred && ! $row->preferred ) continue;
+					if ( ! empty($type) && ! in_array($row->type, $type) ) continue;
+					/*
+					 * // END -- Do not return dates that do not match the supplied $atts.
+					 */
+					
+					// If the user does not have permission to view the address, do not return it.
+					if ( ! $this->validate->userPermitted( $row->visibility ) ) continue;
+					
+					
+					$row = apply_filters('cn_date', $row);
+					
+					$results[] = $row;
+				}
+				
+				$results = apply_filters('cn_dates', $results);
+				
+				return $results;
+			}
+		}
+		else
+		{
+			// Exit right away and return an emtpy array if the entry ID has not been set otherwise all dates will be returned by the query.
+			if ( ! isset( $this->id ) || empty( $this->id ) ) return array();
+			
+			$results = $connections->retrieve->dates( $atts );
+			
+			if ( empty($results) ) return array();
+			
+			
+			foreach ( $results as $date )
+			{
+				$date->id = (int) $date->id;
+				$date->order = (int) $date->order;
+				$date->preferred = (bool) $date->preferred;
+				$date->type = $this->format->sanitizeString($date->type);
+				$date->date = $this->format->sanitizeString($date->date);
+				$date->visibility = $this->format->sanitizeString($date->visibility);
+				
+				
+				/*
+				 * Set the date name based on the date type.
+				 */
+				$dateTypes = $connections->options->getDateOptions();
+				$date->name = $dateTypes[$date->type];
+				
+				$date = apply_filters('cn_date', $date);
+				
+				$dates[] = $date; 
+			}
+			
+			$dates = apply_filters('cn_dates', $dates);
+			
+			return $dates;
+		}
+		
+    }
+    
+    /**
+     * Caches the datess for use and preps for saving and updating.
+     * 
+     * Valid values as follows.
+     * 
+     * $date['id'] (int) Stores the date ID if it was retrieved from the db.
+     * $date['preferred'] (bool) If the date is the preferred date or not.
+	 * $date['type'] (string) Stores the date type.
+	 * $date['date'] (string) Stores date.
+	 * $date['visibility'] (string) Stores the date visibility.
+     * 
+     * @param array $dates
+     */
+    public function setDates($dates)
+    {
+        global $connections;
+		$userPreferred = NULL;
+		
+		$validFields = array('id' => NULL, 'preferred' => NULL, 'type' => NULL, 'date' => NULL, 'visibility' => NULL);
+		
+		if ( !empty($dates) )
+		{
+			$order = 0;
+			$preferred = '';
+			
+			if ( isset( $dates['preferred'] ) )
+			{
+				$preferred = $dates['preferred'];
+				unset( $dates['preferred'] );
+			}			
+			
+			foreach ($dates as $key => $date)
+			{
+				// First validate the supplied data.
+				$date[$key] = $this->validate->attributesArray($validFields, $date);
+								
+				// If the date is empty, no need to store it.
+				if ( empty($date['date']) ) unset($date[$key]);
+				
+				// Store the order attribute as supplied in the date array.
+				$dates[$key]['order'] = $order;
+				
+				( ( isset( $preferred ) ) && $preferred == $key ) ? $dates[$key]['preferred'] = TRUE : $dates[$key]['preferred'] = FALSE;
+				
+				/*
+				 * If the user set a perferred date, save the $key value.
+				 * This is going to be needed because if a date that the user
+				 * does not have permission to edit is set to preferred, that date
+				 * will have preference.
+				 */
+				if ( $dates[$key]['preferred'] ) $userPreferred = $key;
+				
+				/*
+				 * Format the supplied date correctly for the table column:  YYYY/MM/DD
+				 */
+				$dateObject = date_create($date['date']);
+				$dates[$key]['date'] = date_format($dateObject, 'Y-m-d');
+				
+				$order++;
+			}
+		}
+		
+		/*
+		 * Before storing the data, add back into the array from the cache the dates
+		 * the user may not have had permission to edit so the cache stays current.
+		 */
+		$cached = unserialize($this->dates);
+		
+		if ( ! empty($cached) )
+		{
+			foreach ( $cached as $date )
+			{
+				/*
+				 * // START -- Compatibility for previous versions.
+				 */
+				if ( ! isset($date['visibility']) || empty($date['visibility']) ) $date['visibility'] = 'public';
+				/*
+				 * // END -- Compatibility for previous versions.
+				 */
+				
+				/*
+				 * Format the supplied date correctly for the table column:  YYYY/MM/DD
+				 */
+				//$dateObject = date_create($date['date']);
+				//$date['date'] = date_format($dateObject, 'Y-m-d');
+				
+				if ( ! $this->validate->userPermitted( $date['visibility'] ) )
+				{
+					//$dates[] = $date;
+					
+					// If the date is preferred, it takes precedence, so the user's choice is overriden.
+					if ( ! empty($preferred) && $date['preferred'] )
+					{
+						$dates[$userPreferred]['preferred'] = FALSE;
+						
+						// Throw the user a message so they know why their choice was overridden.
+						$connections->setErrorMessage('entry_preferred_overridden_date');
+					}
+				}
+			}
+		}
+		
+		( ! empty($dates) ) ? $this->dates = serialize($dates) : $this->dates = NULL;
     }
 	
     /**
@@ -3127,10 +3380,12 @@ class cnEntry
 											im					= %s,
 											social				= %s,
 											links				= %s,
+											dates				= %s,
 											options				= %s,
 											bio					= %s,
 											notes				= %s,
 											edited_by			= %d,
+											user				= %d,
 											status				= %s
 											WHERE id			= %d',
 											current_time('mysql'),
@@ -3156,10 +3411,12 @@ class cnEntry
 											$this->im,
 											$this->socialMedia,
 											$this->links,
+											$this->dates,
 											$this->options,
 											$this->bio,
 											$this->notes,
 											$connections->currentUser->getID(),
+											0,
 											$this->status,
 											$this->id));
 		
@@ -3181,6 +3438,7 @@ class cnEntry
 			$imIDs = $this->getIm();
 			$socialNetworks = $this->getSocialMedia();
 			$links = $this->getLinks();
+			$dates = $this->getDates();
 			
 			/*
 			 * Create a sql segment for the entry ID that can be used in the queries.
@@ -3715,6 +3973,82 @@ class cnEntry
 			$wpdb->query( 'DELETE FROM `' . CN_ENTRY_LINK_TABLE . '` ' . implode(' ', $where) );
 			if ( isset($where['links']) ) unset( $where['links'] );
 			
+			
+			/*
+			 * Update and add the dates as necessary and removing the rest unless the current user does not have permission to view/edit.
+			 */
+			$keepIDs = array();
+			
+			if ( ! empty($dates) )
+			{
+				foreach ( $dates as $date )
+				{
+					/*
+					 * If the $date->id is set, this date is already in the db so it will be updated.
+					 * If the $date->id was not set, the add the date to the db.
+					 */
+					if ( isset($date->id) && ! empty($date->id) )
+					{
+						$wpdb->query($wpdb->prepare ('UPDATE ' . CN_ENTRY_DATE_TABLE . ' SET
+													`entry_id`			= %d,
+													`order`				= %d,
+													`preferred`			= %d,
+													`type`				= %s,
+													`date`				= %s,
+													`visibility`		= %s
+													WHERE `id` 			= %d',
+													$this->getId(),
+													$date->order,
+													$date->preferred,
+													$date->type,
+													$date->date,
+													$date->visibility,
+													$date->id));
+					
+						// Save the date IDs that have been updated
+						$keepIDs[] = $date->id;
+					
+					}
+					else
+					{
+						$wpdb->query( $wpdb->prepare ('INSERT INTO ' . CN_ENTRY_DATE_TABLE . ' SET
+														`entry_id`			= %d,
+														`order`				= %d,
+														`preferred`			= %d,
+														`type`				= %s,
+														`date`				= %s,
+														`visibility`		= %s',
+														$this->getId(),
+														$date->order,
+														$date->preferred,
+														$date->type,
+														$date->date,
+														$date->visibility));
+						
+						// Save the date IDs that have been added
+						$keepIDs[] = $wpdb->insert_id;
+					}
+				}
+			}
+			
+			/*
+			 * Now delete all the dates that have not been added/updated and
+			 * make sure not to delete the entries that the user does not have permission to view/edit.
+			 */
+			//( ! empty($keepIDs) ) ? $IDs = '\'' . implode("', '", (array) $keepIDs) . '\'' : $IDs = '';
+			if ( ! empty($keepIDs) ) $where['date'] = 'AND `id` NOT IN (\'' . implode('\', \'', (array) $keepIDs) . '\')';
+			
+			/*if ( ! empty($IDs) )
+			{
+				$sql = 'SELECT * FROM `' . CN_ENTRY_DATE_TABLE . '` WHERE `entry_id` = "' . $this->getId() . '" AND `id` NOT IN ( ' . $IDs . ' ) ' . $sqlVisibility;
+				
+				$results = $wpdb->get_col( $sql );
+				
+				if ( ! empty($results) ) $wpdb->query( 'DELETE FROM ' . CN_ENTRY_DATE_TABLE . ' WHERE `id` IN (\'' . implode("', '", (array) $results) . '\')' );
+			}*/
+			
+			$wpdb->query( 'DELETE FROM `' . CN_ENTRY_DATE_TABLE . '` ' . implode(' ', $where) );
+			if ( isset($where['date']) ) unset( $where['date'] );
 		}
 		
 		$wpdb->show_errors = FALSE;
@@ -3796,6 +4130,7 @@ class cnEntry
 											im  	      		= %s,
 											social 	      		= %s,
 											links	      		= %s,
+											dates	      		= %s,
 											birthday      		= %s,
 											anniversary   		= %s,
 											bio           		= %s,
@@ -3804,6 +4139,7 @@ class cnEntry
 											added_by      		= %d,
 											edited_by     		= %d,
 											owner				= %d,
+											user				= %d,
 											status	      		= %s',
 											current_time('mysql'),
 											current_time('timestamp'),
@@ -3827,6 +4163,7 @@ class cnEntry
 											$this->im,
 											$this->socialMedia,
 											$this->links,
+											$this->dates,
 											$this->birthday,
 											$this->anniversary,
 											$this->bio,
@@ -3835,6 +4172,7 @@ class cnEntry
 											$connections->currentUser->getID(),
 											$connections->currentUser->getID(),
 											$connections->currentUser->getID(),
+											0,
 											$this->status);
 		
 		$result = $wpdb->query($sql);
@@ -3851,6 +4189,7 @@ class cnEntry
 			$imIDs = $this->getIm();
 			$socialNetworks = $this->getSocialMedia();
 			$links = $this->getLinks();
+			$dates = $this->getDates();
 			
 			if ( ! empty($addresses) )
 			{
@@ -4009,6 +4348,28 @@ class cnEntry
 					$wpdb->query($sql);
 				}
 			}
+			
+			if ( ! empty($dates) )
+			{
+				foreach ( $dates as $date )
+				{
+					$sql = $wpdb->prepare ('INSERT INTO ' . CN_ENTRY_DATE_TABLE . ' SET
+											`entry_id`			= %d,
+											`order`				= %d,
+											`preferred`			= %d,
+											`type`				= %s,
+											`date`				= %s,
+											`visibility`		= %s',
+											$connections->lastInsertID,
+											$date->order,
+											$date->preferred,
+											$date->type,
+											$date->date,
+											$date->visibility);
+					
+					$wpdb->query($sql);
+				}
+			}
 		}
 		
 		$wpdb->show_errors = FALSE;
@@ -4082,6 +4443,11 @@ class cnEntry
 		 * @TODO Only delete the links if deleting the entry was successful
 		 */
 		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . CN_ENTRY_LINK_TABLE . ' WHERE entry_id = %d' , $id ) );
+		
+		/**
+		 * @TODO Only delete the dates if deleting the entry was successful
+		 */
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . CN_ENTRY_DATE_TABLE . ' WHERE entry_id = %d' , $id ) );
 		
 		/**
 		 * @TODO Only delete the category relationships if deleting the entry was successful

@@ -1463,6 +1463,84 @@ class cnOutput extends cnEntry
 		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
+	
+	/**
+	 * Echo or return the entry's dates in a HTML string.
+	 * 
+	 * Accepted options for the $atts property are:
+	 * 	preferred (bool) Retrieve the preferred entry date.
+	 * 	type (array) || (string) Retrieve specific date types.
+	 * 		Permitted Types:
+	 * 			baptism
+	 * 			certification
+	 * 			employment
+	 * 			membership
+	 * 			graduate_high_school
+	 * 			graduate_college
+	 * 			ordination
+	 * 
+	 * 	format (string) The tokens to use to display the date block parts.
+	 * 		Permitted Tokens:
+	 * 			%label%
+	 * 			%date%
+	 * 	before (string) HTML to output before the dates.
+	 * 	after (string) HTML to after before the dates.
+	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (bool) $cached Returns the cached data rather than querying the db.
+	 * @return string
+	 */
+	public function getDateBlock( $suppliedAttr = array() , $cached = TRUE )
+	{
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['type'] = NULL;
+			$defaultAttr['format'] = '%label%: %date%';
+			$defaultAttr['date_format'] = 'F jS Y';
+			$defaultAttr['before'] = '';
+			$defaultAttr['after'] = '';
+			$defaultAttr['return'] = FALSE;
+			
+			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
+			$atts['id'] = $this->getId();
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		$out = '';
+		$dates = $this->getDates( $atts , $cached );
+		$search = array('%label%' , '%date%');
+		
+		if ( empty($dates) ) return '';
+		
+		$out .= '<span class="date-block">';
+		
+		foreach ( $dates as $date ) 
+		{
+			$replace = array();
+			$dateObject = new DateTime($date->date);
+			
+			$out .= "\n" . '<span class="vevent">';
+				
+				// Hiiden elements are to maintain hCalenday spec compatibility
+				( empty($date->name) ) ? $replace[] = '<span class="summary" style="display: none;">' . $date->name . '</span>' : $replace[] = '<span class="summary">' . $date->name . '</span>';
+				( empty($date->date) ) ? $replace[] = '<span class="dtstart" style="display: none;"><span class="value">' . $dateObject->format( 'Y-m-d' ) . '</span></span>' : $replace[] = '<span class="dtstart"><span class="value" style="display: none;">' . $dateObject->format( 'Y-m-d' ) . '</span><span class="date-displayed">' . $dateObject->format( $atts['date_format'] ) . '</span></span>';
+				
+				$out .= str_ireplace( $search , $replace , $atts['format'] );
+				
+			$out .= '</span>' . "\n";
+		}
+		
+		$out .= '</span>';
+		
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+	}
+	
+	
 	public function getBirthdayBlock( $format = 'F jS' )
 	{
 		//NOTE: The vevent span is for hCalendar compatibility.

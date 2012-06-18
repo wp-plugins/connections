@@ -1321,6 +1321,112 @@ class cnRetrieve
 		return $results;
 	}
 	
+	
+	/**
+	 * Returns as an array of objects containing the dates per the defined options.
+	 * 
+	 * $atts['id'] (int) Retrieve the dates of the specified entry by entry id.
+	 * $atts['preferred'] (bool) Retrieve the preferred date; id must be supplied.
+	 * $atts['type'] (array) || (string) Retrieve specific date types, id must be supplied.
+	 * 
+	 * @param array $suppliedAttr Accepted values as noted above.
+	 * @param bool $returnIDs Query just the entry IDs or not. If set to FALSE, only the entry IDs would be returned as an array. If set TRUE, the date data will be returned.
+	 * @return array
+	 */
+	public function dates( $suppliedAttr , $returnData = TRUE )
+	{
+		global $wpdb, $connections, $current_user;
+		
+		get_currentuserinfo();
+		$validate = new cnValidate();
+		$where[] = 'WHERE 1=1';
+		
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+			$defaultAttr['id'] = NULL;
+			$defaultAttr['preferred'] = NULL;
+			$defaultAttr['type'] = NULL;
+			
+			$atts = $validate->attributesArray($defaultAttr, $suppliedAttr);
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		extract( $atts );
+		
+		
+		if ( ! empty($id) )
+		{
+			$where[] = $wpdb->prepare( 'AND `entry_id` = "%d"', $id );
+			
+			if ( ! empty($preferred) )
+			{
+				$where[] = $wpdb->prepare( 'AND `preferred` = %d', (bool) $preferred );
+			}
+			
+			if ( ! empty($type) )
+			{
+				if ( ! is_array($type) ) $type = explode( ',' , trim($type) );
+				
+				$where[] = stripslashes ( $wpdb->prepare( 'AND `type` IN (\'%s\')', implode("', '", (array) $type) ) );
+			}
+		}
+		
+		// Set query string for visibility based on user permissions if logged in.
+		if ( is_user_logged_in() )
+		{
+			if ( ! isset( $atts['visibility'] ) || empty( $atts['visibility'] ) )
+			{
+				if ( current_user_can('connections_view_public') ) $visibility[] = 'public';
+				if ( current_user_can('connections_view_private') ) $visibility[] = 'private';
+				if ( current_user_can('connections_view_unlisted') && is_admin() ) $visibility[] = 'unlisted';
+			}
+			else
+			{
+				$visibility[] = $atts['visibility'];
+			}
+		}
+		else
+		{
+			if ( $connections->options->getAllowPublic() ) $visibility[] = 'public';
+			if ( $atts['allow_public_override'] == TRUE && $connections->options->getAllowPublicOverride() ) $visibility[] = 'public';
+			if ( $atts['private_override'] == TRUE && $connections->options->getAllowPrivateOverride() ) $visibility[] = 'private';
+		}
+		
+		if ( ! empty($visibility) ) $where[] = 'AND `visibility` IN (\'' . implode("', '", (array) $visibility) . '\')';
+		
+		if ( $returnData )
+		{
+			$sql = 'SELECT SQL_CALC_FOUND_ROWS DISTINCT ' . CN_ENTRY_DATE_TABLE . '.* 
+					
+					FROM ' . CN_ENTRY_DATE_TABLE . ' ' . ' ' .
+					
+					implode(' ', $where) . ' ' . 
+					
+					'ORDER BY `order`';
+			
+			//print_r($sql);
+			
+			$results = $wpdb->get_results($sql);
+		}
+		else
+		{
+			$sql = 'SELECT SQL_CALC_FOUND_ROWS DISTINCT ' . CN_ENTRY_DATE_TABLE . '.entry_id 
+					
+					FROM ' . CN_ENTRY_DATE_TABLE . ' ' . ' ' . implode(' ', $where);
+			
+			//print_r($sql);
+			$results = $wpdb->get_col($sql);
+		}
+		
+		if ( empty($results) ) return array();
+		
+		//print_r($results);
+		return $results;
+	}
+	
+	
 	/**
 	 * Return an array of entry ID/s found with the supplied search terms.
 	 * 

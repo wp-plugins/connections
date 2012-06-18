@@ -748,8 +748,9 @@ function connectionsShowViewPage( $action = NULL )
 										echo "</td> \n";
 																				
 										echo "<td>";
-											if ($entry->getBirthday()) echo "<strong>Birthday:</strong><br />" . $entry->getBirthday() . "<br /><br />";
-											if ($entry->getAnniversary()) echo "<strong>Anniversary:</strong><br />" . $entry->getAnniversary();
+											if ($entry->getBirthday()) echo "<strong>Birthday:</strong> " . $entry->getBirthday() . '<br />';
+											if ($entry->getAnniversary()) echo "<strong>Anniversary:</strong> " . $entry->getAnniversary() . '<br />';
+											$entry->getDateBlock();
 										echo "</td> \n";
 									echo "</tr> \n";
 									

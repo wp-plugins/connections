@@ -48,6 +48,7 @@ function processEntry($data, $action)
 	( isset($data['social']) ) ? $entry->setSocialMedia($data['social']) : $entry->setSocialMedia( array() );
 	//( isset($data['website']) ) ? $entry->setWebsites($data['website']) : $entry->setWebsites( array() );
 	( isset($data['link']) ) ? $entry->setLinks($data['link']) : $entry->setLinks( array() );
+	( isset($data['date']) ) ? $entry->setDates($data['date']) : $entry->setDates( array() );
 	if ( isset($data['birthday_day']) && isset($data['birthday_month']) ) $entry->setBirthday($data['birthday_day'], $data['birthday_month']);
 	if ( isset($data['anniversary_day']) && isset($data['anniversary_month']) ) $entry->setAnniversary($data['anniversary_day'], $data['anniversary_month']);
 	if ( isset($data['bio']) ) $entry->setBio($data['bio']);

@@ -90,6 +90,7 @@ class cnOptions
 											 'linked-in' => 'Linked-in',
 											 'mixcloud' => 'mixcloud',
 											 'myspace' => 'MySpace',
+											 'pinterest' => 'Pinterest',
 											 'podcast' => 'Podcast',
 											 'reverbnation' => 'ReverbNation',
 											 'rss' => 'RSS',
@@ -1203,6 +1204,28 @@ class cnOptions
         $this->defaultLinkValues = $defaultLinkValues;
     }
     
+	/**
+     * Returns $getDefaultDateValues.
+     *
+     * @see cnOptions::$getDefaultDateValues
+     */
+    public function getDateOptions()
+	{
+        $dateOptions	=	array(
+								/*'anniversary' => __( 'Anniversary' , 'connections' ),*/
+								'baptism' => __( 'Baptism' , 'connections' ),
+								/*'birthday' => __( 'Birthday' , 'connections' ),*/
+								'certification' => __( 'Certification' , 'connections' ),
+								'employment' => __( 'Employment' , 'connections' ),
+								'membership' => __( 'Membership' , 'connections' ),
+								'graduate_high_school' => __( 'Graduate High School' , 'connections' ),
+								'graduate_college' => __( 'Graduate College' , 'connections' ),
+								'ordination' => __( 'Ordination' , 'connections' )
+							);
+		
+		return $dateOptions;
+    }
+	
 	public function setDebug( $bool )
 	{
 		$this->debug = $bool;

@@ -144,7 +144,7 @@ if (!class_exists('connectionsLoad'))
 			// Load the translation files.
 			load_plugin_textdomain( 'connections' , false , CN_DIR_NAME . '/lang' );
 			
-			//$this->options->setDBVersion('0.1.7');
+			//$this->options->setDBVersion('0.1.8');
 			
 			// Setup the current user object
 			add_action( 'init', array(&$this, 'setupCurrentUser' ) );
@@ -194,7 +194,7 @@ if (!class_exists('connectionsLoad'))
 			define('CN_LOG', FALSE);
 			
 			define('CN_CURRENT_VERSION', '0.7.2.7');
-			define('CN_DB_VERSION', '0.1.8');
+			define('CN_DB_VERSION', '0.1.9');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
 			
@@ -235,6 +235,7 @@ if (!class_exists('connectionsLoad'))
 			define('CN_ENTRY_MESSENGER_TABLE', $wpdb->prefix . 'connections_messenger');
 			define('CN_ENTRY_SOCIAL_TABLE', $wpdb->prefix . 'connections_social');
 			define('CN_ENTRY_LINK_TABLE', $wpdb->prefix . 'connections_link');
+			define('CN_ENTRY_DATE_TABLE', $wpdb->prefix . 'connections_date');
 			
 			define('CN_ENTRY_TABLE_META', $wpdb->prefix . 'connections_meta');
 			define('CN_TERMS_TABLE', $wpdb->prefix . 'connections_terms');
@@ -484,7 +485,8 @@ if (!class_exists('connectionsLoad'))
 			$this->message->add('entry_preferred_overridden_im', 'Your preferred setting for a IM Network was overridden because another IM Network that you are not permitted to view or edit is set as the preferred IM Network. Please contact the admin if you received this message in error.');
 			$this->message->add('entry_preferred_overridden_social', 'Your preferred setting for a social media network was overridden because another social media network that you are not permitted to view or edit is set as the preferred social media network. Please contact the admin if you received this message in error.');
 			$this->message->add('entry_preferred_overridden_link', 'Your preferred setting for a link was overridden because another link that you are not permitted to view or edit is set as the preferred link. Please contact the admin if you received this message in error.');
-			
+			$this->message->add('entry_preferred_overridden_date', 'Your preferred setting for a date was overridden because another date that you are not permitted to view or edit is set as the preferred date. Please contact the admin if you received this message in error.');
+
 			$this->message->add('image_upload_failed', 'Image upload failed.');
 			$this->message->add('image_uploaded_failed', 'Uploaded image could not be saved to the destination folder.');
 			$this->message->add('image_profile_failed', 'Profile image could not be created and/or saved to the destination folder.');
@@ -622,6 +624,7 @@ if (!class_exists('connectionsLoad'))
 					added_by bigint(20) NOT NULL,
 					edited_by bigint(20) NOT NULL,
 					owner bigint(20) NOT NULL,
+					user bigint(20) NOT NULL,
 					status varchar(20) NOT NULL,
 			        PRIMARY KEY  (id),
 					FULLTEXT search (family_name, first_name, middle_name, last_name, title, organization, department, contact_first_name, contact_last_name, bio, notes)
@@ -844,6 +847,24 @@ if (!class_exists('connectionsLoad'))
 			    dbDelta($entryTableLink);
 			}
 			
+			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_ENTRY_DATE_TABLE . "'") != CN_ENTRY_DATE_TABLE)
+			{
+				require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+				
+				$entryTableDate = "CREATE TABLE " . CN_ENTRY_DATE_TABLE . " (
+			        `id` bigint(20) unsigned NOT NULL auto_increment,
+					`entry_id` bigint(20) unsigned NOT NULL default '0',
+					`order` tinyint unsigned NOT NULL default '0',
+					`preferred` tinyint unsigned NOT NULL default '0',
+					`type` tinytext NOT NULL,
+					`date` date NOT NULL default '0000-00-00',
+					`visibility` tinytext NOT NULL,
+					PRIMARY KEY (`id`, `entry_id`)
+			    ) $charsetCollate";
+			    
+				// Create the table
+			    dbDelta($entryTableDate);
+			}
 			
 			// Create the cache folder.
 			wp_mkdir_p( CN_CACHE_PATH );
@@ -1230,6 +1251,8 @@ if (!class_exists('connectionsLoad'))
 				global $concatenate_scripts, $compress_scripts, $compress_css;
 				
 				wp_enqueue_script('jquery-gomap-min');
+				wp_enqueue_script('jquery-ui-datepicker');
+				wp_enqueue_script('jquery-chosen-min');
 				
 				if( version_compare($GLOBALS['wp_version'], '3.2.999', '<') )
 				{
@@ -1270,7 +1293,6 @@ if (!class_exists('connectionsLoad'))
 				//wp_enqueue_script('admin-widgets');
 				
 				wp_enqueue_script('cn-widget', WP_PLUGIN_URL . '/connections/js/widgets.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
-				wp_enqueue_script('jquery-chosen-min');
 			}
 		}
 		
@@ -1308,6 +1330,7 @@ if (!class_exists('connectionsLoad'))
 			if ( in_array($_GET['page'], $adminPages) )
 			{
 				wp_enqueue_style('connections-admin', CN_URL . '/css/cn-admin.css', array(), CN_CURRENT_VERSION);
+				wp_enqueue_style('connections-admin-jquery-ui', CN_URL . '/css/cn-jquery-ui-fresh.css', array(), CN_CURRENT_VERSION);
 			}
 			
 			/*

@@ -284,6 +284,7 @@ class cnFormObjects
 		add_meta_box('metabox-messenger', 'Messenger IDs', array(&$this, 'metaboxMessenger'), $pageHook, 'normal', 'core');
 		add_meta_box('metabox-social-media', 'Social Media IDs', array(&$this, 'metaboxSocialMedia'), $pageHook, 'normal', 'core');
 		add_meta_box('metabox-links', 'Links', array(&$this, 'metaboxLinks'), $pageHook, 'normal', 'core');
+		add_meta_box('metabox-date', 'Dates', array(&$this, 'metaboxDates'), $pageHook, 'normal', 'core');
 		add_meta_box('metabox-birthday', 'Birthday', array(&$this, 'metaboxBirthday'), $pageHook, 'normal', 'core');
 		add_meta_box('metabox-anniversary', 'Anniversary', array(&$this, 'metaboxAnniversary'), $pageHook, 'normal', 'core');
 		add_meta_box('metabox-bio', 'Biographical Info', array(&$this, 'metaboxBio'), $pageHook, 'normal', 'core');
@@ -838,7 +839,7 @@ class cnFormObjects
 					echo '<div id="relations">';
 							
 						// --> Start template for Connection Group <-- \\
-						echo '<textarea id="relation_row_base" style="display: none">';
+						echo '<textarea id="relation-template" style="display: none">';
 							echo $this->getEntrySelect('family_member[::FIELD::][entry_id]' , NULL , 'family-member-name'  );
 							echo $this->buildSelect('family_member[::FIELD::][relation]', $connections->options->getDefaultFamilyRelationValues() , NULL , 'family-member-relation' );
 						echo '</textarea>';
@@ -852,10 +853,10 @@ class cnFormObjects
 								$relation->set($key);
 								$token = $this->token($relation->getId());
 								
-								echo '<div id="relation_row_' . $token . '" class="relation_row">';
+								echo '<div id="relation-row-' . $token . '" class="relation">';
 									echo $this->getEntrySelect('family_member[' . $token . '][entry_id]', $key , 'family-member-name' );
 									echo $this->buildSelect('family_member[' . $token . '][relation]', $connections->options->getDefaultFamilyRelationValues(), $value  , 'family-member-relation' );
-									echo '<a href="#" id="remove_button_' . $token . '" class="button button-warning" onClick="removeEntryRow(\'#relation_row_' . $token . '\'); return false;">Remove</a>';
+									echo '<a href="#" class="cn-remove cn-button button button-warning" data-type="relation" data-token="' . $token . '">Remove</a>';
 								echo '</div>';
 								
 								unset($relation);
@@ -863,7 +864,7 @@ class cnFormObjects
 						}						
 						
 					echo '</div>';
-					echo '<p class="add"><a id="add_relation" class="button">Add Relation</a></p>';
+					echo '<p class="add"><a id="add-relation" class="button">Add Relation</a></p>';
 					
 				echo '
 			</div>
@@ -997,7 +998,7 @@ class cnFormObjects
 		echo  '<div class="widgets-sortables ui-sortable form-field" id="addresses">' , "\n";
 			
 			// --> Start template <-- \\
-			echo  '<textarea id="address_row_base" style="display: none;">' , "\n";
+			echo  '<textarea id="address-template" style="display: none;">' , "\n";
 				
 				echo '<div class="widget-top">' , "\n";
 					echo '<div class="widget-title-action"><a class="widget-action"></a></div>' , "\n";
@@ -1069,7 +1070,7 @@ class cnFormObjects
 					echo '<div class="map" id="map-::FIELD::" data-map-id="::FIELD::" style="display: none; height: 400px; width: 100%">Geocode</div>';
 					
 					echo  '<br>';
-					echo  '<p class="remove-button"><a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#address_row_::FIELD::\'); return false;">Remove</a></p>';
+					echo  '<p class="remove-button"><a href="#" class="cn-remove cn-button button button-warning" data-type="address" data-token="::FIELD::">Remove</a></p>';
 				
 				echo  '</div>' , "\n";
 				
@@ -1088,7 +1089,7 @@ class cnFormObjects
 					$selectName = 'address['  . $token . '][type]';
 					( $address->preferred ) ? $preferredAddress = 'CHECKED' : $preferredAddress = '';
 					
-					echo '<div class="widget address" id="address_row_'  . $token . '">' , "\n";
+					echo '<div class="widget address" id="address-row-'  . $token . '">' , "\n";
 						echo '<div class="widget-top">' , "\n";
 							echo '<div class="widget-title-action"><a class="widget-action"></a></div>' , "\n";
 							
@@ -1154,7 +1155,7 @@ class cnFormObjects
 						
 							echo  '<div class="clear"></div>' , "\n";
 							
-							echo  '<p class="remove-button"><a href="#" id="remove_button_' , $token , '" class="button button-warning" onClick="removeEntryRow(\'#address_row_' , $token , '\'); return false;">Remove</a></p>' , "\n";
+							echo  '<p class="remove-button"><a href="#" class="cn-remove cn-button button button-warning" data-type="address" data-token="' . $token . '">Remove</a></p>' , "\n";
 							
 						echo  '</div>' , "\n";
 					echo  '</div>' , "\n";
@@ -1163,7 +1164,7 @@ class cnFormObjects
 			}
 			
 		echo  '</div>' , "\n";
-		echo  '<p class="add"><a id="add_address" class="button">Add Address</a></p>' , "\n";
+		echo  '<p class="add"><a href="#" class="cn-add cn-button button" data-type="address" data-container="addresses">Add Address</a></p>' , "\n";
 	}
 	
 	/**
@@ -1180,7 +1181,7 @@ class cnFormObjects
 		echo  '<div class="widgets-sortables ui-sortable form-field" id="phone-numbers">';
 			
 			// --> Start template <-- \\
-			echo  '<textarea id="phone_number_row_base" style="display: none">';
+			echo  '<textarea id="phone-template" style="display: none">';
 				
 				echo '<div class="widget-top">' , "\n";
 					echo '<div class="widget-title-action"><a class="widget-action"></a></div>' , "\n";
@@ -1196,7 +1197,7 @@ class cnFormObjects
 				echo '<div class="widget-inside">' , "\n";
 				
 					echo  '<label>Phone Number</label><input type="text" name="phone[::FIELD::][number]" value="" style="width: 30%"/>' , "\n";
-					echo  '<p class="remove-button"><a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#phone-row-::FIELD::\'); return false;">Remove</a></p>' , "\n";
+					echo  '<p class="remove-button"><a href="#" class="cn-remove cn-button button button-warning" data-type="phone" data-token="::FIELD::">Remove</a></p>' , "\n";
 					
 				echo '</div>' , "\n";
 				
@@ -1230,7 +1231,7 @@ class cnFormObjects
 					
 							echo  '<label>Phone Number</label><input type="text" name="phone[' , $token , '][number]" value="' , $phone->number , '" style="width: 30%"/>';
 							echo  '<input type="hidden" name="phone[' , $token , '][id]" value="' , $phone->id , '">' , "\n";
-							echo  '<p class="remove-button"><a href="#" id="remove_button_' , $token , '" class="button button-warning" onClick="removeEntryRow(\'#phone-row-' , $token , '\'); return false;">Remove</a></p>';
+							echo  '<p class="remove-button"><a href="#" class="cn-remove cn-button button button-warning" data-type="phone" data-token="' . $token . '">Remove</a></p>';
 							
 						echo '</div>' , "\n";
 					echo '</div>' , "\n";
@@ -1239,7 +1240,7 @@ class cnFormObjects
 			}
 			
 		echo  '</div>';
-		echo  '<p class="add"><a id="add_phone_number" class="button">Add Phone Number</a></p>';
+		echo  '<p class="add"><a href="#" class="cn-add cn-button button" data-type="phone" data-container="phone-numbers">Add Phone Number</a></p>';
 	}
 	
 	/**
@@ -1256,7 +1257,7 @@ class cnFormObjects
 		echo  '<div class="widgets-sortables ui-sortable form-field" id="email-addresses">';
 			
 			// --> Start template <-- \\
-			echo  '<textarea id="email_address_row_base" style="display: none">';
+			echo  '<textarea id="email-template" style="display: none">';
 				
 				echo '<div class="widget-top">' , "\n";
 					echo '<div class="widget-title-action"><a class="widget-action"></a></div>' , "\n";
@@ -1272,7 +1273,7 @@ class cnFormObjects
 				echo '<div class="widget-inside">' , "\n";
 				
 					echo  '<label>Email Address</label><input type="text" name="email[::FIELD::][address]" value="" style="width: 30%"/>' , "\n";
-					echo  '<p class="remove-button"><a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#email-row-::FIELD::\'); return false;">Remove</a></p>' , "\n";
+					echo  '<p class="remove-button"><a href="#" class="cn-remove cn-button button button-warning" data-type="email" data-token="::FIELD::">Remove</a></p>' , "\n";
 					
 				echo '</div>' , "\n";
 				
@@ -1306,7 +1307,7 @@ class cnFormObjects
 					
 							echo  '<label>Email Address</label><input type="text" name="email[' , $token , '][address]" value="' , $email->address , '" style="width: 30%"/>';
 							echo  '<input type="hidden" name="email[' , $token , '][id]" value="' , $email->id , '">' , "\n";
-							echo  '<p class="remove-button"><a href="#" id="remove_button_' , $token , '" class="button button-warning" onClick="removeEntryRow(\'#email-row-' , $token , '\'); return false;">Remove</a></p>';
+							echo  '<p class="remove-button"><a href="#" class="cn-remove cn-button button button-warning" data-type="email" data-token="' . $token . '">Remove</a></p>';
 							
 						echo '</div>' , "\n";
 					echo '</div>' , "\n";
@@ -1315,7 +1316,7 @@ class cnFormObjects
 			}
 			
 		echo  '</div>';
-		echo  '<p class="add"><a id="add_email_address" class="button">Add Email Address</a></p>';
+		echo  '<p class="add"><a href="#" class="cn-add cn-button button" data-type="email" data-container="email-addresses">Add Email Address</a></p>';
 	}
 	
 	/**
@@ -1332,7 +1333,7 @@ class cnFormObjects
 		echo  '<div class="widgets-sortables ui-sortable form-field" id="im-ids">';
 			
 			// --> Start template.  <-- \\
-			echo  '<textarea id="im_row_base" style="display: none">';
+			echo  '<textarea id="im-template" style="display: none">';
 				
 				echo '<div class="widget-top">' , "\n";
 					echo '<div class="widget-title-action"><a class="widget-action"></a></div>' , "\n";
@@ -1348,7 +1349,7 @@ class cnFormObjects
 				echo '<div class="widget-inside">' , "\n";
 				
 					echo  '<label>IM Network ID</label><input type="text" name="im[::FIELD::][id]" value="" style="width: 30%"/>' , "\n";
-					echo  '<p class="remove-button"><a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#im-row-::FIELD::\'); return false;">Remove</a></p>' , "\n";
+					echo  '<p class="remove-button"><a href="#" class="cn-remove cn-button button button-warning" data-type="im" data-token="::FIELD::">Remove</a></p>' , "\n";
 					
 				echo '</div>' , "\n";
 				
@@ -1381,7 +1382,7 @@ class cnFormObjects
 					
 							echo  '<label>IM Network ID</label><input type="text" name="im[' , $token , '][id]" value="' , $network->id , '" style="width: 30%"/>';
 							echo  '<input type="hidden" name="im[' , $token , '][uid]" value="' , $network->uid , '">' , "\n";
-							echo  '<p class="remove-button"><a href="#" id="remove_button_' , $token , '" class="button button-warning" onClick="removeEntryRow(\'#im-row-' , $token , '\'); return false;">Remove</a></p>';
+							echo  '<p class="remove-button"><a href="#" class="cn-remove cn-button button button-warning" data-type="im" data-token="' . $token . '">Remove</a></p>';
 							
 						echo '</div>' , "\n";
 					echo '</div>' , "\n";
@@ -1390,7 +1391,7 @@ class cnFormObjects
 			}
 			
 		echo  '</div>';
-		echo  '<p class="add"><a id="add_im_id" class="button">Add Messenger ID</a></p>';
+		echo  '<p class="add"><a href="#" class="cn-add cn-button button" data-type="im" data-container="im-ids">Add Messenger ID</a></p>';
 	}
 	
 	/**
@@ -1407,7 +1408,7 @@ class cnFormObjects
 		echo  '<div class="widgets-sortables ui-sortable form-field" id="social-media">';
 		
 		// --> Start template <-- \\
-		echo  '<textarea id="social_media_row_base" style="display: none">';
+		echo  '<textarea id="social-template" style="display: none">';
 			
 			echo '<div class="widget-top">' , "\n";
 				echo '<div class="widget-title-action"><a class="widget-action"></a></div>' , "\n";
@@ -1423,7 +1424,7 @@ class cnFormObjects
 			echo '<div class="widget-inside">' , "\n";
 			
 				echo  '<label>URL</label><input type="text" name="social[::FIELD::][url]" value="http://" style="width: 30%"/>' , "\n";
-				echo  '<p class="remove-button"><a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#social-row-::FIELD::\'); return false;">Remove</a></p>' , "\n";
+				echo  '<p class="remove-button"><a href="#" class="cn-remove cn-button button button-warning" data-type="social" data-token="::FIELD::">Remove</a></p>' , "\n";
 				
 			echo '</div>' , "\n";
 			
@@ -1457,7 +1458,7 @@ class cnFormObjects
 				
 						echo  '<label>URL</label><input type="text" name="social[' , $token , '][url]" value="' , $network->url , '" style="width: 30%"/>';
 						echo  '<input type="hidden" name="social[' , $token , '][id]" value="' , $network->id , '">' , "\n";
-						echo  '<p class="remove-button"><a href="#" id="remove_button_' , $token , '" class="button button-warning" onClick="removeEntryRow(\'#social-row-' , $token , '\'); return false;">Remove</a></p>';
+						echo  '<p class="remove-button"><a href="#" class="cn-remove cn-button button button-warning" data-type="social" data-token="' . $token . '">Remove</a></p>';
 						
 					echo '</div>' , "\n";
 				echo '</div>' , "\n";
@@ -1466,11 +1467,11 @@ class cnFormObjects
 		}
 			
 		echo  '</div>';
-		echo  '<p class="add"><a id="add_social_media" class="button">Add Social Media ID</a></p>';
+		echo  '<p class="add"><a href="#" class="cn-add cn-button button" data-type="social" data-container="social-media">Add Social Media ID</a></p>';
 	}
 	
 	/**
-	 * Outputs the image website box.
+	 * Outputs the links meta box.
 	 * 
 	 * @since 0.7.1.5
 	 * 
@@ -1483,7 +1484,7 @@ class cnFormObjects
 		echo  '<div class="widgets-sortables ui-sortable form-field" id="links">';
 		
 		// --> Start template <-- \\
-		echo  '<textarea id="link_row_base" style="display: none">';
+		echo  '<textarea id="link-template" style="display: none">';
 			
 			echo '<div class="widget-top">' , "\n";
 				echo '<div class="widget-title-action"><a class="widget-action"></a></div>' , "\n";
@@ -1513,7 +1514,7 @@ class cnFormObjects
 					echo '<label><input type="radio" name="link[logo]" value="::FIELD::"> Assign link to the logo.</label>' , "\n";
 				echo '</div>' , "\n";
 				
-				echo  '<p class="remove-button"><a href="#" id="remove_button_::FIELD::" class="button button-warning" onClick="removeEntryRow(\'#link-row-::FIELD::\'); return false;">Remove</a></p>' , "\n";
+				echo  '<p class="remove-button"><a href="#" class="cn-remove cn-button button button-warning" data-type="link" data-token="::FIELD::">Remove</a></p>' , "\n";
 				
 			echo '</div>' , "\n";
 			
@@ -1564,7 +1565,7 @@ class cnFormObjects
 						echo '</div>' , "\n";
 						
 						echo  '<input type="hidden" name="link[' , $token , '][id]" value="' , $link->id , '">' , "\n";
-						echo  '<p class="remove-button"><a href="#" id="remove_button_' , $token , '" class="button button-warning" onClick="removeEntryRow(\'#link-row-' , $token , '\'); return false;">Remove</a></p>';
+						echo  '<p class="remove-button"><a href="#" class="cn-remove cn-button button button-warning" data-type="link" data-token="' . $token . '">Remove</a></p>';
 						
 					echo '</div>' , "\n";
 				echo '</div>' , "\n";
@@ -1573,7 +1574,89 @@ class cnFormObjects
 		}
 			
 		echo  '</div>';
-		echo  '<p class="add"><a id="add_link" class="button">Add Link</a></p>';
+		echo  '<p class="add"><a href="#" class="cn-add cn-button button" data-type="link" data-container="links">Add Link</a></p>';
+	}
+	
+	/**
+	 * Outputs the dates box.
+	 * 
+	 * @since 0.7.2.7
+	 * 
+	 * @param array $entry
+	 */
+	public function metaboxDates( $entry = NULL )
+	{
+		global $connections;
+			
+		echo  '<div class="widgets-sortables ui-sortable form-field" id="dates">';
+		
+		// --> Start template <-- \\
+		echo  '<textarea id="date-template" style="display: none">';
+			
+			echo '<div class="widget-top">' , "\n";
+				echo '<div class="widget-title-action"><a class="widget-action"></a></div>' , "\n";
+				
+				echo '<div class="widget-title"><h4>' , "\n";
+					echo 'Type: ' , $this->buildSelect('date[::FIELD::][type]', $connections->options->getDateOptions() ) , "\n";
+					echo '<label><input type="radio" name="date[preferred]" value="::FIELD::"> Preferred</label>' , "\n";
+					echo '<span class="visibility">Visibility: ' , $this->buildRadio('date[::FIELD::][visibility]', 'date_visibility_::FIELD::' , $this->visibiltyOptions, 'public' ) , '</span>' , "\n";
+				echo '</h4></div>'  , "\n";
+				
+			echo '</div>' , "\n";
+			
+			echo '<div class="widget-inside">' , "\n";
+				
+				echo '<div>' , "\n";
+					echo  '<label>Date</label><input type="text" class="datepicker" name="date[::FIELD::][date]" value="" style="padding: 2px; width: 17.5em;"/>' , "\n";
+				echo '</div>' , "\n";
+				
+				echo  '<p class="remove-button"><a href="#" class="cn-remove cn-button button button-warning" data-type="date" data-token="::FIELD::">Remove</a></p>' , "\n";
+				
+			echo '</div>' , "\n";
+			
+		echo  '</textarea>';
+		// --> End template <-- \\
+		
+		$dates = $entry->getDates( array(), FALSE );
+		
+		if ( ! empty($dates) )
+		{
+			
+			foreach ( $dates as $date )
+			{
+				$token = $this->token( $entry->getId() );
+				$selectName = 'date['  . $token . '][type]';
+				( $date->preferred ) ? $preferredDate = 'CHECKED' : $preferredDate = '';
+				
+				echo '<div class="widget link" id="date-row-'  . $token . '">' , "\n";
+					echo '<div class="widget-top">' , "\n";
+						echo '<div class="widget-title-action"><a class="widget-action"></a></div>' , "\n";
+						
+						echo '<div class="widget-title"><h4>' , "\n";
+							echo 'Type: ' , $this->buildSelect($selectName, $connections->options->getDateOptions(), $date->type) , "\n";
+							echo '<label><input type="radio" name="date[preferred]" value="' , $token , '" ' , $preferredDate , '> Preferred</label>' , "\n";
+							echo '<span class="visibility">Visibility: ' , $this->buildRadio('date[' . $token . '][visibility]', 'date_visibility_'  . $token , $this->visibiltyOptions, $date->visibility ) , '</span>' , "\n";
+						echo '</h4></div>'  , "\n";
+						
+					echo '</div>' , "\n";
+				
+					echo '<div class="widget-inside">' , "\n";
+				
+						echo '<div>' , "\n";
+							echo  '<label>Date</label><input type="text" name="date[' , $token , '][date]" class="datepicker" value="' , $date->date , '" style="padding: 2px; width: 17.5em;"/>' , "\n";
+						echo '</div>' , "\n";
+						
+						echo  '<input type="hidden" name="date[' , $token , '][id]" value="' , $date->id , '">' , "\n";
+						echo  '<p class="remove-button"><a href="#" class="cn-remove cn-button button button-warning" data-type="date" data-token="' . $token . '">Remove</a></p>';
+						
+					echo '</div>' , "\n";
+				echo '</div>' , "\n";
+			}
+			
+		}
+			
+		echo  '</div>';
+		echo  '<p class="add"><a href="#" class="cn-add cn-button button" data-type="date" data-container="dates">Add Date</a></p>';
 	}
 	
 	/**
