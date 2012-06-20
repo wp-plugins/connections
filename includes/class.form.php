@@ -285,8 +285,8 @@ class cnFormObjects
 		add_meta_box('metabox-social-media', 'Social Media IDs', array(&$this, 'metaboxSocialMedia'), $pageHook, 'normal', 'core');
 		add_meta_box('metabox-links', 'Links', array(&$this, 'metaboxLinks'), $pageHook, 'normal', 'core');
 		add_meta_box('metabox-date', 'Dates', array(&$this, 'metaboxDates'), $pageHook, 'normal', 'core');
-		add_meta_box('metabox-birthday', 'Birthday', array(&$this, 'metaboxBirthday'), $pageHook, 'normal', 'core');
-		add_meta_box('metabox-anniversary', 'Anniversary', array(&$this, 'metaboxAnniversary'), $pageHook, 'normal', 'core');
+		//add_meta_box('metabox-birthday', 'Birthday', array(&$this, 'metaboxBirthday'), $pageHook, 'normal', 'core');
+		//add_meta_box('metabox-anniversary', 'Anniversary', array(&$this, 'metaboxAnniversary'), $pageHook, 'normal', 'core');
 		add_meta_box('metabox-bio', 'Biographical Info', array(&$this, 'metaboxBio'), $pageHook, 'normal', 'core');
 		add_meta_box('metabox-note', 'Notes', array(&$this, 'metaboxNotes'), $pageHook, 'normal', 'core');
 	}

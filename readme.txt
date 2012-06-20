@@ -91,11 +91,13 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * BUG: Use character entity codes for the page forward / page backward buttons.
 * BUG: Add the missing queries to enable FULLTEXT index for the default search fields.
 * BUG: Allow either http:// or https:// for both social media link and links.
+* BUG: Fix data validation for entry details to ensure only the fields expected in arrays is processed.
 * OTHER: Update Chosen CSS version query string.
 * OTHER: Added some additional CSS to keep theme's from breaking Connections layout.
 * OTHER: Improve search results.
 * OTHER: Improve search scalability.
-* OTHER: IMprove the the add entry javascript functions to reduce redundant code.
+* OTHER: Improve the the add entry javascript functions to reduce redundant code.
+* OTHER: Minor efficiencies to code in class.entry.php.
 
 = 0.7.2.7 04/23/12 =
 * OTHER: Started to internationalize.

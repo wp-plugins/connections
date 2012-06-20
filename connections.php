@@ -377,6 +377,8 @@ if (!class_exists('connectionsLoad'))
 			
 			$this->options->setSearchFields($field);
 			
+			if ( $this->options->getSearchUsingFulltext() === NULL ) $this->options->setSearchUsingFulltext(TRUE);
+			
 			// Save the default options
 			$this->options->saveOptions();
 		}

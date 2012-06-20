@@ -1516,31 +1516,48 @@ class cnRetrieve
 		 * 		MySQL has a default stopwords file that has a list of common words (i.e., the, that, has) which are not returned in your search. In other words, searching for the will return zero rows.
 		 * 		According to MySQL's manual, the argument to AGAINST() must be a constant string. In other words, you cannot search for values returned within the query.
 		 */
-		if ( FALSE )
+		if ( $connections->options->getSearchUsingFulltext() )
 		{
 			// Convert the search terms to a string adding the wild card to the end of each term to allow wider search results.
 			//$terms = implode( '* ' , $atts['terms'] ) . '*';
 			$terms = '+' . implode( ' +' , $atts['terms'] );
 			//$terms = implode( ' ' , $atts['terms'] );
 			
-						
-			$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_TABLE . '.id 
-										FROM ' . CN_ENTRY_TABLE . ' 
-										WHERE MATCH (' . implode( ', ' , $atts['fields_entry'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $terms );
-			//print_r($sql);
-			$results = $wpdb->get_col($sql);
+			/*
+			 * Only search the primary records if at least one fields is selected to be searched.
+			 */
+			if ( ! empty( $defaultAttr['fields_entry'] ) )
+			{		
+				$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_TABLE . '.id 
+											FROM ' . CN_ENTRY_TABLE . ' 
+											WHERE MATCH (' . implode( ', ' , $atts['fields_entry'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $terms );
+				//print_r($sql);
+				$results = $wpdb->get_col($sql);
+			}
 			
-			$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_ADDRESS_TABLE . '.entry_id 
-										FROM ' . CN_ENTRY_ADDRESS_TABLE . ' 
-										WHERE MATCH (' . implode( ', ' , $atts['fields_address'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $terms );
-			//print_r($sql);
-			$results = array_merge( $results, $wpdb->get_col($sql) );
+			/*
+			 * Only search the address records if at least one fields is selected to be searched.
+			 */
+			if ( ! empty( $defaultAttr['fields_address'] ) )
+			{
+				$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_ADDRESS_TABLE . '.entry_id 
+											FROM ' . CN_ENTRY_ADDRESS_TABLE . ' 
+											WHERE MATCH (' . implode( ', ' , $atts['fields_address'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $terms );
+				//print_r($sql);
+				$results = array_merge( $results, $wpdb->get_col($sql) );
+			}
 			
-			$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_PHONE_TABLE . '.entry_id 
-										FROM ' . CN_ENTRY_PHONE_TABLE . ' 
-										WHERE MATCH (' . implode( ', ' , $atts['fields_phone'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $terms );
-			//print_r($sql);
-			$results = array_merge( $results, $wpdb->get_col($sql) );
+			/*
+			 * Only search the phone records if thefield is selected to be search.
+			 */
+			if ( ! empty( $defaultAttr['fields_phone'] ) )
+			{
+				$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_PHONE_TABLE . '.entry_id 
+											FROM ' . CN_ENTRY_PHONE_TABLE . ' 
+											WHERE MATCH (' . implode( ', ' , $atts['fields_phone'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $terms );
+				//print_r($sql);
+				$results = array_merge( $results, $wpdb->get_col($sql) );
+			}
 		}
 		
 		/*
@@ -1576,6 +1593,7 @@ class cnRetrieve
 				$results = array_merge( $results, $wpdb->get_col($sql) );
 				//print_r($results);
 			}
+			
 			/*
 			 * Only search the address records if at least one fields is selected to be searched.
 			 */

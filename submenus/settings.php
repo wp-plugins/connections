@@ -337,7 +337,7 @@ function connectionsShowSettingsPage()
 									</th>
 									<td>
 										<p>The selected fields will be searched.</p>
-										<small><strong>NOTE: </strong>This only applied to search in the the Connections admin and premium templates that enable search in the front end.</small>
+										<small><strong>NOTE: </strong>This only applies to search in the the Connections admin and premium templates that enable search in the front end.</small>
 										<small><strong>NOTE: </strong>Only change when necessary. It can take seconds to many minutes to build the indexes.</small>
 
 										<label>
@@ -459,12 +459,12 @@ function connectionsShowSettingsPage()
 								
 								<tr valign="top">
 									<th scope="row">
-										Disable FULLTEXT support.
+										FULLTEXT Query Support
 									</th>
 									<td>
 										<label>
 											<input type="checkbox" value="true" name="settings[search][fulltext]" id="search-fulltext" 
-												<?php if ( TRUE ) echo 'CHECKED ' ?>
+												<?php if ( $connections->options->getSearchUsingFulltext() ) echo 'CHECKED ' ?>
 											/>
 											If you do not know what this means, please do not change it.
 										</label>

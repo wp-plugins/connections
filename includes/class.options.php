@@ -159,6 +159,8 @@ class cnOptions
 	
 	private $searchFields;
 	
+	private $searchUsingFulltext;
+	
 	/**
 	 * Current time as reported by PHP in Unix timestamp format.
 	 * 
@@ -245,6 +247,8 @@ class cnOptions
 		
 		$this->searchFields = $this->options['settings']['search']['field'];
 		
+		$this->searchUsingFulltext = $this->options['settings']['search']['fulltext'];
+		
 		$this->wpCurrentTime = current_time('timestamp');
 		$this->currentTime = date('U');
 		
@@ -313,6 +317,8 @@ class cnOptions
 		$this->options['settings']['advanced']['load_javascript_footer'] = $this->javaScriptFooter;
 		
 		$this->options['settings']['search']['field'] = $this->searchFields;
+		
+		$this->options['settings']['search']['fulltext'] = $this->searchUsingFulltext;
 		
 		update_option('connections_options', $this->options);
 	}
@@ -1212,9 +1218,9 @@ class cnOptions
     public function getDateOptions()
 	{
         $dateOptions	=	array(
-								/*'anniversary' => __( 'Anniversary' , 'connections' ),*/
+								'anniversary' => __( 'Anniversary' , 'connections' ),
 								'baptism' => __( 'Baptism' , 'connections' ),
-								/*'birthday' => __( 'Birthday' , 'connections' ),*/
+								'birthday' => __( 'Birthday' , 'connections' ),
 								'certification' => __( 'Certification' , 'connections' ),
 								'employment' => __( 'Employment' , 'connections' ),
 								'membership' => __( 'Membership' , 'connections' ),
@@ -1273,6 +1279,26 @@ class cnOptions
     public function setJavaScriptFooter($javaScriptFooter) {
         $this->javaScriptFooter = $javaScriptFooter;
     }
+    
+    /**
+     * Returns $searchUsingFulltext.
+     *
+     * @see cnOptions::$searchUsingFulltext
+     */
+    public function getSearchUsingFulltext() {
+        return $this->searchUsingFulltext;
+    }
+    
+    /**
+     * Sets $searchUsingFulltext.
+     *
+     * @param object $searchUsingFulltext
+     * @see cnOptions::$searchUsingFulltext
+     */
+    public function setSearchUsingFulltext($searchUsingFulltext) {
+        $this->searchUsingFulltext = $searchUsingFulltext;
+    }
+    
     
 	/**
 	 * Get the user's search field choices
@@ -1370,9 +1396,9 @@ class cnOptions
 		 * Drop the current FULLTEXT indexes.
 		 * @TODO indexes should only be dropped on tables that are changing.
 		 */
-		$wpdb->query('ALTER TABLE ' . CN_ENTRY_TABLE . ' DROP INDEX search');		
-		$wpdb->query('ALTER TABLE ' . CN_ENTRY_ADDRESS_TABLE . ' DROP INDEX search');		
-		$wpdb->query('ALTER TABLE ' . CN_ENTRY_PHONE_TABLE . ' DROP INDEX search');
+		@$wpdb->query('ALTER TABLE ' . CN_ENTRY_TABLE . ' DROP INDEX search');		
+		@$wpdb->query('ALTER TABLE ' . CN_ENTRY_ADDRESS_TABLE . ' DROP INDEX search');		
+		@$wpdb->query('ALTER TABLE ' . CN_ENTRY_PHONE_TABLE . ' DROP INDEX search');
 		
 		/*
 		 * Recreate the FULLTEXT indexes based on the user choices
