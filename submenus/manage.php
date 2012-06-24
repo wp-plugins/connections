@@ -9,9 +9,9 @@ function connectionsShowViewPage( $action = NULL )
 	{
 		case 'add':
 			
-			echo '<div class="wrap">
-					<div class="icon32" id="icon-connections"><br/></div>
-					<h2>Connections : Add Entry</h2>';
+			echo '<div class="wrap">';
+			echo get_screen_icon('connections');
+			echo '<h2>Connections : Add Entry</h2>';
 			
 			/*
 			 * Check whether current user can add an entry.
@@ -79,9 +79,9 @@ function connectionsShowViewPage( $action = NULL )
 		
 		case 'copy':
 			
-			echo '<div class="wrap">
-					<div class="icon32" id="icon-connections"><br/></div>
-					<h2>Connections : Copy Entry</h2>';
+			echo '<div class="wrap">';
+			echo get_screen_icon('connections');
+			echo '<h2>Connections : Copy Entry</h2>';
 			
 			/*
 			 * Check whether current user can add an entry.
@@ -152,9 +152,9 @@ function connectionsShowViewPage( $action = NULL )
 		
 		case 'edit':
 			
-			echo '<div class="wrap">
-					<div class="icon32" id="icon-connections"><br/></div>
-					<h2>Connections : Edit Entry</h2>';
+			echo '<div class="wrap">';
+			echo get_screen_icon('connections');
+			echo '<h2>Connections : Edit Entry</h2>';
 					
 			/*
 			 * Check whether the current user can edit entries.
@@ -232,9 +232,9 @@ function connectionsShowViewPage( $action = NULL )
 			$page = $connections->currentUser->getFilterPage('manage');
 			$offset = ( $page->current - 1 ) * $page->limit;
 			
-			echo '<div class="wrap">
-					<div class="icon32" id="icon-connections"><br/></div>
-					<h2>Connections : Manage <a class="button add-new-h2" href="admin.php?page=connections_add">Add New</a></h2>';
+			echo '<div class="wrap">';
+			echo get_screen_icon('connections');
+			echo '<h2>Connections : Manage <a class="button add-new-h2" href="admin.php?page=connections_add">Add New</a></h2>';
 			
 			/*
 			 * Check whether user can view the entry list

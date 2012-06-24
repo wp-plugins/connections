@@ -34,9 +34,7 @@ function connectionsShowTemplatesPage()
 		$connections->displayMessages();
 	?>
 		<div class="wrap">
-			<div id="icon-connections" class="icon32">
-		        <br>
-		    </div>
+			<?php echo get_screen_icon('connections'); ?>
 			
 			<h2>Connections : Templates <a class="button add-new-h2" href="http://connections-pro.com/templates/" target="_blank">Get More</a></h2>
 			

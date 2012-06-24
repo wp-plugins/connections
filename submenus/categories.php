@@ -69,7 +69,7 @@ function connectionsShowCategoriesPage()
 		{
 			?>
 				<div class="wrap nosubsub">
-					<div class="icon32" id="icon-connections"><br/></div>
+					<?php echo get_screen_icon('connections'); ?>
 					<h2>Connections : Categories</h2>
 					<?php echo $connections->displayMessages(); ?>
 					<div id="col-container">

@@ -85,7 +85,7 @@ Author URI: http://connections-pro.com/
  */
 
 
-if (!class_exists('connectionsLoad'))
+if ( ! class_exists('connectionsLoad') )
 {
 	class connectionsLoad
 	{
@@ -95,14 +95,13 @@ if (!class_exists('connectionsLoad'))
 		public $term;
 		
 		/**
-		 * Holds the string values returned from the add_menu_page & add_submenu_page functions
-		 * @var object
+		 * Stores the string values returned from the add_menu_page & add_submenu_page functions
+		 * 
+		 * @var array
 		 */
 		public $pageHook;
 		
 		public $message;
-		/*public $errorMessages;
-		public $successMessages;*/
 		
 		/**
 		 * Do the database upgrade.
@@ -124,11 +123,10 @@ if (!class_exists('connectionsLoad'))
 			// register_uninstall_hook( dirname(__FILE__) . '/connections.php', array('connectionsLoad', 'uninstall') );
 			
 			// Calls the method to load the admin menus.
-			if ( is_admin() ) add_action('admin_menu', array (&$this, 'loadAdminMenus'));
+			if ( is_admin() ) add_action('admin_menu', array( &$this , 'loadAdminMenus' ) );
 			
 			// Add the rewrite rules.
 			//add_action( 'init', array(&$this, 'addRewriteRules') );
-			
 			
 			// Start this plug-in once all other plugins are fully loaded
 			add_action( 'plugins_loaded', array(&$this, 'start') );
@@ -136,18 +134,14 @@ if (!class_exists('connectionsLoad'))
 		
 		public function start()
 		{
-			global $wpdb;
-		
-			/*get_currentuserinfo();
-			$this->currentUser->setID($current_user->ID);*/
-			
 			// Load the translation files.
 			load_plugin_textdomain( 'connections' , false , CN_DIR_NAME . '/lang' );
 			
 			//$this->options->setDBVersion('0.1.8');
 			
 			// Setup the current user object
-			add_action( 'init', array(&$this, 'setupCurrentUser' ) );
+			$current_user = wp_get_current_user();
+			$this->currentUser->setID($current_user->ID);
 			
 			// Register Common scripts
 			add_action( 'init', array(&$this, 'registerScripts' ) );
@@ -165,6 +159,7 @@ if (!class_exists('connectionsLoad'))
 				/*
 				 * Add the filter to update the user settings when the 'Apply" button is clicked.
 				 * NOTE: This relies on the the Screen Options class by Janis Elsts
+				 * NOTE: This filter must be init here otherwise it registers to late to be run.
 				 */
 				add_filter( 'set-screen-option', array(&$this, 'managePageLimitSave'), 10 , 3 );
 			}
@@ -173,10 +168,6 @@ if (!class_exists('connectionsLoad'))
 				// Calls the methods to enqueue the frontend scripts and CSS.
 				add_action( 'wp_print_scripts', array(&$this, 'loadScripts' ) );
 				add_action( 'wp_print_styles', array(&$this, 'loadStyles' ) );
-				
-				// Add a version number to the header
-				// Disable as it fails the HTML5 validation
-				//add_action( 'wp_head', create_function('', 'echo "\n<meta name=\'Connections\' content=\'' . $this->options->getVersion() . '-' . $this->options->getDBVersion() . '\' />\n";') );
 				
 				// Register all valid query variables.
 				add_filter( 'query_vars', array(&$this, 'registerQueryVariables' ) );
@@ -293,11 +284,17 @@ if (!class_exists('connectionsLoad'))
 			//templates
 			require_once(WP_PLUGIN_DIR . '/connections/includes/class.template.php'); // Required for the front end template processing
 			
-			/*
-			 * Include the Screen Options class by Janis Elsts
-			 * http://w-shadow.com/blog/2010/06/29/adding-stuff-to-wordpress-screen-options/
-			 */
-			include( CN_PATH . '/includes/screen-options/screen-options.php' );
+			if ( is_admin() )
+			{
+				// Register the settings admin page tabs, section and fields using the WordPress Settings API.
+				require_once(WP_PLUGIN_DIR . '/connections/includes/class.register-settings.php');
+				
+				/*
+				 * Include the Screen Options class by Janis Elsts
+				 * http://w-shadow.com/blog/2010/06/29/adding-stuff-to-wordpress-screen-options/
+				 */
+				include( CN_PATH . '/includes/screen-options/screen-options.php' );
+			}
 			
 		}
 		
@@ -311,7 +308,7 @@ if (!class_exists('connectionsLoad'))
 		}
 		
 		/**
-		 * During install this will initiate the options.
+		 * During activation this will initiate the options.
 		 */
 		private function initOptions()
 		{
@@ -383,23 +380,11 @@ if (!class_exists('connectionsLoad'))
 			$this->options->saveOptions();
 		}
 		
-		/**
-		 * Register the current user ID.
-		 * 
-		 * @return NULL
-		 */
-		public function setupCurrentUser()
-		{
-			$current_user = wp_get_current_user();
-			$this->currentUser->setID($current_user->ID);
-		}
-		
 		public function displayMessages()
 		{
 			// Exit the method if $_GET['display_messages'] isn't set.
 			if ( ! isset( $_GET['display_messages'] ) ) return;
 			
-			//global $connections;
 			$output = '';
 			
 			$messages = $this->currentUser->getMessages();
@@ -449,17 +434,6 @@ if (!class_exists('connectionsLoad'))
 		 */
 		private function initErrorMessages()
 		{
-			//$this->errorMessages = new WP_Error();
-			
-			/*$this->errorMessages->add('session_path_does_not_exist', 'The $_SESSION save path does not exist.');
-			$this->errorMessages->add('session_path_not_writable', 'The $_SESSION save path is not writable.');
-			
-			$this->errorMessages->add('form_token_mismatch', 'Token mismatch.');
-			$this->errorMessages->add('form_no_entry_id', 'No entry ID.');
-			$this->errorMessages->add('form_no_entry_token', 'No entry token.');
-			$this->errorMessages->add('form_no_session_token', 'No session token.');
-			$this->errorMessages->add('form_no_token', 'No form token.');*/
-			
 			$this->message->add('capability_view_entry_list', 'You are not authorized to view the entry list. Please contact the admin if you received this message in error.');
 			
 			$this->message->add('capability_add', 'You are not authorized to add entries. Please contact the admin if you received this message in error.');
@@ -1014,7 +988,6 @@ if (!class_exists('connectionsLoad'))
 			/*
 			 * Add admin notices if required directories are not present or not writeable.
 			 */
-			
 			if ( ! file_exists(CN_IMAGE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connection_images does not seem to exist. Please try deactivating and reactivating Connections.</p></div>\';' ) );
 			if ( file_exists(CN_IMAGE_PATH) && ! is_writeable(CN_IMAGE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connection_images does not seem to be writeable.</p></div>\';' ) );
 			if ( ! file_exists(CN_CUSTOM_TEMPLATE_PATH) ) add_action( 'admin_notices' , create_function( '' , ' echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Path ../wp-content/connections_templates does not seem to exist. Please try deactivating and reactivating Connections.</p></div>\';' ) );
@@ -1031,13 +1004,6 @@ if (!class_exists('connectionsLoad'))
 			
 			// Add FAQ, Support and Donate links
 			add_filter('plugin_row_meta', array(&$this, 'addMetaLinks'), 10, 2);
-			
-			/*
-			 * Add the Add Entry item to the favorites dropdown.
-			 * WordPress removed this in 3.2. I'm temporarily disabling the filter as I might be able to conver the code
-			 * in the function to be used in the admin bar.
-			 */
-			//add_filter('favorite_actions', array(&$this, 'addEntryFavorite') );
 			
 			// Add Changelog table row in the Manage Plugins admin page.
 			add_action('after_plugin_row_' . CN_BASE_NAME, array(&$this, 'displayUpgradeNotice'), 1, 0);
@@ -1058,6 +1024,12 @@ if (!class_exists('connectionsLoad'))
 			add_action('load-' . $this->pageHook->templates, array(&$this, 'removeDBUpgradeMessage'));
 			add_action('load-' . $this->pageHook->settings, array(&$this, 'removeDBUpgradeMessage'));
 			add_action('load-' . $this->pageHook->roles, array(&$this, 'removeDBUpgradeMessage'));
+			
+			// Register the settings tabs shown on the Settings admin page.
+			add_filter( 'cn_register_admin_tabs' , 'cnRegisterSettings::registerSettingsTabs' );
+			
+			// Register the settings sections.
+			add_filter( 'cn_register_admin_setting_section' , 'cnRegisterSettings::registerSettingsSections' );
 			
 			/*
 			 * Add the panel to the "Screen Options" box to the manage page.
@@ -1108,6 +1080,10 @@ if (!class_exists('connectionsLoad'))
 		
 		/**
 		 * Register the admin menus for Connections
+		 * 
+		 * @author Steven A. Zahm
+	 	 * @since Undefined
+		 * @return void
 		 */	
 		public function loadAdminMenus()
 		{
@@ -1156,6 +1132,7 @@ if (!class_exists('connectionsLoad'))
 		 * 
 		 * @author Steven A. Zahm
 		 * @since 0.7.1.3
+		 * @return void
 		 */
 		public function registerEditMetaboxes()
 		{
@@ -1176,6 +1153,7 @@ if (!class_exists('connectionsLoad'))
 		 * 
 		 * @author Steven A. Zahm
 		 * @since 0.7.1.6
+		 * @return void
 		 */
 		public function registerDashboardMetaboxes()
 		{
@@ -1206,7 +1184,7 @@ if (!class_exists('connectionsLoad'))
 		/**
 		 * Register the external JS libraries that may be enqueued in either the frontend or admin.
 		 * 
-		 * @return NULL
+		 * @return void
 		 */
 		public function registerScripts()
 		{
@@ -1283,17 +1261,6 @@ if (!class_exists('connectionsLoad'))
 				wp_enqueue_script('common');
 				wp_enqueue_script('wp-lists');
 				wp_enqueue_script('postbox');
-				
-				//wp_enqueue_script('jquery-ui-core');
-				//wp_enqueue_script('hoverintent');
-				//wp_enqueue_script('common');
-				//wp_enqueue_script('jquery-color');
-				//wp_enqueue_script('jquery-ui-widget');
-				//wp_enqueue_script('jquery-ui-mouse');
-				//wp_enqueue_script('jquery-ui-sortable');
-				//wp_enqueue_script('jquery-ui-draggable');
-				//wp_enqueue_script('admin-widgets');
-				
 				wp_enqueue_script('cn-widget', WP_PLUGIN_URL . '/connections/js/widgets.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
 			}
 		}
@@ -1309,9 +1276,7 @@ if (!class_exists('connectionsLoad'))
 			 * http://scribu.net/wordpress/optimal-script-loading.html
 			 */
 			
-			//wp_enqueue_script('jquery-preloader');
 			wp_enqueue_script('cn-ui', WP_PLUGIN_URL . '/connections/js/cn-user.js', array('jquery','jquery-preloader'), CN_CURRENT_VERSION, $this->options->getJavaScriptFooter() );
-			
 		}
 		
 		/**
@@ -1354,48 +1319,6 @@ if (!class_exists('connectionsLoad'))
 			wp_enqueue_style('connections-user', CN_URL . '/css/cn-user.css', array(), CN_CURRENT_VERSION);
 			wp_enqueue_style('connections-chosen', CN_URL . '/css/chosen.css', array(), '0.9.8');
 			wp_enqueue_style('connections-qtip', CN_URL . '/css/jquery.qtip.min.css', array(), 'nightly');
-		}
-		
-		/*
-		 * Add items to the favorites drop down.
-		 * WordPress removed the favorites drop down in 3.2. I might be able to conver this to an admin bar menu.
-		 * @url http://wpdevel.wordpress.com/2011/12/07/admin_user_info_links/
-		 */
-		public function addEntryFavorite($actions)
-		{
-			// Exit the method if $_GET['page'] isn't set.
-			if ( !isset($_GET['page']) ) return $actions;
-			
-			switch ($_GET['page'])
-			{
-				
-				case 'connections_manage':
-					$cnActions = array( 'admin.php?page=connections_add' => array('Add Entry', 'connections_add_entry'),
-										'admin.php?page=connections_categories' => array('Add Category<div class="favorite-action"><hr /></div>', 'connections_edit_categories')
-										);
-				break;
-				
-				case 'connections_add':
-					$cnActions = array( 'admin.php?page=connections_categories' => array('Add Category', 'connections_edit_categories') );
-				break;
-				
-				case 'connections_categories':
-					$cnActions = array( 'admin.php?page=connections_add' => array('Add Entry', 'connections_add_entry') );
-				break;
-				
-				case 'connections_templates':
-				case 'connections_settings':
-				case 'connections_roles':
-				case 'connections_csv':
-				case 'connections_help':
-				case 'connections_dashboard':
-					$cnActions = array( 'admin.php?page=connections_add' => array('Add Entry', 'connections_add_entry'),
-										'admin.php?page=connections_categories' => array('Add Category<div class="favorite-action"><hr /></div>', 'connections_edit_categories')
-									   );
-				break;
-			}
-			
-			return array_merge( (array) $cnActions, $actions);
 		}
 		
 		// Add settings option

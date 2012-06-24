@@ -28,11 +28,10 @@ function connectionsShowSettingsPage()
 		$connections->displayMessages();
 	?>
 		<div class="wrap">
-			<div id="icon-connections" class="icon32">
-		        <br>
-		    </div>
-			
+			<?php echo get_screen_icon('connections'); ?>
 			<h2>Connections : Settings</h2>
+			
+			<?php echo get_screen_icon('options-general'); ?>
 			
 			<?php 
 				$attr = array(
@@ -42,6 +41,13 @@ function connectionsShowSettingsPage()
 				
 				$form->open($attr);
 				$form->tokenField('update_settings');
+				
+				$currentTab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'general'; 
+				
+				// Output the tabs.
+				$form->adminSettings( $connections->pageHook->settings , $currentTab );
+				
+				
 			?>
 			
 				<div class="form-wrap">

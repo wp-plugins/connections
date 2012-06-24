@@ -11,8 +11,6 @@ class cnFormObjects
 	
 	public function __construct()
 	{
-		//if ( is_admin() ) $this->registerMetaboxes();
-		
 		// Load the validation class.
 		$this->validate = new cnValidate();
 		
@@ -260,6 +258,225 @@ class cnFormObjects
 	}
 	
 	/**
+	 * Output the tab bank, if one has been hooked to the current admin page, and output
+	 * the settings sections hooked to the current admin page/tab.
+	 * 
+	 * @author Steven A. Zahm
+	 * @since 0.7.3.0
+	 * @param string $pageHook
+	 * @param string $currentTab [optional]
+	 * @param object $return [optional]
+	 * @return string
+	 */
+	public function adminSettings( $pageHook , $currentTab = '' , $return = FALSE )
+	{
+		$out = '';
+		
+		// If the page hook was not supplied echo an empty string.
+		if ( ! empty( $pageHook ) )
+		{
+			$tabs = $this->getAdminTabs($pageHook);
+			
+			// If there were no tabs returned echo out an empty string.
+			if ( ! empty( $tabs ) )
+			{
+				$out .= '<h2 class="nav-tab-wrapper">';
+				
+				foreach ( $tabs as $tab )
+				{
+					$class = ( $currentTab === $tab['id'] ) ? ' nav-tab-active' : '';
+					
+					$out .= '<a class="nav-tab' . $class . '" href="' . add_query_arg('tab', $tab['id']) . '">' . $tab['title'] . '</a>';
+				}
+				
+				$out .= '</h2>';
+			}
+		}
+		
+		// Add to the output any sections and settings that are hooked to this tab.
+		$out .= $this->adminSettingSections($pageHook , $currentTab , TRUE );
+		
+		if ( $return ) return $out;
+		
+		echo $out;
+	}
+	
+	/**
+	 * Returns the registered tabs based on the supplied admin page hook.
+	 * 
+	 * Filters:
+	 * 	cn_register_admin_tabs	=>	Allow new tabs to be registered.
+	 * 	cn_filter_admin_tabs	=>	Allow tabs to be filtered.
+	 * 
+	 * The array construct for registering a tab:
+	 * 	array(
+	 * 		'id' => 'string',			// ID used to identify this tab and with which to register the settings sections
+	 * 		'position' => int,			// Set the position of the section. The lower the int the further left the tab will be place in the bank.
+	 * 		'title' => 'string',		// Title of the tab to be displayed on the admin page 
+	 * 		'page_hook' => 'string'		// Admin page on which to add this section of options
+	 * 	}
+	 * 
+	 * @author Steven A. Zahm
+	 * @since 0.7.3.0
+	 * @param $pageHook string
+	 * @return array
+	 */
+	private function getAdminTabs( $pageHook = '' )
+	{
+		global $connections;
+		$tabs = array();
+		$sort = array();
+		
+		$tabs = apply_filters('cn_register_admin_tabs', $tabs);
+		$tabs = apply_filters('cn_filter_admin_tabs', $tabs);
+		
+		if ( empty($pageHook) ) return array();
+		
+		foreach ( $tabs as $key => $tab )
+		{
+			if ( ! isset( $tab['page_hook'] ) || $tab['page_hook'] !== $pageHook ) unset( $tabs[$key] );
+			
+			// Store the position values so an array multi sort can be done to postion the tabs in the desired order.
+			( isset( $tab['position'] ) && ! empty( $tab['position'] ) ) ? $sort[] = $tab['position'] : $sort[] = 0;
+		}
+		
+		if ( ! empty( $tabs ) )
+		{
+			array_multisort( $sort , $tabs );
+			return $tabs;
+		}
+		else
+		{
+			return array();
+		}
+		
+	}
+	
+	/**
+	 * Registers the settings sections with the WordPress Settings API.
+	 * 
+	 * Filters:
+	 * 	cn_register_admin_setting_section	=>	Register the settings sections.
+	 * 	cn_filter_admin_setting_section	=>	Filter the settings sections.
+	 * 
+	 * The array construct for registering a settings section:
+	 * 	array(
+	 * 		'tab' => 'string',			// The tab ID in which the settings section can be hooked to. [optional]
+	 * 		'id' => 'string',			// ID used to identify this section and with which to register options 
+	 * 		'position' => int,			// Set the position of the section. Lower int will place the section higher on the settings page.
+	 * 		'title' => 'string',		// Title to be displayed on the admin page 
+	 * 		'callback' => 'string',		// Callback used to render the description of the section
+	 * 		'page_hook' => 'string'		// Admin page on which to add this section of options
+	 * 	}
+	 * 
+	 * @author Steven A. Zahm
+	 * @since 0.7.3.0
+	 * @param string $sections
+	 * @return void
+	 */
+	private function getAdminSections( $pageHook )
+	{
+		global $connections;
+		$sections = array();
+		$sort = array();
+		
+		$sections = apply_filters('cn_register_admin_setting_section', $sections);
+		$sections = apply_filters('cn_filter_admin_setting_section', $sections);
+		
+		if ( empty($pageHook) ) return;
+		
+		foreach ( $sections as $key => $section )
+		{
+			if ( ! isset( $section['page_hook'] ) || $section['page_hook'] !== $pageHook ) unset( $sections[$key] );
+			
+			// Store the position values so an array multi sort can be done to postion the tab sections in the desired order.
+			( isset( $section['position'] ) && ! empty( $section['position'] ) ) ? $sort[] = $section['position'] : $sort[] = 0;
+		}
+		
+		if ( ! empty( $sections ) )
+		{
+			array_multisort( $sort , $sections );
+			
+			foreach ( $sections as $section )
+			{
+				( isset( $section['tab'] ) || ! empty( $section['tab'] ) ) ? $section['page_hook'] = $section['page_hook'] . '-' . $section['tab'] : $section['page_hook'] = $section['page_hook'] ;
+				
+				/*
+				 * Reference:
+				 * http://codex.wordpress.org/Function_Reference/add_settings_section
+				 */
+				add_settings_section(  
+					$section['id'] , 
+					$section['title'] ,	
+					$section['callback'] , 
+					$section['page_hook'] 
+				); 
+			}
+		}
+		
+		
+		
+		/*apply_filters( $pageHook . '-general' , 
+				array(
+					10 => array(
+						'id' => 'allow_public',
+						'name' => __('Public Entries', 'connections'),
+						'desc' => __('Allow unregistered visitors and users not logged in to view entries'),
+						'help' => __('When disabled, use roles to define which roles may view the public entries.'),
+						'type' => 'checkbox'
+						) ,
+					20 => array(
+						'id' => 'allow_public_override',
+						'name' => __('public_override', 'connections'),
+						'desc' => __('Disable the public_override shortcode option.'),
+						'help' => __(''),
+						'type' => 'checkbox'
+						) , 
+					20 => array(
+						'id' => 'allow_private_override',
+						'name' => __('private_override', 'connections'),
+						'desc' => __('Disable the private_override shortcode option.'),
+						'help' => __(''),
+						'type' => 'checkbox'
+						)
+					)
+				);*/
+	}
+	
+	/**
+	 * Output the settings sections using the WordPress Settings API.
+	 * 
+	 * @author Steven A. Zahm
+	 * @since 0.7.3.0
+	 * @param string $pageHook
+	 * @param string $currentTab [optional]
+	 * @param string $return [optional]
+	 * @return string
+	 */
+	private function adminSettingSections( $pageHook , $currentTab = '' , $return = FALSE )
+	{
+		global $connections;
+		$out = '';
+		
+		// Setup the settings sections.
+		$this->getAdminSections( $pageHook );
+		
+		ob_start();
+		
+		/*
+		 * Reference:
+		 * http://codex.wordpress.org/Function_Reference/do_settings_sections
+		 */
+		do_settings_sections( $pageHook . '-' . $currentTab );
+		
+		$out = ob_get_clean();
+		
+		if ( $return ) return $out;
+		
+		echo $out;
+	}
+	
+	/**
 	 * Registers the entry edit form meta boxes
 	 * 
 	 * @param string $pageHook The page hook to add the entry edit metaboxes to.
@@ -273,9 +490,7 @@ class cnFormObjects
 		 * meta_box_prefs function
 		 */
 		add_meta_box('submitdiv', 'Publish', array(&$this, 'metaboxPublish'), $pageHook, 'side', 'core');
-		//add_meta_box('metabox-fields', 'Fields', array(&$this, 'metaboxFields'), $pageHook, 'side', 'core');
 		add_meta_box('categorydiv', 'Categories', array(&$this, 'metaboxCategories'), $pageHook, 'side', 'core');
-		//add_meta_box('metabox-name', 'Name', array(&$this, 'metaboxName'), $pageHook, 'normal', 'core');
 		add_meta_box('metabox-image', 'Image', array(&$this, 'metaboxImage'), $pageHook, 'normal', 'core');
 		add_meta_box('metabox-logo', 'Logo', array(&$this, 'metaboxLogo'), $pageHook, 'normal', 'core');
 		add_meta_box('metabox-address', 'Addresses', array(&$this, 'metaboxAddress'), $pageHook, 'normal', 'core');
@@ -392,6 +607,9 @@ class cnFormObjects
 	 * 
 	 * @author Alex Rabe (http://alexrabe.de/)
 	 * @since 0.7.1.6
+	 * @param $post
+	 * @param $metabox array
+	 * @return string
 	 */
 	public function metaboxNews($post, $metabox)
 	{
@@ -467,9 +685,10 @@ class cnFormObjects
 	/**
 	 * Outputs the Dashboard Today's Birthday Widget.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.6
-	 * 
 	 * @param array $data
+	 * @return void
 	 */
 	public function metaboxBirthdayToday($data = NULL)
 	{
@@ -495,9 +714,10 @@ class cnFormObjects
 	/**
 	 * Outputs the Dashboard Upcoming Birthdays Widget.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.6
-	 * 
 	 * @param array $data
+	 * @return string
 	 */
 	public function metaboxBirthdayUpcoming($data = NULL)
 	{
@@ -519,8 +739,8 @@ class cnFormObjects
 	/**
 	 * Outputs the Dashboard Today's Anniversary Widget.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.6
-	 * 
 	 * @param array $data
 	 */
 	public function metaboxAnniversaryToday($data = NULL)
@@ -547,8 +767,8 @@ class cnFormObjects
 	/**
 	 * Outputs the Dashboard Upcoming Anniversary Widget.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.6
-	 * 
 	 * @param array $data
 	 */
 	public function metaboxAnniversaryUpcoming($data = NULL)
@@ -571,8 +791,8 @@ class cnFormObjects
 	/**
 	 * Outputs the Dashboard Recently Added Widget.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.6
-	 * 
 	 * @param array $data
 	 */
 	public function metaboxRecentAdded($data = NULL)
@@ -595,8 +815,8 @@ class cnFormObjects
 	/**
 	 * Outputs the Dashboard Recently Modified Widget.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.6
-	 * 
 	 * @param array $data
 	 */
 	public function metaboxRecentModified($data = NULL)
@@ -730,8 +950,8 @@ class cnFormObjects
 	/**
 	 * Outputs the publish meta box.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.6
-	 * 
 	 * @param array $entry
 	 */
 	public function metaboxPublish($entry = NULL)
@@ -785,25 +1005,10 @@ class cnFormObjects
 	}
 	
 	/**
-	 * Outputs the add field meta box. NOT USED
-	 * 
-	 * @since 0.7.1.5
-	 */
-	public function metaboxFields()
-	{
-		echo '<p><a id="add_address" class="button">Add Address</a></p>';
-		echo '<p><a id="add_phone_number" class="button">Add Phone Number</a></p>';
-		echo '<p><a id="add_email_address" class="button">Add Email Address</a></p>';
-		echo '<p><a id="add_im_id" class="button">Add Messenger ID</a></p>';
-		echo '<p><a id="add_social_media" class="button">Add Social Media ID</a></p>';
-		echo '<p><a id="add_website_address" class="button">Add Website Address</a></p>';
-	}
-	
-	/**
 	 * Outputs the category meta box.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.5
-	 * 
 	 * @param array $entry
 	 */
 	public function metaboxCategories($entry = NULL)
@@ -824,8 +1029,8 @@ class cnFormObjects
 	/**
 	 * Outputs the name meta box.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.5
-	 * 
 	 * @param array $entry
 	 */
 	public function metaboxName($entry = NULL)
@@ -935,8 +1140,8 @@ class cnFormObjects
 	/**
 	 * Outputs the image meta box.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.5
-	 * 
 	 * @param array $entry
 	 */
 	public function metaboxImage($entry = NULL)
@@ -961,8 +1166,8 @@ class cnFormObjects
 	/**
 	 * Outputs the logo meta box.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.5
-	 * 
 	 * @param array $entry
 	 */
 	public function metaboxLogo($entry = NULL)
@@ -987,8 +1192,8 @@ class cnFormObjects
 	/**
 	 * Outputs the address meta box.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.5
-	 * 
 	 * @param array $entry
 	 */
 	public function metaboxAddress( $entry = NULL )
@@ -1170,8 +1375,8 @@ class cnFormObjects
 	/**
 	 * Outputs the phone meta box.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.5
-	 * 
 	 * @param array $entry
 	 */
 	public function metaboxPhone($entry = NULL)
@@ -1246,8 +1451,8 @@ class cnFormObjects
 	/**
 	 * Outputs the email meta box.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.5
-	 * 
 	 * @param array $entry
 	 */
 	public function metaboxEmail($entry = NULL)
@@ -1322,8 +1527,8 @@ class cnFormObjects
 	/**
 	 * Outputs the messenger meta box.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.5
-	 * 
 	 * @param array $entry
 	 */
 	public function metaboxMessenger($entry = NULL)
@@ -1397,8 +1602,8 @@ class cnFormObjects
 	/**
 	 * Outputs the social media meta box.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.5
-	 * 
 	 * @param array $entry
 	 */
 	public function metaboxSocialMedia($entry = NULL)
@@ -1473,8 +1678,8 @@ class cnFormObjects
 	/**
 	 * Outputs the links meta box.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.5
-	 * 
 	 * @param array $entry
 	 */
 	public function metaboxLinks($entry = NULL)
@@ -1580,8 +1785,8 @@ class cnFormObjects
 	/**
 	 * Outputs the dates box.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.2.7
-	 * 
 	 * @param array $entry
 	 */
 	public function metaboxDates( $entry = NULL )
@@ -1662,8 +1867,8 @@ class cnFormObjects
 	/**
 	 * Outputs the birthday meta box.
 	 * 
-	 * @since 0.7.1.58
-	 * 
+	 * @author Steven A. Zahm
+	 * @since 0.7.1.5
 	 * @param array $entry
 	 */
 	public function metaboxBirthday($entry = NULL)
@@ -1680,8 +1885,8 @@ class cnFormObjects
 	/**
 	 * Outputs the anniversary meta box.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.5
-	 * 
 	 * @param array $entry
 	 */
 	public function metaboxAnniversary($entry = NULL)
@@ -1698,8 +1903,8 @@ class cnFormObjects
 	/**
 	 * Outputs the bio meta box.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.5
-	 * 
 	 * @param array $entry
 	 */
 	public function metaboxBio($entry = NULL)
@@ -1740,8 +1945,8 @@ class cnFormObjects
 	/**
 	 * Outputs the notes meta box.
 	 * 
+	 * @author Steven A. Zahm
 	 * @since 0.7.1.5
-	 * 
 	 * @param array $entry
 	 */
 	public function metaboxNotes($entry = NULL)

@@ -26,9 +26,7 @@ function connectionsShowDashboardPage()
 		$form = new cnFormObjects();
 	?>
 		<div class="wrap">
-			<div id="icon-connections" class="icon32">
-		        <br>
-		    </div>
+			<?php echo get_screen_icon('connections'); ?>
 			
 			<h2>Connections : Dashboard</h2>
 			

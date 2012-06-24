@@ -1347,29 +1347,6 @@ class cnOptions
 		/*
 		 * Build the array to store the user preferences.
 		 */
-		/*( ! isset( $field['family_name'] ) ) ? $search['family_name'] = FALSE : $search['family_name'] = $field['family_name'];
-		( ! isset( $field['first_name'] ) ) ? $search['first_name'] = FALSE : $search['first_name'] = $field['first_name'];
-		( ! isset( $field['middle_name'] ) ) ? $search['middle_name'] = FALSE : $search['middle_name'] = $field['middle_name'];
-		( ! isset( $field['last_name'] ) ) ? $search['last_name'] = FALSE : $search['last_name'] = $field['last_name'];
-		( ! isset( $field['title'] ) ) ? $search['title'] = FALSE : $search['title'] = $field['title'];
-		( ! isset( $field['organization'] ) ) ? $search['organization'] = FALSE : $search['organization'] = $field['organization'];
-		( ! isset( $field['department'] ) ) ? $search['department'] = FALSE : $search['department'] = $field['department'];
-		( ! isset( $field['contact_first_name'] ) ) ? $search['contact_first_name'] = FALSE : $search['contact_first_name'] = $field['contact_first_name'];
-		( ! isset( $field['contact_last_name'] ) ) ? $search['contact_last_name'] = FALSE : $search['contact_last_name'] = $field['contact_last_name'];
-		( ! isset( $field['bio'] ) ) ? $search['bio'] = FALSE : $search['bio'] = $field['bio'];
-		( ! isset( $field['notes'] ) ) ? $search['notes'] = FALSE : $search['notes'] = $field['notes'];*/
-		
-		/*( ! isset( $field['address_line_1'] ) ) ? $search['address_line_1'] = FALSE : $search['address_line_1'] = $field['address_line_1'];
-		( ! isset( $field['address_line_2'] ) ) ? $search['address_line_2'] = FALSE : $search['address_line_2'] = $field['address_line_2'];
-		( ! isset( $field['address_line_3'] ) ) ? $search['address_line_3'] = FALSE : $search['address_line_3'] = $field['address_line_3'];
-		( ! isset( $field['address_city'] ) ) ? $search['address_city'] = FALSE : $search['address_city'] = $field['address_city'];
-		( ! isset( $field['address_state'] ) ) ? $search['address_state'] = FALSE : $search['address_state'] = $field['address_state'];
-		( ! isset( $field['address_zipcode'] ) ) ? $search['address_zipcode'] = FALSE : $search['address_zipcode'] = $field['address_zipcode'];
-		( ! isset( $field['address_country'] ) ) ? $search['address_country'] = FALSE : $search['address_country'] = $field['address_country'];
-		
-		( ! isset( $field['phone_number'] ) ) ? $search['phone_number'] = FALSE : $search['phone_number'] = $field['phone_number'];*/
-		
-		
 		$search['family_name'] = ( isset( $field['family_name'] ) && $field['family_name'] != FALSE ) ? TRUE : FALSE;
 		$search['first_name'] = ( isset( $field['first_name'] ) && $field['first_name'] != FALSE ) ? TRUE : FALSE;
 		$search['middle_name'] = ( isset( $field['middle_name'] ) && $field['middle_name'] != FALSE ) ? TRUE : FALSE;

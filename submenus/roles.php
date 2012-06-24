@@ -29,9 +29,7 @@ function connectionsShowRolesPage()
 		
 	?>
 		<div class="wrap cn-roles">
-			<div id="icon-connections" class="icon32">
-		        <br>
-		    </div>
+			<?php echo get_screen_icon('connections'); ?>
 			
 			<h2>Connections : Roles &amp; Capabilities</h2>
 			
