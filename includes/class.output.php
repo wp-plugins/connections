@@ -41,14 +41,6 @@ class cnOutput extends cnEntry
 	{
 		global $connections;
 		
-		/*
-		 * Set some defaults so the result resembles how the previous rendered.
-		 */
-		/*$atts['image'] = 'logo';
-		$atts['height'] = $connections->options->getImgLogoY();
-		$atts['width'] = $connections->options->getImgLogoX();
-		$atts['zc'] = 3;
-		$this->getImage( $atts );*/
 		$this->getImage( array( 'image' => 'logo' ) );
 	}
 	
@@ -80,6 +72,9 @@ class cnOutput extends cnEntry
 	 * 
 	 * @todo Enable support for a default image to be set.
 	 * 
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
 	 * @param array $atts [optional]
 	 * @return string
 	 */
@@ -132,8 +127,8 @@ class cnOutput extends cnEntry
 				{
 					$displayImage = TRUE;
 					$atts['class'] = 'photo';
-					$atts['alt'] = 'Photo of ' . $this->getName();
-					$atts['title'] = 'Photo of ' . $this->getName();
+					$atts['alt'] = __('Photo of', 'connections') . ' ' . $this->getName();
+					$atts['title'] = __('Photo of', 'connections') . ' ' . $this->getName();
 										
 					if ( $customSize )
 					{
@@ -192,8 +187,8 @@ class cnOutput extends cnEntry
 				{
 					$displayImage = TRUE;
 					$atts['class'] = 'logo';
-					$atts['alt'] = 'Logo for ' . $this->getName();
-					$atts['title'] = 'Logo for ' . $this->getName();
+					$atts['alt'] = __('Logo for', 'connections') . ' ' . $this->getName();
+					$atts['title'] = __('Logo for', 'connections') . ' ' . $this->getName();
 					
 					if ( $customSize )
 					{
@@ -349,11 +344,16 @@ class cnOutput extends cnEntry
 	 * NOTE: If an entry is a organization/family, this will return the organization/family name instead
 	 * 		 ignoring the format attribute because it does not apply.
 	 * 
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
 	 * @param array $atts [optional]
 	 * @return string
 	 */
 	public function getNameBlock( $suppliedAtts = array() )
 	{
+		global $connections;
+		
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
@@ -415,6 +415,16 @@ class cnOutput extends cnEntry
 			break;
 		}
 		
+		$connections->url->useHome(FALSE);
+		$out = $connections->url->permalink( array(
+			'type' => 'name',
+			'slug' => $this->getSlug(),
+			'title' => $this->getName($atts),
+			'text' => $out,
+			'return' => TRUE
+			)
+		);
+		
 		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
@@ -460,6 +470,11 @@ class cnOutput extends cnEntry
 	
 	/**
 	 * Echos the family members of the family entry type.
+	 * 
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
+	 * @return string
 	 */
 	public function getFamilyMemberBlock()
 	{
@@ -470,8 +485,21 @@ class cnOutput extends cnEntry
 			foreach ($this->getFamilyMembers() as $key => $value)
 			{
 				$relation = new cnEntry();
+				$relationName = '';
+				
 				$relation->set($key);
-				echo '<span><strong>' . $connections->options->getFamilyRelation($value) . ':</strong> ' . $relation->getFullFirstLastName() . '</span><br />' . "\n";
+				$relationType = $connections->options->getFamilyRelation($value);
+				
+				$relationName = cnURL::permalink( array(
+					'type' => 'name',
+					'slug' => $relation->getSlug(),
+					'title' => $relation->getName(),
+					'text' => $relation->getName(),
+					'return' => TRUE
+					)
+				);
+				
+				echo '<span><strong>' . $relationType . ':</strong> ' . $relationName . '</span><br />' . "\n";
 				unset($relation);
 			}
 		}
@@ -485,8 +513,10 @@ class cnOutput extends cnEntry
 	 * 	after (string) HTML to after before an address.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
 	 * 
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
 	 * @param (array) $suppliedAttr Accepted values as noted above.
-	 * @param (bool) $cached Returns the cached address data rather than querying the db.
 	 * @return string
 	 */
 	public function getTitleBlock( $suppliedAtts = array() )
@@ -528,8 +558,10 @@ class cnOutput extends cnEntry
 	 * 	after (string) HTML to after before an address.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
 	 * 
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
 	 * @param (array) $suppliedAttr Accepted values as noted above.
-	 * @param (bool) $cached Returns the cached address data rather than querying the db.
 	 * @return string
 	 */
 	public function getOrgUnitBlock( $suppliedAtts = array() )
@@ -601,6 +633,9 @@ class cnOutput extends cnEntry
 	 * 	after (string) HTML to after before an address.
 	 * 	return (bool) Return or echo the string. Default is to echo.
 	 * 
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
 	 * @param array $atts [optional]
 	 * @return string
 	 */
@@ -610,7 +645,7 @@ class cnOutput extends cnEntry
 		 * // START -- Set the default attributes array. \\
 		 */
 		$defaultAtts = array( 'format' => '%label%: %first% %last%',
-							  'label' => 'Contact',
+							  'label' => __('Contact', 'connections'),
 							  'before' => '',
 							  'after' => '',
 							  'return' => FALSE
@@ -671,8 +706,11 @@ class cnOutput extends cnEntry
 	 * 	after (string) HTML to after before the addresses.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
 	 * 
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
 	 * @param (array) $suppliedAttr Accepted values as noted above.
-	 * @param (bool) $cached Returns the cached address rather than querying the db.
+	 * @param (bool) [optional] $cached Returns the cached address rather than querying the db.
 	 * @return string
 	 */
 	public function getAddressBlock( $suppliedAttr = array() , $cached = TRUE )
@@ -687,7 +725,6 @@ class cnOutput extends cnEntry
 			$defaultAttr['zipcode'] = NULL;
 			$defaultAttr['country'] = NULL;
 			$defaultAttr['coordinates'] = array();
-			//$defaultAttr['format'] = '%label%|%line1%|%line2%|%line3%|%city%, %state%  %zipcode%|%geo%';
 			$defaultAttr['format'] = '%label% %line1% %line2% %line3% %city%, %state%  %zipcode% %country%';
 			$defaultAttr['before'] = '';
 			$defaultAttr['after'] = '';
@@ -727,8 +764,8 @@ class cnOutput extends cnEntry
 				if ( ! empty($address->latitude) || ! empty($address->longitude) )
 				{
 					 $replace[] = '<span class="geo">' . 
-					 	( ( empty($address->latitude) ) ? '' : '<span class="latitude" title="' . $address->latitude . '"><span class="cn-label">Latitude: </span>' . $address->latitude . '</span>' ) . 
-						( ( empty($address->longitude) ) ? '' : '<span class="longitude" title="' . $address->longitude . '"><span class="cn-label">Longitude: </span>' . $address->longitude . '</span>' ) . 
+					 	( ( empty($address->latitude) ) ? '' : '<span class="latitude" title="' . $address->latitude . '"><span class="cn-label">' . __('Latitude', 'connections') . ': </span>' . $address->latitude . '</span>' ) . 
+						( ( empty($address->longitude) ) ? '' : '<span class="longitude" title="' . $address->longitude . '"><span class="cn-label">' . __('Longitude', 'connections') . ': </span>' . $address->longitude . '</span>' ) . 
 						'</span>';
 				}
 				
@@ -741,8 +778,6 @@ class cnOutput extends cnEntry
 		}
 		
 		$out .= '</span>';
-		
-		//$out = str_ireplace( array('|||||||||' , '||||||||' ,'|||||||' ,'||||||' ,'|||||' ,'||||' ,'|||' ,'||' ,'|') , '<br>' , $out );
 		
 		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
@@ -774,8 +809,11 @@ class cnOutput extends cnEntry
 	 * 
 	 * @TODO Add support for the Google Maps API Premier client id.
 	 * 
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
 	 * @param (array) $suppliedAttr Accepted values as noted above.
-	 * @param (bool) $cached Returns the cached address rather than querying the db.
+	 * @param (bool) [optiona] $cached Returns the cached address rather than querying the db.
 	 * @return string
 	 */
 	public function getMapBlock( $suppliedAttr = array() , $cached = TRUE )
@@ -802,6 +840,7 @@ class cnOutput extends cnEntry
 		
 		$out = '';
 		$attr = array();
+		$addr = array();
 		$geo = array();
 		
 		// Limit the map type to one of the valid types to prevent user error.
@@ -852,10 +891,10 @@ class cnOutput extends cnEntry
 		else
 		{
 			$attr[] = 'id="map-' . $this->getRuid() . '"';
-			$attr[] = 'data-address="' . implode(', ', $addr) .'"';
+			if ( ! empty($addr) ) $attr[] = 'data-address="' . implode(', ', $addr) .'"';
 			if ( ! empty($geo['latitude']) ) $attr[] = 'data-latitude="' . $geo['latitude'] .'"';
 			if ( ! empty($geo['longitude']) ) $attr[] = 'data-longitude="' . $geo['longitude'] .'"';
-			$attr[] = 'style="width: ' . $atts['width'] . 'px; height: ' . $atts['height'] . 'px"';
+			$attr[] = 'style="' . ( ! empty( $atts['width'] ) ? 'width: ' . $atts['width'] . 'px; ' : '' ) . 'height: ' . $atts['height'] . 'px"';
 			$attr[] = 'data-maptype="' . $atts['maptype'] .  '"';
 			$attr[] = 'data-zoom="' . $atts['zoom'] .  '"';
 			
@@ -886,8 +925,11 @@ class cnOutput extends cnEntry
 	 * 	after (string) HTML to after before the phone numbers.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
 	 * 
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
 	 * @param (array) $suppliedAttr Accepted values as noted above.
-	 * @param (bool) $cached Returns the cached data rather than querying the db.
+	 * @param (bool) [optional] $cached Returns the cached data rather than querying the db.
 	 * @return string
 	 */
 	public function getPhoneNumberBlock( $suppliedAttr = array() , $cached = TRUE )
@@ -923,7 +965,7 @@ class cnOutput extends cnEntry
 			$out .= "\n" . '<span class="tel">';
 			
 				( empty($phone->name) ) ? $replace[] = '' : $replace[] = '<span class="phone-name">' . $phone->name . '</span>';
-				( empty($phone->number) ) ? $replace[] = '' : $replace[] = '<span class="value">' . $phone->number . '</span>';
+				( empty($phone->number) ) ? $replace[] = '' : $replace[] = '<a class="value" href="tel:' . $phone->number . '" value="' . preg_replace('/[^0-9]/', '', $phone->number) . '">' . $phone->number . '</a>';
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );
 				
@@ -943,6 +985,9 @@ class cnOutput extends cnEntry
 	 * Returns the entry's telephone type in a HTML hCard compliant string.
 	 * 
 	 * @url http://microformats.org/wiki/hcard-cheatsheet
+	 * @access private
+	 * @since unknown
+	 * @version 1.0
 	 * @param (string) $data
 	 * @return string
 	 */
@@ -986,6 +1031,9 @@ class cnOutput extends cnEntry
 	 * Returns the entry's address type in a HTML hCard compliant string.
 	 * 
 	 * @url http://microformats.org/wiki/adr-cheatsheet#Properties_.28Class_Names.29
+	 * @access private
+	 * @since unknown
+	 * @version 1.0
 	 * @param (string) $data
 	 * @return string
 	 */
@@ -1027,12 +1075,28 @@ class cnOutput extends cnEntry
 	 * 		Permitted Tokens:
 	 * 			%label%
 	 * 			%address%
+	 * 			%icon%
+	 * 	title (string) The link title attribute. Accepts tokens.
+	 * 		Permitted Tokens:
+	 * 			Name tokens:
+	 * 				%prefix%
+	 * 				%first%
+	 * 				%middle%
+	 * 				%last%
+	 * 				%suffix%
+	 * 			Email tokens:
+	 * 				%type%
+	 * 				%name%
+	 * 	size (int) the icon size. Permitted sizes are 16, 24, 32, 48.
 	 * 	before (string) HTML to output before the email addresses.
 	 * 	after (string) HTML to after before the email addresses.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
 	 * 
+	 * @access puplic
+	 * @since unknown
+	 * @version 1.0
 	 * @param (array) $suppliedAttr Accepted values as noted above.
-	 * @param (bool) $cached Returns the cached data rather than querying the db.
+	 * @param (bool) [optional] $cached Returns the cached data rather than querying the db.
 	 * @return string
 	 */
 	public function getEmailAddressBlock( $suppliedAttr = array() , $cached = TRUE )
@@ -1043,6 +1107,8 @@ class cnOutput extends cnEntry
 			$defaultAttr['preferred'] = NULL;
 			$defaultAttr['type'] = NULL;
 			$defaultAttr['format'] = '%label%: %address%';
+			$defaultAttr['title'] = '%first% %last% %type% email.';
+			$defaultAttr['size'] = 32;
 			$defaultAttr['before'] = '';
 			$defaultAttr['after'] = '';
 			$defaultAttr['return'] = FALSE;
@@ -1055,7 +1121,16 @@ class cnOutput extends cnEntry
 		
 		$out = '';
 		$emailAddresses = $this->getEmailAddresses( $atts , $cached );
-		$search = array('%label%' , '%address%');
+		$search = array('%label%' , '%address%' , '%icon%');
+		$iconSizes = array(16, 24, 32, 48);
+		
+		// Replace the 'Name Tokens' with the entry's name.
+		$title = $this->getName( array( 'format' => $atts['title' ] ) );
+		
+		/*
+		 * Ensure the supplied size is valid, if not reset to the default value.
+		 */
+		( in_array($atts['size'], $iconSizes) ) ? $iconSize = $atts['size'] : $iconSize = 32;
 		
 		if ( empty($emailAddresses) ) return '';
 		
@@ -1067,8 +1142,12 @@ class cnOutput extends cnEntry
 			
 			$out .= "\n" . '<span class="email">';
 				
-				( empty($email->name) ) ? $replace[] = '' : $replace[] = '<span class="email-name">' . $email->name . '</span>';
-				( empty($email->address) ) ? $replace[] = '' : $replace[] = '<a class="value" href="mailto:' . $email->address . '">' . $email->address . '</a>';
+				// Replace the 'Email Tokens' with the email info.
+				$title = str_ireplace( array('%type%', '%name%') , array($email->type, $email->name), $title);
+				
+				$replace[] = ( empty($email->name) ) ? '' : '<span class="email-name">' . $email->name . '</span>';
+				$replace[] = ( empty($email->address) ) ? '' : '<a class="value" title="' . $title . '" href="mailto:' . $email->address . '">' . $email->address . '</a>';
+				$replace[] = ( empty($email->address) ) ? '' : '<a class="value" title="' . $title . '" href="mailto:' . $email->address . '"><image src="' . CN_URL . '/images/icons/mail/mail_' . $iconSize . '.png" height="' . $iconSize . 'px" width="' . $iconSize . 'px"/></a>';
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );
 				
@@ -1108,8 +1187,11 @@ class cnOutput extends cnEntry
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
 	 * 
 	 * @url http://microformats.org/wiki/hcard-examples#New_Types_of_Contact_Info
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
 	 * @param (array) $suppliedAttr Accepted values as noted above.
-	 * @param (bool) $cached Returns the cached data rather than querying the db.
+	 * @param (bool) [optiona] $cached Returns the cached data rather than querying the db.
 	 * @return string
 	 */
 	public function getImBlock( $suppliedAttr = array() , $cached = TRUE )
@@ -1230,8 +1312,11 @@ class cnOutput extends cnEntry
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
 	 * 
 	 * @url http://microformats.org/wiki/hcard-examples#Site_profiles
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
 	 * @param (array) $suppliedAttr Accepted values as noted above.
-	 * @param (bool) $cached Returns the cached data rather than querying the db.
+	 * @param (bool) [optional] $cached Returns the cached data rather than querying the db.
 	 * @return string
 	 */
 	public function getSocialMediaBlock( $suppliedAttr = array() , $cached = TRUE )
@@ -1283,7 +1368,7 @@ class cnOutput extends cnEntry
 			$iconClass[] = $iconStyle;
 			$iconClass[] = 'sz-' . $iconSize;
 			
-			$out .= "\n" . '<span class="social-media-network">';
+			$out .= '<span class="social-media-network">';
 			
 				$replace[] = '<a class="url ' . $network->type . '" href="' . $network->url . '" target="_blank" title="' . $network->name . '">' . $network->name . '</a>';
 				
@@ -1293,7 +1378,7 @@ class cnOutput extends cnEntry
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );
 				
-			$out .= '</span>' . "\n";
+			$out .= '</span>';
 		}
 		
 		$out .= '</span>';
@@ -1337,8 +1422,11 @@ class cnOutput extends cnEntry
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
 	 * 
 	 * @url http://microformats.org/wiki/hcard-examples#Site_profiles
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
 	 * @param (array) $suppliedAttr Accepted values as noted above.
-	 * @param (bool) $cached Returns the cached data rather than querying the db.
+	 * @param (bool) [optional] $cached Returns the cached data rather than querying the db.
 	 * @return string
 	 */
 	public function getLinkBlock( $suppliedAttr = array() , $cached = TRUE )
@@ -1348,7 +1436,7 @@ class cnOutput extends cnEntry
 		 */
 			$defaultAttr['preferred'] = NULL;
 			$defaultAttr['type'] = NULL;
-			$defaultAttr['format'] = '%title%';
+			$defaultAttr['format'] = '%label%: %title%';
 			$defaultAttr['label'] = NULL;
 			$defaultAttr['size'] = 'lg';
 			$defaultAttr['before'] = '';
@@ -1380,7 +1468,7 @@ class cnOutput extends cnEntry
 			
 				if ( empty( $atts['label'] ) )
 				{
-					( empty($link->name) ) ? $replace[] = '' : $replace[] = '<span class="link-name">' . $link->name . '</span>';
+					$replace[] = ( empty($link->name) ) ? '' : '<span class="link-name">' . $link->name . '</span>';
 				}
 				else
 				{
@@ -1391,65 +1479,57 @@ class cnOutput extends cnEntry
 				( empty($link->title) ) ? $replace[] = '' : $replace[] = '<a class="url" href="' . $link->url . '"' . ( ( empty($link->target) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty($link->followString) ? '' : ' rel="' . $link->followString . '"' ) ) . '>' . $link->title . '</a>';
 				( empty($link->url) ) ? $replace[] = '' : $replace[] = '<a class="url" href="' . $link->url . '"' . ( ( empty($link->target) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty($link->followString) ? '' : ' rel="' . $link->followString . '"' ) ) . '>' . $link->url . '</a>';
 				
-				/*if ( $atts['image'] )
-				{*/
-					//
-					
-					// Set the image size; These string values match the valid size for http://www.shrinktheweb.com
-					switch ( $atts['size'] )
-					{
-						case 'mcr':
-							$width = 75;
-							$height = 56;
-							break;
-							
-						case 'tny':
-							$width = 90;
-							$height = 68;
-							break;
-							
-						case 'vsm':
-							$width = 100;
-							$height = 75;
-							break;
-							
-						case 'sm':
-							$width = 120;
-							$height = 90;
-							break;
-							
-						case 'lg':
-							$width = 200;
-							$height = 150;
-							break;
-							
-						case 'xlg':
-							$width = 320;
-							$height = 240;
-							break;
-					}
-					
-					if ( $this->validate->url( $link->url , FALSE ) == 1 )
-					{
-						// Create the query the WordPress for the webshot to be displayed.
-						$queryURL = 'http://s.wordpress.com/mshots/v1/' . urlencode($link->url) . '?w=' . $width;
-						$imageTag = '<img class="screenshot" alt="' . esc_attr($link->url) . '" width="' . $width . '" src="' . $queryURL . '" />';
+				
+				// Set the image size; These string values match the valid size for http://www.shrinktheweb.com
+				switch ( $atts['size'] )
+				{
+					case 'mcr':
+						$width = 75;
+						$height = 56;
+						break;
 						
-						$imgBlock .= '<span class="cn-image-style" style="display: inline-block;"><span class="cn-image" style="height: ' . $height . '; width: ' . $width . '">';
-						$imgBlock .= '<a class="url" href="' . $link->url . '"' . ( ( empty($link->target) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty($link->followString) ? '' : ' rel="' . $link->followString . '"' ) ) . '>' . $imageTag . '</a>';
-						$imgBlock .= '</span></span>';
+					case 'tny':
+						$width = 90;
+						$height = 68;
+						break;
 						
-						$replace[] = $imgBlock;
-					}
-					else
-					{
-						$replace[] = '';
-					}
-				/*}
+					case 'vsm':
+						$width = 100;
+						$height = 75;
+						break;
+						
+					case 'sm':
+						$width = 120;
+						$height = 90;
+						break;
+						
+					case 'lg':
+						$width = 200;
+						$height = 150;
+						break;
+						
+					case 'xlg':
+						$width = 320;
+						$height = 240;
+						break;
+				}
+				
+				if ( $this->validate->url( $link->url , FALSE ) == 1 )
+				{
+					// Create the query the WordPress for the webshot to be displayed.
+					$queryURL = 'http://s.wordpress.com/mshots/v1/' . urlencode($link->url) . '?w=' . $width;
+					$imageTag = '<img class="screenshot" alt="' . esc_attr($link->url) . '" width="' . $width . '" src="' . $queryURL . '" />';
+					
+					$imgBlock .= '<span class="cn-image-style" style="display: inline-block;"><span class="cn-image" style="height: ' . $height . '; width: ' . $width . '">';
+					$imgBlock .= '<a class="url" href="' . $link->url . '"' . ( ( empty($link->target) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty($link->followString) ? '' : ' rel="' . $link->followString . '"' ) ) . '>' . $imageTag . '</a>';
+					$imgBlock .= '</span></span>';
+					
+					$replace[] = $imgBlock;
+				}
 				else
 				{
 					$replace[] = '';
-				}*/
+				}
 				
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );
@@ -1487,8 +1567,11 @@ class cnOutput extends cnEntry
 	 * 	after (string) HTML to after before the dates.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
 	 * 
+	 * @access public
+	 * @since 0.7.3
+	 * @version 1.0
 	 * @param (array) $suppliedAttr Accepted values as noted above.
-	 * @param (bool) $cached Returns the cached data rather than querying the db.
+	 * @param (bool) [optional] $cached Returns the cached data rather than querying the db.
 	 * @return string
 	 */
 	public function getDateBlock( $suppliedAttr = array() , $cached = TRUE )
@@ -1525,7 +1608,7 @@ class cnOutput extends cnEntry
 			
 			$out .= "\n" . '<span class="vevent">';
 				
-				// Hiiden elements are to maintain hCalenday spec compatibility
+				// Hidden elements are to maintain hCalendar spec compatibility
 				( empty($date->name) ) ? $replace[] = '<span class="summary" style="display: none;">' . $date->name . '</span>' : $replace[] = '<span class="summary">' . $date->name . '</span>';
 				( empty($date->date) ) ? $replace[] = '<span class="dtstart" style="display: none;"><span class="value">' . $dateObject->format( 'Y-m-d' ) . '</span></span>' : $replace[] = '<span class="dtstart"><span class="value" style="display: none;">' . $dateObject->format( 'Y-m-d' ) . '</span><span class="date-displayed">' . $dateObject->format( $atts['date_format'] ) . '</span></span>';
 				
@@ -1540,7 +1623,13 @@ class cnOutput extends cnEntry
 		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
-	
+	/**
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
+	 * @param string $format [optional]
+	 * @return string
+	 */
 	public function getBirthdayBlock( $format = 'F jS' )
 	{
 		//NOTE: The vevent span is for hCalendar compatibility.
@@ -1555,6 +1644,13 @@ class cnOutput extends cnEntry
 		return $out;
 	}
 	
+	/**
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
+	 * @param string $format [optional]
+	 * @return string
+	 */
 	public function getAnniversaryBlock( $format = 'F jS' )
 	{
 		//NOTE: The vevent span is for hCalendar compatibility.
@@ -1572,7 +1668,11 @@ class cnOutput extends cnEntry
 	 * Registers the global $wp_embed because the run_shortcode method needs 
 	 * to run before the do_shortcode function for the [embed] shortcode to fire
 	 * 
-	 * @TODO Add support for the $atts array. 
+	 * @TODO Add support for the $atts array.
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
+	 * @param array
 	 * @return string
 	 */
 	public function getNotesBlock( $suppliedAttr = array() )
@@ -1589,7 +1689,11 @@ class cnOutput extends cnEntry
 	 * Registers the global $wp_embed because the run_shortcode method needs 
 	 * to run before the do_shortcode function for the [embed] shortcode to fire
 	 * 
-	 * @TODO Add support for the $atts array. 
+	 * @TODO Add support for the $atts array.
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
+	 * @param array
 	 * @return string
 	 */
 	public function getBioBlock( $suppliedAttr = array() )
@@ -1614,6 +1718,9 @@ class cnOutput extends cnEntry
 	 * 		parents == bool -- Display the parents
 	 * 		return == TRUE || FALSE -- Return string if set to TRUE instead of echo string.
 	 * 
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
 	 * @param array $atts [optional]
 	 * @return string
 	 */
@@ -1673,6 +1780,9 @@ class cnOutput extends cnEntry
 	/**
 	 * Displays the category list for use in the class tag.
 	 * 
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
 	 * @param bool $return [optional] Return instead of echo.
 	 * @return string
 	 */
@@ -1693,11 +1803,23 @@ class cnOutput extends cnEntry
 		
 	}
 	
+	/**
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
+	 * @return string
+	 */
 	public function getRevisionDateBlock()
 	{
 		return '<span class="rev">' . date('Y-m-d', strtotime($this->getUnixTimeStamp())) . 'T' . date('H:i:s', strtotime($this->getUnixTimeStamp())) . 'Z' . '</span>' . "\n";
 	}
 	
+	/**
+	 * @access private
+	 * @since unknown
+	 * @version 1.0
+	 * @return string
+	 */
 	public function getLastUpdatedStyle()
 	{
 		$age = (int) abs( time() - strtotime( $this->getUnixTimeStamp() ) );
@@ -1718,11 +1840,121 @@ class cnOutput extends cnEntry
 		return $ageStyle;
 	}
 	
+	/**
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
+	 * @deprecated
+	 * @return string
+	 */
 	public function returnToTopAnchor()
 	{
-		return '<a href="#cn-top" title="Return to top."><img src="' . WP_PLUGIN_URL . '/connections/images/uparrow.gif" alt="Return to Top"/></a>';
+		global $connections;
+			
+		$connections->template->returnToTop();
 	}
 	
+	/**
+	 * Outputs the vCard download permalink.
+	 * 
+	 * Accepted attributes for the $atts array are:
+	 * 	class (string) The link class attribute.
+	 * 	text (string) The acnhor text.
+	 * 	title (string) The link title attribute.
+	 * 	format (string) The tokens to use to display the vcard link block parts.
+	 * 		Permitted Tokens:
+	 * 			%text%
+	 * 			%icon%
+	 * 	follow (bool) Add add the rel="nofollow" attribute if set to FALSE
+	 * 	size (int) The icon size. Valid values are: 16, 24, 32, 48
+	 * 	slug (string) The entry's slug ID.
+	 * 	before (string) HTML to output before the email addresses.
+	 * 	after (string) HTML to after before the email addresses.
+	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * @access public
+	 * @since 0.7.3
+	 * @version 1.0
+	 * @uses wp_parse_args()
+	 * @param array $atts [optional]
+	 * @return string
+	 */
+	public function vcard( $atts = array() )
+	{
+		global $wp_rewrite, $connections;
+		
+		$base = get_option('connections_permalink');
+		$name = $base['name_base'];
+		$piece = array();
+		$id = FALSE;
+		$token = FALSE;
+		$iconSizes = array(16, 24, 32, 48);
+		$search = array('%text%' , '%icon%');
+		
+		// These are values will need to be added to the query string in order to download inlisted entries from the admin.
+		if ( $this->getVisibility() === 'unlisted' )
+		{
+			$id = $this->getId();
+			$token = wp_create_nonce('download_vcard_' . $this->getId() );
+		}
+		
+		$defaults = array(
+			'class' => '',
+			'text' => __('Add to Address Book.', 'connections'),
+			'title' => __('Download vCard', 'connections'),
+			'format' => '%text%',
+			'size' => 24,
+			'follow' => FALSE,
+			'slug' => '',
+			'before' => '',
+			'after' => '',
+			'return' => FALSE
+		);
+		
+		$atts = wp_parse_args( $atts, $defaults );
+		
+		/*
+		 * Ensure the supplied size is valid, if not reset to the default value.
+		 */
+		( in_array($atts['size'], $iconSizes) ) ? $iconSize = $atts['size'] : $iconSize = 32;
+		
+		/*
+		 * If the directory is on a page use the page for the root of the directory,
+		 * if it is not, redirect to the designated directory home page.
+		 */
+		$directoryHome = is_page() ? get_permalink() : get_permalink( $connections->settings->get('connections', 'connections_home_page', 'page_id') );
+		
+		if ( ! empty( $atts['class'] ) ) $piece[] = 'class="' . $atts['class'] .'"';
+		if ( ! empty( $atts['slug'] ) ) $piece[] = 'id="' . $atts['slug'] .'"';
+		if ( ! empty( $atts['title'] ) ) $piece[] = 'title="' . $atts['title'] .'"';
+		if ( ! empty( $atts['target'] ) ) $piece[] = 'target="' . $atts['target'] .'"';
+		if ( ! $atts['follow'] ) $piece[] = 'rel="nofollow"';
+		
+		if ( $wp_rewrite->using_permalinks() )
+		{
+			
+			$piece[] = 'href="' . add_query_arg( array( 'cn-id' => $id , 'cn-token' => $token ) , $directoryHome . $name . '/' .$this->getSlug() . '/vcard/' ) . '"';
+		}
+		else
+		{
+			$piece[] = 'href="' . add_query_arg( array( 'cn-entry-slug' => $this->getSlug() , 'cn-process' => 'vcard' , 'cn-id' => $id , 'cn-token' => $token ) , $directoryHome) . '"';
+		}
+		
+		$out = '<span class="vcard-block">';
+		
+		$replace[] = '<a ' . implode(' ', $piece) . '>' . $atts['text'] . '</a>';
+		
+		$replace[] = '<a ' . implode(' ', $piece) . '><image src="' . CN_URL . '/images/icons/vcard/vcard_' . $iconSize . '.png" height="' . $iconSize . 'px" width="' . $iconSize . 'px"/></a>';
+		
+		
+		$out .= str_ireplace( $search , $replace , $atts['format'] );
+		
+		$out .= '</span>';
+		
+		
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+	}
 }
 
 ?>

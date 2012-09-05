@@ -10,7 +10,7 @@ jQuery(document).ready(function($){
 	/*
 	 * Hide the image loading spinner and show the image.
 	 */
-	$('.connections').preloader({
+	$('.connections').cn_preloader({
 		delay:200,
 		imgSelector:'.cn-image img.photo, .cn-image img.logo',
 		beforeShow:function(){
@@ -243,9 +243,6 @@ jQuery(document).ready(function($){
 		var uid = $this.attr('data-uid');
 		//console.log(uid);
 		
-		//var address = $('input[name^=address\\[' + uid + '\\]]').map(function(){return $(this).val();}).get();
-		//var address = $('input[name^=address\\[' + uid + '\\]]').serializeArray();
-		
 		address.line_1 = $('input[name=address\\[' + uid + '\\]\\[line_1\\]]').val();
 		address.line_2 = $('input[name=address\\[' + uid + '\\]\\[line_2\\]]').val();
 		address.line_3 = $('input[name=address\\[' + uid + '\\]\\[line_3\\]]').val();
@@ -258,7 +255,7 @@ jQuery(document).ready(function($){
 		
 		//console.log(address);
 		
-		$( '#map-' + uid ).fadeIn('fast' , function() {
+		$( '#map-' + uid ).fadeIn('slow' , function() {
 			$( '#map-' + uid ).goMap({
 				maptype: 'ROADMAP'/*,
 				latitude: 40.366502,
@@ -266,11 +263,26 @@ jQuery(document).ready(function($){
 				zoom: 14*/
 			});
 			
+			$.goMap.clearMarkers();
+			
 			$.goMap.createMarker({
 				address: '\'' + address.line_1 + ', ' + address.city + ', ' + address.state + ', ' + address.zipcode + ', ' +  '\'' , id: 'baseMarker' , draggable: true
 			});
 			
 			$.goMap.setMap({ address: '\'' + address.line_1 + ', ' + address.city + ', ' + address.state + ', ' + address.zipcode + ', ' +  '\'' , zoom: 18 });
+			
+			
+			
+			$.goMap.createListener( {type:'marker', marker:'baseMarker'} , 'idle', function(event) {
+				var lat = event.latLng.lat();
+				var lng = event.latLng.lng();
+				
+				console.log(lat);
+				console.log(lng);
+				
+				$('input[name=address\\[' + uid + '\\]\\[latitude\\]]').val(lat);
+				$('input[name=address\\[' + uid + '\\]\\[longitude\\]]').val(lng);
+			});
 			
 			$.goMap.createListener( {type:'marker', marker:'baseMarker'} , 'dragend', function(event) {
 				var lat = event.latLng.lat();
@@ -278,12 +290,27 @@ jQuery(document).ready(function($){
 				
 				console.log(lat);
 				console.log(lng);
+				
+				$('input[name=address\\[' + uid + '\\]\\[latitude\\]]').val(lat);
+				$('input[name=address\\[' + uid + '\\]\\[longitude\\]]').val(lng);
 			});
 			
 		});
 		
+		
+		// There has to be a better way than setting a delay. I know I have to use a callback b/c the geocode is an asyn request.
+		setTimeout( function(){
+			setLatLngInfo(uid);
+		}, 1500)
+		
 		return false;
 	});
 	
-	
+	function setLatLngInfo(uid)
+	{
+		var baseMarkerPosition = $( '#map-' + uid ).data('baseMarker').getPosition();
+		$('input[name=address\\[' + uid + '\\]\\[latitude\\]]').val( baseMarkerPosition.lat() );
+		$('input[name=address\\[' + uid + '\\]\\[longitude\\]]').val( baseMarkerPosition.lng() );
+		
+	}
 });

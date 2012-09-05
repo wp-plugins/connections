@@ -1,3 +1,6 @@
+/*
+ * The Connections page icon.
+ */
 #icon-connections {
 	-moz-background-clip:border;
 	-moz-background-inline-policy:continuous;
@@ -91,6 +94,7 @@ table#currenttheme img {
 	border-width: 0;
 	margin-right: 1em;
 	margin-bottom: 1.5em;
+	margin-left: 0;
 	width: 150px;
 }
 
@@ -243,7 +247,7 @@ div#wpcontent .widget-placeholder {
 	height: 60px;
 	width: 100%;
 }
-div#metabox-address, div#metabox-phone, div#metabox-email, div#metabox-messenger, div#metabox-social-media, div#metabox-links {
+div#metabox-address, div#metabox-phone, div#metabox-email, div#metabox-messenger, div#metabox-social-media, div#metabox-links, div#metabox-date {
 	background-color: #FCFCFC;
 	background-image: none;
 }
@@ -255,7 +259,7 @@ form p.add  {font-style:normal; padding:12px 0 0; text-align: right;}
 table.form-table td input {width:auto;}
 
 #cancel-button {float:left;}
-#cancel-button .button {display: block; padding: 5px 10px;}
+#cancel-button .button {display: inline-block;}
 .button-warning:hover {background:#CE0000 none repeat scroll 0 0; color:#FFFFFF;}
 .button {margin: 1px;}
 .button-primary  {margin: 1px ; padding: 3px 10px; }
@@ -272,7 +276,6 @@ form div.form-field h4 span.visibility { position: absolute; right: 0; }
 form div.form-field h4 span.visibility label { font-weight: normal; }
 form div.form-field div.input { float: left; }
 form div.form-field div.input.half-width { width: 50%; }
-/*form div.form-field div.floatright {float:right;}*/
 form div.form-field .address-local input { width: 80%; }
 form div.form-field .address-region input { width: 80%; }
 form div.form-field .address-city { width: 28%; }
@@ -301,6 +304,13 @@ form div#metabox-image div.form-field img {-moz-border-radius:4px; background-co
 
 form div.form-field div.relation {margin: 6px 0px}
 form div.form-field div.websites label {display: inline;}
-/*form div.form-field span.target { margin-left: 4px }*/
-form div.form-field p.remove-button { bottom: 6px; position: absolute; right: 10px; }
+form div.form-field p.remove-button { bottom: 0px; display:inline-block; position: absolute; right: 10px; }
+form div.form-field a.geocode.button { display: inline-block; }
 form div.inside	span.radio_group label {float: left; line-height: 30px; margin: 6px; padding-right: 12px; white-space: nowrap;}
+form div.form-field div.map {
+	border: solid 1px #DFDFDF;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	margin: 10px 0px 20px;
+}

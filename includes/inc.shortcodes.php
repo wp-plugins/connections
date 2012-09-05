@@ -6,13 +6,81 @@
  * 
  * EXAMPLE:   connectionsEntryList( array('id' => 325) );
  * 
+ * @access public
+ * @since unknown
+ * @version 1.0
  * @param array $atts
  * @return string
  */
 function connectionsEntryList($atts)
 {
-	echo _connections_list($atts);
+	echo connectionsList($atts);
 }
+
+/**
+ * @access public
+ * @since 0.7.3
+ * @version 1.0
+ * @uses get_query_var()
+ * @param array $atts
+ * @param string $content [optional]
+ * @return string
+ */
+function connectionsView( $atts , $content = NULL )
+{
+	global $connections;
+	
+	/*$getAllowPublic = $connections->options->getAllowPublic();
+	var_dump($getAllowPublic);
+	$getAllowPublicOverride = $connections->options->getAllowPublicOverride();
+	var_dump($getAllowPublicOverride);
+	$getAllowPrivateOverride = $connections->options->getAllowPrivateOverride();
+	var_dump($getAllowPrivateOverride);*/
+	
+	if ( ! $connections->options->getAllowPublic() && ! ( $connections->options->getAllowPublicOverride() || $connections->options->getAllowPrivateOverride() ) )
+	{
+		$out = '<p>' . $connections->settings->get('connections', 'connections_login', 'message') . '</p>';
+		return $out;
+	}
+	
+	$view = get_query_var('cn-view');
+	
+	switch ( get_query_var('cn-view') )
+	{
+		case 'landing':
+			
+			return '<p>Future home of the landing pages, such a list of categories.</p>';
+			
+			break;
+		
+		// Show the standard result list.
+		case 'list':
+			
+			return connectionsList( $atts, $content );
+			
+			break;
+		
+		// Show the entry detail using a template based on the entry type.
+		case 'detail':
+			
+			$results = $connections->retrieve->entries($atts);
+			//var_dump($results);
+			
+			$atts['list_type'] = $results[0]->entry_type;
+			
+			return connectionsList( $atts, $content );
+			
+			break;
+		
+		// Show the standard result list.
+		default:
+			
+			return connectionsList( $atts, $content );
+			
+			break;
+	}
+}
+add_shortcode('connections', 'connectionsView');
 
 /**
  * Register the [connections] shortcode
@@ -39,10 +107,14 @@ function connectionsEntryList($atts)
  * 		cn_list_index					=> Can be used to modify the index before the output of the list.
  * 										   The entry list results are passed. Return string.
  * 
+ * @access private
+ * @since unknown
+ * @param array $atts
+ * @param string $content [optional]
+ * @return string
  */
-add_shortcode('connections_list', '_connections_list'); /** @deprecated since version 0.7.0.4 */
-add_shortcode('connections', '_connections_list'); /** @since version 0.7.1.0 */
-function _connections_list($atts, $content = NULL)
+add_shortcode('connections_list', 'connectionsList'); /** @deprecated since version 0.7.0.4 */
+function connectionsList($atts, $content = NULL)
 {
 	global $wpdb, $wp_filter, $current_user, $connections;
 	
@@ -52,7 +124,6 @@ function _connections_list($atts, $content = NULL)
 	$format =& $convert;
 	$filterRegistry = array();
 	
-	//if ( ! isset($connections->template) ) $connections->template = new cnTemplate();
 	$template =& $connections->template;
 	
 	$previousLetter = '';
@@ -95,67 +166,72 @@ function _connections_list($atts, $content = NULL)
 		$templateType = 'all';
 	}
 	
-	
 	/*
-	 * As of version 0.7.0.5 the $atts['template_name'] is deprecated.
+	 * If the legacy shortcode option template is being used, set the template shortcode option to its value.
+	 * It's been over two years, so, remove the template_name option in the release after 0.7.3.
 	 */
-	if ( ! empty($preLoadAtts['template_name']) )
+	if ( ! empty( $preLoadAtts['template_name'] ) )
 	{
-		$template->load($atts['template_name']);
+		$preLoadAtts['template'] = $preLoadAtts['template_name'];
+		$preLoadAtts['template_name'] = NULL;
+	}
+	
+	if ( ! empty( $preLoadAtts['template'] ) )
+	{
+		$template->load($preLoadAtts['template']);
 	}
 	else
 	{
-		if ( ! empty( $preLoadAtts['template'] ) )
-		{
-			$template->load($atts['template']);
-		}
-		else
-		{
-			$template->init( $connections->options->getActiveTemplate( $templateType ) );
-		}
+		$template->init( $connections->options->getActiveTemplate( $templateType ) );
 	}
+	
 	
 	//$out .= '<pre style="display: none;">' . print_r($template , TRUE) . '</pre>';
 	
 	// If no template was found, exit return an error message.
 	if ( ! isset($template->file) || empty($template->file) || ! is_file($template->file) )
-		return '<p style="color:red; font-weight:bold; text-align:center;">ERROR: Template ' . $preLoadAtts['template_name'] . $preLoadAtts['template'] . ' not found.</p>';
+		return '<p style="color:red; font-weight:bold; text-align:center;">ERROR: Template "' . $preLoadAtts['template_name'] . $preLoadAtts['template'] . '" not found.</p>';
 	
 	
 	/*
 	 * Now that the template has been loaded, Validate the user supplied shortcode atts.
 	 */
 	$permittedAtts = array(
-							'id' => NULL,
-							'slug' => NULL,
-							'category' => NULL,
-							'category_in' => NULL,
-							'exclude_category' => NULL,
-							'category_name' => NULL,
-							'category_slug' => NULL,
-							'wp_current_category' => 'false',
-							'allow_public_override' => 'false',
-							'private_override' => 'false',
-							'show_alphaindex' => 'false',
-							'repeat_alphaindex' => 'false',
-							'show_alphahead' => 'false',
-							'list_type' => NULL,
-							'order_by' => NULL,
-							'limit' => NULL,
-							'offset' => NULL,
-							'family_name' => NULL,
-							'last_name' => NULL,
-							'title' => NULL,
-							'organization' => NULL,
-							'department' => NULL,
-							'city' => NULL,
-							'state' => NULL,
-							'zip_code' => NULL,
-							'country' => NULL,
-							'template' => NULL, /** @since version 0.7.1.0 */
-							'template_name' => NULL /** @deprecated since version 0.7.0.4 */,
-							'width' => NULL
-						);
+		'id' => NULL,
+		'slug' => NULL,
+		'category' => NULL,
+		'category_in' => NULL,
+		'exclude_category' => NULL,
+		'category_name' => NULL,
+		'category_slug' => NULL,
+		'wp_current_category' => 'false',
+		'allow_public_override' => 'false',
+		'private_override' => 'false',
+		'show_alphaindex' => 'false',
+		'repeat_alphaindex' => 'false',
+		'show_alphahead' => 'false',
+		'list_type' => NULL,
+		'order_by' => NULL,
+		'limit' => NULL,
+		'offset' => NULL,
+		'family_name' => NULL,
+		'last_name' => NULL,
+		'title' => NULL,
+		'organization' => NULL,
+		'department' => NULL,
+		'city' => NULL,
+		'state' => NULL,
+		'zip_code' => NULL,
+		'country' => NULL,
+		'near_addr' => NULL,
+		'latitude' => NULL,
+		'longitude' => NULL,
+		'radius' => 10,
+		'unit' => 'mi',
+		'template' => NULL, /** @since version 0.7.1.0 */
+		'template_name' => NULL /** @deprecated since version 0.7.0.4 */,
+		'width' => NULL
+	);
 	
 	$permittedAtts = apply_filters( 'cn_list_atts_permitted' , $permittedAtts );
 	$permittedAtts = apply_filters( 'cn_list_atts_permitted-' . $template->slug , $permittedAtts );
@@ -198,7 +274,7 @@ function _connections_list($atts, $content = NULL)
 	$atts = apply_filters('cn_list_retrieve_atts-' . $template->slug , $atts );
 	
 	$results = $connections->retrieve->entries($atts);
-	//$out .= print_r($connections->lastQuery , TRUE);
+	$out .= print_r($connections->lastQuery , TRUE);
 	//$out .= print_r($results , TRUE);
 	
 	if ( ! empty($results) ) $results = apply_filters( 'cn_list_results', $results );
@@ -258,8 +334,8 @@ function _connections_list($atts, $content = NULL)
 			// If there are no results no need to proceed and output message.
 			if ( empty($results) )
 			{
-				$noResultMessage = apply_filters( 'cn_list_no_result_message' , 'No results' );
-				$noResultMessage = apply_filters( 'cn_list_no_result_message-' . $template->slug , 'No results' );
+				$noResultMessage = apply_filters( 'cn_list_no_result_message' , __('No results.', 'connections') );
+				$noResultMessage = apply_filters( 'cn_list_no_result_message-' . $template->slug , __('No results.', 'connections') );
 				$filterRegistry[] = 'cn_list_no_result_message-' . $template->slug;
 				
 				$out .=  "\n" . '<p class="cn-list-no-results">' . $noResultMessage . '</p>' . "\n";
@@ -269,6 +345,9 @@ function _connections_list($atts, $content = NULL)
 				/*
 				 * When an entry is assigned multiple categories and the RANDOM order_by shortcode attribute
 				 * is used, this will cause the entry to show once for every category it is assigned.
+				 * 
+				 * The same issue occurs when an entry has been assigned multiple address and each address
+				 * falls within the geo bounds when performing a geo-limiting query.
 				 */
 				$skipEntry = array();
 				
@@ -405,6 +484,7 @@ function _upcoming_list($atts, $content=null) {
 	$template = new cnTemplate();
 	$convert = new cnFormatting();
 	$out = '';
+	$alternate = '';
 	
 	$atts = shortcode_atts( array(
 			'list_type' => 'birthday',
@@ -474,7 +554,7 @@ function _upcoming_list($atts, $content=null) {
 	// If there are no results no need to proceed and output message.
 	if ( empty($results) )
 	{
-		$noResultMessage = 'No results';
+		$noResultMessage = __('No results.', 'connections');
 		$noResultMessage = apply_filters('cn_upcoming_no_result_message', $noResultMessage);
 		$out .= '<p class="cn-upcoming-no-results">' . $noResultMessage . '</p>';
 	}

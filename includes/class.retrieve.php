@@ -3,21 +3,32 @@
 class cnRetrieve
 {
 	/**
+	 * The result count from the query with no limit.
+	 * 
+	 * @var integer
+	 */
+	public $resultCountNoLimit;
+	
+	/**
+	 * @access public
+	 * @since unknown
+	 * @version 1.0
+	 * @param array
 	 * @return array
 	 */
-	public function entries( $suppliedAttr = array() )
+	public function entries( $atts = array() )
 	{
 		global $wpdb, $connections, $current_user;
 		
 		get_currentuserinfo();
 		
-		//$entryIDs = array();
 		$validate = new cnValidate();
 		$select[] = CN_ENTRY_TABLE . '.*';
 		$from[] = CN_ENTRY_TABLE;
 		$join = array();
 		$where[] = 'WHERE 1=1';
 		$orderBy = array();
+		$visibility = array();
 		
 		$permittedEntryTypes = array('individual', 'organization', 'family', 'connection_group');
 		$permittedEntryStatus = array('approved', 'pending');
@@ -25,35 +36,132 @@ class cnRetrieve
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['list_type'] = NULL;
-			$defaultAttr['category'] = NULL;
-			$defaultAttr['category_in'] = NULL;
-			$defaultAttr['exclude_category'] = NULL;
-			$defaultAttr['category_name'] = NULL;
-			$defaultAttr['wp_current_category'] = FALSE;
-			$defaultAttr['id'] = NULL;
-			$defaultAttr['slug'] = NULL;
-			$defaultAttr['family_name'] = NULL;
-			$defaultAttr['last_name'] = NULL;
-			$defaultAttr['title'] = NULL;
-			$defaultAttr['organization'] = NULL;
-			$defaultAttr['department'] = NULL;
-			$defaultAttr['city'] = NULL;
-			$defaultAttr['state'] = NULL;
-			$defaultAttr['zip_code'] = NULL;
-			$defaultAttr['country'] = NULL;
-			$defaultAttr['visibility'] = NULL;
-			$defaultAttr['status'] = array();
-			$defaultAttr['order_by'] = NULL;
-			$defaultAttr['limit'] = NULL;
-			$defaultAttr['offset'] = NULL;
-			$defaultAttr['allow_public_override'] = FALSE;
-			$defaultAttr['private_override'] = FALSE;
-			$defaultAttr['search_terms'] = NULL;
+			$defaults['list_type'] = NULL;
+			$defaults['category'] = NULL;
+			$defaults['category_in'] = NULL;
+			$defaults['exclude_category'] = NULL;
+			$defaults['category_name'] = NULL;
+			$defaults['category_slug'] = NULL;
+			$defaults['wp_current_category'] = FALSE;
+			$defaults['id'] = NULL;
+			$defaults['slug'] = NULL;
+			$defaults['family_name'] = NULL;
+			$defaults['last_name'] = NULL;
+			$defaults['title'] = NULL;
+			$defaults['organization'] = NULL;
+			$defaults['department'] = NULL;
+			$defaults['city'] = NULL;
+			$defaults['state'] = NULL;
+			$defaults['zip_code'] = NULL;
+			$defaults['country'] = NULL;
+			$defaults['visibility'] = NULL;
+			$defaults['status'] = array('approved');
+			$defaults['order_by'] = array('sort_column', 'last_name', 'first_name');
+			$defaults['limit'] = NULL;
+			$defaults['offset'] = 0;
+			$defaults['allow_public_override'] = FALSE;
+			$defaults['private_override'] = FALSE;
+			$defaults['search_terms'] = NULL;
 			
-			$atts = $validate->attributesArray($defaultAttr, $suppliedAttr);
+			// $atts vars to support showing entries within a specified radius.
+			$defaults['near_addr'] = NULL;
+			$defaults['latitude'] = NULL;
+			$defaults['longitude'] = NULL;
+			$defaults['radius'] = 10;
+			$defaults['unit'] = 'mi';
+			
+			$atts = $validate->attributesArray($defaults, $atts);
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		/*
+		 * // START -- Process the query vars. \\
+		 * NOTE: these will override any values supplied via $atts, which include via the shortcode.
+		 */
+		if ( ! is_admin() )
+		{
+			// Category slug
+			$queryCategorySlug = get_query_var( 'cn-cat-slug' );
+			if ( ! empty($queryCategorySlug) )
+			{
+				// If the category slug is a descendant, use the last slug from the URL for the query.
+				$queryCategorySlug = explode( '/' , $queryCategorySlug );
+				
+				if ( isset( $queryCategorySlug[count($queryCategorySlug)-1] ) ) $atts['category_slug'] = $queryCategorySlug[count($queryCategorySlug)-1];
+			}
+			
+			// Category ID
+			$queryCategoryID = get_query_var( 'cn-cat' );
+			if ( ! empty($queryCategoryID) ) $atts['category'] = $queryCategoryID;
+			
+			// Country
+			$queryCountry = get_query_var('cn-country');
+			if ( ! empty($queryCountry) ) $atts['country'] = urldecode( $queryCountry );
+			
+			// Region [State]
+			$queryRegion = get_query_var('cn-region');
+			if ( ! empty($queryRegion) ) $atts['state'] = urldecode( $queryRegion );
+			
+			// Locality [City]
+			$queryLocality = get_query_var('cn-locality');
+			if ( ! empty($queryLocality) ) $atts['city'] = urldecode( $queryLocality );
+			
+			// Postal Code
+			$queryPostalCode = get_query_var('cn-postal-code');
+			if ( ! empty($queryPostalCode) ) $atts['zip_code'] = urldecode( $queryPostalCode );
+			
+			// Entry slug
+			$queryEntrySlug = get_query_var('cn-entry-slug');
+			if ( ! empty($queryEntrySlug) ) $atts['slug'] = urldecode( $queryEntrySlug );
+			
+			// Pagination
+			$queryPage = get_query_var('cn-pg');
+			$atts['offset'] = ( ! empty($queryPage) ) ? ( $queryPage - 1 ) * $atts['limit'] : $atts['offset'];
+			$atts['offset'] = ( $atts['offset'] > 0 ) ? $atts['offset'] : NULL;
+			
+			// Search terms
+			$searchTerms = get_query_var('cn-s');
+			if ( ! empty($searchTerms) ) $atts['search_terms'] = urldecode( $searchTerms );
+			
+			// Geo-location
+			$queryCoord = get_query_var('cn-near-coord');
+			if ( ! empty($queryCoord) )
+			{
+				$queryCoord = explode(',', $queryCoord);
+				$atts['latitude'] = (float) $queryCoord[0];
+				$atts['longitude'] = (float) $queryCoord[1];
+				
+				// Get the radius, otherwise the defaultf of 10.
+				if ( get_query_var('cn-radius') ) $atts['radius'] = (int) get_query_var('cn-radius');
+				
+				// Set the unit.
+				$atts['unit'] = ( get_query_var('cn-unit') ) ? get_query_var('cn-unit') : $atts['unit'];
+			}
+		}
+		/*
+		 * // END -- Process the query vars. \\
+		 */
+		
+		/*
+		 * // START -- Reset some of the $atts based if category_slug or entry slug
+		 * is being used. This is done to prevent query conflicts. This should be safe because
+		 * if a specific entry or category is being queried the other $atts can be discarded.
+		 * This has to be done in order to reconcile values passed via the shortcode and the
+		 * query string values.
+		 * 
+		 * @TODO I know there are more scenarios to consider ... but this is all I can think of at the moment.
+		 * Thought --- maybe resetting to the default $atts should be done --- something to consider.
+		 */
+		if ( ! empty( $atts['slug']) || ! empty( $atts['category_slug']) )
+		{
+			$atts['list_type'] = NULL;
+			$atts['category'] = NULL;
+			$atts['category_in'] = NULL;
+			$atts['wp_current_category'] = NULL;
+		}
+		/*
+		 * // END -- Reset.
 		 */
 		
 		/*
@@ -74,10 +182,10 @@ class cnRetrieve
 		/*
 		 * Build and array of the supplied category names and their children.
 		 */
-		if ( !empty($atts['category_name']) )
+		if ( ! empty($atts['category_name']) )
 		{
 			// If value is a string convert to an array.
-			if ( !is_array($atts['category_name']) )
+			if ( ! is_array($atts['category_name']) )
 			{
 				$atts['category_name'] = explode(',', $atts['category_name']);
 			}
@@ -92,7 +200,35 @@ class cnRetrieve
 				
 				foreach ( (array) $results as $term )
 				{
-					if ( !in_array($term->name, $categoryNames) ) $categoryNames[] = $term->name;
+					if ( ! in_array($term->name, $categoryNames) ) $categoryNames[] = $term->name;
+				}
+			}
+		}
+		
+		/*
+		 * Build and array of the supplied category slugs and their children.
+		 */
+		if ( ! empty($atts['category_slug']) )
+		{
+			$categorySlugs = array();
+			
+			// If value is a string convert to an array.
+			if ( ! is_array($atts['category_slug']) )
+			{
+				$atts['category_slug'] = explode(',', $atts['category_slug']);
+			}
+			
+			foreach ( $atts['category_slug'] as $categorySlug )
+			{
+				// Add the parent category to the array and remove any whitespace from the begining/end of the name in case the user added it when using the shortcode.
+				$categorySlugs[] = trim($categorySlug);
+				
+				// Retrieve the children categories
+				$results = $this->categoryChildren('slug', $categorySlug);
+				
+				foreach ( (array) $results as $term )
+				{
+					if ( ! in_array($term->name, $categorySlugs) ) $categorySlugs[] = $term->slug;
 				}
 			}
 		}
@@ -168,18 +304,8 @@ class cnRetrieve
 			
 			if ( ! empty($results) )
 			{
-				//$entryIDs = $results;
 				$where[] = 'AND ' . CN_ENTRY_TABLE . '.id IN (\'' . implode("', '", $results ) . '\')';
 			}
-			//else
-			//{
-				/**
-				 * @TODO This is hack. This is being set because if no results are returned then this will not pass
-				 * the empty() check for the entry IDs and then the main query will return all entries. Maybe it would
-				 * be best to just return an empty array. Let's sleep on it.
-				 */
-				//$entryIDs = array('NONE');
-			//}
 			
 			/*
 			 * This is the query to use to return entry IDs that are in the same categories. The COUNT value
@@ -191,7 +317,7 @@ class cnRetrieve
 			 */
 		}
 		
-		if ( ! empty($categoryIDs) || ! empty($categoryNames) )
+		if ( ! empty($categoryIDs) || ! empty($categoryNames) || ! empty($categorySlugs) )
 		{
 			// Set the query string to INNER JOIN the term relationship and taxonomy tables.
 			$join[] = 'INNER JOIN ' . CN_TERM_RELATIONSHIP_TABLE . ' ON ( ' . CN_ENTRY_TABLE . '.id = ' . CN_TERM_RELATIONSHIP_TABLE . '.entry_id )';
@@ -214,6 +340,13 @@ class cnRetrieve
 				
 				unset( $categoryNames );
 			}
+			
+			if ( ! empty($categorySlugs) )
+			{
+				$where[] = 'AND ' . CN_TERMS_TABLE . '.slug IN (\'' . implode("', '", (array) $categorySlugs ) . '\')';
+				
+				unset( $categorySlugs );
+			}
 		}
 		
 		/*
@@ -235,27 +368,17 @@ class cnRetrieve
 		 */
 			if ( ! empty( $atts['search_terms'] ) )
 			{
-				// Merge the entries found when using category_in and the supplied entry IDs.
-				//$atts['id'] = array_unique( array_merge( (array) $atts['id'], (array) $entryIDs ) );
-			//}
-			//else
-			//{
 				$searchResults = $this->search( array('terms' => $atts['search_terms']) );
 				//print_r($searchResults);
 				
-				// If there were no results, set the $atts['id'] to NONE. When the main query is run, no results will return because no entries will have an ID of NONE.
-				// @todo Fix this hack.
+				// If there were no results, add a WHERE clause that will not return results when performing the whole query.
 				if ( empty($searchResults) )
 				{
-					//$atts['id'] =  array('NONE');
-					
-					// @todo If returning an empty array works make sure to set the result counts.
-					return array();
+					$where[] = 'AND 1=2';
 				}
 				else
 				{
 					// Set the entry IDs to be the search results.
-					//$atts['id'] = array_unique( $searchResults );
 					$where[] = 'AND ' . CN_ENTRY_TABLE . '.id IN (\'' . implode("', '", $searchResults ) . '\')';
 				}
 			}
@@ -357,7 +480,7 @@ class cnRetrieve
 		 * // START --> Set up the query to only return the entries based on status.
 		 */
 			// Convert the supplied entry statuses $atts['status'] to an array.
-			if ( ! is_array($atts['status']) && ! empty($atts['status']) )
+			if ( ! is_array( $atts['status'] ) /*&& ! empty($atts['status'])*/ )
 			{
 				// Trim the space characters if present.
 				$atts['status'] = str_replace(' ', '', $atts['status']);
@@ -365,11 +488,11 @@ class cnRetrieve
 				// Convert to array.
 				$atts['status'] = explode(',', $atts['status']);
 			}
-			else
+			/*else
 			{
 				// Query the approved entries
 				$atts['status'] = array('approved');
-			}
+			}*/
 			
 			if ( is_user_logged_in() )
 			{
@@ -396,11 +519,11 @@ class cnRetrieve
 					$atts['status'] = array_intersect($userPermittedEntryStatus, $atts['status']);
 				}
 			}
-			else
+			/*else
 			{
 				// If no user is logged in, set the status for the query to approved.
 				$atts['status'] = array('approved');
-			}
+			}*/
 			
 			$where[] = 'AND ' . CN_ENTRY_TABLE . '.status IN (\'' . implode("', '", $atts['status']) . '\')';
 		/*
@@ -408,47 +531,99 @@ class cnRetrieve
 		 */
 		
 		/*
+		 * // START --> Geo-limit the query.
+		 */
+			//$atts['latitude'] = 40.3663671;
+			//$atts['longitude'] = -75.8876941;
+			
+			if ( ! empty( $atts['latitude'] ) && ! empty( $atts['longitude'] ) )
+			{
+				$earthRadius = 6371;  // Earth's radius in (SI) km.
+				
+				// Convert the supplied radius from the supplied unit to (SI) km.
+				$atts['radius'] = cnGeo::convert( array( 'value' => $atts['radius'] , 'from' => $atts['unit'] , 'to' => 'km' , 'format' => FALSE , 'return' => TRUE ) );
+				
+				// Limiting bounding box (in degrees).
+				$minLat = $atts['latitude'] - rad2deg($atts['radius']/$earthRadius);
+				$maxLat = $atts['latitude'] + rad2deg($atts['radius']/$earthRadius);
+				$minLng = $atts['longitude'] - rad2deg($atts['radius']/$earthRadius/cos(deg2rad($atts['latitude'])));
+				$maxLng = $atts['longitude'] + rad2deg($atts['radius']/$earthRadius/cos(deg2rad($atts['latitude'])));
+				
+				// Convert origin of geographic circle to radians.
+				$atts['latitude'] = deg2rad($atts['latitude']);
+				$atts['longitude'] = deg2rad($atts['longitude']);
+				
+				// Add the SELECT statement that adds the `radius` column.
+				$select[] = $wpdb->prepare( 'acos(sin(%f)*sin(radians(latitude)) + cos(%f)*cos(radians(latitude))*cos(radians(longitude)-%f))*6371 AS distance' , $atts['latitude'] , $atts['latitude'] , $atts['longitude'] );
+				
+				// Create a subquery that will limit the rows that have the cosine law applied to within the bounding box.
+				$geoSubselect = $wpdb->prepare( '(SELECT entry_id FROM ' . CN_ENTRY_ADDRESS_TABLE . ' WHERE latitude>%f AND latitude<%f AND longitude>%f AND longitude<%f) AS geo_bound' , $minLat , $maxLat , $minLng , $maxLng );
+				// The subquery needs to be added to the beginning of the array so the inner joins on the other tables are joined to the CN_ENTRY_TABLE
+				array_unshift($from, $geoSubselect);
+				
+				// Add the JOIN for the address table. NOTE: This JOIN is also set in the ORDER BY section. The 'address' index is to make sure it doea not get added to the query twice.
+				if ( ! isset($join['address']) ) $join['address'] = 'INNER JOIN ' . CN_ENTRY_ADDRESS_TABLE . ' ON ( ' . CN_ENTRY_TABLE . '.id = ' . CN_ENTRY_ADDRESS_TABLE . '.entry_id )';
+				
+				// Add the WHERE statement to limit the query to a geographic circle per the defined radius.
+				$where[] = $wpdb->prepare( 'AND acos(sin(%f)*sin(radians(latitude)) + cos(%f)*cos(radians(latitude))*cos(radians(longitude)-%f))*6371 < %f' , $atts['latitude'] , $atts['latitude'] , $atts['longitude'] , $atts['radius'] );
+			
+				// Temporarily set the sort order to 'radius' for testing.
+				//$atts['order_by'] = array('radius');
+			}
+		/*
+		 * // END --> Geo-limit the query.
+		 */
+		
+		/*
 		 * // START --> Build the ORDER BY query segment.
 		 */
-			if ( empty($atts['order_by']) )
-			{
+			//if ( empty($atts['order_by']) )
+			//{
 				// Setup the default sort order if none were supplied.
-				$orderBy[] = /*CN_ENTRY_TABLE .*/ 'sort_column';
-				$orderBy[] = /*CN_ENTRY_TABLE .*/ 'last_name';
-				$orderBy[] = /*CN_ENTRY_TABLE .*/ 'first_name';
-			}
-			else
-			{
+				//$orderBy = array('sort_column', 'last_name', 'first_name');
+			//}
+			//else
+			//{
 				$orderFields = array(
-									'id',
-									'date_added',
-									'date_modified',
-									'first_name',
-									'last_name',
-									'title',
-									'organization',
-									'department',
-									'city',
-									'state',
-									'zipcode',
-									'country',
-									'birthday',
-									'anniversary'
-									);
+					'id',
+					'date_added',
+					'date_modified',
+					'first_name',
+					'last_name',
+					'title',
+					'organization',
+					'department',
+					'city',
+					'state',
+					'zipcode',
+					'country',
+					'birthday',
+					'anniversary',
+					'sort_column'
+				);
 				
 				$orderFlags = array(
-									'SPECIFIED' => 'SPECIFIED',
-									'RANDOM' => 'RANDOM',
-									'SORT_ASC' => 'ASC',
-									'SORT_DESC' => 'DESC'
-									);
+					'SPECIFIED' => 'SPECIFIED',
+					'RANDOM' => 'RANDOM',
+					'SORT_ASC' => 'ASC',
+					'SORT_DESC' => 'DESC'
+				);
 				
+				// If a geo-bound query is being performed the `radius` order field can be used.
+				if ( ! empty( $atts['latitude'] ) && ! empty( $atts['longitude'] ) ) array_push($orderFields, 'distance');
 				
-				// Build an array of each field to order by and its sort order.
-				$orderByFields = explode( ',' , $atts['order_by'] );
+				// Convert to an array
+				if ( ! is_array($atts['order_by']) )
+				{
+					// Trim the space characters if present.
+					$atts['order_by'] = str_replace(' ', '', $atts['order_by']);
+				
+					// Build an array of each field to order by and its sort order.
+					$atts['order_by'] = explode( ',' , $atts['order_by'] );
+				}
 				
 				// For each field the sort order can be defined.
-				foreach ( $orderByFields as $orderByField )
+				foreach ( $atts['order_by'] as $orderByField )
 				{
 					$orderByAtts[] = explode( '|' , $orderByField );
 				}
@@ -462,7 +637,7 @@ class cnRetrieve
 					// Check to make sure the supplied field is one of the valid fields to order by.
 					if ( in_array( $field[0] , $orderFields ) )
 					{
-						// The date_modified actually maps to the ts column in the db.
+						// The date_modified actually maps to the `ts` column in the db.
 						if ( $field[0] == 'date_modified' ) $field[0] = 'ts';
 						
 						// If one of the order fields is an address region add the INNER JOIN to the CN_ENTRY_ADDRESS_TABLE
@@ -477,60 +652,58 @@ class cnRetrieve
 							// Trim any spaces the user might have added and change the string to uppercase..
 							$field[1] = strtoupper( trim( $field[1] ) );
 							
-							/*
-							 * The SPECIFIED and RANDOM order flags are special use and should only be used with the id sort field.
-							 * Set the default sort flag if it was use on any other sort field than id.
-							 */
-							if ( ( $orderFlags[$field[1]] == 'SPECIFIED' || $orderFlags[$field[1]] == 'RANDOM' ) && $field[0] != 'id' ) $field[1] = 'SORT_ASC';
-							
-							switch ( $orderFlags[$field[1]] )
+							// If a user included a sort flag that is invalid/mis-spelled it is skipped since it can not be used.
+							if ( array_key_exists( $field[1] , $orderFlags ) )
 							{
 								/*
-								 * Order the results based on the order of the supplied entry IDs
+								 * The SPECIFIED and RANDOM order flags are special use and should only be used with the id sort field.
+								 * Set the default sort flag if it was use on any other sort field than id.
 								 */
-								case 'SPECIFIED':
-									if ( ! empty($atts['id']) )
-									{
-										$orderBy = array('FIELD( id, ' . implode(', ', (array) $atts['id'] ) . ' )');
-									}
-									break;
+								if ( ( $orderFlags[$field[1]] == 'SPECIFIED' || $orderFlags[$field[1]] == 'RANDOM' ) && $field[0] != 'id' ) $field[1] = 'SORT_ASC';
 								
-								/*
-								 * Randomize the order of the results.
-								 */
-								case 'RANDOM':
+								switch ( $orderFlags[$field[1]] )
+								{
 									/*
-									 * Unfortunately this doesn't work when the joins for categories are added to the query.
-									 * Keep this around to see if it can be made to work.
+									 * Order the results based on the order of the supplied entry IDs
 									 */
-									/*$from = array('(SELECT id FROM wp_connections WHERE 1=1 ORDER BY RAND() ) AS cn_random');
-									$join[] = 'JOIN ' . CN_ENTRY_TABLE . ' ON (' . CN_ENTRY_TABLE . '.id = cn_random.id)';*/
+									case 'SPECIFIED':
+										if ( ! empty($atts['id']) )
+										{
+											$orderBy = array('FIELD( id, ' . implode(', ', (array) $atts['id'] ) . ' )');
+										}
+										break;
 									
 									/*
-									 * @TODO: This seems fast enough, better profiling will need to be done.
-									 * @TODO: The session ID can be used as the seed for RAND() to support randomized paginated results. 
+									 * Randomize the order of the results.
 									 */
-									$select[] = CN_ENTRY_TABLE . '.id*0+RAND() AS random';
-									$orderBy = array('random');
-									break;
-								
-								/*
-								 * Return the results in ASC or DESC order.
-								 */
-								default:
-									// If a user included a sort flag that is invalid/mis-spelled it is skipped since it can not be used.
-									if ( ! array_key_exists( $field[1] , $orderFlags ) )
-									{
-										$orderBy[] = $field[0];
-									}
-									else
-									{
+									case 'RANDOM':
+										/*
+										 * Unfortunately this doesn't work when the joins for categories are added to the query.
+										 * Keep this around to see if it can be made to work.
+										 */
+										/*$from = array('(SELECT id FROM wp_connections WHERE 1=1 ORDER BY RAND() ) AS cn_random');
+										$join[] = 'JOIN ' . CN_ENTRY_TABLE . ' ON (' . CN_ENTRY_TABLE . '.id = cn_random.id)';*/
+										
+										/*
+										 * @TODO: This seems fast enough, better profiling will need to be done.
+										 * @TODO: The session ID can be used as the seed for RAND() to support randomized paginated results. 
+										 */
+										$select[] = CN_ENTRY_TABLE . '.id*0+RAND() AS random';
+										$orderBy = array('random');
+										break;
+									
+									/*
+									 * Return the results in ASC or DESC order.
+									 */
+									default:
 										$orderBy[] = $field[0] . ' ' . $orderFlags[$field[1]];
-									}
-									
-									break;
+										break;
+								}
 							}
-							
+							else
+							{
+								$orderBy[] = $field[0];
+							}
 						}
 						else
 						{
@@ -538,9 +711,9 @@ class cnRetrieve
 						}
 					}
 				}
-			}
+			//}
 			
-			( empty($orderBy) ) ? $orderBy = '' : $orderBy = 'ORDER BY ' . implode(', ', $orderBy);
+			( empty($orderBy) ) ? $orderBy = 'ORDER BY sort_column, last_name, first_name' : $orderBy = 'ORDER BY ' . implode(', ', $orderBy);
 		/*
 		 * // END --> Build the ORDER BY query segment.
 		 */
@@ -557,7 +730,6 @@ class cnRetrieve
 		/*
 		 * // START --> Build the SELECT query segment.
 		 */
-			//$select[] = CN_ENTRY_TABLE . '.*';
 			$select[] = 'CASE `entry_type`
 						  WHEN \'individual\' THEN `last_name`
 						  WHEN \'organization\' THEN `organization`
@@ -570,6 +742,7 @@ class cnRetrieve
 		
 		
 		$sql = 'SELECT SQL_CALC_FOUND_ROWS DISTINCT ' . implode(', ', $select) . 'FROM ' . implode(', ', $from) . ' ' . implode(' ', $join) . ' ' . implode(' ', $where) . ' ' . $orderBy . ' ' . $limit . $offset;
+		//print_r($sql); die;
 		
 		$results = $wpdb->get_results($sql);
 		
@@ -587,7 +760,8 @@ class cnRetrieve
 		
 		// The number of rows returned by the last query without the limit clause set
 		$foundRows = $wpdb->get_results('SELECT FOUND_ROWS()'); 
-		$connections->resultCountNoLimit = $foundRows[0]->{'FOUND_ROWS()'}; 
+		$connections->resultCountNoLimit = $foundRows[0]->{'FOUND_ROWS()'};
+		$this->resultCountNoLimit = $foundRows[0]->{'FOUND_ROWS()'};
 		
 		// The total number of entries based on user permissions.
 		$connections->recordCount = $this->recordCount($atts['allow_public_override'], $atts['private_override']);
@@ -599,10 +773,12 @@ class cnRetrieve
 		$connections->recordCountApproved = $this->recordCount($atts['allow_public_override'], $atts['private_override'], array('approved') );
 		
 		/*
+		 * ONLY in the admin.
+		 * 
 		 * Reset the pagination filter for the current user, remove the offset from the query and re-run the
 		 * query if the offset for the query is greater than the record count with no limit set in the query.
 		 */
-		if ( $atts['offset'] > $connections->resultCountNoLimit )
+		if ( is_admin() && $atts['offset'] > $connections->resultCountNoLimit )
 		{
 			$connections->currentUser->resetFilterPage('manage');
 			unset( $atts['offset'] );
@@ -618,7 +794,7 @@ class cnRetrieve
 	public function entry($id)
 	{
 		global $wpdb;
-		//return $wpdb->get_row('SELECT * FROM ' . $wpdb->prefix . 'connections WHERE id="' . $wpdb->escape($id) . '"');
+		
 		return $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . CN_ENTRY_TABLE . ' WHERE id="%d"' , $id ) );
 	}
 	
@@ -630,7 +806,7 @@ class cnRetrieve
 		$results =  $wpdb->get_results( $wpdb->prepare( "SELECT t.*, tt.* FROM " . CN_TERMS_TABLE . " AS t INNER JOIN " . CN_TERM_TAXONOMY_TABLE . " AS tt ON t.term_id = tt.term_id INNER JOIN " . CN_TERM_RELATIONSHIP_TABLE . " AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id WHERE tt.taxonomy = 'category' AND tr.entry_id = %d ", $id) );
 		//SELECT t.*, tt.* FROM wp_connections_terms AS t INNER JOIN wp_connections_term_taxonomy AS tt ON t.term_id = tt.term_id INNER JOIN wp_connections_term_relationships AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id WHERE tt.taxonomy = 'category' AND tr.entry_id = 325
 		
-		if ( !empty($results) )
+		if ( ! empty($results) )
 		{
 			usort($results, array(&$this, 'sortTermsByName') );
 		}
@@ -1456,26 +1632,26 @@ class cnRetrieve
 		 */
 			$defaultAttr['terms'] = array();
 			
-			if ( $search->family_name ) $defaultAttr['fields_entry'][] = 'family_name';
-			if ( $search->first_name ) $defaultAttr['fields_entry'][] = 'first_name';
-			if ( $search->middle_name ) $defaultAttr['fields_entry'][] = 'middle_name';
-			if ( $search->last_name ) $defaultAttr['fields_entry'][] = 'last_name';
-			if ( $search->title ) $defaultAttr['fields_entry'][] = 'title';
-			if ( $search->organization ) $defaultAttr['fields_entry'][] = 'organization';
-			if ( $search->department ) $defaultAttr['fields_entry'][] = 'department';
-			if ( $search->contact_first_name ) $defaultAttr['fields_entry'][] = 'contact_first_name';
-			if ( $search->contact_last_name ) $defaultAttr['fields_entry'][] = 'contact_last_name';
-			if ( $search->bio ) $defaultAttr['fields_entry'][] = 'bio';
-			if ( $search->notes ) $defaultAttr['fields_entry'][] = 'notes';
+			if ( in_array( 'family_name' , $search ) ) $defaultAttr['fields_entry'][] = 'family_name';
+			if ( in_array( 'first_name' , $search ) ) $defaultAttr['fields_entry'][] = 'first_name';
+			if ( in_array( 'middle_name' , $search ) ) $defaultAttr['fields_entry'][] = 'middle_name';
+			if ( in_array( 'last_name' , $search ) ) $defaultAttr['fields_entry'][] = 'last_name';
+			if ( in_array( 'title' , $search ) ) $defaultAttr['fields_entry'][] = 'title';
+			if ( in_array( 'organization' , $search ) ) $defaultAttr['fields_entry'][] = 'organization';
+			if ( in_array( 'department' , $search ) ) $defaultAttr['fields_entry'][] = 'department';
+			if ( in_array( 'contact_first_name' , $search ) ) $defaultAttr['fields_entry'][] = 'contact_first_name';
+			if ( in_array( 'contact_last_name' , $search ) ) $defaultAttr['fields_entry'][] = 'contact_last_name';
+			if ( in_array( 'bio' , $search ) ) $defaultAttr['fields_entry'][] = 'bio';
+			if ( in_array( 'notes' , $search ) ) $defaultAttr['fields_entry'][] = 'notes';
 			
-			if ( $search->address_line_1 ) $defaultAttr['fields_address'][] = 'line_1';
-			if ( $search->address_line_2 ) $defaultAttr['fields_address'][] = 'line_2';
-			if ( $search->address_line_3 ) $defaultAttr['fields_address'][] = 'line_3';
-			if ( $search->address_city ) $defaultAttr['fields_address'][] = 'city';
-			if ( $search->address_state ) $defaultAttr['fields_address'][] = 'state';
-			if ( $search->address_country ) $defaultAttr['fields_address'][] = 'country';
+			if ( in_array( 'address_line_1' , $search ) ) $defaultAttr['fields_address'][] = 'line_1';
+			if ( in_array( 'address_line_2' , $search ) ) $defaultAttr['fields_address'][] = 'line_2';
+			if ( in_array( 'address_line_3' , $search ) ) $defaultAttr['fields_address'][] = 'line_3';
+			if ( in_array( 'address_city' , $search ) ) $defaultAttr['fields_address'][] = 'city';
+			if ( in_array( 'address_state' , $search ) ) $defaultAttr['fields_address'][] = 'state';
+			if ( in_array( 'address_country' , $search ) ) $defaultAttr['fields_address'][] = 'country';
 			
-			if ( $search->phone_number ) $defaultAttr['fields_phone'][] = 'number';
+			if ( in_array( 'phone_number' , $search ) ) $defaultAttr['fields_phone'][] = 'number';
 			
 			$atts = $validate->attributesArray($defaultAttr, $suppliedAttr);
 			//print_r($atts);
@@ -1531,7 +1707,7 @@ class cnRetrieve
 				$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_TABLE . '.id 
 											FROM ' . CN_ENTRY_TABLE . ' 
 											WHERE MATCH (' . implode( ', ' , $atts['fields_entry'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $terms );
-				//print_r($sql);
+				//print_r($sql);die;
 				$results = $wpdb->get_col($sql);
 			}
 			
@@ -1582,7 +1758,7 @@ class cnRetrieve
 					 * Since $wpdb->prepare() required var for each directive in the query string we'll use array_fill 
 					 * where the count based on the number of columns that will be searched.
 					 */
-					$like[] = $wpdb->prepare( implode( ' LIKE %s OR ' , $defaultAttr['fields_entry'] ) . ' LIKE %s ' , array_fill( 0 , count( $defaultAttr['fields_entry'] ) , '%' . like_escape($term) . "%" ) );
+					$like[] = $wpdb->prepare( implode( ' LIKE %s OR ' , $defaultAttr['fields_entry'] ) . ' LIKE %s ' , array_fill( 0 , count( $defaultAttr['fields_entry'] ) , '%' . like_escape($term) . '%' ) );
 				}
 				
 				$sql =  'SELECT ' . CN_ENTRY_TABLE . '.id 
@@ -1609,7 +1785,7 @@ class cnRetrieve
 					 * Since $wpdb->prepare() required var for each directive in the query string we'll use array_fill 
 					 * where the count based on the number of columns that will be searched.
 					 */
-					$like[] = $wpdb->prepare( implode( ' LIKE %s OR ' , $defaultAttr['fields_address'] ) . ' LIKE %s ' , array_fill( 0 , count( $defaultAttr['fields_address'] ) , '%' . like_escape($term) . "%" ) );
+					$like[] = $wpdb->prepare( implode( ' LIKE %s OR ' , $defaultAttr['fields_address'] ) . ' LIKE %s ' , array_fill( 0 , count( $defaultAttr['fields_address'] ) , '%' . like_escape($term) . '%' ) );
 				}
 				
 				$sql =  'SELECT ' . CN_ENTRY_ADDRESS_TABLE . '.entry_id 
@@ -1636,7 +1812,7 @@ class cnRetrieve
 					 * Since $wpdb->prepare() required var for each directive in the query string we'll use array_fill 
 					 * where the count based on the number of columns that will be searched.
 					 */
-					$like[] = $wpdb->prepare( implode( ' LIKE %s OR ' , $defaultAttr['fields_phone'] ) . ' LIKE %s ' , array_fill( 0 , count( $defaultAttr['fields_phone'] ) , '%' . like_escape($term) . "%" ) );
+					$like[] = $wpdb->prepare( implode( ' LIKE %s OR ' , $defaultAttr['fields_phone'] ) . ' LIKE %s ' , array_fill( 0 , count( $defaultAttr['fields_phone'] ) , '%' . like_escape($term) . '%' ) );
 				}
 				
 				$sql =  'SELECT ' . CN_ENTRY_PHONE_TABLE . '.entry_id 
@@ -1693,6 +1869,10 @@ class cnRetrieve
 	 * an indexed array of entry IDs. If this is set, other sort fields/flags
 	 * are ignored.
 	 * 
+	 * @access private
+	 * @since unknown
+	 * @version 1.0
+	 * @deprecated since unkown
 	 * @param array of object $entries
 	 * @param string $orderBy
 	 * @param string || array $ids [optional]
@@ -2012,6 +2192,7 @@ class cnRetrieve
 	 * 
 	 * This is more or less a hack until limit is properly implemented in the retrieve query.
 	 * 
+	 * @access private
 	 * @version 1.0
 	 * @since 0.7.1.6
 	 * @param array $results
@@ -2029,6 +2210,7 @@ class cnRetrieve
 	 * 
 	 * This is more or less a hack to remove the entries from the list where the date added was not recorded which would be entries added before 0.7.1.1.
 	 * 
+	 * @access private
 	 * @version 1.0
 	 * @since 0.7.1.6
 	 * @param array $results

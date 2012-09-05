@@ -534,25 +534,6 @@ class cnEntry
      */
     public function getLastName()
     {
-		/*switch ($this->getEntryType())
-		{
-			case 'individual':
-				return $this->format->sanitizeString($this->lastName);
-			break;
-			
-			case 'organization':
-				return $this->getOrganization();;
-			break;
-			
-			case 'family':
-				return $this->getFamilyName();
-			break;
-			
-			default:
-				return $this->format->sanitizeString($this->lastName);
-			break;
-		}*/
-		
 		return $this->format->sanitizeString($this->lastName);
     }
     
@@ -801,6 +782,8 @@ class cnEntry
 	 *  cn_address => (object) Individual address as it is processed thru the loop.
 	 *  cn_addresses => (array) All addresses before it is returned.
 	 * 
+	 * @access public
+	 * @since unknown
 	 * @param array $suppliedAttr Accepted values as noted above.
 	 * @param bool $cached Returns the cached address data rather than querying the db.
 	 * @return array
@@ -865,10 +848,11 @@ class cnEntry
 						 empty($address['city']) && 
 						 empty($address['state']) && 
 						 empty($address['zipcode']) &&
-						 ! empty($address['country']) &&
-						 ! empty($address['latitude']) &&
-						 ! empty($address['longitude']) ) continue;
+						 empty($address['country']) &&
+						 empty($address['latitude']) &&
+						 empty($address['longitude']) ) continue;
 					
+					//var_dump($address);
 					
 					$row = new stdClass();
 					
@@ -970,7 +954,7 @@ class cnEntry
 				 * Set the address name based on the address type.
 				 */
 				$addressTypes = $connections->options->getDefaultAddressValues();
-				( $addressTypes[$address->type] === 'Select' ) ? $address->name = NULL : $address->name = $addressTypes[$address->type];
+				( ! isset($addressTypes[$address->type]) || $addressTypes[$address->type] === 'Select' ) ? $address->name = NULL : $address->name = $addressTypes[$address->type];
 				
 				/*
 				 * // START -- Compatibility for previous versions.
@@ -1009,6 +993,8 @@ class cnEntry
 	 * $addresses['longitude'] (float) Stores the address longitude.
 	 * $addresses['visibility'] (string) Stores the address visibility.
      * 
+     * @access public
+     * @since unknown
      * @param array $addresses
      */
     public function setAddresses($addresses)
@@ -1037,50 +1023,11 @@ class cnEntry
 				
 				/*
 				 * Geocode the address using Google Geocoding API
-				 * 
-				 * http://www.cssbakery.com/2010/10/google-geocoding-from-php-with-curl.html
-				 * http://erlycoder.com/45/php-server-side-geocoding-with-google-maps-api-v3
 				 */
 				if ( empty($address['latitude']) || empty($address['longitude']) )
 				{
-					/*$addr = array();
-					$geo = array();
-					
-					if ( ! empty($address['line_1']) ) $addr[] = trim($address['line_1']);
-					if ( ! empty($address['line_2']) ) $addr[] = trim($address['line_2']);
-					if ( ! empty($address['line_3']) ) $addr[] = trim($address['line_3']);
-					if ( ! empty($address['city']) ) $addr[] = trim($address['city']);
-					if ( ! empty($address['state']) ) $addr[] = trim($address['state']);
-					if ( ! empty($address['zipcode']) ) $addr[] = trim($address['zipcode']);
-					if ( ! empty($address['country']) ) $addr[] = trim($address['country']);
-					
-					// Convert the array to a string for the URL
-					$addrString = implode( ',' , $addr );
-					
-					// Remove non alpha numeric chars such as extra spaces and replace w/ a plus.
-					//$addr = preg_replace("[^A-Za-z0-9]", '+', $addr );
-					$addrString = urlencode( utf8_encode( str_replace(' ', '+', $addrString) ) );
-					//echo $addrString;
-					
-					$geoURL = "http://maps.googleapis.com/maps/api/geocode/json?address=$addrString&sensor=false";
-					
-					$getResult = file_get_contents($geoURL);
-					
-					if ( $getResult )
-					{
-						$jsonResult = json_decode( $getResult );
-						//echo file_get_contents($geoURL);
-						//echo $jsonResult->{'status'};
-						
-						if ( $jsonResult->{'status'} === 'OK' )
-						{
-							$addresses[$key]['latitude'] = $jsonResult->{'results'}[0]->{'geometry'}->{'location'}->{'lat'};
-							$addresses[$key]['longitude'] = $jsonResult->{'results'}[0]->{'geometry'}->{'location'}->{'lng'};
-						}
-					}*/
-					
-					$geocode = new cnGeo();
-					//$result = $geocode->address($address);
+					//$geocode = new cnGeo();
+					$result = cnGeo::address($address);
 					
 					if ( ! empty($result) )
 					{
@@ -1163,6 +1110,8 @@ class cnEntry
 	 *  cn_phone_number => (object) Individual phone number as it is processed thru the loop.
 	 *  cn_phone_numbers => (array) All phone numbers before it is returned.
 	 *  
+	 * @access
+	 * @since unknown
 	 * @param array $suppliedAttr Accepted values as noted above.
 	 * @param bool $cached Returns the cached phone numbers data rather than querying the db.
 	 * @return array
@@ -1205,6 +1154,11 @@ class cnEntry
 								
 				foreach ( (array) $phoneNumbers as $key => $number)
 				{
+					/*
+					 * Previous versions stored empty arrays for phone numbers, check for a number, continue if not found.
+					 */
+					if ( ! isset($number['number']) || empty($number['number']) ) continue;
+					
 					$row = new stdClass();
 					
 					( isset( $number['id'] ) ) ? $row->id = (int) $number['id'] : $row->id = 0;
@@ -1356,7 +1310,11 @@ class cnEntry
 				$phoneNumber = $this->validate->attributesArray($validFields, $phoneNumber);
 				
 				// If the number is empty, no need to store it.
-				if ( empty($phoneNumber['number']) ) unset($phoneNumbers[$key]);
+				if ( empty($phoneNumber['number']) )
+				{
+					unset($phoneNumbers[$key]);
+					continue;
+				}
 				
 				// Store the order attribute as supplied in the addresses array.
 				$phoneNumbers[$key]['order'] = $order;
@@ -1470,6 +1428,11 @@ class cnEntry
 				
 				foreach ( (array) $emailAddresses as $key => $email)
 				{
+					/*
+					 * Previous versions stored empty arrays for email addresses, check for an address, continue if not found.
+					 */
+					if ( ! isset($email['address']) || empty($email['address']) ) continue;
+					
 					$row = new stdClass();
 					
 					( isset( $email['id'] ) ) ? $row->id = (int) $email['id'] : $row->id = 0;
@@ -1577,7 +1540,7 @@ class cnEntry
 			{
 				$preferred = $emailAddresses['preferred'];
 				unset( $emailAddresses['preferred'] );
-			}	
+			}
 			
 			foreach ($emailAddresses as $key => $email)
 			{
@@ -1585,7 +1548,11 @@ class cnEntry
 				$email = $this->validate->attributesArray($validFields, $email);
 				
 				// If the address is empty, no need to store it.
-				if ( empty($email['address']) ) unset($email[$key]);
+				if ( empty($email['address']) )
+				{
+					unset($emailAddresses[$key]);
+					continue;
+				}
 				
 				// Store the order attribute as supplied in the addresses array.
 				$emailAddresses[$key]['order'] = $order;
@@ -1702,6 +1669,11 @@ class cnEntry
 								
 				foreach ( (array) $networks as $key => $network)
 				{
+					/*
+					 * Previous versions stored empty arrays for IM IDs, check for an ID, continue if not found.
+					 */
+					if ( ! isset($network['id']) || empty($network['id']) ) continue;
+					
 					$row = new stdClass();
 					
 					// This stores the table `id` value.
@@ -1854,7 +1826,11 @@ class cnEntry
 				$network = $this->validate->attributesArray($validFields, $network);
 				
 				// If the id is emty, no need to store it.
-				if ( empty($network['id']) ) unset($im[$key]);
+				if ( empty($network['id']) )
+				{
+					unset($im[$key]);
+					continue;
+				}
 				
 				// Store the order attribute as supplied in the addresses array.
 				$im[$key]['order'] = $order;
@@ -1980,6 +1956,11 @@ class cnEntry
 				
 				foreach ( (array) $networks as $key => $network)
 				{
+					/*
+					 * Previous versions stored empty arrays for the URL, check for the URL, continue if not found.
+					 */
+					if ( ! isset($network['url']) || empty($network['url']) ) continue;
+					
 					$row = new stdClass();
 					
 					( isset( $network['id'] ) ) ? $row->id = (int) $network['id'] : $row->id = 0;
@@ -2037,7 +2018,7 @@ class cnEntry
 				$network->order = (int) $network->order;
 				$network->preferred = (bool) $network->preferred;
 				$network->type = $this->format->sanitizeString($network->type);
-				$network->address = $this->format->sanitizeString($network->address);
+				$network->url = $this->format->sanitizeString($network->url);
 				$network->visibility = $this->format->sanitizeString($network->visibility);
 				
 				/*
@@ -2090,10 +2071,14 @@ class cnEntry
 			foreach ($socialNetworks as $key => $network)
 			{
 				// First validate the supplied data.
-				$socialNetworks = $this->validate->attributesArray($validFields, $network);
+				$network = $this->validate->attributesArray($validFields, $network);
 				
 				// If the URL is empty, no need to save it.
-				if ( empty($network['url']) || $network['url'] == 'http://') continue;
+				if ( empty($network['url']) || $network['url'] == 'http://')
+				{
+					unset($socialNetworks[$key]);
+					continue;
+				}
 				
 				// if the http protocol is not part of the url, add it.
 				if ( preg_match( "/https?/" , $network['url'] ) == 0 ) $socialNetworks[$key]['url'] = 'http://' . $network['url'];
@@ -2235,6 +2220,7 @@ class cnEntry
 					 */
 					$linkTypes = $connections->options->getDefaultLinkValues();
 					( empty( $row->type ) ) ? $row->name = $linkTypes['website'] : $row->name = $linkTypes[$row->type];
+					//var_dump($row->type);
 					
 					/*
 					 * // START -- Compatibility for previous versions.
@@ -2447,14 +2433,17 @@ class cnEntry
 			foreach ($links as $key => $link)
 			{
 				// First validate the supplied data.
-				$links = $this->validate->attributesArray($validFields, $link);
+				$link = $this->validate->attributesArray($validFields, $link);
 				
 				// If the URL is empty, no need to save it.
-				if ( empty($link['url']) || $link['url'] == 'http://') continue;
+				if ( empty($link['url']) || $link['url'] == 'http://' )
+				{
+					unset($links[$key]);
+					continue;
+				}
 				
 				// if the http protocol is not part of the url, add it.
 				if ( preg_match( "/https?/" , $link['url'] ) == 0 ) $links[$key]['url'] = 'http://' . $link['url'];
-				
 				
 				// Store the order attribute as supplied in the addresses array.
 				$links[$key]['order'] = $order;
@@ -2469,7 +2458,7 @@ class cnEntry
 				( ( ! empty( $logo ) ) && $logo == $key ) ? $links[$key]['logo'] = TRUE : $links[$key]['logo'] = FALSE;
 				
 				/*
-				 * If the user set a perferred network, save the $key value.
+				 * If the user set a preferred network, save the $key value.
 				 * This is going to be needed because if a network that the user
 				 * does not have permission to edit is set to preferred, that network
 				 * will have preference.
@@ -2525,7 +2514,7 @@ class cnEntry
 					// If the link is already assigned to an image, it takes precedence, so the user's choice is overriden.
 					if ( ! empty($logo) && $link['logo'] )
 					{
-						$links[$userLogo]['log0'] = FALSE;
+						$links[$userLogo]['logo'] = FALSE;
 						
 						// @TODO Create error message for the user.
 					}
@@ -2534,7 +2523,7 @@ class cnEntry
 		}
 		
 		( ! empty($links) ) ? $this->links = serialize($links) : $this->links = NULL;
-		//print_r($links);
+		//print_r($links); die;
     }
 	
 	/**
@@ -2780,7 +2769,11 @@ class cnEntry
 				$date = $this->validate->attributesArray($validFields, $date);
 								
 				// If the date is empty, no need to store it.
-				if ( empty($date['date']) ) unset($date[$key]);
+				if ( empty($date['date']) )
+				{
+					unset($dates[$key]);
+					continue;
+				}
 				
 				// Store the order attribute as supplied in the date array.
 				$dates[$key]['order'] = $order;
@@ -3046,7 +3039,11 @@ class cnEntry
 	
     /**
      * Returns $visibility.
-     * @see entry::$visibility
+     * 
+     * @access public
+     * @since unknown
+     * @version 1.0
+     * @return string
      */
     public function getVisibility()
     {
@@ -3055,8 +3052,11 @@ class cnEntry
     
     /**
      * Sets $visibility.
-     * @param object $visibility
-     * @see entry::$visibility
+     * 
+     * @access public
+     * @since unknown
+     * @version 1.0
+     * @param string $visibility
      */
     public function setVisibility($visibility)
     {
@@ -3267,16 +3267,6 @@ class cnEntry
 		{
 			return 'Unknown';
 		}
-		
-		/*if (!$addedBy->display_name == NULL)
-		{
-			return $addedBy->display_name;
-		}
-		else
-		{
-			return 'Unknown';
-		}*/
-		
 	}
 	
 	public function getSortColumn()
@@ -3296,16 +3286,6 @@ class cnEntry
 		{
 			return 'Unknown';
 		}
-		
-		/*if (!$editedBy->display_name == NULL)
-		{
-			return $editedBy->display_name;
-		}
-		else
-		{
-			return 'Unknown';
-		}*/
-		
 	}
     
     /**
@@ -3684,17 +3664,7 @@ class cnEntry
 			 * Now delete all the phone numbers that have not been added/updated and
 			 * make sure not to delete the entries that the user does not have permission to view/edit.
 			 */
-			//( ! empty($keepIDs) ) ? $IDs = '\'' . implode("', '", (array) $keepIDs) . '\'' : $IDs = '';
 			if ( ! empty($keepIDs) ) $where['phone'] = 'AND `id` NOT IN (\'' . implode('\', \'', (array) $keepIDs) . '\')';
-			
-			/*if ( ! empty($IDs) )
-			{
-				$sql = 'SELECT * FROM `' . CN_ENTRY_PHONE_TABLE . '` WHERE `entry_id` = "' . $this->getId() . '" AND `id` NOT IN ( ' . $IDs . ' ) ' . $sqlVisibility;
-				
-				$results = $wpdb->get_col( $sql );
-				
-				if ( ! empty($results) ) $wpdb->query( 'DELETE FROM ' . CN_ENTRY_PHONE_TABLE . ' WHERE `id` IN (\'' . implode("', '", (array) $results) . '\')' );
-			}*/
 			
 			$wpdb->query( 'DELETE FROM `' . CN_ENTRY_PHONE_TABLE . '` ' . implode(' ', $where) );
 			if ( isset($where['phone']) ) unset( $where['phone'] );
@@ -3761,17 +3731,7 @@ class cnEntry
 			 * Now delete all the social network IDs that have not been added/updated and
 			 * make sure not to delete the entries that the user does not have permission to view/edit.
 			 */
-			//( ! empty($keepIDs) ) ? $IDs = '\'' . implode("', '", (array) $keepIDs) . '\'' : $IDs = '';
 			if ( ! empty($keepIDs) ) $where['email'] = 'AND `id` NOT IN (\'' . implode('\', \'', (array) $keepIDs) . '\')';
-			
-			/*if ( ! empty($IDs) )
-			{
-				$sql = 'SELECT * FROM `' . CN_ENTRY_EMAIL_TABLE . '` WHERE `entry_id` = "' . $this->getId() . '" AND `id` NOT IN ( ' . $IDs . ' ) ' . $sqlVisibility;
-				
-				$results = $wpdb->get_col( $sql );
-				
-				if ( ! empty($results) ) $wpdb->query( 'DELETE FROM ' . CN_ENTRY_EMAIL_TABLE . ' WHERE `id` IN (\'' . implode("', '", (array) $results) . '\')' );
-			}*/
 			
 			$wpdb->query( 'DELETE FROM `' . CN_ENTRY_EMAIL_TABLE . '` ' . implode(' ', $where) );
 			if ( isset($where['email']) ) unset( $where['email'] );
@@ -3838,17 +3798,7 @@ class cnEntry
 			 * Now delete all the IM network IDs that have not been added/updated and
 			 * make sure not to delete the entries that the user does not have permission to view/edit.
 			 */
-			//( ! empty($keepIDs) ) ? $IDs = '\'' . implode("', '", (array) $keepIDs) . '\'' : $IDs = '';
 			if ( ! empty($keepIDs) ) $where['im'] = 'AND `id` NOT IN (\'' . implode('\', \'', (array) $keepIDs) . '\')';
-			
-			/*if ( ! empty($IDs) )
-			{
-				$sql = 'SELECT * FROM `' . CN_ENTRY_MESSENGER_TABLE . '` WHERE `entry_id` = "' . $this->getId() . '" AND `id` NOT IN ( ' . $IDs . ' ) ' . $sqlVisibility;
-				
-				$results = $wpdb->get_col( $sql );
-				
-				if ( ! empty($results) ) $wpdb->query( 'DELETE FROM ' . CN_ENTRY_MESSENGER_TABLE . ' WHERE `id` IN (\'' . implode("', '", (array) $results) . '\')' );
-			}*/
 			
 			$wpdb->query( 'DELETE FROM `' . CN_ENTRY_MESSENGER_TABLE . '` ' . implode(' ', $where) );
 			if ( isset($where['im']) ) unset( $where['im'] );
@@ -3915,17 +3865,7 @@ class cnEntry
 			 * Now delete all the social network IDs that have not been added/updated and
 			 * make sure not to delete the entries that the user does not have permission to view/edit.
 			 */
-			//( ! empty($keepIDs) ) ? $IDs = '\'' . implode("', '", (array) $keepIDs) . '\'' : $IDs = '';
 			if ( ! empty($keepIDs) ) $where['social'] = 'AND `id` NOT IN (\'' . implode('\', \'', (array) $keepIDs) . '\')';
-			
-			/*if ( ! empty($IDs) )
-			{
-				$sql = 'SELECT * FROM `' . CN_ENTRY_SOCIAL_TABLE . '` WHERE `entry_id` = "' . $this->getId() . '" AND `id` NOT IN ( ' . $IDs . ' ) ' . $sqlVisibility;
-				
-				$results = $wpdb->get_col( $sql );
-				
-				if ( ! empty($results) ) $wpdb->query( 'DELETE FROM ' . CN_ENTRY_SOCIAL_TABLE . ' WHERE `id` IN (\'' . implode("', '", (array) $results) . '\')' );
-			}*/
 			
 			$wpdb->query( 'DELETE FROM `' . CN_ENTRY_SOCIAL_TABLE . '` ' . implode(' ', $where) );
 			if ( isset($where['social']) ) unset( $where['social'] );
@@ -4012,17 +3952,7 @@ class cnEntry
 			 * Now delete all the link IDs that have not been added/updated and
 			 * make sure not to delete the entries that the user does not have permission to view/edit.
 			 */
-			//( ! empty($keepIDs) ) ? $IDs = '\'' . implode("', '", (array) $keepIDs) . '\'' : $IDs = '';
 			if ( ! empty($keepIDs) ) $where['links'] = 'AND `id` NOT IN (\'' . implode('\', \'', (array) $keepIDs) . '\')';
-			
-			/*if ( ! empty($IDs) )
-			{
-				$sql = 'SELECT * FROM `' . CN_ENTRY_LINK_TABLE . '` WHERE `entry_id` = "' . $this->getId() . '" AND `id` NOT IN ( ' . $IDs . ' ) ' . $sqlVisibility;
-				
-				$results = $wpdb->get_col( $sql );
-				
-				if ( ! empty($results) ) $wpdb->query( 'DELETE FROM ' . CN_ENTRY_LINK_TABLE . ' WHERE `id` IN (\'' . implode("', '", (array) $results) . '\')' );
-			}*/
 			
 			$wpdb->query( 'DELETE FROM `' . CN_ENTRY_LINK_TABLE . '` ' . implode(' ', $where) );
 			if ( isset($where['links']) ) unset( $where['links'] );
@@ -4089,17 +4019,7 @@ class cnEntry
 			 * Now delete all the dates that have not been added/updated and
 			 * make sure not to delete the entries that the user does not have permission to view/edit.
 			 */
-			//( ! empty($keepIDs) ) ? $IDs = '\'' . implode("', '", (array) $keepIDs) . '\'' : $IDs = '';
 			if ( ! empty($keepIDs) ) $where['date'] = 'AND `id` NOT IN (\'' . implode('\', \'', (array) $keepIDs) . '\')';
-			
-			/*if ( ! empty($IDs) )
-			{
-				$sql = 'SELECT * FROM `' . CN_ENTRY_DATE_TABLE . '` WHERE `entry_id` = "' . $this->getId() . '" AND `id` NOT IN ( ' . $IDs . ' ) ' . $sqlVisibility;
-				
-				$results = $wpdb->get_col( $sql );
-				
-				if ( ! empty($results) ) $wpdb->query( 'DELETE FROM ' . CN_ENTRY_DATE_TABLE . ' WHERE `id` IN (\'' . implode("', '", (array) $results) . '\')' );
-			}*/
 			
 			$wpdb->query( 'DELETE FROM `' . CN_ENTRY_DATE_TABLE . '` ' . implode(' ', $where) );
 			if ( isset($where['date']) ) unset( $where['date'] );

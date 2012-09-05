@@ -1,33 +1,4 @@
 <?php
-
-class cnCounter
-{
-     private $step;
-     private $count; 
-
-     public function getcount() {
-          return $this->count;
-     }
- 
-     public function getstep() {
-          return $this->step;
-     }
-
-     public function changestep($newval) {
-          if(is_integer($newval))
-          $this->step = $newval;
-     }
-
-     public function step() {
-          $this->count += $this->step;
-     }
-
-     public function reset() {
-          $this->count = 0;
-          $this->step = 1;
-     }
-}
-
 class cnFormatting
 {
 	/**
@@ -205,12 +176,17 @@ class cnValidate
 	 
 	    // convert multi-byte international url's by stripping multi-byte chars
 	    $url_local = urldecode($url) . ' ';
-	    $len = mb_strlen($url_local);
-	    if ($len !== strlen($url_local))
-	    {
-	        $convmap = array(0x0, 0x2FFFF, 0, 0xFFFF);
-	        $url_local = mb_decode_numericentity($url_local, $convmap, 'UTF-8');
-	    }
+		
+		if ( function_exists( 'mb_strlen' ) )
+		{
+		    $len = mb_strlen($url_local);
+		    if ($len !== strlen($url_local))
+		    {
+		        $convmap = array(0x0, 0x2FFFF, 0, 0xFFFF);
+		        $url_local = mb_decode_numericentity($url_local, $convmap, 'UTF-8');
+		    }
+		}
+		
 	    $url_local = trim($url_local);
 	 
 	    // now, process pre-encoded MBI's
@@ -220,7 +196,7 @@ class cnValidate
 	 
 	    // test for bracket-enclosed IP address (IPv6) and modify for further testing
 	    preg_match('#(?<=\[)(.*?)(?=\])#i', $url, $matches);
-	    if ($matches[0])
+	    if ( isset($matches[0]) && $matches[0] )
 	    {
 	        $ip = $matches[0];
 	        if (!preg_match('/^([0-9a-f\.\/:]+)$/', strtolower($ip))) {return false;}
@@ -417,43 +393,113 @@ class cnValidate
 class cnURL
 {
 	/**
-	 * Modifies, replaces or removes the url query.
+	 * Used to determine whether the directory home page 
+	 * should be used for the permalink root.
 	 * 
-	 * @author solenoid && jesse
-	 * @link http://us2.php.net/manual/en/function.parse-url.php#100114
-	 * @param array $mod
+	 * Set via cnURL::useHome.
+	 * 
+	 * @access private
+	 * @var bool
+	 * @since 0.7.3
+	 */
+	private $useHome = TRUE;
+	
+	/**
+	 * Create a permalink.
+	 * 
+	 * @access private
+	 * @since 0.7.3
+	 * @version 1.0
+	 * @uses is_admin()
+	 * @uses wp_parse_args()
+	 * @uses get_permalink()
+	 * @uses add_query_arg()
+	 * @param array $atts
 	 * @return string
 	 */
-	public function modify($mod)
+	public function permalink( $atts )
 	{
-	    $url = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-	    $query = explode("&", $_SERVER['QUERY_STRING']);
-	    if (!$_SERVER['QUERY_STRING']) {$queryStart = "?";} else {$queryStart = "&";}
-	    // modify/delete data
-	    foreach($query as $q)
-	    {
-	        list($key, $value) = explode("=", $q);
-	        if(array_key_exists($key, $mod))
-	        {
-	            if($mod[$key])
-	            {
-	                $url = preg_replace('/'.$key.'='.$value.'/', $key.'='.$mod[$key], $url);
-	            }
-	            else
-	            {
-	                $url = preg_replace('/&?'.$key.'='.$value.'/', '', $url);
-	            }
-	        }
-	    }
-	    // add new data
-	    foreach($mod as $key => $value)
-	    {
-	        if($value && !preg_match('/'.$key.'=/', $url))
-	        {
-	            $url .= $queryStart.$key.'='.$value;
-	        }
-	    }
-	    return $url;
+		global $wp_rewrite, $connections;
+		
+		// The anchor attributes.
+		$piece = array();
+		
+		$defaults = array(
+			'class' => '',
+			'text' => '',
+			'title' => '',
+			'follow' => TRUE,
+			'slug' => '',
+			'type' => 'name',
+			/*'home' => TRUE,*/
+			'return' => FALSE
+		);
+		
+		$atts = wp_parse_args( $atts, $defaults );
+		
+		// Get the directory home page ID.
+		$homeID = $connections->settings->get('connections', 'connections_home_page', 'page_id');
+		
+		// Get the settings for the base of each data type to be used in the URL.
+		$base = get_option('connections_permalink');
+		
+		$permalink = ( is_admin() || $this->useHome ) ? get_permalink($homeID) : get_permalink();
+		
+		if ( ! empty( $atts['class'] ) ) $piece[] = 'class="' . $atts['class'] .'"';
+		if ( ! empty( $atts['slug'] ) ) $piece[] = 'id="' . $atts['slug'] .'"';
+		if ( ! empty( $atts['title'] ) ) $piece[] = 'title="' . $atts['title'] .'"';
+		if ( ! empty( $atts['target'] ) ) $piece[] = 'target="' . $atts['target'] .'"';
+		if ( ! $atts['follow'] ) $piece[] = 'rel="nofollow"';
+		
+		switch ( $atts['type'] )
+		{
+			case 'name':
+				
+				if ( ( is_page() || is_admin() ) && $wp_rewrite->using_permalinks() )
+				{
+					$piece[] = 'href="' . $permalink . $base['name_base'] . '/' . $atts['slug'] . '/"';
+				}
+				else
+				{
+					$piece[] = 'href="' . add_query_arg('cn-entry-slug', $atts['slug'] , $permalink) . '"';
+				}
+				
+				break;
+				
+			case 'category':
+				
+				if ( ( is_page() || is_admin() ) && $wp_rewrite->using_permalinks() )
+				{
+					$piece[] = 'href="' . $permalink . $base['category_base'] . '/' . $atts['slug'] . '/"';
+				}
+				else
+				{
+					$piece[] = 'href="' . add_query_arg('cn-cat', $atts['slug'] , $permalink) . '"';
+				}
+				
+				break;
+		}
+		
+		$out = '<a ' . implode(' ', $piece) . '>' . $atts['text'] . '</a>';
+		
+		//if ( ! $this->useHome ) $this->useHome = TRUE;
+		
+		if ( $atts['return'] ) return $out;
+		echo $out;
+	}
+	
+	/**
+	 * Whether or not to set the permalink base to the user selected page for the directory home.
+	 * 
+	 * @access public
+	 * @version 1.0
+	 * @since 0.7.3
+	 * @param bool $value [optional]
+	 * @return bool
+	 */
+	public function useHome( $value = TRUE )
+	{
+		$this->useHome = (bool) $value;
 	}
 }
 ?>

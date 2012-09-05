@@ -64,7 +64,7 @@ function processEntry($data, $action)
 		// If an entry is being updated and a new logo is uploaded, the old logo needs to be deleted.
 		if ($entry->getLogoName() != NULL)
 		{
-			unlink( CN_IMAGE_PATH . $entry->getLogoName() );
+			@unlink( CN_IMAGE_PATH . $entry->getLogoName() );
 		}
 		
 		// Process the newly uploaded logo.
@@ -114,7 +114,7 @@ function processEntry($data, $action)
 				 */
 				if ( is_file( CN_IMAGE_PATH . $entry->getLogoName() ) )
 				{
-					unlink( CN_IMAGE_PATH . $entry->getLogoName() );
+					@unlink( CN_IMAGE_PATH . $entry->getLogoName() );
 				}
 				
 				$entry->setLogoName(NULL);
@@ -146,7 +146,7 @@ function processEntry($data, $action)
 		{
 			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameOriginal() ) )
 			{
-				unlink( CN_IMAGE_PATH . $entry->getImageNameOriginal() );
+				@unlink( CN_IMAGE_PATH . $entry->getImageNameOriginal() );
 			}
 		}
 		
@@ -154,7 +154,7 @@ function processEntry($data, $action)
 		{
 			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameThumbnail() ) )
 			{
-				unlink( CN_IMAGE_PATH . $entry->getImageNameThumbnail() );
+				@unlink( CN_IMAGE_PATH . $entry->getImageNameThumbnail() );
 				
 			}
 		}
@@ -163,7 +163,7 @@ function processEntry($data, $action)
 		{
 			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameCard() ) )
 			{
-				unlink( CN_IMAGE_PATH . $entry->getImageNameCard() );
+				@unlink( CN_IMAGE_PATH . $entry->getImageNameCard() );
 			}
 		}
 		
@@ -171,7 +171,7 @@ function processEntry($data, $action)
 		{
 			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameProfile() ) )
 			{
-				unlink( CN_IMAGE_PATH . $entry->getImageNameProfile() );
+				@unlink( CN_IMAGE_PATH . $entry->getImageNameProfile() );
 			}
 		}
 		
@@ -233,7 +233,7 @@ function processEntry($data, $action)
 				{
 					if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameOriginal() ) )
 					{
-						unlink( CN_IMAGE_PATH . $entry->getImageNameOriginal() );
+						@unlink( CN_IMAGE_PATH . $entry->getImageNameOriginal() );
 					}
 				}
 				
@@ -241,7 +241,7 @@ function processEntry($data, $action)
 				{
 					if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameThumbnail() ) )
 					{
-						unlink( CN_IMAGE_PATH . $entry->getImageNameThumbnail() );
+						@unlink( CN_IMAGE_PATH . $entry->getImageNameThumbnail() );
 						
 					}
 				}
@@ -250,7 +250,7 @@ function processEntry($data, $action)
 				{
 					if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameCard() ) )
 					{
-						unlink( CN_IMAGE_PATH . $entry->getImageNameCard() );
+						@unlink( CN_IMAGE_PATH . $entry->getImageNameCard() );
 					}
 				}
 				
@@ -258,7 +258,7 @@ function processEntry($data, $action)
 				{
 					if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameProfile() ) )
 					{
-						unlink( CN_IMAGE_PATH . $entry->getImageNameProfile() );
+						@unlink( CN_IMAGE_PATH . $entry->getImageNameProfile() );
 					}
 				}
 				
@@ -783,143 +783,6 @@ function processDeleteEntries()
 	}
 }
 
-function updateSettings()
-{
-	global $connections;
-	$format = new cnFormatting();
-	
-	( isset($_POST['settings']['allow_public']) && $_POST['settings']['allow_public'] === 'true' ) ? $connections->options->setAllowPublic(TRUE) : $connections->options->setAllowPublic(FALSE);
-	
-	
-	
-	if ( isset($_POST['settings']['allow_public_override']) && $_POST['settings']['allow_public_override'] === 'true' && !$connections->options->getAllowPublic() )
-	{
-		$connections->options->setAllowPublicOverride(TRUE);
-	}
-	else
-	{
-		$connections->options->setAllowPublicOverride(FALSE);
-	}
-	
-	
-	( isset($_POST['settings']['allow_private_override']) && $_POST['settings']['allow_private_override'] === 'true' ) ? $connections->options->setAllowPrivateOverride(TRUE) : $connections->options->setAllowPrivateOverride(FALSE);
-	
-	
-	if ( isset($_POST['settings']['image']['thumbnail']['quality']) )
-	{
-		$connections->options->setImgThumbQuality($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['quality']));
-	}
-	
-	if ( isset($_POST['settings']['image']['thumbnail']['x']) )
-	{
-		$connections->options->setImgThumbX($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['x']));
-	}
-	
-	if ( isset($_POST['settings']['image']['thumbnail']['y']) )
-	{
-		$connections->options->setImgThumbY($format->stripNonNumeric($_POST['settings']['image']['thumbnail']['y']));
-	}
-	
-	if ( isset($_POST['settings']['image']['thumbnail']['crop']) )
-	{
-		$connections->options->setImgThumbCrop($_POST['settings']['image']['thumbnail']['crop']);
-	}
-	
-	if ( isset($_POST['settings']['image']['entry']['quality']) )
-	{
-		$connections->options->setImgEntryQuality($format->stripNonNumeric($_POST['settings']['image']['entry']['quality']));
-	}
-	
-	if ( isset($_POST['settings']['image']['entry']['x']) )
-	{
-		$connections->options->setImgEntryX($format->stripNonNumeric($_POST['settings']['image']['entry']['x']));
-	}
-	
-	if ( isset($_POST['settings']['image']['entry']['y']) )
-	{
-		$connections->options->setImgEntryY($format->stripNonNumeric($_POST['settings']['image']['entry']['y']));
-	}
-	
-	if ( isset($_POST['settings']['image']['entry']['crop']) )
-	{
-		$connections->options->setImgEntryCrop($_POST['settings']['image']['entry']['crop']);
-	}
-	
-	if ( isset($_POST['settings']['image']['profile']['quality']) )
-	{
-		$connections->options->setImgProfileQuality($format->stripNonNumeric($_POST['settings']['image']['profile']['quality']));
-	}
-	
-	if ( isset($_POST['settings']['image']['profile']['x']) )
-	{
-		$connections->options->setImgProfileX($format->stripNonNumeric($_POST['settings']['image']['profile']['x']));
-	}
-	
-	if ( isset($_POST['settings']['image']['profile']['y']) )
-	{
-		$connections->options->setImgProfileY($format->stripNonNumeric($_POST['settings']['image']['profile']['y']));
-	}
-	
-	if ( isset($_POST['settings']['image']['profile']['crop']) )
-	{
-		$connections->options->setImgProfileCrop($_POST['settings']['image']['profile']['crop']);
-	}
-	
-	if ( isset($_POST['settings']['image']['logo']['quality']) )
-	{
-		$connections->options->setImgLogoQuality($format->stripNonNumeric($_POST['settings']['image']['logo']['quality']));
-	}
-	
-	if ( isset($_POST['settings']['image']['logo']['x']) )
-	{
-		$connections->options->setImgLogoX($format->stripNonNumeric($_POST['settings']['image']['logo']['x']));
-	}
-	
-	if ( isset($_POST['settings']['image']['logo']['y']) )
-	{
-		$connections->options->setImgLogoY($format->stripNonNumeric($_POST['settings']['image']['logo']['y']));
-	}
-	
-	if ( isset($_POST['settings']['image']['logo']['crop']) )
-	{
-		$connections->options->setImgLogoCrop($_POST['settings']['image']['logo']['crop']);
-	}
-	
-	if ( isset($_POST['settings']['debug']) && $_POST['settings']['debug'] === 'true' )
-	{
-		$connections->options->setDebug(TRUE);
-	}
-	else
-	{
-		$connections->options->setDebug(FALSE);
-	}
-	
-	if ( isset($_POST['settings']['advanced']['google_maps_api']) && $_POST['settings']['advanced']['google_maps_api'] === 'true' )
-	{
-		$connections->options->setGoogleMapsAPI(TRUE);
-	}
-	else
-	{
-		$connections->options->setGoogleMapsAPI(FALSE);
-	}
-	
-	if ( isset($_POST['settings']['advanced']['javascript_footer']) && $_POST['settings']['advanced']['javascript_footer'] === 'true' )
-	{
-		$connections->options->setJavaScriptFooter(TRUE);
-	}
-	else
-	{
-		$connections->options->setJavaScriptFooter(FALSE);
-	}
-	
-	// Save the search field choices.
-	$connections->options->setSearchFields( $_POST['settings']['search']['field'] );
-	$connections->options->setSearchUsingFulltext( $_POST['settings']['search']['fulltext'] );
-	
-	$connections->options->saveOptions();
-	$connections->setSuccessMessage('settings_updated');
-}
-
 function processAddCategory()
 {
 	$category = new cnCategory();
@@ -1038,7 +901,7 @@ function processDeleteTemplate()
 		        }
 		        else
 				{
-		            unlink( $directory . $file ) or $deleteError = TRUE;
+		            @unlink( $directory . $file ) or $deleteError = TRUE;
 				}
 				
 				if ( $deleteError ) return FALSE;

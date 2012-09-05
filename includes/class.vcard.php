@@ -326,6 +326,8 @@ class cnvCard extends cnOutput
 	
 	/**
 	 * Add the latitude and longitude of the first address to the GEO property
+	 * @TODO Should use the preferred address if set and only then use the first geo on the first address.
+	 * @return void
 	 */
 	private function setvCardGEO()
 	{
@@ -338,6 +340,11 @@ class cnvCard extends cnOutput
 		}
 	}
 	
+	/**
+	 * @TODO When multple addresses of the same type is set for an entry, the last is used because it overwrites
+	 * the previous. This should use the preferred address if set and then use the intial address of the specific type.
+	 * @return void
+	 */
 	private function setvCardAddresses()
 	{
 		if ($this->getAddresses())
@@ -574,6 +581,14 @@ class cnvCard extends cnOutput
 		return $this->card;
 	}
 	
+	/**
+	 * @access private
+	 * @since unknown
+	 * @version 1.0
+	 * @deprecated
+	 * @param array $suppliedAtts [optional]
+	 * @return string
+	 */
 	public function download( $suppliedAtts = array() )
 	{
 		/*
@@ -590,10 +605,11 @@ class cnvCard extends cnOutput
 		 */
 		
 		extract($atts);
-		$token = wp_create_nonce('download_vcard_' . $this->getId() );
 		
-		//echo '<a href="' . get_option('siteurl') . '/download.vCard.php?token=' . $token . '&entry=' . $this->getId() . '" rel="nofollow">' . $atts['anchorText'] . '</a>';
-		$out = '<a href="' . get_site_url() . '?cntoken=' . $token . '&cnid=' . $this->getId() . '&cnvc=1" title="' . $title . '" rel="nofollow">' . $anchorText . '</a>';
+		$out = $this->vcard( array( 'text' => $anchorText , 'title' => $title , 'return' => TRUE ) );
+		
+		//$token = wp_create_nonce('download_vcard_' . $this->getId() );
+		//$out = '<a href="' . get_site_url() . '?cntoken=' . $token . '&cnid=' . $this->getId() . '&cnvc=1" title="' . $title . '" rel="nofollow">' . $anchorText . '</a>';
 		
 		if ( $return ) return $out; else echo $out;
 	}

@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: shazahm1@hotmail.com
 Donate link: http://connections-pro.com/
-Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, business directory, business-directory, church, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, staff, user, users, vcard
+Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, business directory, business-directory, church, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, member directory, members directory, members directories, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, staff, user, users, vcard
 Requires at least: 3.2
 Tested up to: 3.4
 Stable tag: 0.7.2.6
@@ -84,21 +84,57 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 
 == Changelog ==
 
-= 0.7.3.x xx/xx/12 =
+= 0.7.3 xx/xx/12 =
+* FEATURE: Added permalink support.
 * FEATURE: Added a date meta field which uses the jQuery UI Datepicker for easy data entry.
-* FEATURE: Added Auto and manual geocoding of addresses.
+* FEATURE: Added auto and manual geocoding of addresses.
+* FEATURE: Added markup to the telephone number output to support clickable telephone numbers on smartphones.
 * FEATURE: Which fields to search can now be defined in the settings.
+* FEATURE: Added a configurable message that can be displayed to the user prompting them to login when the directory is set to require user login.
+* FEATURE: Updated the Settings admin page to use the new Connections Settings API Wrapper Class.
+* FEATURE: Added a view link to the Connections : Manage page. This link will take you to the front end of the site to that specific entry.
+* FEATURE: Added foursquare to the social media options.
+* FEATURE: Completely localization ready.
+* FEATURE: Add geo location filtering shortcode options: near_addr, latitude, longitude, radius, unit.
 * BUG: Use character entity codes for the page forward / page backward buttons.
 * BUG: Add the missing queries to enable FULLTEXT index for the default search fields.
 * BUG: Allow either http:// or https:// for both social media link and links.
 * BUG: Fix data validation for entry details to ensure only the fields expected in arrays is processed.
+* BUG: Disabled the registration the jQuery spin.js plugin because Elegant Themes uses the same registration name which causes conflicts and errors in the admin.
+* BUG: Fixed link target always setting to "New Window".
+* BUG: Fixed issues with empty data with the various data fields being saved when they should have been discarded.
+* BUG: Fixed an incorrectly named variable in cnEntry::getSocialMedia().
 * OTHER: Update Chosen CSS version query string.
-* OTHER: Added some additional CSS to keep theme's from breaking Connections layout.
+* OTHER: Added some additional CSS to keep theme's from breaking the default Connections layout.
 * OTHER: Improve search results.
 * OTHER: Improve search scalability.
 * OTHER: Improve the the add entry javascript functions to reduce redundant code.
 * OTHER: Minor efficiencies to code in class.entry.php.
 * OTHER: Code cleanup of the connections.php file.
+* OTHER: Complete re-write of the settings to use the new Connections Settings API Wrapper Class.
+* OTHER: Removed the new line returns from around the social media icons and added 1px left/right margin.
+* OTHER: Check for data in the lat/long and country fields before tossing the address as empty.
+* OTHER: Updated the version attribute when enqueuing the Chosen CSS file.
+* OTHER: Add error supression to the unlink function in the inc.processes.php file.
+* OTHER: Deprecated the method used to create a link to the vCard.
+* OTHER: Added replacement static method in the cnTemplate class uses the new permalink support and offers and icons option.
+* OTHER: Added public method 'returnToTop' to create the return to top anchor in the cnTemplate class.
+* OTHER: Added public method 'pagination' to create the pagination controls in the cnTemplate class.
+* OTHER: Added public method 'search' to create the pagination controls in the cnTemplate class.
+* OTHER: Added public method 'category' to create a category drop in the cnTemplate class. Supports, single-select, multi-select and option groups for both. It also supports checkboxes and radio inputs in a table layout where the parents and children are presented in unordered lists.
+* OTHER: Move the query result count properties to the cnRetrieve class.
+* OTHER: Added base for landing pages.
+* OTHER: Added base for entry detail page.
+* OTHER: Prefix the image preloader jQuery plugin function with cn_ to prevent potential conflicts with themes.
+* OTHER: Add icons support for the email addresses.
+* OTHER: Remove the legacy help page from the admin.
+* OTHER: Remove some support for the legacy template system. This will be completely removed in the next release in preparation for the improved plugin template system.
+* OTHER: Minor optimization in setting the default values in the cnRetrive class for limiting the query by status.
+* OTHER: Minor optimization in setting the default values for the sort order in the cnRetrive class.
+* OTHER: Added some descriptive text to the input text fields on "Add Category" admin page.
+* OTHER: Adjusted a few styles on the "Templates" admin page for better visual integration with WordPress 3.4.
+* OTHER: Adjusted a few styles on the "Roles" admin page for better visual integration with WordPress 3.4.
+* OTHER: Started the cnGeo API Class to support geocoding.
 
 = 0.7.2.7 04/23/12 =
 * OTHER: Started to internationalize.
@@ -339,6 +375,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * FEATURE: Show the entries assigned categories in the entry list.
 * FEATURE: Categories are add to the vcard div class.
 * FEATURE: Add template tag to show an entries assigned categories.
+* FEATURE: Added a 'Awaiting Moderation' widget to the Connections : Dashboard admin page.
 * BUG: Set the db version after each db upgrade cycle.
 * BUG: Add the missing social media block to the output class, default templates and help page.
 * BUG: Fix typos in the help page.
@@ -391,7 +428,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * Defined table names as constants.
 * Options class now is used throughout the plug-in rather than creating new instances.
 * Renamed all the classes to be more unique to help avoid conflict with other plug-ins.
-* Re-worked the way method used to store the cached entry list filters to use the user_meta table.
+* Re-worked the method used to store the cached entry list filters to use the user_meta table.
 * Capturing more meta data when added/updating entries; date added, added by, last edited by.
 * Added and middle name. Support extended to hCard and vCard.
 * Added a setting to disable the private override shortcode attribute.
@@ -399,7 +436,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * Added a permission filter. All queries are run thru this filter removing any entries the current user is not permitted to view.
 * Changed it so the upgrade message and version error only show on the Connections admin pages.
 * Started to enable support for SSL connections.
-* Changed minimum supported WP version to 2.8 [Used 2.8 only function for editable roles]
+* Changed minimum supported WP version to 2.8 [Uses 2.8 only function for editable roles]
 * Add check for $_SESSION save path and throw an error if it isn't found.
 * Add category support.
 * Add upgrade routine to support new features and some planned future features.
@@ -449,7 +486,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * Started to add jQuery in the admin
 * Fixed the CSS to load only in the Connections page
 * All the fields that can be input are shown in the output
-* Added the ability to use custom output templates and a slew of template tags
+* Added the ability to use custom output templates and add slew of template tags
 * Added a default profile template and a default single entry template
 
 = 0.2.24 =
@@ -507,3 +544,6 @@ A couple bug fixes. Should be the last one.
 
 = 0.7.2.6 =
 Bug fixes and updates to third party jQuery plugins and PHP classes. It is highly recommended to update.
+
+= 0.7.3 =
+This upgrade may break some custom templates using the old template system.

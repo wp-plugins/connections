@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-	$('.connections-list').preloader({
+	$('.connections-list').cn_preloader({
 		delay:200,
 		imgSelector:'.cn-image img.photo, .cn-image img.logo, .cn-image img.map, .cn-image img.screenshot',
 		beforeShow:function(){
