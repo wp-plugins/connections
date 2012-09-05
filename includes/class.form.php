@@ -1909,10 +1909,15 @@ class cnCategoryObjects
 				$out .= '<input type="checkbox" name="category[]" value="' . $category->getId() . '"/>';
 			$out .= '</th>';
 			$out .= '<td class="name column-name"><a class="row-title" href="' . $editToken . '">' . $pad . $category->getName() . '</a><br />';
-				$out .= '<div class="row-actions">';
-					$out .= '<span class="edit"><a href="' . $editToken . '">' . __('Edit', 'connections') . '</a> | </span>';
-					$out .= '<span class="delete"><a onclick="return confirm(\'You are about to delete this category. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="' . $deleteToken . '">' . __('Delete', 'connections') . '</a></span>';
-				$out .= '</div>';
+				
+				if ( $category->getSlug() !== 'uncategorized' || $category->getName() !== 'Uncategorized' )
+				{
+					$out .= '<div class="row-actions">';
+						$out .= '<span class="edit"><a href="' . $editToken . '">' . __('Edit', 'connections') . '</a> | </span>';
+						$out .= '<span class="delete"><a onclick="return confirm(\'You are about to delete this category. \\\'Cancel\\\' to stop, \\\'OK\\\' to delete\');" href="' . $deleteToken . '">' . __('Delete', 'connections') . '</a></span>';
+					$out .= '</div>';
+				}
+				
 			$out .= '</td>';
 			$out .= '<td class="description column-description">' . $category->getDescription() . '</td>';
 			$out .= '<td class="slug column-slug">' . $category->getSlug() . '</td>';

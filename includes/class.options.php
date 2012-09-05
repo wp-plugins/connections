@@ -1027,15 +1027,18 @@ class cnOptions
 			 'linked-in' => 'Linked-in',
 			 'mixcloud' => 'mixcloud',
 			 'myspace' => 'MySpace',
+			 'odnoklassniki' => 'Odnoklassniki',
 			 'pinterest' => 'Pinterest',
 			 'podcast' => 'Podcast',
 			 'reverbnation' => 'ReverbNation',
 			 'rss' => 'RSS',
+			 'soundcloud' => 'SoundCloud',
 			 'technorati' => 'Technorati',
 			 'tripadvisor' => 'TripAdvisor',
 			 'twitter' => 'Twitter',
-			 'soundcloud' => 'SoundCloud',
+			 'vk' => 'VK',
 			 'youtube' => 'YouTube'
+			 
 		);
     }
     

@@ -96,6 +96,11 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * FEATURE: Added foursquare to the social media options.
 * FEATURE: Completely localization ready.
 * FEATURE: Add geo location filtering shortcode options: near_addr, latitude, longitude, radius, unit.
+* FEATURE: Added Pinterest to the social networks.
+* FEATURE: Added foursquare to the social networks.
+* FEATURE: Added VK to the social networks.
+* FEATURE: Added Odnoklassniki to the social networks.
+* FEATURE: Allow categories of the same name as long as they do not share the same parent.
 * BUG: Use character entity codes for the page forward / page backward buttons.
 * BUG: Add the missing queries to enable FULLTEXT index for the default search fields.
 * BUG: Allow either http:// or https:// for both social media link and links.
@@ -104,6 +109,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * BUG: Fixed link target always setting to "New Window".
 * BUG: Fixed issues with empty data with the various data fields being saved when they should have been discarded.
 * BUG: Fixed an incorrectly named variable in cnEntry::getSocialMedia().
+* BUG: Remove the "Edit" and "Delete" actions from the default "Uncategorized" category to further prevent uses from trying to edit it.
 * OTHER: Update Chosen CSS version query string.
 * OTHER: Added some additional CSS to keep theme's from breaking the default Connections layout.
 * OTHER: Improve search results.
@@ -135,6 +141,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * OTHER: Adjusted a few styles on the "Templates" admin page for better visual integration with WordPress 3.4.
 * OTHER: Adjusted a few styles on the "Roles" admin page for better visual integration with WordPress 3.4.
 * OTHER: Started the cnGeo API Class to support geocoding.
+* OTHER: cnOutput::getMapBlock, check to see if the width value is empty in the interactive map div before setting the CSS width.
 
 = 0.7.2.7 04/23/12 =
 * OTHER: Started to internationalize.
