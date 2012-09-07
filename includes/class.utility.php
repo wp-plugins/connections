@@ -431,7 +431,6 @@ class cnURL
 			'follow' => TRUE,
 			'slug' => '',
 			'type' => 'name',
-			/*'home' => TRUE,*/
 			'return' => FALSE
 		);
 		
@@ -443,7 +442,14 @@ class cnURL
 		// Get the settings for the base of each data type to be used in the URL.
 		$base = get_option('connections_permalink');
 		
-		$permalink = ( is_admin() || $this->useHome ) ? get_permalink($homeID) : get_permalink();
+		
+		
+		if ( in_the_loop() && is_page() )
+		{
+			$permalink = get_permalink();
+		} else {
+			$permalink = get_permalink($homeID);
+		}
 		
 		if ( ! empty( $atts['class'] ) ) $piece[] = 'class="' . $atts['class'] .'"';
 		if ( ! empty( $atts['slug'] ) ) $piece[] = 'id="' . $atts['slug'] .'"';
@@ -455,7 +461,7 @@ class cnURL
 		{
 			case 'name':
 				
-				if ( ( is_page() || is_admin() ) && $wp_rewrite->using_permalinks() )
+				if ( $wp_rewrite->using_permalinks() )
 				{
 					$piece[] = 'href="' . $permalink . $base['name_base'] . '/' . $atts['slug'] . '/"';
 				}
@@ -468,7 +474,7 @@ class cnURL
 				
 			case 'category':
 				
-				if ( ( is_page() || is_admin() ) && $wp_rewrite->using_permalinks() )
+				if ( $wp_rewrite->using_permalinks() )
 				{
 					$piece[] = 'href="' . $permalink . $base['category_base'] . '/' . $atts['slug'] . '/"';
 				}
@@ -481,8 +487,6 @@ class cnURL
 		}
 		
 		$out = '<a ' . implode(' ', $piece) . '>' . $atts['text'] . '</a>';
-		
-		//if ( ! $this->useHome ) $this->useHome = TRUE;
 		
 		if ( $atts['return'] ) return $out;
 		echo $out;

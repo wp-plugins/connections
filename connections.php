@@ -162,9 +162,9 @@ if ( ! class_exists('connectionsLoad') )
 			 * Init the registered settings.
 			 * NOTE: The init method must be run after registering the tabs, sections and fields.
 			 */
-			add_filter( 'cn_register_settings_tabs' , 'cnRegisterSettings::registerSettingsTabs' , 10 , 1 );
-			add_filter( 'cn_register_settings_sections' , 'cnRegisterSettings::registerSettingsSections' , 10 , 1 );
-			add_filter( 'cn_register_settings_fields' , 'cnRegisterSettings::registerSettingsFields' , 10 , 1 );
+			add_filter( 'cn_register_settings_tabs' , array('cnRegisterSettings','registerSettingsTabs') , 10 , 1 );
+			add_filter( 'cn_register_settings_sections' , array('cnRegisterSettings','registerSettingsSections') , 10 , 1 );
+			add_filter( 'cn_register_settings_fields' , array('cnRegisterSettings','registerSettingsFields') , 10 , 1 );
 			$this->settings->init();
 			
 			// Setup the current user object

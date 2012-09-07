@@ -41,7 +41,7 @@ function connectionsShowTemplatesPage()
 			<ul class="subsubsub">
 				<li><a <?php if ($type === 'all') echo 'class="current" ' ?>href="admin.php?page=connections_templates&type=all"><?php _e('All', 'connections'); ?></a> | </li>
 				<li><a <?php if ($type === 'individual') echo 'class="current" ' ?>href="admin.php?page=connections_templates&type=individual"><?php _e('Individual', 'connections'); ?></a> | </li>
-				<li><a <?php if ($type === 'organization') echo 'class="current" ' ?>href="admin.php?page=connections_templates&type=organization"><?php _e('Organization', 'connections'); ?>Organization</a> | </li>
+				<li><a <?php if ($type === 'organization') echo 'class="current" ' ?>href="admin.php?page=connections_templates&type=organization"><?php _e('Organization', 'connections'); ?></a> | </li>
 				<li><a <?php if ($type === 'family') echo 'class="current" ' ?>href="admin.php?page=connections_templates&type=family"><?php _e('Family', 'connections'); ?></a> | </li>
 				<li><a <?php if ($type === 'anniversary') echo 'class="current" ' ?>href="admin.php?page=connections_templates&type=anniversary"><?php _e('Anniversary', 'connections'); ?></a> | </li>
 				<li><a <?php if ($type === 'birthday') echo 'class="current" ' ?>href="admin.php?page=connections_templates&type=birthday"><?php _e('Birthday', 'connections'); ?></a></li>

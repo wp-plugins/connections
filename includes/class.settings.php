@@ -107,7 +107,7 @@ class cnRegisterSettings
 			'title' => __( 'Image and Logo Instructions' , 'connections' ), 
 			'callback' => create_function( '', "_e('When an image or logo is uploaded to an entry, various sizes are created and cached. This helps to reduce server load during the
 				rendering of the directory. If these settings are changed, they will only affect images uploaded after the change has been made. All previous images will remain at their
-				previously cached sizes. NOTE: the activate template will determine which image is used.', 'connections');" ),  
+				previously cached sizes. NOTE: the active template will determine which image(s) is used.', 'connections');" ),  
 			'page_hook' => $settings
 		);
 		$sections[] = array(
