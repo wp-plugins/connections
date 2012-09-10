@@ -193,14 +193,14 @@ class cnRetrieve
 			foreach ( $atts['category_name'] as $categoryName )
 			{
 				// Add the parent category to the array and remove any whitespace from the begining/end of the name in case the user added it when using the shortcode.
-				$categoryNames[] = trim($categoryName);
+				$categoryNames[] = htmlspecialchars( trim($categoryName) );
 				
 				// Retrieve the children categories
 				$results = $this->categoryChildren('name', $categoryName);
 				
 				foreach ( (array) $results as $term )
 				{
-					if ( ! in_array($term->name, $categoryNames) ) $categoryNames[] = $term->name;
+					if ( ! in_array($term->name, $categoryNames) ) $categoryNames[] = htmlspecialchars($term->name);
 				}
 			}
 		}

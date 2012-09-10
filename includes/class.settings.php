@@ -283,7 +283,7 @@ class cnRegisterSettings
 		 */
 		$fields[] = array(
 			'plugin_id' => 'connections',
-			'id' => 'jpeg_quality',
+			'id' => 'quality',
 			'position' => 10,
 			'page_hook' => $settings,
 			'tab' => 'images',
@@ -343,7 +343,7 @@ class cnRegisterSettings
 		);
 		$fields[] = array(
 			'plugin_id' => 'connections',
-			'id' => 'jpeg_quality',
+			'id' => 'quality',
 			'position' => 10,
 			'page_hook' => $settings,
 			'tab' => 'images',
@@ -403,7 +403,7 @@ class cnRegisterSettings
 		);
 		$fields[] = array(
 			'plugin_id' => 'connections',
-			'id' => 'jpeg_quality',
+			'id' => 'quality',
 			'position' => 10,
 			'page_hook' => $settings,
 			'tab' => 'images',
@@ -463,7 +463,7 @@ class cnRegisterSettings
 		);
 		$fields[] = array(
 			'plugin_id' => 'connections',
-			'id' => 'jpeg_quality',
+			'id' => 'quality',
 			'position' => 10,
 			'page_hook' => $settings,
 			'tab' => 'images',

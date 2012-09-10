@@ -283,6 +283,13 @@ class cnOptions
 	{
 		global $wp_roles;
 		
+		/* 
+		 * Check to make sure $wp_roles has been initialized and set.
+		 * If it hasn't it is initialized. This was done because this method 
+		 * can be called before the $wp_roles has been initialized.
+		 */
+		if ( ! isset($wp_roles) ) $wp_roles = new WP_Roles();
+		
 		/**
 		 * These are the roles that will default to having full access
 		 * to all capabilites. This is to maintain plugin behavior that

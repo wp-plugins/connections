@@ -217,7 +217,7 @@ if ( ! class_exists('connectionsLoad') )
 			
 			define('CN_LOG', FALSE);
 			
-			define('CN_CURRENT_VERSION', '0.7.2.7');
+			define('CN_CURRENT_VERSION', '0.7.2.9');
 			define('CN_DB_VERSION', '0.1.9');
 			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
 			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
@@ -367,7 +367,7 @@ if ( ! class_exists('connectionsLoad') )
 			{
 				$options = get_option('connections_options');
 				
-				if ( get_option('connections_login') !== FALSE )
+				if ( get_option('connections_login') === FALSE )
 				{
 					update_option( 'connections_login' , array(
 						'required' => $options['settings']['allow_public'],
@@ -376,7 +376,7 @@ if ( ! class_exists('connectionsLoad') )
 					);
 				}
 				
-				if ( get_option('connections_visibility') !== FALSE )
+				if ( get_option('connections_visibility') === FALSE )
 				{
 					update_option( 'connections_visibility' , array(
 						'allow_public_override' => $options['settings']['allow_public_override'],
@@ -385,50 +385,50 @@ if ( ! class_exists('connectionsLoad') )
 					);
 				}
 				
-				if ( get_option('connections_image_thumbnail') !== FALSE )
+				if ( get_option('connections_image_thumbnail') === FALSE )
 				{
 					update_option( 'connections_image_thumbnail' , array(
 						'quality' => $options['settings']['image']['thumbnail']['quality'],
 						'width' => $options['settings']['image']['thumbnail']['x'],
 						'height' => $options['settings']['image']['thumbnail']['y'],
-						'ration' => $options['settings']['image']['thumbnail']['crop']
+						'ratio' => $options['settings']['image']['thumbnail']['crop']
 						)
 					);
 				}
-				if ( get_option('connections_image_medium') !== FALSE )
+				if ( get_option('connections_image_medium') === FALSE )
 				{
 					update_option( 'connections_image_medium' , array(
 						'quality' => $options['settings']['image']['entry']['quality'],
 						'width' => $options['settings']['image']['entry']['x'],
 						'height' => $options['settings']['image']['entry']['y'],
-						'ration' => $options['settings']['image']['entry']['crop']
+						'ratio' => $options['settings']['image']['entry']['crop']
 						)
 					);
 				}
 				
-				if ( get_option('connections_image_large') !== FALSE )
+				if ( get_option('connections_image_large') === FALSE )
 				{
 					update_option( 'connections_image_large' , array(
 						'quality' => $options['settings']['image']['profile']['quality'],
 						'width' => $options['settings']['image']['profile']['x'],
 						'height' => $options['settings']['image']['profile']['y'],
-						'ration' => $options['settings']['image']['profile']['crop']
+						'ratio' => $options['settings']['image']['profile']['crop']
 						)
 					);
 				}
 				
-				if ( get_option('connections_image_logo') !== FALSE )
+				if ( get_option('connections_image_logo') === FALSE )
 				{
 					update_option( 'connections_image_logo' , array(
 						'quality' => $options['settings']['image']['logo']['quality'],
 						'width' => $options['settings']['image']['logo']['x'],
 						'height' => $options['settings']['image']['logo']['y'],
-						'ration' => $options['settings']['image']['logo']['crop']
+						'ratio' => $options['settings']['image']['logo']['crop']
 						)
 					);
 				}
 				
-				if ( get_option('connections_compatibility') !== FALSE )
+				if ( get_option('connections_compatibility') === FALSE )
 				{
 					update_option( 'connections_compatibility' , array( 
 						'google_maps_api' => $options['settings']['advanced']['load_google_maps_api'],
@@ -436,7 +436,7 @@ if ( ! class_exists('connectionsLoad') )
 					);
 				}
 				
-				if ( get_option('connections_debug') !== FALSE ) update_option( 'connections_debug' , array( 'debug_messages' => $options['debug'] ) );
+				if ( get_option('connections_debug') === FALSE ) update_option( 'connections_debug' , array( 'debug_messages' => $options['debug'] ) );
 				
 			}
 			
