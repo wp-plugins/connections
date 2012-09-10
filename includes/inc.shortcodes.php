@@ -274,7 +274,7 @@ function connectionsList($atts, $content = NULL)
 	$atts = apply_filters('cn_list_retrieve_atts-' . $template->slug , $atts );
 	
 	$results = $connections->retrieve->entries($atts);
-	$out .= print_r($connections->lastQuery , TRUE);
+	//$out .= print_r($connections->lastQuery , TRUE);
 	//$out .= print_r($results , TRUE);
 	
 	if ( ! empty($results) ) $results = apply_filters( 'cn_list_results', $results );
