@@ -415,7 +415,7 @@ class cnOutput extends cnEntry
 			break;
 		}
 		
-		$connections->url->useHome(FALSE);
+		//$connections->url->useHome(FALSE);
 		$out = $connections->url->permalink( array(
 			'type' => 'name',
 			'slug' => $this->getSlug(),

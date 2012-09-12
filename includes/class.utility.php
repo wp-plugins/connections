@@ -402,7 +402,7 @@ class cnURL
 	 * @var bool
 	 * @since 0.7.3
 	 */
-	private $useHome = TRUE;
+	/*private $useHome = TRUE;*/
 	
 	/**
 	 * Create a permalink.
@@ -501,9 +501,9 @@ class cnURL
 	 * @param bool $value [optional]
 	 * @return bool
 	 */
-	public function useHome( $value = TRUE )
+	/*public function useHome( $value = TRUE )
 	{
 		$this->useHome = (bool) $value;
-	}
+	}*/
 }
 ?>

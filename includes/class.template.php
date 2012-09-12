@@ -710,7 +710,7 @@ class cnTemplate
 		foreach ( $categories as $key => $category )
 		{
 			// Limit the category tree to only the supplied root parent categories.
-			if ( ! in_array( $category->term_id, $atts['parent_id'] ) ) continue;
+			if ( ! empty( $atts['parent_id'] ) && ! in_array( $category->term_id, $atts['parent_id'] ) ) continue;
 			
 			// If grouping by root parent is enabled, open the optiongroup tag.
 			if ( $atts['group'] && ! empty($category->children) )

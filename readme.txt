@@ -144,6 +144,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * OTHER: Started the cnGeo API Class to support geocoding.
 * OTHER: cnOutput::getMapBlock, check to see if the width value is empty in the interactive map div before setting the CSS width.
 * OTHER: Add inline CSS to the socialmedia icons to help prevent themes and other plugins from interfering with the icon size.
+* OTHER: Add the CSS required for the "Return to top" anchor link to the cn-user.css file.
 
 = 0.7.2.7 04/23/12 =
 * OTHER: Started to internationalize.

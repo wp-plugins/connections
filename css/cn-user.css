@@ -284,3 +284,18 @@ input#cn-submit {
 .cn-gmap img {
 	max-width: none;
 }
+
+/*
+ * Return to top.
+ */
+div#cn-list span.cn-return-to-top img {
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	background-color: #FFFFFF;
+	border: 1px solid #E3E3E3;
+	display: inline-block;
+	float: none;
+	margin: 0 0 -6px;
+	padding: 5px;
+}
