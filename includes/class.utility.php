@@ -446,9 +446,9 @@ class cnURL
 		
 		if ( in_the_loop() && is_page() )
 		{
-			$permalink = get_permalink();
+			$permalink = trailingslashit ( get_permalink() );
 		} else {
-			$permalink = get_permalink($homeID);
+			$permalink = trailingslashit ( get_permalink($homeID) );
 		}
 		
 		if ( ! empty( $atts['class'] ) ) $piece[] = 'class="' . $atts['class'] .'"';
@@ -464,9 +464,7 @@ class cnURL
 				if ( $wp_rewrite->using_permalinks() )
 				{
 					$piece[] = 'href="' . $permalink . $base['name_base'] . '/' . $atts['slug'] . '/"';
-				}
-				else
-				{
+				} else {
 					$piece[] = 'href="' . add_query_arg('cn-entry-slug', $atts['slug'] , $permalink) . '"';
 				}
 				
@@ -477,9 +475,7 @@ class cnURL
 				if ( $wp_rewrite->using_permalinks() )
 				{
 					$piece[] = 'href="' . $permalink . $base['category_base'] . '/' . $atts['slug'] . '/"';
-				}
-				else
-				{
+				} else {
 					$piece[] = 'href="' . add_query_arg('cn-cat', $atts['slug'] , $permalink) . '"';
 				}
 				

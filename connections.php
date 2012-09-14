@@ -1283,10 +1283,9 @@ if ( ! class_exists('connectionsLoad') )
 			$this->message = new WP_Error();
 			$this->initErrorMessages();
 			$this->initSuccessMessages();
-			$flush = get_option('connections_flush_rewrite');
 			
 			// If the user changed the bases for the permalinks, flush the rewrite rules.
-			if ( $flush )
+			if ( get_option('connections_flush_rewrite') )
 			{
 				flush_rewrite_rules();
 				delete_option('connections_flush_rewrite');
