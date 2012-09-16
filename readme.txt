@@ -148,6 +148,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * OTHER: Add the CSS required for the "Return to top" anchor link to the cn-user.css file.
 * OTHER: Flush rewrite rules on plugin upgrade.
 * OTHER: Update all files to use the CN_* constants.
+* OTHER: Add an option to cnOutput::getNameBlock() turn the name into a permalink and set its target to either the direct link or to the detail page.
 
 = 0.7.2.7 04/23/12 =
 * OTHER: Started to internationalize.

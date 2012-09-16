@@ -393,18 +393,6 @@ class cnValidate
 class cnURL
 {
 	/**
-	 * Used to determine whether the directory home page 
-	 * should be used for the permalink root.
-	 * 
-	 * Set via cnURL::useHome.
-	 * 
-	 * @access private
-	 * @var bool
-	 * @since 0.7.3
-	 */
-	/*private $useHome = TRUE;*/
-	
-	/**
 	 * Create a permalink.
 	 * 
 	 * @access private
@@ -442,8 +430,7 @@ class cnURL
 		// Get the settings for the base of each data type to be used in the URL.
 		$base = get_option('connections_permalink');
 		
-		
-		
+		// Create the permalink base based on context where the entry is being displayed.
 		if ( in_the_loop() && is_page() )
 		{
 			$permalink = trailingslashit ( get_permalink() );
@@ -470,6 +457,17 @@ class cnURL
 				
 				break;
 				
+			case 'detail':
+				
+				if ( $wp_rewrite->using_permalinks() )
+				{
+					$piece[] = 'href="' . $permalink . $base['name_base'] . '/' . $atts['slug'] . '/detail/"';
+				} else {
+					$piece[] = 'href="' . add_query_arg( array( 'cn-entry-slug' => $atts['slug'] , 'cn-view' => 'detail' ) , $permalink ) . '"';
+				}
+				
+				break;
+				
 			case 'category':
 				
 				if ( $wp_rewrite->using_permalinks() )
@@ -487,19 +485,5 @@ class cnURL
 		if ( $atts['return'] ) return $out;
 		echo $out;
 	}
-	
-	/**
-	 * Whether or not to set the permalink base to the user selected page for the directory home.
-	 * 
-	 * @access public
-	 * @version 1.0
-	 * @since 0.7.3
-	 * @param bool $value [optional]
-	 * @return bool
-	 */
-	/*public function useHome( $value = TRUE )
-	{
-		$this->useHome = (bool) $value;
-	}*/
 }
 ?>

@@ -78,29 +78,33 @@ class cnOutput extends cnEntry
 	 * @param array $atts [optional]
 	 * @return string
 	 */
-	public function getImage( $suppliedAtts = array() )
+	public function getImage( $atts = array() )
 	{
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-		$defaultAtts = array( 'image' => 'photo',
-							  'preset' => 'entry',
-							  'fallback' => array( 'type' => 'none',
-							  					   'string' => '',
-												   'height' => 0,
-												   'width' => 0
-												 ),
-							  'height' => 0,
-							  'width' => 0,
-							  'zc' => 2,
-							  'before' => '',
-							  'after' => '',
-							  'style' => array(),
-							  'return' => FALSE
-							);
+		$defaults = array(
+			'image' => 'photo',
+			'preset' => 'entry',
+			'fallback' => array(
+				'type' => 'none',
+				'string' => '',
+				'height' => 0,
+				'width' => 0
+			),
+			'height' => 0,
+			'width' => 0,
+			'zc' => 2,
+			'before' => '',
+			'after' => '',
+			'style' => array(),
+			'return' => FALSE
+		);
 		
-		$atts = $this->validate->attributesArray( $defaultAtts , $suppliedAtts );
-		if ( isset($suppliedAtts['fallback']) && is_array($suppliedAtts['fallback']) ) $atts['fallback'] = $this->validate->attributesArray( $defaultAtts['fallback'] , $suppliedAtts['fallback'] );
+		$defaults = apply_filters( 'cn_default_atts_image_block' , $defaults );
+		
+		$atts = $this->validate->attributesArray( $defaults , $atts );
+		if ( isset($atts['fallback']) && is_array($atts['fallback']) ) $atts['fallback'] = $this->validate->attributesArray( $defaults['fallback'] , $atts['fallback'] );
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -143,24 +147,36 @@ class cnOutput extends cnEntry
 						switch ( $atts['preset'])
 						{
 							case 'entry':
-								$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
-								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameCard();
+								if ( is_file( CN_IMAGE_PATH . $this->getImageNameCard() ) )
+								{
+									$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
+									$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameCard();
+								}
 								break;
 							case 'profile':
-								$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameProfile() );
-								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameProfile();
+								if ( is_file( CN_IMAGE_PATH . $this->getImageNameProfile() ) )
+								{
+									$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameProfile() );
+									$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameProfile();
+								}
 								break;
 							case 'thumbnail':
-								$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameThumbnail() );
-								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameThumbnail();
+								if ( is_file( CN_IMAGE_PATH . $this->getImageNameThumbnail() ) )
+								{
+									$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameThumbnail() );
+									$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameThumbnail();
+								}
 								break;
 							default:
-								$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
-								$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameCard();
+								if ( is_file( CN_IMAGE_PATH . $this->getImageNameThumbnail() ) )
+								{
+									$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
+									$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameCard();
+								}
 								break;
 						}
 						
-						if ( $atts['image_size'] !== FALSE )
+						if ( isset( $atts['image_size'] ) && $atts['image_size'] !== FALSE )
 						{
 							$atts['width'] = $atts['image_size'][0];
 							$atts['height'] = $atts['image_size'][1];
@@ -350,20 +366,25 @@ class cnOutput extends cnEntry
 	 * @param array $atts [optional]
 	 * @return string
 	 */
-	public function getNameBlock( $suppliedAtts = array() )
+	public function getNameBlock( $atts = array() )
 	{
 		global $connections;
 		
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-		$defaultAtts = array( 'format' => '%prefix% %first% %middle% %last% %suffix%',
-							  'before' => '',
-							  'after' => '',
-							  'return' => FALSE
-							);
+		$defaults = array(
+			'format' => '%prefix% %first% %middle% %last% %suffix%',
+			'link' => FALSE,
+			'target' => 'name',
+			'before' => '',
+			'after' => '',
+			'return' => FALSE
+		);
 		
-		$atts = $this->validate->attributesArray($defaultAtts, $suppliedAtts);
+		$defaults = apply_filters( 'cn_default_atts_name_block' , $defaults );
+		
+		$atts = $this->validate->attributesArray($defaults, $atts);
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -415,15 +436,17 @@ class cnOutput extends cnEntry
 			break;
 		}
 		
-		//$connections->url->useHome(FALSE);
-		$out = $connections->url->permalink( array(
-			'type' => 'name',
-			'slug' => $this->getSlug(),
-			'title' => $this->getName($atts),
-			'text' => $out,
-			'return' => TRUE
-			)
+		if ( $atts['link'] )
+		{
+			$out = $connections->url->permalink( array(
+				'type' => $atts['target'],
+				'slug' => $this->getSlug(),
+				'title' => $this->getName($atts),
+				'text' => $out,
+				'return' => TRUE
+				)
 		);
+		}
 		
 		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
@@ -516,20 +539,22 @@ class cnOutput extends cnEntry
 	 * @access public
 	 * @since unknown
 	 * @version 1.0
-	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (array) $atts Accepted values as noted above.
 	 * @return string
 	 */
-	public function getTitleBlock( $suppliedAtts = array() )
+	public function getTitleBlock( $atts = array() )
 	{
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-		$defaultAtts = array( 'before' => '',
+		$defaults = array( 'before' => '',
 							  'after' => '',
 							  'return' => FALSE
 							);
 		
-		$atts = $this->validate->attributesArray($defaultAtts, $suppliedAtts);
+		$defaults = apply_filters( 'cn_default_atts_title_block' , $defaults );
+		
+		$atts = $this->validate->attributesArray($defaults, $atts);
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -561,10 +586,10 @@ class cnOutput extends cnEntry
 	 * @access public
 	 * @since unknown
 	 * @version 1.0
-	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (array) $atts Accepted values as noted above.
 	 * @return string
 	 */
-	public function getOrgUnitBlock( $suppliedAtts = array() )
+	public function getOrgUnitBlock( $atts = array() )
 	{
 		$out = '';
 		$org = $this->getOrganization();
@@ -573,12 +598,14 @@ class cnOutput extends cnEntry
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-		$defaultAtts = array( 'before' => '',
+		$defaults = array( 'before' => '',
 							  'after' => '',
 							  'return' => FALSE
 							);
 		
-		$atts = $this->validate->attributesArray($defaultAtts, $suppliedAtts);
+		$defaults = apply_filters( 'cn_default_atts_orgunit_block' , $defaults );
+		
+		$atts = $this->validate->attributesArray($defaults, $atts);
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -639,19 +666,21 @@ class cnOutput extends cnEntry
 	 * @param array $atts [optional]
 	 * @return string
 	 */
-	public function getContactNameBlock( $suppliedAtts = array() )
+	public function getContactNameBlock( $atts = array() )
 	{
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-		$defaultAtts = array( 'format' => '%label%: %first% %last%',
+		$defaults = array( 'format' => '%label%: %first% %last%',
 							  'label' => __('Contact', 'connections'),
 							  'before' => '',
 							  'after' => '',
 							  'return' => FALSE
 							);
 		
-		$atts = $this->validate->attributesArray($defaultAtts, $suppliedAtts);
+		$defaults = apply_filters( 'cn_default_atts_contact_name_block' , $defaults );
+		
+		$atts = $this->validate->attributesArray($defaults, $atts);
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -709,29 +738,31 @@ class cnOutput extends cnEntry
 	 * @access public
 	 * @since unknown
 	 * @version 1.0
-	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (array) $atts Accepted values as noted above.
 	 * @param (bool) [optional] $cached Returns the cached address rather than querying the db.
 	 * @return string
 	 */
-	public function getAddressBlock( $suppliedAttr = array() , $cached = TRUE )
+	public function getAddressBlock( $atts = array() , $cached = TRUE )
 	{
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['preferred'] = NULL;
-			$defaultAttr['type'] = NULL;
-			$defaultAttr['city'] = NULL;
-			$defaultAttr['state'] = NULL;
-			$defaultAttr['zipcode'] = NULL;
-			$defaultAttr['country'] = NULL;
-			$defaultAttr['coordinates'] = array();
-			$defaultAttr['format'] = '%label% %line1% %line2% %line3% %city%, %state%  %zipcode% %country%';
-			$defaultAttr['before'] = '';
-			$defaultAttr['after'] = '';
-			$defaultAttr['return'] = FALSE;
-			
-			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
-			$atts['id'] = $this->getId();
+		$defaults['preferred'] = NULL;
+		$defaults['type'] = NULL;
+		$defaults['city'] = NULL;
+		$defaults['state'] = NULL;
+		$defaults['zipcode'] = NULL;
+		$defaults['country'] = NULL;
+		$defaults['coordinates'] = array();
+		$defaults['format'] = '%label% %line1% %line2% %line3% %city% %state%  %zipcode% %country%';
+		$defaults['before'] = '';
+		$defaults['after'] = '';
+		$defaults['return'] = FALSE;
+		
+		$defaults = apply_filters( 'cn_default_atts_address_block' , $defaults );
+		
+		$atts = $this->validate->attributesArray($defaults, $atts);
+		$atts['id'] = $this->getId();
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -812,28 +843,30 @@ class cnOutput extends cnEntry
 	 * @access public
 	 * @since unknown
 	 * @version 1.0
-	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (array) $atts Accepted values as noted above.
 	 * @param (bool) [optiona] $cached Returns the cached address rather than querying the db.
 	 * @return string
 	 */
-	public function getMapBlock( $suppliedAttr = array() , $cached = TRUE )
+	public function getMapBlock( $atts = array() , $cached = TRUE )
 	{
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['preferred'] = NULL;
-			$defaultAttr['type'] = NULL;
-			$defaultAttr['static'] = FALSE;
-			$defaultAttr['maptype'] = 'ROADMAP';
-			$defaultAttr['zoom'] = 13;
-			$defaultAttr['height'] = 400;
-			$defaultAttr['width'] = 400;
-			$defaultAttr['before'] = '';
-			$defaultAttr['after'] = '';
-			$defaultAttr['return'] = FALSE;
-			
-			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
-			$atts['id'] = $this->getId();
+		$defaults['preferred'] = NULL;
+		$defaults['type'] = NULL;
+		$defaults['static'] = FALSE;
+		$defaults['maptype'] = 'ROADMAP';
+		$defaults['zoom'] = 13;
+		$defaults['height'] = 400;
+		$defaults['width'] = 400;
+		$defaults['before'] = '';
+		$defaults['after'] = '';
+		$defaults['return'] = FALSE;
+		
+		$defaults = apply_filters( 'cn_default_atts_contact_name_block' , $defaults );
+		
+		$atts = $this->validate->attributesArray($defaults, $atts);
+		$atts['id'] = $this->getId();
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -928,24 +961,26 @@ class cnOutput extends cnEntry
 	 * @access public
 	 * @since unknown
 	 * @version 1.0
-	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (array) $atts Accepted values as noted above.
 	 * @param (bool) [optional] $cached Returns the cached data rather than querying the db.
 	 * @return string
 	 */
-	public function getPhoneNumberBlock( $suppliedAttr = array() , $cached = TRUE )
+	public function getPhoneNumberBlock( $atts = array() , $cached = TRUE )
 	{
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['preferred'] = NULL;
-			$defaultAttr['type'] = NULL;
-			$defaultAttr['format'] = '%label%: %number%';
-			$defaultAttr['before'] = '';
-			$defaultAttr['after'] = '';
-			$defaultAttr['return'] = FALSE;
-			
-			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
-			$atts['id'] = $this->getId();
+		$defaults['preferred'] = NULL;
+		$defaults['type'] = NULL;
+		$defaults['format'] = '%label%: %number%';
+		$defaults['before'] = '';
+		$defaults['after'] = '';
+		$defaults['return'] = FALSE;
+		
+		$defaults = apply_filters( 'cn_default_atts_phone_block' , $defaults );
+		
+		$atts = $this->validate->attributesArray($defaults, $atts);
+		$atts['id'] = $this->getId();
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -1095,26 +1130,28 @@ class cnOutput extends cnEntry
 	 * @access puplic
 	 * @since unknown
 	 * @version 1.0
-	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (array) $atts Accepted values as noted above.
 	 * @param (bool) [optional] $cached Returns the cached data rather than querying the db.
 	 * @return string
 	 */
-	public function getEmailAddressBlock( $suppliedAttr = array() , $cached = TRUE )
+	public function getEmailAddressBlock( $atts = array() , $cached = TRUE )
 	{
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['preferred'] = NULL;
-			$defaultAttr['type'] = NULL;
-			$defaultAttr['format'] = '%label%: %address%';
-			$defaultAttr['title'] = '%first% %last% %type% email.';
-			$defaultAttr['size'] = 32;
-			$defaultAttr['before'] = '';
-			$defaultAttr['after'] = '';
-			$defaultAttr['return'] = FALSE;
-			
-			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
-			$atts['id'] = $this->getId();
+		$defaults['preferred'] = NULL;
+		$defaults['type'] = NULL;
+		$defaults['format'] = '%label%: %address%';
+		$defaults['title'] = '%first% %last% %type% email.';
+		$defaults['size'] = 32;
+		$defaults['before'] = '';
+		$defaults['after'] = '';
+		$defaults['return'] = FALSE;
+		
+		$defaults = apply_filters( 'cn_default_atts_email_block' , $defaults );
+		
+		$atts = $this->validate->attributesArray($defaults, $atts);
+		$atts['id'] = $this->getId();
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -1190,24 +1227,26 @@ class cnOutput extends cnEntry
 	 * @access public
 	 * @since unknown
 	 * @version 1.0
-	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (array) $atts Accepted values as noted above.
 	 * @param (bool) [optiona] $cached Returns the cached data rather than querying the db.
 	 * @return string
 	 */
-	public function getImBlock( $suppliedAttr = array() , $cached = TRUE )
+	public function getImBlock( $atts = array() , $cached = TRUE )
 	{
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['preferred'] = NULL;
-			$defaultAttr['type'] = NULL;
-			$defaultAttr['format'] = '%label%: %id%';
-			$defaultAttr['before'] = '';
-			$defaultAttr['after'] = '';
-			$defaultAttr['return'] = FALSE;
-			
-			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
-			$atts['id'] = $this->getId();
+		$defaults['preferred'] = NULL;
+		$defaults['type'] = NULL;
+		$defaults['format'] = '%label%: %id%';
+		$defaults['before'] = '';
+		$defaults['after'] = '';
+		$defaults['return'] = FALSE;
+		
+		$defaults = apply_filters( 'cn_default_atts_im_block' , $defaults );
+		
+		$atts = $this->validate->attributesArray($defaults, $atts);
+		$atts['id'] = $this->getId();
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -1315,26 +1354,28 @@ class cnOutput extends cnEntry
 	 * @access public
 	 * @since unknown
 	 * @version 1.0
-	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (array) $atts Accepted values as noted above.
 	 * @param (bool) [optional] $cached Returns the cached data rather than querying the db.
 	 * @return string
 	 */
-	public function getSocialMediaBlock( $suppliedAttr = array() , $cached = TRUE )
+	public function getSocialMediaBlock( $atts = array() , $cached = TRUE )
 	{
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['preferred'] = NULL;
-			$defaultAttr['type'] = NULL;
-			$defaultAttr['format'] = '%icon%';
-			$defaultAttr['style'] = 'wpzoom';
-			$defaultAttr['size'] = 32;
-			$defaultAttr['before'] = '';
-			$defaultAttr['after'] = '';
-			$defaultAttr['return'] = FALSE;
-			
-			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
-			$atts['id'] = $this->getId();
+		$defaults['preferred'] = NULL;
+		$defaults['type'] = NULL;
+		$defaults['format'] = '%icon%';
+		$defaults['style'] = 'wpzoom';
+		$defaults['size'] = 32;
+		$defaults['before'] = '';
+		$defaults['after'] = '';
+		$defaults['return'] = FALSE;
+		
+		$defaults = apply_filters( 'cn_default_atts_socialmedia_block' , $defaults );
+		
+		$atts = $this->validate->attributesArray($defaults, $atts);
+		$atts['id'] = $this->getId();
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -1425,26 +1466,28 @@ class cnOutput extends cnEntry
 	 * @access public
 	 * @since unknown
 	 * @version 1.0
-	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (array) $atts Accepted values as noted above.
 	 * @param (bool) [optional] $cached Returns the cached data rather than querying the db.
 	 * @return string
 	 */
-	public function getLinkBlock( $suppliedAttr = array() , $cached = TRUE )
+	public function getLinkBlock( $atts = array() , $cached = TRUE )
 	{
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['preferred'] = NULL;
-			$defaultAttr['type'] = NULL;
-			$defaultAttr['format'] = '%label%: %title%';
-			$defaultAttr['label'] = NULL;
-			$defaultAttr['size'] = 'lg';
-			$defaultAttr['before'] = '';
-			$defaultAttr['after'] = '';
-			$defaultAttr['return'] = FALSE;
-			
-			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
-			$atts['id'] = $this->getId();
+		$defaults['preferred'] = NULL;
+		$defaults['type'] = NULL;
+		$defaults['format'] = '%label%: %title%';
+		$defaults['label'] = NULL;
+		$defaults['size'] = 'lg';
+		$defaults['before'] = '';
+		$defaults['after'] = '';
+		$defaults['return'] = FALSE;
+		
+		$defaults = apply_filters( 'cn_default_atts_link_block' , $defaults );
+		
+		$atts = $this->validate->attributesArray($defaults, $atts);
+		$atts['id'] = $this->getId();
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -1570,25 +1613,27 @@ class cnOutput extends cnEntry
 	 * @access public
 	 * @since 0.7.3
 	 * @version 1.0
-	 * @param (array) $suppliedAttr Accepted values as noted above.
+	 * @param (array) $atts Accepted values as noted above.
 	 * @param (bool) [optional] $cached Returns the cached data rather than querying the db.
 	 * @return string
 	 */
-	public function getDateBlock( $suppliedAttr = array() , $cached = TRUE )
+	public function getDateBlock( $atts = array() , $cached = TRUE )
 	{
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-			$defaultAttr['preferred'] = NULL;
-			$defaultAttr['type'] = NULL;
-			$defaultAttr['format'] = '%label%: %date%';
-			$defaultAttr['date_format'] = 'F jS Y';
-			$defaultAttr['before'] = '';
-			$defaultAttr['after'] = '';
-			$defaultAttr['return'] = FALSE;
-			
-			$atts = $this->validate->attributesArray($defaultAttr, $suppliedAttr);
-			$atts['id'] = $this->getId();
+		$defaults['preferred'] = NULL;
+		$defaults['type'] = NULL;
+		$defaults['format'] = '%label%: %date%';
+		$defaults['date_format'] = 'F jS Y';
+		$defaults['before'] = '';
+		$defaults['after'] = '';
+		$defaults['return'] = FALSE;
+		
+		$defaults = apply_filters( 'cn_default_atts_date_block' , $defaults );
+		
+		$atts = $this->validate->attributesArray($defaults, $atts);
+		$atts['id'] = $this->getId();
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
@@ -1675,7 +1720,7 @@ class cnOutput extends cnEntry
 	 * @param array
 	 * @return string
 	 */
-	public function getNotesBlock( $suppliedAttr = array() )
+	public function getNotesBlock( $atts = array() )
 	{
 		global $wp_embed;
 		$notes = $wp_embed->run_shortcode( $this->getNotes() );
@@ -1696,7 +1741,7 @@ class cnOutput extends cnEntry
 	 * @param array
 	 * @return string
 	 */
-	public function getBioBlock( $suppliedAttr = array() )
+	public function getBioBlock( $atts = array() )
 	{
 		global $wp_embed;
 		$bio = $wp_embed->run_shortcode( $this->getBio() );
@@ -1724,18 +1769,21 @@ class cnOutput extends cnEntry
 	 * @param array $atts [optional]
 	 * @return string
 	 */
-	public function getCategoryBlock($atts = NULL)
+	public function getCategoryBlock( $atts = array() )
 	{
-		$defaultAtts = array('list' => 'unordered',
-							 'separator' => NULL,
-							 'before' => NULL,
-							 'after' => NULL,
-							 'label' => 'Categories: ',
-							 'parents' => FALSE,
-							 'return' => FALSE
-							);
+		$defaults = array(
+			'list' => 'unordered',
+			'separator' => NULL,
+			'before' => NULL,
+			'after' => NULL,
+			'label' => 'Categories: ',
+			'parents' => FALSE,
+			'return' => FALSE
+		);
 		
-		$atts = $this->validate->attributesArray($defaultAtts, (array) $atts);
+		$defaults = apply_filters( 'cn_default_atts_category_block' , $defaults );
+		
+		$atts = $this->validate->attributesArray($defaults, $atts);
 		
 		$out = '';
 		$categories = $this->getCategory();
@@ -1885,13 +1933,14 @@ class cnOutput extends cnEntry
 		
 		$base = get_option('connections_permalink');
 		$name = $base['name_base'];
+		$homeID = $connections->settings->get('connections', 'connections_home_page', 'page_id'); // Get the directory home page ID.
 		$piece = array();
 		$id = FALSE;
 		$token = FALSE;
 		$iconSizes = array(16, 24, 32, 48);
 		$search = array('%text%' , '%icon%');
 		
-		// These are values will need to be added to the query string in order to download inlisted entries from the admin.
+		// These are values will need to be added to the query string in order to download unlisted entries from the admin.
 		if ( $this->getVisibility() === 'unlisted' )
 		{
 			$id = $this->getId();
@@ -1911,18 +1960,20 @@ class cnOutput extends cnEntry
 			'return' => FALSE
 		);
 		
-		$atts = wp_parse_args( $atts, $defaults );
+		$atts = wp_parse_args( $atts , $defaults );
 		
 		/*
 		 * Ensure the supplied size is valid, if not reset to the default value.
 		 */
 		( in_array($atts['size'], $iconSizes) ) ? $iconSize = $atts['size'] : $iconSize = 32;
 		
-		/*
-		 * If the directory is on a page use the page for the root of the directory,
-		 * if it is not, redirect to the designated directory home page.
-		 */
-		$directoryHome = is_page() ? get_permalink() : get_permalink( $connections->settings->get('connections', 'connections_home_page', 'page_id') );
+		// Create the permalink base based on context where the entry is being displayed.
+		if ( in_the_loop() && is_page() )
+		{
+			$permalink = trailingslashit ( get_permalink() );
+		} else {
+			$permalink = trailingslashit ( get_permalink($homeID) );
+		}
 		
 		if ( ! empty( $atts['class'] ) ) $piece[] = 'class="' . $atts['class'] .'"';
 		if ( ! empty( $atts['slug'] ) ) $piece[] = 'id="' . $atts['slug'] .'"';
@@ -1933,11 +1984,11 @@ class cnOutput extends cnEntry
 		if ( $wp_rewrite->using_permalinks() )
 		{
 			
-			$piece[] = 'href="' . add_query_arg( array( 'cn-id' => $id , 'cn-token' => $token ) , $directoryHome . $name . '/' .$this->getSlug() . '/vcard/' ) . '"';
+			$piece[] = 'href="' . add_query_arg( array( 'cn-id' => $id , 'cn-token' => $token ) , $permalink . $name . '/' .$this->getSlug() . '/vcard/' ) . '"';
 		}
 		else
 		{
-			$piece[] = 'href="' . add_query_arg( array( 'cn-entry-slug' => $this->getSlug() , 'cn-process' => 'vcard' , 'cn-id' => $id , 'cn-token' => $token ) , $directoryHome) . '"';
+			$piece[] = 'href="' . add_query_arg( array( 'cn-entry-slug' => $this->getSlug() , 'cn-process' => 'vcard' , 'cn-id' => $id , 'cn-token' => $token ) , $permalink ) . '"';
 		}
 		
 		$out = '<span class="vcard-block">';

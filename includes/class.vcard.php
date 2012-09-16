@@ -187,7 +187,7 @@ class cnvCard extends cnOutput
 		    . $this->data['other_country']."\r\n";
 		}
 		
-		if ( $this->data['latitude'] && $this->data['longitude'] )
+		if ( ( isset( $this->data['latitude'] ) && ! empty( $this->data['latitude'] ) ) && ( isset( $this->data['longitude'] ) && ! empty( $this->data['longitude'] ) ) )
 		{
 			$this->card .= "GEO:".$this->data['latitude'].";".$this->data['longitude']."\r\n";;
 		}

@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.2.7
+Version: 0.7.2.10
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 
@@ -217,7 +217,7 @@ if ( ! class_exists('connectionsLoad') )
 			
 			define('CN_LOG', FALSE);
 			
-			define('CN_CURRENT_VERSION', '0.7.2.9');
+			define('CN_CURRENT_VERSION', '0.7.2.10');
 			define('CN_DB_VERSION', '0.1.9');
 			
 			
@@ -1207,7 +1207,7 @@ if ( ! class_exists('connectionsLoad') )
 			$var[] = 'cn-process';		// various processes [ vcard || add || edit || moderate || delete ]
 			$var[] = 'cn-view';			// current view [ landing || list || detail ]
 			
-			// Query vars to support showing entries within a specified distance.
+			// Query vars to support showing entries within a specified radius.
 			$var[] = 'cn-near-coord';	// latitute and longitude
 			$var[] = 'cn-near-addr';	// address url encoded
 			$var[] = 'cn-radius';		// distance

@@ -160,6 +160,15 @@ class cnRetrieve
 			$atts['category_in'] = NULL;
 			$atts['wp_current_category'] = NULL;
 		}
+		
+		if ( ! empty( $atts['slug']) )
+		{
+			$atts['near_addr'] = NULL;
+			$atts['latitude'] = NULL;
+			$atts['longitude'] = NULL;
+			$atts['radius'] = 10;
+			$atts['unit'] = 'mi';
+		}
 		/*
 		 * // END -- Reset.
 		 */
@@ -792,6 +801,8 @@ class cnRetrieve
 		 * 
 		 * Reset the pagination filter for the current user, remove the offset from the query and re-run the
 		 * query if the offset for the query is greater than the record count with no limit set in the query.
+		 * 
+		 * @TODO This will have to be down for the front end too, how, I'll have to give it some though.
 		 */
 		if ( is_admin() && $atts['offset'] > $connections->resultCountNoLimit )
 		{
