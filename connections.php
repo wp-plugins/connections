@@ -213,44 +213,33 @@ if ( ! class_exists('connectionsLoad') )
 		
 		private function loadConstants()
 		{
-			global $wpdb;
+			global $wpdb, $blog_id;
 			
 			define('CN_LOG', FALSE);
 			
 			define('CN_CURRENT_VERSION', '0.7.2.9');
 			define('CN_DB_VERSION', '0.1.9');
-			define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
-			define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
 			
 			
 			/*
-			 * Enable for multi-site support.
+			 * Enable support for multi-site file locations.
 			 * 
-			 * The plugin path and url will like need changed to support multisite too.
+			 * @TODO The table prefixes will definitely need to be change to support the multisite db naming scheme
 			 * 
-			 * The table prefixes will definitely need to be change to support the multisite db naming scheme
-			 * 
-			 * NOTE: Per codex the constants shouldn't be used, which contradicts all the net tutorials. I'll have to look into this.
-			 * http://codex.wordpress.org/Determining_Plugin_and_Content_Directories#Available_Functions
-			 * 
-			 * There are functions. I wonder if they automatically resolve correctly for multisite.
+			 * NOTE: http://codex.wordpress.org/Determining_Plugin_and_Content_Directories#Available_Functions
 			 */
-			/*if( is_multisite() )
+			if( is_multisite() )
 			{
 				define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/blogs.dir/' . $blog_id . '/connection_images/');
 				define('CN_IMAGE_BASE_URL', network_site_url('/wp-content/blogs.dir/' . $blog_id . '/connection_images/'));
-			} else {
-				define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
-				define('CN_IMAGE_BASE_URL', WP_CONTENT_URL . '/connection_images/');
-			}
-			
-			if(is_multisite()){
 				define('CN_CUSTOM_TEMPLATE_PATH', WP_CONTENT_DIR . '/blogs.dir/' . $blog_id . '/connections_templates');
 				define('CN_CUSTOM_TEMPLATE_URL', network_site_url('/wp-content/blogs.dir/' . $blog_id . '/connections_templates/'));
 			} else {
+				define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
+				define('CN_IMAGE_BASE_URL', content_url() . '/connection_images/');
 				define('CN_CUSTOM_TEMPLATE_PATH', WP_CONTENT_DIR . '/connections_templates');
-				define('CN_CUSTOM_TEMPLATE_URL', WP_CONTENT_URL . '/connections_templates');
-			}*/
+				define('CN_CUSTOM_TEMPLATE_URL', content_url() . '/connections_templates');
+			}
 			
 			define('CN_ENTRY_TABLE', $wpdb->prefix . 'connections');
 			define('CN_ENTRY_ADDRESS_TABLE', $wpdb->prefix . 'connections_address');
@@ -268,15 +257,16 @@ if ( ! class_exists('connectionsLoad') )
 			
 			define('CN_DIR_NAME', plugin_basename( dirname(__FILE__) ) );
 			define('CN_BASE_NAME', plugin_basename( __FILE__ ) );
-			define('CN_PATH', WP_PLUGIN_DIR . '/' . CN_DIR_NAME);
-			define('CN_URL', WP_PLUGIN_URL . '/' . CN_DIR_NAME);
+			define('CN_PATH', plugin_dir_path( __FILE__ ) );
+			define('CN_URL', plugin_dir_url( __FILE__ ) );
+			//define('CN_IMAGE_PATH', WP_CONTENT_DIR . '/connection_images/');
+			//define('CN_IMAGE_BASE_URL', content_url() . '/connection_images/');
 			define('CN_TEMPLATE_PATH', CN_PATH . '/templates');
 			define('CN_TEMPLATE_URL', CN_URL . '/templates');
-			define('CN_CUSTOM_TEMPLATE_PATH', WP_CONTENT_DIR . '/connections_templates');
-			define('CN_CUSTOM_TEMPLATE_URL', WP_CONTENT_URL . '/connections_templates');
+			//define('CN_CUSTOM_TEMPLATE_PATH', WP_CONTENT_DIR . '/connections_templates');
+			//define('CN_CUSTOM_TEMPLATE_URL', content_url() . '/connections_templates');
 			define('CN_CACHE_PATH', CN_PATH . '/cache');
 			
-			define('CN_PLUGIN_URL', get_site_url() . '/wp-content/plugins/' . CN_DIR_NAME);
 		}
 		
 		private function loadDependencies()
@@ -286,42 +276,42 @@ if ( ! class_exists('connectionsLoad') )
 			 * needed in the admin and frontend
 			 */
 			//Current User objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.user.php'); // Required for activation
+			require_once(CN_PATH . '/includes/class.user.php'); // Required for activation
 			//Terms Objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.terms.php'); // Required for activation
+			require_once(CN_PATH . '/includes/class.terms.php'); // Required for activation
 			//Category Objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.category.php'); // Required for activation, entry list
+			require_once(CN_PATH . '/includes/class.category.php'); // Required for activation, entry list
 			//Retrieve objects from the db.
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.retrieve.php'); // Required for activation
+			require_once(CN_PATH . '/includes/class.retrieve.php'); // Required for activation
 			//HTML FORM objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.form.php'); // Required for activation
+			require_once(CN_PATH . '/includes/class.form.php'); // Required for activation
 			//date objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.date.php'); // Required for activation, entry list, add entry
+			require_once(CN_PATH . '/includes/class.date.php'); // Required for activation, entry list, add entry
 			//entry objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.entry.php'); // Required for activation, entry list
+			require_once(CN_PATH . '/includes/class.entry.php'); // Required for activation, entry list
 			//plugin option objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.options.php'); // Required for activation
+			require_once(CN_PATH . '/includes/class.options.php'); // Required for activation
 			//plugin utility objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.utility.php'); // Required for activation, entry list
+			require_once(CN_PATH . '/includes/class.utility.php'); // Required for activation, entry list
 			//plugin template objects
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.output.php'); // Required for activation, entry list
+			require_once(CN_PATH . '/includes/class.output.php'); // Required for activation, entry list
 			//builds vCard
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.vcard.php'); // Required for front end
+			require_once(CN_PATH . '/includes/class.vcard.php'); // Required for front end
 			
 			// geocoding
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.geo.php'); // Required
+			require_once(CN_PATH . '/includes/class.geo.php'); // Required
 			
 			//shortcodes
-			require_once(WP_PLUGIN_DIR . '/connections/includes/inc.shortcodes.php'); // Required for front end
+			require_once(CN_PATH . '/includes/inc.shortcodes.php'); // Required for front end
 			
 			//templates
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.template.php'); // Required for the front end template processing
+			require_once(CN_PATH . '/includes/class.template.php'); // Required for the front end template processing
 			
 			// Load the Connections Settings API Wrapper Class.
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.settings-api.php');
+			require_once(CN_PATH . '/includes/class.settings-api.php');
 			
 			// Load the Connections core settings admin page tabs, section and fields using the WordPress Settings API.
-			require_once(WP_PLUGIN_DIR . '/connections/includes/class.settings.php');
+			require_once(CN_PATH . '/includes/class.settings.php');
 				
 			if ( is_admin() )
 			{
@@ -345,11 +335,17 @@ if ( ! class_exists('connectionsLoad') )
 			$this->template = new cnTemplate();
 			$this->url = new cnURL();
 			
-			// This was moved from showPage()
+			// Init the options is this is a version change.
 			if  ( $this->options->getVersion() < CN_CURRENT_VERSION )
 			{
 				$this->initOptions(); // @TODO: a version change should not reset the roles and capabilites.
 				$this->options->setVersion(CN_CURRENT_VERSION);
+				
+				/*
+				 * This option is added for a check that will force a flush_rewrite() in connectionsLoad::adminInit() once.
+				 * Should save the user from having to update the permalink settings.
+				 */
+				update_option('connections_flush_rewrite', '1');
 			}
 		}
 		
@@ -1427,7 +1423,7 @@ if ( ! class_exists('connectionsLoad') )
 			}
 			
 			// Register the top level menu item.
-			$this->pageHook->topLevel = add_menu_page('Connections', 'Connections', 'connections_view_dashboard', 'connections_dashboard', array (&$this, 'showPage'), WP_PLUGIN_URL . '/connections/images/menu.png');
+			$this->pageHook->topLevel = add_menu_page('Connections', 'Connections', 'connections_view_dashboard', 'connections_dashboard', array (&$this, 'showPage'), CN_URL . '/images/menu.png');
 			
 			$submenu[0]   = array( 'hook' => 'dashboard', 'page_title' => 'Connections : ' . __('Dashboard', 'connections'), 'menu_title' => __('Dashboard', 'connections'), 'capability' => 'connections_view_dashboard', 'menu_slug' => 'connections_dashboard', 'function' => array (&$this, 'showPage') );
 			$submenu[20]  = array( 'hook' => 'manage', 'page_title' => 'Connections : ' . __('Manage', 'connections'), 'menu_title' => __('Manage', 'connections'), 'capability' => 'connections_manage', 'menu_slug' => 'connections_manage', 'function' => array (&$this, 'showPage') );
@@ -1523,23 +1519,23 @@ if ( ! class_exists('connectionsLoad') )
 			if ( $this->options->getGoogleMapsAPI() ) 
 			{
 				wp_register_script('cn-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, $this->options->getJavaScriptFooter() );
-				wp_register_script('jquery-gomap-min', WP_PLUGIN_URL . '/connections/js/jquery.gomap-1.3.2.min.js', array('jquery' , 'cn-google-maps-api' ), '1.3.2', $this->options->getJavaScriptFooter() );
-				wp_register_script('jquery-markerclusterer-min', WP_PLUGIN_URL . '/connections/js/jquery.markerclusterer-2.0.10.min.js', array('jquery' , 'cn-google-maps-api' , 'jquery-gomap-min' ), '2.0.10', $this->options->getJavaScriptFooter() );
+				wp_register_script('jquery-gomap-min', CN_URL . '/js/jquery.gomap-1.3.2.min.js', array('jquery' , 'cn-google-maps-api' ), '1.3.2', $this->options->getJavaScriptFooter() );
+				wp_register_script('jquery-markerclusterer-min', CN_URL . '/js/jquery.markerclusterer-2.0.10.min.js', array('jquery' , 'cn-google-maps-api' , 'jquery-gomap-min' ), '2.0.10', $this->options->getJavaScriptFooter() );
 			}
 			else
 			{
-				wp_register_script('jquery-gomap-min', WP_PLUGIN_URL . '/connections/js/jquery.gomap-1.3.2.min.js', array('jquery' ), '1.3.2', $this->options->getJavaScriptFooter() );
-				wp_register_script('jquery-markerclusterer-min', WP_PLUGIN_URL . '/connections/js/jquery.markerclusterer-2.0.10.min.js', array('jquery' , 'jquery-gomap-min' ), '2.0.10', $this->options->getJavaScriptFooter() );
+				wp_register_script('jquery-gomap-min', CN_URL . '/js/jquery.gomap-1.3.2.min.js', array('jquery' ), '1.3.2', $this->options->getJavaScriptFooter() );
+				wp_register_script('jquery-markerclusterer-min', CN_URL . '/js/jquery.markerclusterer-2.0.10.min.js', array('jquery' , 'jquery-gomap-min' ), '2.0.10', $this->options->getJavaScriptFooter() );
 			}
 			
-			wp_register_script('jquery-qtip', WP_PLUGIN_URL . '/connections/js/jquery.qtip.min.js', array('jquery'), 'nightly', $this->options->getJavaScriptFooter() );
-			wp_register_script('jquery-preloader', WP_PLUGIN_URL . '/connections/js/jquery.preloader.js', array('jquery'), '1.1', $this->options->getJavaScriptFooter() );
+			wp_register_script('jquery-qtip', CN_URL . '/js/jquery.qtip.min.js', array('jquery'), 'nightly', $this->options->getJavaScriptFooter() );
+			wp_register_script('jquery-preloader', CN_URL . '/js/jquery.preloader.js', array('jquery'), '1.1', $this->options->getJavaScriptFooter() );
 			
 			// Disble this for now, Elegant Theme uses the same registration name in the admin which causes errors.
-			//wp_register_script('jquery-spin', WP_PLUGIN_URL . '/connections/js/jquery.spin.js', array('jquery'), '1.2.5', $this->options->getJavaScriptFooter() );
+			//wp_register_script('jquery-spin', CN_URL . '/js/jquery.spin.js', array('jquery'), '1.2.5', $this->options->getJavaScriptFooter() );
 			
-			wp_register_script('jquery-chosen-min', WP_PLUGIN_URL . '/connections/js/jquery.chosen-0.9.8.min.js', array('jquery'), '0.9.8', $this->options->getJavaScriptFooter() );
-			wp_register_script('jquery-validate' , WP_PLUGIN_URL . '/connections/js/jquery.validate.min.js', array('jquery', 'jquery-form') , '1.9.0' , $this->options->getJavaScriptFooter() );
+			wp_register_script('jquery-chosen-min', CN_URL . '/js/jquery.chosen-0.9.8.min.js', array('jquery'), '0.9.8', $this->options->getJavaScriptFooter() );
+			wp_register_script('jquery-validate' , CN_URL . '/js/jquery.validate.min.js', array('jquery', 'jquery-form') , '1.9.0' , $this->options->getJavaScriptFooter() );
 		}
 		
 		/**
@@ -1554,7 +1550,7 @@ if ( ! class_exists('connectionsLoad') )
 			
 			if ( in_array($_GET['page'], $allPages) )
 			{
-				wp_enqueue_script('cn-ui-admin', WP_PLUGIN_URL . '/connections/js/cn-admin.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
+				wp_enqueue_script('cn-ui-admin', CN_URL . '/js/cn-admin.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
 				wp_enqueue_script('jquery-preloader');
 			}
 			
@@ -1604,7 +1600,7 @@ if ( ! class_exists('connectionsLoad') )
 				wp_enqueue_script('common');
 				wp_enqueue_script('wp-lists');
 				wp_enqueue_script('postbox');
-				wp_enqueue_script('cn-widget', WP_PLUGIN_URL . '/connections/js/widgets.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
+				wp_enqueue_script('cn-widget', CN_URL . '/js/widgets.js', array('jquery'), CN_CURRENT_VERSION, TRUE);
 			}
 		}
 		
@@ -1619,7 +1615,7 @@ if ( ! class_exists('connectionsLoad') )
 			 * http://scribu.net/wordpress/optimal-script-loading.html
 			 */
 			
-			wp_enqueue_script('cn-ui', WP_PLUGIN_URL . '/connections/js/cn-user.js', array('jquery','jquery-preloader'), CN_CURRENT_VERSION, $this->options->getJavaScriptFooter() );
+			wp_enqueue_script('cn-ui', CN_URL . '/js/cn-user.js', array('jquery','jquery-preloader'), CN_CURRENT_VERSION, $this->options->getJavaScriptFooter() );
 		}
 		
 		/**

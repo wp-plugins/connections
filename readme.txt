@@ -111,6 +111,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * BUG: Fixed an incorrectly named variable in cnEntry::getSocialMedia().
 * BUG: Remove the "Edit" and "Delete" actions from the default "Uncategorized" category to further prevent uses from trying to edit it.
 * BUG: cnRetrieve::entries, wrap the category_name option values in htmlspecialchars() so it'll find matches in the db. This is because the special charaters are stored in the db with entities encoded.
+* BUG: Make sure the correct folder path and URL are set in the CN_* constants for multi-site.
 * OTHER: Update Chosen CSS version query string.
 * OTHER: Added some additional CSS to keep theme's from breaking the default Connections layout.
 * OTHER: Improve search results.
@@ -145,6 +146,8 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * OTHER: cnOutput::getMapBlock, check to see if the width value is empty in the interactive map div before setting the CSS width.
 * OTHER: Add inline CSS to the socialmedia icons to help prevent themes and other plugins from interfering with the icon size.
 * OTHER: Add the CSS required for the "Return to top" anchor link to the cn-user.css file.
+* OTHER: Flush rewrite rules on plugin upgrade.
+* OTHER: Update all files to use the CN_* constants.
 
 = 0.7.2.7 04/23/12 =
 * OTHER: Started to internationalize.

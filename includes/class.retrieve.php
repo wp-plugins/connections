@@ -466,9 +466,24 @@ class cnRetrieve
 			}
 			else
 			{
+				//var_dump( $connections->options->getAllowPublic() ); die;
+				
+				// Display the 'public' entries if the user is not required to be logged in.
 				if ( $connections->options->getAllowPublic() ) $visibility[] = 'public';
-				if ( $atts['allow_public_override'] == TRUE && $connections->options->getAllowPublicOverride() ) $visibility[] = 'public';
-				if ( $atts['private_override'] == TRUE && $connections->options->getAllowPrivateOverride() ) $visibility[] = 'private';
+				
+				// Display the 'public' entries if the public override shortcode option is enabled.
+				if ( $connections->options->getAllowPublicOverride() )
+				{
+					if ( $atts['allow_public_override'] == TRUE) $visibility[] = 'public';
+				}
+				
+				// Display the 'public' & 'private' entries if the private override shortcode option is enabled.
+				if ( $connections->options->getAllowPrivateOverride() )
+				{
+					// If the user can view private entries then they should be able to view public entries too, so we'll add it. Just check to see if it is already set first.
+					if ( ! in_array('public', $visibility) && $atts['private_override'] == TRUE ) $visibility[] = 'public';
+					if ( $atts['private_override'] == TRUE ) $visibility[] = 'private';
+				}
 			}
 			
 			$where[] = 'AND ' . CN_ENTRY_TABLE . '.visibility IN (\'' . implode("', '", (array) $visibility) . '\')';

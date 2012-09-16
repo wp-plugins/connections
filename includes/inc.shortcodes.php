@@ -37,7 +37,11 @@ function connectionsView( $atts , $content = NULL )
 	$getAllowPrivateOverride = $connections->options->getAllowPrivateOverride();
 	var_dump($getAllowPrivateOverride);*/
 	
-	if ( ! $connections->options->getAllowPublic() && ! ( $connections->options->getAllowPublicOverride() || $connections->options->getAllowPrivateOverride() ) )
+	/*
+	 * Only show this message under the following condition:
+	 * - ( The user is not logged in AND the 'Login Required' is checked ) AND ( neither of the shortcode visibility overrides are enabled ).
+	 */
+	if ( ( ! is_user_logged_in() && ! $connections->options->getAllowPublic() ) && ! ( $connections->options->getAllowPublicOverride() || $connections->options->getAllowPrivateOverride() ) )
 	{
 		$out = '<p>' . $connections->settings->get('connections', 'connections_login', 'message') . '</p>';
 		return $out;
@@ -113,7 +117,7 @@ add_shortcode('connections', 'connectionsView');
  * @param string $content [optional]
  * @return string
  */
-add_shortcode('connections_list', 'connectionsList'); /** @deprecated since version 0.7.0.4 */
+add_shortcode('connections_list', 'connectionsView'); /** @deprecated since version 0.7.0.4 */
 function connectionsList($atts, $content = NULL)
 {
 	global $wpdb, $wp_filter, $current_user, $connections;
