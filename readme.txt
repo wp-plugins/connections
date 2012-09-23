@@ -100,7 +100,9 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * FEATURE: Added foursquare to the social networks.
 * FEATURE: Added VK to the social networks.
 * FEATURE: Added Odnoklassniki to the social networks.
+* FEATURE: Added Vimeo to the social networks.
 * FEATURE: Allow categories of the same name as long as they do not share the same parent.
+* FEATURE: Added a global 'CN_MULTISITE_ENABLED' to run Connections as a single site installation when installed on multi-site.
 * BUG: Use character entity codes for the page forward / page backward buttons.
 * BUG: Add the missing queries to enable FULLTEXT index for the default search fields.
 * BUG: Allow either http:// or https:// for both social media link and links.
@@ -112,6 +114,8 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * BUG: Remove the "Edit" and "Delete" actions from the default "Uncategorized" category to further prevent uses from trying to edit it.
 * BUG: cnRetrieve::entries, wrap the category_name option values in htmlspecialchars() so it'll find matches in the db. This is because the special charaters are stored in the db with entities encoded.
 * BUG: Make sure the correct folder path and URL are set in the CN_* constants for multi-site.
+* BUG: Make sure the table prefixes are preperly set in the CN_* constants for multi-site.
+* BUG: Fix markup bug for vevent in the anniversary and birthday output.
 * OTHER: Update Chosen CSS version query string.
 * OTHER: Added some additional CSS to keep theme's from breaking the default Connections layout.
 * OTHER: Improve search results.
@@ -149,6 +153,8 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * OTHER: Flush rewrite rules on plugin upgrade.
 * OTHER: Update all files to use the CN_* constants.
 * OTHER: Add an option to cnOutput::getNameBlock() turn the name into a permalink and set its target to either the direct link or to the detail page.
+* OTHER: Added filters for all the $atts variables in cnOutput.
+* OTHER: Add Connections and Database version to the Dashboard System widget.
 
 = 0.7.2.7 04/23/12 =
 * OTHER: Started to internationalize.

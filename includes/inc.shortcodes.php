@@ -551,6 +551,7 @@ function _upcoming_list($atts, $content=null) {
         . " - ( MID('$wpCurrentDate',5,6)"
         . " ".$includeToday." MID(DATE_ADD(FROM_UNIXTIME(`".$atts['list_type']."`), INTERVAL ".$connections->options->sqlTimeOffset." SECOND),5,6) )"
 		. $visibilityfilter;
+	//$out .= print_r($newSQL , TRUE);
 	
 	$results = $wpdb->get_results($newSQL);
 	//$out .= print_r($results , TRUE);

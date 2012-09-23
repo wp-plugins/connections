@@ -126,6 +126,9 @@ if ( ! class_exists('connectionsLoad') )
 			$this->loadDependencies();
 			$this->initDependencies();
 			
+			// Init the options if there is a version change just in case there were any changes.
+			if ( version_compare( $this->options->getVersion() , CN_CURRENT_VERSION ) < 0 ) $this->initOptions();
+			
 			// Activation/Deactivation hooks
 			register_activation_hook( dirname(__FILE__) . '/connections.php', array(&$this, 'activate') );
 			register_deactivation_hook( dirname(__FILE__) . '/connections.php', array(&$this, 'deactivate') );
@@ -152,10 +155,10 @@ if ( ! class_exists('connectionsLoad') )
 		
 		public function start()
 		{
+			//$this->options->setDBVersion('0.1.8'); $this->options->saveOptions();
+			
 			// Load the translation files.
 			load_plugin_textdomain( 'connections' , false , CN_DIR_NAME . '/lang' );
-			
-			//$this->options->setDBVersion('0.1.8');
 			
 			/*
 			 * Register the settings tabs shown on the Settings admin page tabs, sections and fields.
@@ -217,7 +220,7 @@ if ( ! class_exists('connectionsLoad') )
 			
 			define('CN_LOG', FALSE);
 			
-			define('CN_CURRENT_VERSION', '0.7.2.10');
+			define('CN_CURRENT_VERSION', '0.7.2.12');
 			define('CN_DB_VERSION', '0.1.9');
 			
 			
@@ -241,19 +244,44 @@ if ( ! class_exists('connectionsLoad') )
 				define('CN_CUSTOM_TEMPLATE_URL', content_url() . '/connections_templates');
 			}
 			
-			define('CN_ENTRY_TABLE', $wpdb->prefix . 'connections');
-			define('CN_ENTRY_ADDRESS_TABLE', $wpdb->prefix . 'connections_address');
-			define('CN_ENTRY_PHONE_TABLE', $wpdb->prefix . 'connections_phone');
-			define('CN_ENTRY_EMAIL_TABLE', $wpdb->prefix . 'connections_email');
-			define('CN_ENTRY_MESSENGER_TABLE', $wpdb->prefix . 'connections_messenger');
-			define('CN_ENTRY_SOCIAL_TABLE', $wpdb->prefix . 'connections_social');
-			define('CN_ENTRY_LINK_TABLE', $wpdb->prefix . 'connections_link');
-			define('CN_ENTRY_DATE_TABLE', $wpdb->prefix . 'connections_date');
+			/*
+			 * Goal: To run Connections on a multisite as single site mode.
+			 * Add to wp-config.php: define('CN_MULTISITE_ENABLED', TRUE);
+			 * 
+			 * @credit lancelot-du-lac
+			 * @url http://wordpress.org/support/topic/plugin-connections-support-multisite-in-single-mode
+			 */
+			if ( ! defined('CN_MULTISITE_ENABLED') ) define('CN_MULTISITE_ENABLED', FALSE);
+			$prefix = ( is_multisite() && CN_MULTISITE_ENABLED ) ? $wpdb->base_prefix : $wpdb->prefix;
 			
-			define('CN_ENTRY_TABLE_META', $wpdb->prefix . 'connections_meta');
-			define('CN_TERMS_TABLE', $wpdb->prefix . 'connections_terms');
-			define('CN_TERM_TAXONOMY_TABLE', $wpdb->prefix . 'connections_term_taxonomy');
-			define('CN_TERM_RELATIONSHIP_TABLE', $wpdb->prefix . 'connections_term_relationships');
+			define('CN_ENTRY_TABLE', $prefix . 'connections');
+			define('CN_ENTRY_ADDRESS_TABLE', $prefix . 'connections_address');
+			define('CN_ENTRY_PHONE_TABLE', $prefix . 'connections_phone');
+			define('CN_ENTRY_EMAIL_TABLE', $prefix . 'connections_email');
+			define('CN_ENTRY_MESSENGER_TABLE', $prefix . 'connections_messenger');
+			define('CN_ENTRY_SOCIAL_TABLE', $prefix . 'connections_social');
+			define('CN_ENTRY_LINK_TABLE', $prefix . 'connections_link');
+			define('CN_ENTRY_DATE_TABLE', $prefix . 'connections_date');
+			
+			define('CN_ENTRY_TABLE_META', $prefix . 'connections_meta');
+			define('CN_TERMS_TABLE', $prefix . 'connections_terms');
+			define('CN_TERM_TAXONOMY_TABLE', $prefix . 'connections_term_taxonomy');
+			define('CN_TERM_RELATIONSHIP_TABLE', $prefix . 'connections_term_relationships');
+			
+			
+			//define('CN_ENTRY_TABLE', $wpdb->prefix . 'connections');
+			//define('CN_ENTRY_ADDRESS_TABLE', $wpdb->prefix . 'connections_address');
+			//define('CN_ENTRY_PHONE_TABLE', $wpdb->prefix . 'connections_phone');
+			//define('CN_ENTRY_EMAIL_TABLE', $wpdb->prefix . 'connections_email');
+			//define('CN_ENTRY_MESSENGER_TABLE', $wpdb->prefix . 'connections_messenger');
+			//define('CN_ENTRY_SOCIAL_TABLE', $wpdb->prefix . 'connections_social');
+			//define('CN_ENTRY_LINK_TABLE', $wpdb->prefix . 'connections_link');
+			//define('CN_ENTRY_DATE_TABLE', $wpdb->prefix . 'connections_date');
+			
+			//define('CN_ENTRY_TABLE_META', $wpdb->prefix . 'connections_meta');
+			//define('CN_TERMS_TABLE', $wpdb->prefix . 'connections_terms');
+			//define('CN_TERM_TAXONOMY_TABLE', $wpdb->prefix . 'connections_term_taxonomy');
+			//define('CN_TERM_RELATIONSHIP_TABLE', $wpdb->prefix . 'connections_term_relationships');
 			
 			define('CN_DIR_NAME', plugin_basename( dirname(__FILE__) ) );
 			define('CN_BASE_NAME', plugin_basename( __FILE__ ) );
@@ -334,19 +362,6 @@ if ( ! class_exists('connectionsLoad') )
 			$this->term = new cnTerms();
 			$this->template = new cnTemplate();
 			$this->url = new cnURL();
-			
-			// Init the options is this is a version change.
-			if  ( $this->options->getVersion() < CN_CURRENT_VERSION )
-			{
-				$this->initOptions(); // @TODO: a version change should not reset the roles and capabilites.
-				$this->options->setVersion(CN_CURRENT_VERSION);
-				
-				/*
-				 * This option is added for a check that will force a flush_rewrite() in connectionsLoad::adminInit() once.
-				 * Should save the user from having to update the permalink settings.
-				 */
-				update_option('connections_flush_rewrite', '1');
-			}
 		}
 		
 		/**
@@ -436,15 +451,22 @@ if ( ! class_exists('connectionsLoad') )
 				
 			}
 			
-			if ($this->options->getDefaultTemplatesSet() === NULL) $this->options->setDefaultTemplates();
+			if ( $this->options->getDefaultTemplatesSet() === NULL ) $this->options->setDefaultTemplates();
 			
+			// @TODO: a version change should not reset the roles and capabilites.
 			$this->options->setDefaultCapabilities();
 			
-			if ( $this->options->getVersion() === NULL ) $this->options->setVersion(CN_CURRENT_VERSION);
-			if ( $this->options->getDBVersion() === NULL ) $this->options->setDBVersion(CN_DB_VERSION);
+			// Increment the version number.
+			$this->options->setVersion(CN_CURRENT_VERSION);
 			
-			// Save the default options
+			// Save the options
 			$this->options->saveOptions();
+			
+			/*
+			 * This option is added for a check that will force a flush_rewrite() in connectionsLoad::adminInit() once.
+			 * Should save the user from having to "save" the permalink settings.
+			 */
+			update_option('connections_flush_rewrite', '1');
 		}
 		
 		public function displayMessages()
@@ -1299,7 +1321,7 @@ if ( ! class_exists('connectionsLoad') )
 				);
 			
 			//Check if the db requires updating, display message if it does.
-			if ($this->options->getDBVersion() < CN_DB_VERSION) $this->dbUpgrade = add_action( 'admin_notices' , array( &$this , 'addDBUpgradeMessage' ) );
+			if ( version_compare( $this->options->getDBVersion() , CN_DB_VERSION ) < 0 ) $this->dbUpgrade = add_action( 'admin_notices' , array( &$this , 'addDBUpgradeMessage' ) );
 			
 			/*
 			 * Add admin notices if required directories are not present or not writeable.

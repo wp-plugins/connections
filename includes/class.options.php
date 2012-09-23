@@ -67,8 +67,8 @@ class cnOptions
 		
 		$this->options = get_option('connections_options');
 		
-		$this->version = $this->options['version'];
-		$this->dbVersion = $this->options['db_version'];
+		$this->version = ( isset( $this->options['version'] ) && ! empty( $this->options['version'] ) ) ? $this->options['version'] : CN_CURRENT_VERSION;
+		$this->dbVersion = ( isset( $this->options['db_version'] ) && ! empty( $this->options['db_version'] ) ) ? $this->options['db_version'] : CN_DB_VERSION;
 		
 		$this->defaultTemplatesSet = $this->options['settings']['template']['defaults_set'];
 		$this->activeTemplates = (array) $this->options['settings']['template']['active'];
@@ -350,14 +350,7 @@ class cnOptions
      */
     public function getVersion()
     {
-        if ( empty($this->version) )
-		{
-			return NULL;
-		}
-		else
-		{
-			return $this->version;
-		}
+        return $this->version;
     }
     
     /**
@@ -377,14 +370,7 @@ class cnOptions
      */
     public function getDBVersion()
     {
-        if ( empty($this->dbVersion) )
-		{
-			return NULL;
-		}
-		else
-		{
-			return $this->dbVersion;
-		}
+        return $this->dbVersion;
     }
     
     /**
@@ -408,7 +394,7 @@ class cnOptions
     {
         global $connections;
 		
-		return $connections->settings->get('connections', 'connections_image_medium', 'jpeg_quality');
+		return $connections->settings->get('connections', 'connections_image_medium', 'quality');
     }
     
     /**
@@ -522,7 +508,7 @@ class cnOptions
     {
         global $connections;
 		
-		return $connections->settings->get('connections', 'connections_image_large', 'jpeg_quality');
+		return $connections->settings->get('connections', 'connections_image_large', 'quality');
     }
     
     /**
@@ -636,7 +622,7 @@ class cnOptions
     {
         global $connections;
 		
-		return $connections->settings->get('connections', 'connections_image_thumbnail', 'jpeg_quality');
+		return $connections->settings->get('connections', 'connections_image_thumbnail', 'quality');
     }
     
     /**
@@ -750,7 +736,7 @@ class cnOptions
     {
         global $connections;
 		
-		return $connections->settings->get('connections', 'connections_image_logo', 'jpeg_quality');
+		return $connections->settings->get('connections', 'connections_image_logo', 'quality');
     }
     
     /**
@@ -1043,6 +1029,7 @@ class cnOptions
 			 'technorati' => 'Technorati',
 			 'tripadvisor' => 'TripAdvisor',
 			 'twitter' => 'Twitter',
+			 'vimeo' => 'vimeo',
 			 'vk' => 'VK',
 			 'youtube' => 'YouTube'
 			 

@@ -689,6 +689,13 @@ class cnFormObjects
 		else $xml = __('No', 'connections');
 			
 		?>
+			<h4><strong>Version Information</strong></h4>
+			
+			<ul class="settings">
+				<li>Connections: <?php echo $connections->options->getVersion() ?></li>
+				<li>Database: <?php echo $connections->options->getDBVersion() ?></li>
+			</ul>
+			
 			<h4><strong>Server Configuration</strong></h4>
 			
 			<ul class="settings">

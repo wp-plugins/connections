@@ -101,7 +101,7 @@ class cnOutput extends cnEntry
 			'return' => FALSE
 		);
 		
-		$defaults = apply_filters( 'cn_default_atts_image_block' , $defaults );
+		$defaults = apply_filters( 'cn_output_default_atts_image' , $defaults );
 		
 		$atts = $this->validate->attributesArray( $defaults , $atts );
 		if ( isset($atts['fallback']) && is_array($atts['fallback']) ) $atts['fallback'] = $this->validate->attributesArray( $defaults['fallback'] , $atts['fallback'] );
@@ -382,7 +382,7 @@ class cnOutput extends cnEntry
 			'return' => FALSE
 		);
 		
-		$defaults = apply_filters( 'cn_default_atts_name_block' , $defaults );
+		$defaults = apply_filters( 'cn_output_default_atts_name' , $defaults );
 		
 		$atts = $this->validate->attributesArray($defaults, $atts);
 		/*
@@ -552,7 +552,7 @@ class cnOutput extends cnEntry
 							  'return' => FALSE
 							);
 		
-		$defaults = apply_filters( 'cn_default_atts_title_block' , $defaults );
+		$defaults = apply_filters( 'cn_output_default_atts_title' , $defaults );
 		
 		$atts = $this->validate->attributesArray($defaults, $atts);
 		/*
@@ -603,7 +603,7 @@ class cnOutput extends cnEntry
 							  'return' => FALSE
 							);
 		
-		$defaults = apply_filters( 'cn_default_atts_orgunit_block' , $defaults );
+		$defaults = apply_filters( 'cn_output_default_atts_orgunit' , $defaults );
 		
 		$atts = $this->validate->attributesArray($defaults, $atts);
 		/*
@@ -678,7 +678,7 @@ class cnOutput extends cnEntry
 							  'return' => FALSE
 							);
 		
-		$defaults = apply_filters( 'cn_default_atts_contact_name_block' , $defaults );
+		$defaults = apply_filters( 'cn_output_default_atts_contact_name' , $defaults );
 		
 		$atts = $this->validate->attributesArray($defaults, $atts);
 		/*
@@ -759,7 +759,7 @@ class cnOutput extends cnEntry
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
 		
-		$defaults = apply_filters( 'cn_default_atts_address_block' , $defaults );
+		$defaults = apply_filters( 'cn_output_default_atts_address' , $defaults );
 		
 		$atts = $this->validate->attributesArray($defaults, $atts);
 		$atts['id'] = $this->getId();
@@ -863,7 +863,7 @@ class cnOutput extends cnEntry
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
 		
-		$defaults = apply_filters( 'cn_default_atts_contact_name_block' , $defaults );
+		$defaults = apply_filters( 'cn_output_default_atts_contact_name' , $defaults );
 		
 		$atts = $this->validate->attributesArray($defaults, $atts);
 		$atts['id'] = $this->getId();
@@ -977,7 +977,7 @@ class cnOutput extends cnEntry
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
 		
-		$defaults = apply_filters( 'cn_default_atts_phone_block' , $defaults );
+		$defaults = apply_filters( 'cn_output_default_atts_phone' , $defaults );
 		
 		$atts = $this->validate->attributesArray($defaults, $atts);
 		$atts['id'] = $this->getId();
@@ -1148,7 +1148,7 @@ class cnOutput extends cnEntry
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
 		
-		$defaults = apply_filters( 'cn_default_atts_email_block' , $defaults );
+		$defaults = apply_filters( 'cn_output_default_atts_email' , $defaults );
 		
 		$atts = $this->validate->attributesArray($defaults, $atts);
 		$atts['id'] = $this->getId();
@@ -1243,7 +1243,7 @@ class cnOutput extends cnEntry
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
 		
-		$defaults = apply_filters( 'cn_default_atts_im_block' , $defaults );
+		$defaults = apply_filters( 'cn_output_default_atts_im' , $defaults );
 		
 		$atts = $this->validate->attributesArray($defaults, $atts);
 		$atts['id'] = $this->getId();
@@ -1372,7 +1372,7 @@ class cnOutput extends cnEntry
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
 		
-		$defaults = apply_filters( 'cn_default_atts_socialmedia_block' , $defaults );
+		$defaults = apply_filters( 'cn_output_default_atts_socialmedia' , $defaults );
 		
 		$atts = $this->validate->attributesArray($defaults, $atts);
 		$atts['id'] = $this->getId();
@@ -1484,7 +1484,7 @@ class cnOutput extends cnEntry
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
 		
-		$defaults = apply_filters( 'cn_default_atts_link_block' , $defaults );
+		$defaults = apply_filters( 'cn_output_default_atts_link' , $defaults );
 		
 		$atts = $this->validate->attributesArray($defaults, $atts);
 		$atts['id'] = $this->getId();
@@ -1613,7 +1613,7 @@ class cnOutput extends cnEntry
 	 * @access public
 	 * @since 0.7.3
 	 * @version 1.0
-	 * @param (array) $atts Accepted values as noted above.
+	 * @param (array) [optional] $atts Accepted values as noted above.
 	 * @param (bool) [optional] $cached Returns the cached data rather than querying the db.
 	 * @return string
 	 */
@@ -1630,7 +1630,7 @@ class cnOutput extends cnEntry
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
 		
-		$defaults = apply_filters( 'cn_default_atts_date_block' , $defaults );
+		$defaults = apply_filters( 'cn_output_default_atts_date' , $defaults );
 		
 		$atts = $this->validate->attributesArray($defaults, $atts);
 		$atts['id'] = $this->getId();
@@ -1654,8 +1654,8 @@ class cnOutput extends cnEntry
 			$out .= "\n" . '<span class="vevent">';
 				
 				// Hidden elements are to maintain hCalendar spec compatibility
-				( empty($date->name) ) ? $replace[] = '<span class="summary" style="display: none;">' . $date->name . '</span>' : $replace[] = '<span class="summary">' . $date->name . '</span>';
-				( empty($date->date) ) ? $replace[] = '<span class="dtstart" style="display: none;"><span class="value">' . $dateObject->format( 'Y-m-d' ) . '</span></span>' : $replace[] = '<span class="dtstart"><span class="value" style="display: none;">' . $dateObject->format( 'Y-m-d' ) . '</span><span class="date-displayed">' . $dateObject->format( $atts['date_format'] ) . '</span></span>';
+				$replace[] = ( empty($date->name) ) ? '<span class="summary" style="display: none;">' . $date->name . '</span>' : '<span class="summary">' . $date->name . '</span>';
+				$replace[] = ( empty($date->date) ) ? '<span class="dtstart" style="display: none;"><span class="value">' . $dateObject->format( 'Y-m-d' ) . '</span></span>' : '<span class="dtstart"><span class="value" style="display: none;">' . $dateObject->format( 'Y-m-d' ) . '</span><span class="date-displayed">' . $dateObject->format( $atts['date_format'] ) . '</span></span>';
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );
 				
@@ -1670,41 +1670,112 @@ class cnOutput extends cnEntry
 	
 	/**
 	 * @access public
-	 * @since unknown
-	 * @version 1.0
-	 * @param string $format [optional]
+	 * @since 0.7.3
+	 * @version 2.0
+	 * @param string [optional] $format deprecated since 0.7.3
+	 * @param (array) [optional] $atts
 	 * @return string
 	 */
-	public function getBirthdayBlock( $format = 'F jS' )
+	public function getBirthdayBlock( $format = NULL, $atts = array() )
 	{
-		//NOTE: The vevent span is for hCalendar compatibility.
-		//NOTE: The second birthday span [hidden] is for hCard compatibility.
-		//NOTE: The third span series [hidden] is for hCalendar compatibility.
-		if ($this->getBirthday()) $out = "\n" . '<div class="vevent"><span class="birthday"><strong>Birthday:</strong> <abbr class="dtstart" title="' . $this->getBirthday('Ymd') .'">' . $this->getBirthday($format) . '</abbr></div>' .
-										 '<span class="bday" style="display:none">' . $this->getBirthday('Y-m-d') . '</span>' .
-										 '<span class="summary" style="display:none">Birthday - ' . $this->getFullFirstLastName() . '</span> <span class="uid" style="display:none">' . $this->getBirthday('YmdHis') . '</span> </span>' . "\n";
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+		$defaults['format'] = '%label%: %date%';
+		$defaults['name_format'] = '%prefix% %first% %middle% %last% %suffix%';
 		
-		if ( !isset($out) || empty($out) ) $out = '';
+		// The $format option has been deprecated since 0.7.3. If it has been supplied override the $defaults['date_format] value.
+		$defaults['date_format'] = empty($format) ? 'F jS' : $format;
 		
-		return $out;
+		$defaults['before'] = '';
+		$defaults['after'] = '';
+		$defaults['return'] = FALSE;
+				
+		$atts = $this->validate->attributesArray($defaults, $atts);
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		$out = '';
+		$search = array('%label%' , '%date%');
+		$replace = array();
+		
+		if ( ! $this->getBirthday() ) return '';
+		
+		/*
+		 * NOTE: The vevent span is for hCalendar compatibility.
+		 * NOTE: The second birthday span [hidden] is for hCard compatibility.
+		 * NOTE: The third span series [hidden] is for hCalendar compatibility.
+		 */
+		$out .= '<div class="vevent"><span class="birthday">';
+			
+			$replace[] = '<span class="date-name">' . __('Birthday', 'connections') . '</span>';
+			$replace[] = '<abbr class="dtstart" title="' . $this->getBirthday('Ymd') .'">' . $this->getBirthday( $atts['date_format'] ) . '</abbr>';
+		
+			$out .= str_ireplace( $search , $replace , $atts['format'] );
+			
+			$out .= '<span class="bday" style="display:none">' . $this->getBirthday('Y-m-d') . '</span>';
+			$out .= '<span class="summary" style="display:none">' . __('Birthday', 'connections') . ' - ' . $this->getName( array( 'format' => $atts['name_format'] ) ) . '</span><span class="uid" style="display:none">' . $this->getBirthday('YmdHis') . '</span></span>';
+		
+		$out .= '</div>';
+		
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
 	/**
 	 * @access public
-	 * @since unknown
-	 * @version 1.0
-	 * @param string $format [optional]
+	 * @since 0.7.3
+	 * @version 2.0
+	 * @param string [optional] $format deprecated since 0.7.3
+	 * @param (array) [optional] $atts
 	 * @return string
 	 */
-	public function getAnniversaryBlock( $format = 'F jS' )
+	public function getAnniversaryBlock( $format = NULL, $atts = array() )
 	{
-		//NOTE: The vevent span is for hCalendar compatibility.
-		if ($this->getAnniversary()) $out = "\n" . '<div class="vevent"><span class="anniversary"><strong>Anniversary:</strong> <abbr class="dtstart" title="' . $this->getAnniversary('Ymd') . '">' . $this->getAnniversary($format) . '</abbr></div>' .
-											'<span class="summary" style="display:none">Anniversary - ' . $this->getFullFirstLastName() . '</span> <span class="uid" style="display:none">' . $this->getAnniversary('YmdHis') . '</span> </span>' . "\n";
+		/*
+		 * // START -- Set the default attributes array. \\
+		 */
+		$defaults['format'] = '%label%: %date%';
+		$defaults['name_format'] = '%prefix% %first% %middle% %last% %suffix%';
 		
-		if ( !isset($out) || empty($out) ) $out = '';
+		// The $format option has been deprecated since 0.7.3. If it has been supplied override the $defaults['date_format] value.
+		$defaults['date_format'] = empty($format) ? 'F jS' : $format;
 		
-		return $out;
+		$defaults['before'] = '';
+		$defaults['after'] = '';
+		$defaults['return'] = FALSE;
+				
+		$atts = $this->validate->attributesArray($defaults, $atts);
+		/*
+		 * // END -- Set the default attributes array if not supplied. \\
+		 */
+		
+		$out = '';
+		$search = array('%label%' , '%date%');
+		$replace = array();
+		
+		if ( ! $this->getAnniversary() ) return '';
+		
+		/*
+		 * NOTE: The vevent span is for hCalendar compatibility.
+		 * NOTE: The second birthday span [hidden] is for hCard compatibility.
+		 * NOTE: The third span series [hidden] is for hCalendar compatibility.
+		 */
+		$out .= '<div class="vevent"><span class="birthday">';
+			
+			$replace[] = '<span class="date-name">' . __('Anniversary', 'connections') . '</span>';
+			$replace[] = '<abbr class="dtstart" title="' . $this->getAnniversary('Ymd') .'">' . $this->getAnniversary( $atts['date_format'] ) . '</abbr>';
+		
+			$out .= str_ireplace( $search , $replace , $atts['format'] );
+			
+			$out .= '<span class="bday" style="display:none">' . $this->getAnniversary('Y-m-d') . '</span>';
+			$out .= '<span class="summary" style="display:none">' . __('Anniversary', 'connections') . ' - ' . $this->getName( array( 'format' => $atts['name_format'] ) ) . '</span><span class="uid" style="display:none">' . $this->getAnniversary('YmdHis') . '</span></span>';
+		
+		$out .= '</div>';
+		
+		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
+		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 	}
 	
 	/**
@@ -1781,7 +1852,7 @@ class cnOutput extends cnEntry
 			'return' => FALSE
 		);
 		
-		$defaults = apply_filters( 'cn_default_atts_category_block' , $defaults );
+		$defaults = apply_filters( 'cn_output_default_atts_category' , $defaults );
 		
 		$atts = $this->validate->attributesArray($defaults, $atts);
 		

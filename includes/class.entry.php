@@ -783,7 +783,8 @@ class cnEntry
 	 *  cn_addresses => (array) All addresses before it is returned.
 	 * 
 	 * @access public
-	 * @since unknown
+	 * @since 0.7.3
+	 * @version 1.0
 	 * @param array $suppliedAttr Accepted values as noted above.
 	 * @param bool $cached Returns the cached address data rather than querying the db.
 	 * @return array
@@ -994,8 +995,10 @@ class cnEntry
 	 * $addresses['visibility'] (string) Stores the address visibility.
      * 
      * @access public
-     * @since unknown
+	 * @since 0.7.3
+	 * @version 1.0
      * @param array $addresses
+     * @return void
      */
     public function setAddresses($addresses)
     {
@@ -1110,8 +1113,9 @@ class cnEntry
 	 *  cn_phone_number => (object) Individual phone number as it is processed thru the loop.
 	 *  cn_phone_numbers => (array) All phone numbers before it is returned.
 	 *  
-	 * @access
-	 * @since unknown
+	 * @access public
+	 * @since 0.7.3
+	 * @version 1.0
 	 * @param array $suppliedAttr Accepted values as noted above.
 	 * @param bool $cached Returns the cached phone numbers data rather than querying the db.
 	 * @return array
@@ -1284,7 +1288,11 @@ class cnEntry
 	 * $phoneNumber['number'] (string) Stores phone number.
 	 * $phoneNumber['visibility'] (string) Stores the phone number visibility.
      * 
+     * @access public
+	 * @since 0.7.3
+	 * @version 1.0
      * @param array $phoneNumbers
+     * @return void
      */
     public function setPhoneNumbers($phoneNumbers)
     {
@@ -1386,6 +1394,9 @@ class cnEntry
 	 *  cn_email_address => (object) Individual email address as it is processed thru the loop.
 	 *  cn_email_addresses => (array) All phone numbers before it is returned.
 	 * 
+	 * @access public
+	 * @since 0.7.3
+	 * @version 1.0
 	 * @param array $suppliedAttr Accepted values as noted above.
 	 * @param bool $cached Returns the cached email addresses data rather than querying the db.
 	 * @return array
@@ -1522,7 +1533,11 @@ class cnEntry
      * 
      * @TODO: Validate as valid email address.
      * 
+     * @access public
+	 * @since 0.7.3
+	 * @version 1.0
      * @param array $emailAddresses
+     * @return void
      */
 	public function setEmailAddresses($emailAddresses)
     {
@@ -1627,6 +1642,9 @@ class cnEntry
 	 *  cn_messenger_id => (object) Individual email address as it is processed thru the loop.
 	 *  cn_messenger_ids => (array) All phone numbers before it is returned.
 	 * 
+	 * @access public
+	 * @since 0.7.3
+	 * @version 1.0
 	 * @param array $suppliedAttr Accepted values as noted above.
 	 * @param bool $cached Returns the cached email addresses data rather than querying the db.
 	 * @return array
@@ -1799,8 +1817,11 @@ class cnEntry
 	 * $network['id'] (string) Stores network URL.
 	 * $network['visibility'] (string) Stores the network visibility.
      * 
-     * 
+     * @access public
+	 * @since 0.7.3
+	 * @version 1.0
      * @param array $im
+     * @return void
      */
    public function setIm($im)
     {
@@ -1915,6 +1936,9 @@ class cnEntry
 	 *  cn_social_network => (object) Individual email address as it is processed thru the loop.
 	 *  cn_social_networks => (array) All phone numbers before it is returned.
 	 * 
+	 * @access public
+	 * @since 0.7.3
+	 * @version 1.0
 	 * @param array $suppliedAttr Accepted values as noted above.
 	 * @param bool $cached Returns the cached social medial URLs data rather than querying the db.
 	 * @return array
@@ -2048,7 +2072,11 @@ class cnEntry
      * 
      * @TODO: Validate as valid url.
      * 
+     * @access public
+	 * @since 0.7.3
+	 * @version 1.0
      * @param array $socialNetworks
+     * @return void
      */
 	public function setSocialMedia( $socialNetworks )
 	{
@@ -2157,6 +2185,9 @@ class cnEntry
 	 *  cn_link => (object) Individual email address as it is processed thru the loop.
 	 *  cn_links => (array) All phone numbers before it is returned.
 	 * 
+	 * @access public
+	 * @since 0.7.3
+	 * @version 1.0
 	 * @param array $suppliedAttr Accepted values as noted above.
 	 * @param bool $cached Returns the cached link data rather than querying the db.
 	 * @return array
@@ -2396,7 +2427,11 @@ class cnEntry
      * 
      * @TODO: Validate as valid web addresses.
      * 
-     * @param array $socialNetworks
+     * @access public
+	 * @since 0.7.3
+	 * @version 1.0
+     * @param array $links
+     * @return void
      */
     public function setLinks( $links )
     {
@@ -2546,12 +2581,13 @@ class cnEntry
 	 * 	cn_date_cached => (bool) Define if the returned dates should be from the object cache or queried from the db.
 	 *  cn_date => (object) Individual date as it is processed thru the loop.
 	 *  cn_dates => (array) All dates before they are returned.
-	 *  
+	 * 
+	 * @access public
+	 * @since 0.7.3
+	 * @version 1.0
 	 * @param array $suppliedAttr Accepted values as noted above.
 	 * @param bool $cached Returns the cached date data rather than querying the db.
 	 * @return array
-	 * 
-	 * @since 0.7.3.0
 	 */
     public function getDates( $suppliedAttr = array(), $cached = TRUE )
     {
@@ -2735,9 +2771,11 @@ class cnEntry
 	 * $date['date'] (string) Stores date.
 	 * $date['visibility'] (string) Stores the date visibility.
      * 
+     * @access public
+	 * @since 0.7.3
+	 * @version 1.0
      * @param array $dates
-     * 
-     * @since 0.7.3.0
+     * @return void
      */
     public function setDates($dates)
     {
@@ -2874,71 +2912,32 @@ class cnEntry
 		( ! empty($dates) ) ? $this->dates = serialize($dates) : $this->dates = NULL;
     }
 	
-    /**
-     * Anniversary as unix time. Format can be sent as string.
-     * @return string
-     * @param string $format[optional]
-     */
-	public function getAnniversary( $format = 'F jS' )
+    public function getAnniversary( $format = 'F jS' )
     {
-        if ($this->anniversary)
-		{
-			global $connections;
-			
-			if ( gmmktime(23, 59, 59, gmdate('m', $this->anniversary), gmdate('d', $this->anniversary), gmdate('Y', $connections->options->wpCurrentTime) ) < $connections->options->wpCurrentTime )
-			{
-				$nextADay = gmmktime(0, 0, 0, gmdate('m', $this->anniversary), gmdate('d', $this->anniversary), gmdate('Y', $connections->options->wpCurrentTime) + 1 );
-			}
-			else
-			{
-				$nextADay = gmmktime(0, 0, 0, gmdate('m', $this->anniversary), gmdate('d', $this->anniversary), gmdate('Y', $connections->options->wpCurrentTime) );
-			}
-			
-			return gmdate($format, $nextADay);
+        if ( ! empty( $this->anniversary ) )
+		{		
+			return $this->getUpcoming('anniversary', $format );
+		} else {
+			return '';
 		}
-
     }
     
-    /**
-     * Sets $anniversary.
-     * @param object $anniversary
-     * @see entry::$anniversary
-     */
     public function setAnniversary($day, $month)
     {
         //Create the anniversary with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
 		( !empty($day) && !empty($month) ) ? $this->anniversary = gmmktime(0, 0, 1, $month, $day, 1970) : $this->anniversary = NULL;
     }
     
-    /**
-     * Birthday as unix time. Format can be sent as string.
-     * @return string
-     * @param string $format[optional]
-     */
     public function getBirthday( $format = 'F jS' )
     {
-        if ($this->birthday)
+        if ( ! empty( $this->birthday ) )
 		{		
-			global $connections;
-			
-			if ( gmmktime(23, 59, 59, gmdate('m', $this->birthday), gmdate('d', $this->birthday), gmdate('Y', $connections->options->wpCurrentTime) ) < $connections->options->wpCurrentTime )
-			{
-				$nextBDay = gmmktime(0, 0, 0, gmdate('m', $this->birthday), gmdate('d', $this->birthday), gmdate('Y', $connections->options->wpCurrentTime) + 1 );
-			}
-			else
-			{
-				$nextBDay = gmmktime(0, 0, 0, gmdate('m', $this->birthday), gmdate('d', $this->birthday), gmdate('Y', $connections->options->wpCurrentTime) );
-			}
-			
-			return gmdate($format, $nextBDay);
+			return $this->getUpcoming('birthday', $format );
+		} else {
+			return '';
 		}
     }
     
-    /**
-     * Sets $birthday.
-     * @param object $birthday
-     * @see entry::$birthday
-     */
     public function setBirthday($day, $month)
     {
         //Create the birthday with a default year and time since we don't collect the year. And this is needed so a proper sort can be done when listing them.
@@ -2947,9 +2946,9 @@ class cnEntry
 	
 	public function getUpcoming($type, $format = 'F jS')
     {
-		if ( empty($this->$type) ) return '';
-		
 		global $connections;
+		
+		if ( empty($this->$type) ) return '';
 			
 		if ( gmmktime(23, 59, 59, gmdate('m', $this->$type), gmdate('d', $this->$type), gmdate('Y', $connections->options->wpCurrentTime) ) < $connections->options->wpCurrentTime )
 		{
@@ -2963,40 +2962,22 @@ class cnEntry
 		return gmdate($format, $nextUDay);
     }
 	
-    /**
-     * Returns $bio.
-     * @see entry::$bio
-     */
     public function getBio()
     {
 		return $this->format->sanitizeString($this->bio, TRUE);
     }
     
-    /**
-     * Sets $bio.
-     * @param object $bio
-     * @see entry::$bio
-     */
     public function setBio($bio)
     {
         $this->bio = $bio;
     }
     
-    /**
-     * Returns $notes.
-     * @see entry::$notes
-     */
     public function getNotes()
     {
         //return $this->notes;
 		return $this->format->sanitizeString($this->notes, TRUE);
     }
     
-    /**
-     * Sets $notes.
-     * @param object $notes
-     * @see entry::$notes
-     */
     public function setNotes($notes)
     {
         $this->notes = $notes;

@@ -1,21 +1,21 @@
 /*
  * Common
  */
-div#cn-list div.cn-list-head { position: relative; }
-div#cn-list div.cn-list-section-head { position: relative; }
-div#cn-list div.cn-list-section-head h4 { font-size: 16px; padding: 0; margin-bottom: .8em; }
-div#cn-list div.cn-alphaindex { font-weight: bold; font-size: 14px; position: relative; bottom: 0; right: 0; }
-div#cn-list label { cursor: pointer; }
+#cn-list div.cn-list-head { position: relative; }
+#cn-list div.cn-list-section-head { position: relative; }
+#cn-list div.cn-list-section-head h4 { font-size: 16px; padding: 0; margin-bottom: .8em; }
+#cn-list div.cn-alphaindex { font-weight: bold; font-size: 14px; position: relative; bottom: 0; right: 0; }
+#cn-list label { cursor: pointer; }
 
 /*
  * Image / Logo Styles
  */
-div#cn-list span.cn-image {
+#cn-list span.cn-image {
 	background:url("../images/loading.gif") transparent no-repeat 50% 50%;
 	display: block;
 	position: relative;
 }
-div#cn-list span.cn-image img {
+#cn-list span.cn-image img {
 	border: none !important;
 	height: auto;
 	left: 0 !important;
@@ -28,7 +28,7 @@ div#cn-list span.cn-image img {
 	visibility: hidden;
 	width: auto !important;
 }
-div#cn-list span.cn-image-style {
+#cn-list span.cn-image-style {
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
@@ -41,69 +41,71 @@ div#cn-list span.cn-image-style {
 /*
  * Name and Org Styles
  */
-div#cn-list span.fn { display: block; }
-div#cn-list span.org { display: block; }
-div#cn-list span.organization-name { display: block; }
-div#cn-list span.organization-unit { display: block; }
-div#cn-list span.title { display: block; }
-div#cn-list span.contact-name { display: block; }
-div#cn-list span.contact-label { font-weight: bold; }
+#cn-list span.fn { display: block; }
+#cn-list span.org { display: block; }
+#cn-list span.organization-name { display: block; }
+#cn-list span.organization-unit { display: block; }
+#cn-list span.title { display: block; }
+#cn-list span.contact-name { display: block; }
+#cn-list span.contact-label { font-weight: bold; }
 
 /*
  * Address Styles
  */
-div#cn-list span.adr { display: block; margin-bottom: 10px; }
-div#cn-list span.adr span.address-name { display: block; font-weight: bold; }
-div#cn-list span.adr span.street-address { display: block; }
-div#cn-list span.adr span.extended-address { display: block; }
-div#cn-list span.adr span.country-name { display: block; }
-div#cn-list span.adr span.geo, div#cn-list span.adr span.geo span.latitude,div#cn-list span.adr span.geo span.longitude { display: block; }
+#cn-list span.adr { display: block; margin-bottom: 10px; }
+#cn-list span.adr span.address-name { display: block; font-weight: bold; }
+#cn-list span.adr span.street-address { display: block; }
+#cn-list span.adr span.extended-address { display: block; }
+#cn-list span.adr span.country-name { display: block; }
+#cn-list span.adr span.geo, div#cn-list span.adr span.geo span.latitude,div#cn-list span.adr span.geo span.longitude { display: block; }
 
 /*
  * Phone Styles
  */
-div#cn-list span.phone-number-block { display: block; margin-bottom: 10px; }
-div#cn-list span.tel { display: block; }
-div#cn-list span.tel span.phone-name { font-weight: bold; }
+#cn-list span.phone-number-block { display: block; margin-bottom: 10px; }
+#cn-list span.tel { display: block; }
+#cn-list span.tel span.phone-name { font-weight: bold; }
 
 /*
  * Email Styles
  */
-div#cn-list span.email-address-block { display: block; margin-bottom: 10px; }
-div#cn-list span.email { background-image: none; display: block; float: none; margin: 0; }
-div#cn-list span.email span.email-name { font-weight: bold; }
+#cn-list span.email-address-block { display: block; margin-bottom: 10px; }
+#cn-list span.email { background-image: none; display: block; float: none; margin: 0; }
+#cn-list span.email span.email-name { font-weight: bold; }
 
 /*
  * IM Styles
  */
-div#cn-list span.im-network-block { display: block; margin-bottom: 10px; }
-div#cn-list span.im-network { display: block; }
-div#cn-list span.im-network span.im-name { font-weight: bold; }
+#cn-list span.im-network-block { display: block; margin-bottom: 10px; }
+#cn-list span.im-network { display: block; }
+#cn-list span.im-network span.im-name { font-weight: bold; }
 
 /*
  * Social Media Network Styles
  */
-div#cn-list span.social-media-block { display: block; margin-bottom: 10px; }
-div#cn-list span.social-media-block a { margin: 0; padding: 0; }
-div#cn-list span.social-media-block img { margin: 0; padding: 0; max-height: none; max-width: none; width: auto; }
-div#cn-list span.social-media-network { display: inline-block; margin: 0 1px; }
+#cn-list span.social-media-block { display: block; margin-bottom: 10px; }
+#cn-list span.social-media-block a { margin: 0; padding: 0; }
+#cn-list span.social-media-block img { margin: 0; padding: 0; max-height: none; max-width: none; width: auto; }
+#cn-list span.social-media-network { display: inline-block; margin: 0 1px; }
 
 /*
  * Link Styles
  */
-div#cn-list span.link-block { display: block; margin-bottom: 10px; }
-div#cn-list span.link { display: block; }
-div#cn-list span.link span.link-name { font-weight: bold; }
+#cn-list span.link-block { display: block; margin-bottom: 10px; }
+#cn-list span.link { display: block; }
+#cn-list span.link span.link-name { font-weight: bold; }
 
 /*
  * Anniversary/Birthday vEvent Styles
  */
-div#cn-list div.vevent abbr{ border: 0; cursor: default; text-transform: none; letter-spacing: normal; }
+#cn-list div.vevent abbr{ border: 0; cursor: default; text-transform: none; letter-spacing: normal; }
+.vevent abbr{ border: 0; cursor: default; text-transform: none; letter-spacing: normal; }
+span.date-name { font-weight: bold; }
 
 /*
  * Bio/Notes Styles
  */
-div#cn-list div.bio, div#cn-list div.note { text-align: left; }
+#cn-list div.bio, div#cn-list div.note { text-align: left; }
 
 
 /*

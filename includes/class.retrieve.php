@@ -824,6 +824,136 @@ class cnRetrieve
 		return $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . CN_ENTRY_TABLE . ' WHERE id="%d"' , $id ) );
 	}
 	
+	public function upcoming( $atts = array() )
+	{
+		global $wpdb, $connections;
+		
+		$validate = new cnValidate();
+		$where = array();
+		$results = array();
+		
+		$permittedUpcomingTypes = array('anniversary', 'birthday');
+		
+		$defaults = array(
+			'type' => 'birthday',
+			'days' => '30',
+			'today' => TRUE,
+			'visibility' => array(),
+			'allow_public_override' => FALSE,
+			'private_override' => FALSE
+		); 
+		
+		$atts = $validate->attributesArray($defaults, $atts);
+		
+		// Ensure that the upcoming type is one of the supported types. If not, reset to the default.
+		$atts['type'] = in_array($atts['type'], $permittedUpcomingTypes) ? $atts['type'] : 'birthday';
+		
+		
+		// Show only public or private [if permitted] entries.
+		/*if ( is_user_logged_in() || $atts['private_override'] != FALSE ) { 
+			$visibilityfilter = " AND (visibility='private' OR visibility='public') AND (".$atts['list_type']." != '')";
+		} else {
+			$visibilityfilter = " AND (visibility='public') AND (`".$atts['list_type']."` != '')";
+		}*/
+		
+		
+		/*
+		 * // START --> Set up the query to only return the entries based on user permissions.
+		 */
+			if ( is_user_logged_in() )
+			{
+				if ( ! isset( $atts['visibility'] ) || empty( $atts['visibility'] ) )
+				{
+					if ( current_user_can('connections_view_public') ) $visibility[] = 'public';
+					if ( current_user_can('connections_view_private') ) $visibility[] = 'private';
+					if ( current_user_can('connections_view_unlisted') && is_admin() ) $visibility[] = 'unlisted';
+				}
+				else
+				{
+					$visibility[] = $atts['visibility'];
+				}
+			}
+			else
+			{
+				//var_dump( $connections->options->getAllowPublic() ); die;
+				
+				// Display the 'public' entries if the user is not required to be logged in.
+				if ( $connections->options->getAllowPublic() ) $visibility[] = 'public';
+				
+				// Display the 'public' entries if the public override shortcode option is enabled.
+				if ( $connections->options->getAllowPublicOverride() )
+				{
+					if ( $atts['allow_public_override'] == TRUE) $visibility[] = 'public';
+				}
+				
+				// Display the 'public' & 'private' entries if the private override shortcode option is enabled.
+				if ( $connections->options->getAllowPrivateOverride() )
+				{
+					// If the user can view private entries then they should be able to view public entries too, so we'll add it. Just check to see if it is already set first.
+					if ( ! in_array('public', $visibility) && $atts['private_override'] == TRUE ) $visibility[] = 'public';
+					if ( $atts['private_override'] == TRUE ) $visibility[] = 'private';
+				}
+			}
+			
+			$where[] = 'AND visibility IN (\'' . implode("', '", $visibility) . '\')';
+			//$where[] = "AND (visibility='private' OR visibility='public')";
+		/*
+		 * // END --> Set up the query to only return the entries based on user permissions.
+		 */
+		
+		// Only select the entries with a date.
+		$where[] = "AND (`".$atts['type']."` != '')";
+		
+		// Get the current date from WP which should have the current time zone offset.
+		$wpCurrentDate = date( 'Y-m-d', $connections->options->wpCurrentTime );
+		
+		// FROM_UNIXTIME automatically adjusts for the local time. Offset is applied in query to ensure event is returned in current WP set timezone.
+		$sqlTimeOffset = $connections->options->sqlTimeOffset;
+		
+		// Whether or not to include the event occurring today or not.
+		$includeToday = ( $atts['today'] ) ? '<=' : '<';
+		
+		$sql = "SELECT * FROM ".CN_ENTRY_TABLE." WHERE"
+			. "  (YEAR(DATE_ADD('$wpCurrentDate', INTERVAL ".$atts['days']." DAY))"
+	        . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['type']."`), INTERVAL ".$sqlTimeOffset." SECOND)) )"
+	        . " - ( MID(DATE_ADD('$wpCurrentDate', INTERVAL ".$atts['days']." DAY),5,6)"
+	        . " < MID(DATE_ADD(FROM_UNIXTIME(`".$atts['type']."`), INTERVAL ".$sqlTimeOffset." SECOND),5,6) )"
+	        . " > ( YEAR('$wpCurrentDate')"
+	        . " - YEAR(DATE_ADD(FROM_UNIXTIME(`".$atts['type']."`), INTERVAL ".$sqlTimeOffset." SECOND)) )"
+	        . " - ( MID('$wpCurrentDate',5,6)"
+	        . " ".$includeToday." MID(DATE_ADD(FROM_UNIXTIME(`".$atts['type']."`), INTERVAL ".$sqlTimeOffset." SECOND),5,6) )"
+			. " ".implode(' ', $where);
+		//print_r($sql);
+		
+		$results = $wpdb->get_results($sql);
+		//print_r($results);
+		
+		
+		if ( ! empty($results) )
+		{
+			/*The SQL returns an array sorted by the birthday and/or anniversary date. However the year end wrap needs to be accounted for.
+			Otherwise earlier months of the year show before the later months in the year. Example Jan before Dec. The desired output is to show
+			Dec then Jan dates.  This function checks to see if the month is a month earlier than the current month. If it is the year is changed to the following year rather than the current.
+			After a new list is built, it is resorted based on the date.*/
+			foreach ($results as $key => $row)
+			{
+				if ( gmmktime(23, 59, 59, gmdate('m', $row->$atts['type']), gmdate('d', $row->$atts['type']), gmdate('Y', $connections->options->wpCurrentTime) ) < $connections->options->wpCurrentTime )
+				{
+					$dateSort[] = $row->$atts['type'] = gmmktime(0, 0, 0, gmdate('m', $row->$atts['type']), gmdate('d', $row->$atts['type']), gmdate('Y', $connections->options->wpCurrentTime) + 1 );
+				}
+				else
+				{
+					$dateSort[] = $row->$atts['type'] = gmmktime(0, 0, 0, gmdate('m', $row->$atts['type']), gmdate('d', $row->$atts['type']), gmdate('Y', $connections->options->wpCurrentTime) );
+				}
+			}
+			
+			array_multisort($dateSort, SORT_ASC, $results);
+		}
+		
+		
+		return $results;
+	}
+	
 	public function entryCategories($id)
 	{
 		global $wpdb;
@@ -1675,6 +1805,7 @@ class cnRetrieve
 			if ( in_array( 'address_line_3' , $search ) ) $defaultAttr['fields_address'][] = 'line_3';
 			if ( in_array( 'address_city' , $search ) ) $defaultAttr['fields_address'][] = 'city';
 			if ( in_array( 'address_state' , $search ) ) $defaultAttr['fields_address'][] = 'state';
+			if ( in_array( 'address_zipcode' , $search ) ) $defaultAttr['fields_address'][] = 'zipcode';
 			if ( in_array( 'address_country' , $search ) ) $defaultAttr['fields_address'][] = 'country';
 			
 			if ( in_array( 'phone_number' , $search ) ) $defaultAttr['fields_phone'][] = 'number';
@@ -1718,6 +1849,7 @@ class cnRetrieve
 		 * 		MySQL has a default stopwords file that has a list of common words (i.e., the, that, has) which are not returned in your search. In other words, searching for the will return zero rows.
 		 * 		According to MySQL's manual, the argument to AGAINST() must be a constant string. In other words, you cannot search for values returned within the query.
 		 */
+		//var_dump( $connections->options->getSearchUsingFulltext() );
 		if ( $connections->options->getSearchUsingFulltext() )
 		{
 			// Convert the search terms to a string adding the wild card to the end of each term to allow wider search results.
@@ -1733,7 +1865,7 @@ class cnRetrieve
 				$sql = $wpdb->prepare( 'SELECT ' . CN_ENTRY_TABLE . '.id 
 											FROM ' . CN_ENTRY_TABLE . ' 
 											WHERE MATCH (' . implode( ', ' , $atts['fields_entry'] ) . ') AGAINST (%s IN BOOLEAN MODE)' , $terms );
-				//print_r($sql);die;
+				//print_r($sql);
 				$results = $wpdb->get_col($sql);
 			}
 			
@@ -1793,7 +1925,7 @@ class cnRetrieve
 				//print_r($sql);
 					
 				$results = array_merge( $results, $wpdb->get_col($sql) );
-				//print_r($results);
+				//print_r($results);die;
 			}
 			
 			/*

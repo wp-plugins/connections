@@ -144,7 +144,7 @@ function processEntry($data, $action)
 		// If an entry is being updated and a new image is uploaded, the old images need to be deleted.
 		if ($entry->getImageNameOriginal() != NULL)
 		{
-			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameOriginal() ) )
+			if ( $compatiblityDate < @filemtime( CN_IMAGE_PATH . $entry->getImageNameOriginal() ) )
 			{
 				@unlink( CN_IMAGE_PATH . $entry->getImageNameOriginal() );
 			}
@@ -152,7 +152,7 @@ function processEntry($data, $action)
 		
 		if ($entry->getImageNameThumbnail() != NULL)
 		{
-			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameThumbnail() ) )
+			if ( $compatiblityDate < @filemtime( CN_IMAGE_PATH . $entry->getImageNameThumbnail() ) )
 			{
 				@unlink( CN_IMAGE_PATH . $entry->getImageNameThumbnail() );
 				
@@ -161,7 +161,7 @@ function processEntry($data, $action)
 		
 		if ($entry->getImageNameCard() != NULL)
 		{
-			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameCard() ) )
+			if ( $compatiblityDate < @filemtime( CN_IMAGE_PATH . $entry->getImageNameCard() ) )
 			{
 				@unlink( CN_IMAGE_PATH . $entry->getImageNameCard() );
 			}
@@ -169,7 +169,7 @@ function processEntry($data, $action)
 		
 		if ($entry->getImageNameProfile() != NULL)
 		{
-			if ( $compatiblityDate < filemtime( CN_IMAGE_PATH . $entry->getImageNameProfile() ) )
+			if ( $compatiblityDate < @filemtime( CN_IMAGE_PATH . $entry->getImageNameProfile() ) )
 			{
 				@unlink( CN_IMAGE_PATH . $entry->getImageNameProfile() );
 			}
@@ -445,6 +445,13 @@ function processImages()
 				$connections->setErrorMessage('image_profile_failed');
 				//return FALSE;
 			}						
+			
+			/*var_dump($connections->options->getImgProfileQuality());
+			var_dump($connections->options->getImgProfileRatioCrop());
+			var_dump($connections->options->getImgProfileRatioFill());
+			var_dump($connections->options->getImgProfileY());
+			var_dump($connections->options->getImgProfileX());
+			die;*/
 			
 			// Creates the entry image and saves it to the wp_content/connection_images/ dir.
 			// If needed this will create the upload dir and chmod it.

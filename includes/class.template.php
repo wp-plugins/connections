@@ -1002,11 +1002,11 @@ class cnTemplate
 	}
 	
 	/**
-	 * The private function called by cnTemplate::category that outputs the category links in a table layout.
-	 * Each category root parent and its descendants are output in an unordered list.
+	 * The private function called by cnTemplate::category that outputs the category links in two formats:
+	 *  - A table layout with one cell per root parent category containing all descendants in an unordered list.
+	 *  - An unordered list.
 	 * 
 	 * Accepted option for the $atts property are:
-	 * 	type (string) The ouput type of the categories. Valid options options are: select || multiselect
 	 * 	show_empty (bool) Whether or not to display empty categories.
 	 * 	show_count (bool) Whether or not to display the category count.
 	 * 	depth (int) The number of levels deap to show categories. Setting to 0 will show all levels.
