@@ -70,6 +70,9 @@ class cnOutput extends cnEntry
 	 * NOTE: If only the height or width was set for a custom image size, the opposite image dimension must be set for
 	 * the fallback block. This does not apply if the fallback is the default image.
 	 * 
+	 * Filters:
+	 * 	cn_output_default_atts_image => (array) Register the methods default attributes.
+	 * 
 	 * @todo Enable support for a default image to be set.
 	 * 
 	 * @access public
@@ -360,6 +363,9 @@ class cnOutput extends cnEntry
 	 * NOTE: If an entry is a organization/family, this will return the organization/family name instead
 	 * 		 ignoring the format attribute because it does not apply.
 	 * 
+	 * Filters:
+	 * 	cn_output_default_atts_name => (array) Register the methods default attributes.
+	 * 
 	 * @access public
 	 * @since unknown
 	 * @version 1.0
@@ -536,6 +542,9 @@ class cnOutput extends cnEntry
 	 * 	after (string) HTML to after before an address.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
 	 * 
+	 * Filters:
+	 * 	cn_output_default_atts_title => (array) Register the methods default attributes.
+	 * 
 	 * @access public
 	 * @since unknown
 	 * @version 1.0
@@ -547,10 +556,11 @@ class cnOutput extends cnEntry
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-		$defaults = array( 'before' => '',
-							  'after' => '',
-							  'return' => FALSE
-							);
+		$defaults = array(
+			'before' => '',
+			'after' => '',
+			'return' => FALSE
+		);
 		
 		$defaults = apply_filters( 'cn_output_default_atts_title' , $defaults );
 		
@@ -583,6 +593,9 @@ class cnOutput extends cnEntry
 	 * 	after (string) HTML to after before an address.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
 	 * 
+	 * Filters:
+	 * 	cn_output_default_atts_orgunit => (array) Register the methods default attributes.
+	 * 
 	 * @access public
 	 * @since unknown
 	 * @version 1.0
@@ -598,10 +611,11 @@ class cnOutput extends cnEntry
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-		$defaults = array( 'before' => '',
-							  'after' => '',
-							  'return' => FALSE
-							);
+		$defaults = array(
+			'before' => '',
+			'after' => '',
+			'return' => FALSE
+		);
 		
 		$defaults = apply_filters( 'cn_output_default_atts_orgunit' , $defaults );
 		
@@ -655,10 +669,15 @@ class cnOutput extends cnEntry
 	 * 			%label%
 	 * 			%first%
 	 * 			%last%
+	 * 			%separator%
 	 * 	label (string) The label to be displayed for the contact name.
+	 * 	separator (string) The separator to use.
 	 * 	before (string) HTML to output before an address.
 	 * 	after (string) HTML to after before an address.
 	 * 	return (bool) Return or echo the string. Default is to echo.
+	 * 
+	 * Filters:
+	 * 	cn_output_default_atts_contact_name => (array) Register the methods default attributes.
 	 * 
 	 * @access public
 	 * @since unknown
@@ -671,12 +690,14 @@ class cnOutput extends cnEntry
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-		$defaults = array( 'format' => '%label%: %first% %last%',
-							  'label' => __('Contact', 'connections'),
-							  'before' => '',
-							  'after' => '',
-							  'return' => FALSE
-							);
+		$defaults = array(
+			'format' => '%label%: %first% %last%',
+			'label' => __('Contact', 'connections'),
+			'separator' => ':',
+			'before' => '',
+			'after' => '',
+			'return' => FALSE
+		);
 		
 		$defaults = apply_filters( 'cn_output_default_atts_contact_name' , $defaults );
 		
@@ -685,7 +706,7 @@ class cnOutput extends cnEntry
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
 		
-		$search = array('%label%','%first%', '%last%');
+		$search = array('%label%','%first%', '%last%' , '%separator%');
 		$replace = array();
 		$first = $this->getContactFirstName();
 		$last = $this->getContactLastName();
@@ -697,7 +718,9 @@ class cnOutput extends cnEntry
 		( empty($first) ) ? $replace[] = '' : $replace[] = '<span class="contact-given-name">' . $first . '</span>';
 		
 		( empty($last) ) ? $replace[] = '' : $replace[] = '<span class="contact-family-name">' . $last . '</span>';
-				
+		
+		$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
+		
 		$out = '<span class="contact-name">' . str_ireplace( $search, $replace, $atts['format'] ) . '</span>';
 		
 		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
@@ -731,9 +754,14 @@ class cnOutput extends cnEntry
 	 * 			%zipcode%
 	 * 			%country%
 	 * 			%geo%
+	 * 			%separator%
+	 * 	separator (string) The separator to use.
 	 * 	before (string) HTML to output before the addresses.
 	 * 	after (string) HTML to after before the addresses.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * Filters:
+	 * 	cn_output_default_atts_address => (array) Register the methods default attributes.
 	 * 
 	 * @access public
 	 * @since unknown
@@ -755,6 +783,7 @@ class cnOutput extends cnEntry
 		$defaults['country'] = NULL;
 		$defaults['coordinates'] = array();
 		$defaults['format'] = '%label% %line1% %line2% %line3% %city% %state%  %zipcode% %country%';
+		$defaults['separator'] = ':';
 		$defaults['before'] = '';
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
@@ -769,7 +798,7 @@ class cnOutput extends cnEntry
 		
 		$out = '';
 		$addresses = $this->getAddresses( $atts , $cached );
-		$search = array('%label%' , '%line1%' , '%line2%' , '%line3%' , '%city%' , '%state%' , '%zipcode%' , '%country%' , '%geo%');
+		$search = array('%label%' , '%line1%' , '%line2%' , '%line3%' , '%city%' , '%state%' , '%zipcode%' , '%country%' , '%geo%' , '%separator%');
 		
 		if ( empty($addresses) ) return '';
 		
@@ -799,6 +828,8 @@ class cnOutput extends cnEntry
 						( ( empty($address->longitude) ) ? '' : '<span class="longitude" title="' . $address->longitude . '"><span class="cn-label">' . __('Longitude', 'connections') . ': </span>' . $address->longitude . '</span>' ) . 
 						'</span>';
 				}
+				
+				$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );
 				
@@ -839,6 +870,9 @@ class cnOutput extends cnEntry
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
 	 * 
 	 * @TODO Add support for the Google Maps API Premier client id.
+	 * 
+	 * Filters:
+	 * 	cn_output_default_atts_contact_name => (array) Register the methods default attributes.
 	 * 
 	 * @access public
 	 * @since unknown
@@ -954,9 +988,14 @@ class cnOutput extends cnEntry
 	 * 		Permitted Tokens:
 	 * 			%label%
 	 * 			%number%
+	 * 			%separator%
+	 * 	separator (string) The separator to use.
 	 * 	before (string) HTML to output before the phone numbers.
 	 * 	after (string) HTML to after before the phone numbers.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * Filters:
+	 * 	cn_output_default_atts_phone => (array) Register the methods default attributes.
 	 * 
 	 * @access public
 	 * @since unknown
@@ -972,7 +1011,8 @@ class cnOutput extends cnEntry
 		 */
 		$defaults['preferred'] = NULL;
 		$defaults['type'] = NULL;
-		$defaults['format'] = '%label%: %number%';
+		$defaults['format'] = '%label%%separator% %number%';
+		$defaults['separator'] = ':';
 		$defaults['before'] = '';
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
@@ -987,7 +1027,7 @@ class cnOutput extends cnEntry
 		
 		$out = '';
 		$phoneNumbers = $this->getPhoneNumbers( $atts , $cached );
-		$search = array('%label%' , '%number%');
+		$search = array('%label%' , '%number%' , '%separator%');
 		
 		if ( empty($phoneNumbers) ) return '';
 		
@@ -1001,6 +1041,7 @@ class cnOutput extends cnEntry
 			
 				( empty($phone->name) ) ? $replace[] = '' : $replace[] = '<span class="phone-name">' . $phone->name . '</span>';
 				( empty($phone->number) ) ? $replace[] = '' : $replace[] = '<a class="value" href="tel:' . $phone->number . '" value="' . preg_replace('/[^0-9]/', '', $phone->number) . '">' . $phone->number . '</a>';
+				$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );
 				
@@ -1111,6 +1152,7 @@ class cnOutput extends cnEntry
 	 * 			%label%
 	 * 			%address%
 	 * 			%icon%
+	 * 			%separator%
 	 * 	title (string) The link title attribute. Accepts tokens.
 	 * 		Permitted Tokens:
 	 * 			Name tokens:
@@ -1123,9 +1165,13 @@ class cnOutput extends cnEntry
 	 * 				%type%
 	 * 				%name%
 	 * 	size (int) the icon size. Permitted sizes are 16, 24, 32, 48.
+	 * 	separator (string) The separator to use.
 	 * 	before (string) HTML to output before the email addresses.
 	 * 	after (string) HTML to after before the email addresses.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * Filters:
+	 * 	cn_output_default_atts_email => (array) Register the methods default attributes.
 	 * 
 	 * @access puplic
 	 * @since unknown
@@ -1141,9 +1187,10 @@ class cnOutput extends cnEntry
 		 */
 		$defaults['preferred'] = NULL;
 		$defaults['type'] = NULL;
-		$defaults['format'] = '%label%: %address%';
+		$defaults['format'] = '%label%%separator% %address%';
 		$defaults['title'] = '%first% %last% %type% email.';
 		$defaults['size'] = 32;
+		$defaults['separator'] = ':';
 		$defaults['before'] = '';
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
@@ -1158,7 +1205,7 @@ class cnOutput extends cnEntry
 		
 		$out = '';
 		$emailAddresses = $this->getEmailAddresses( $atts , $cached );
-		$search = array('%label%' , '%address%' , '%icon%');
+		$search = array('%label%' , '%address%' , '%icon%' , '%separator%');
 		$iconSizes = array(16, 24, 32, 48);
 		
 		// Replace the 'Name Tokens' with the entry's name.
@@ -1185,6 +1232,7 @@ class cnOutput extends cnEntry
 				$replace[] = ( empty($email->name) ) ? '' : '<span class="email-name">' . $email->name . '</span>';
 				$replace[] = ( empty($email->address) ) ? '' : '<a class="value" title="' . $title . '" href="mailto:' . $email->address . '">' . $email->address . '</a>';
 				$replace[] = ( empty($email->address) ) ? '' : '<a class="value" title="' . $title . '" href="mailto:' . $email->address . '"><image src="' . CN_URL . '/images/icons/mail/mail_' . $iconSize . '.png" height="' . $iconSize . 'px" width="' . $iconSize . 'px"/></a>';
+				$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );
 				
@@ -1219,9 +1267,14 @@ class cnOutput extends cnEntry
 	 * 		Permitted Tokens:
 	 * 			%label%
 	 * 			%id%
+	 * 			%separator%
+	 * 	separator (string) The separator to use.
 	 * 	before (string) HTML to output before the IM networks.
 	 * 	after (string) HTML to after before the IM networks.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * Filters:
+	 * 	cn_output_default_atts_im => (array) Register the methods default attributes.
 	 * 
 	 * @url http://microformats.org/wiki/hcard-examples#New_Types_of_Contact_Info
 	 * @access public
@@ -1238,7 +1291,8 @@ class cnOutput extends cnEntry
 		 */
 		$defaults['preferred'] = NULL;
 		$defaults['type'] = NULL;
-		$defaults['format'] = '%label%: %id%';
+		$defaults['format'] = '%label%%separator% %id%';
+		$defaults['separator'] = ':';
 		$defaults['before'] = '';
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
@@ -1253,7 +1307,7 @@ class cnOutput extends cnEntry
 		
 		$out = '';
 		$networks = $this->getIm( $atts , $cached );
-		$search = array('%label%' , '%id%');
+		$search = array('%label%' , '%id%' , '%separator%');
 		
 		if ( empty($networks) ) return '';
 		
@@ -1298,6 +1352,8 @@ class cnOutput extends cnEntry
 						break;
 				}
 				
+				$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
+				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );
 				
 			$out .= '</span>' . "\n";
@@ -1330,12 +1386,14 @@ class cnOutput extends cnEntry
 	 * 			technorati
 	 * 			twitter
 	 * 			soundcloud
+	 * 			vimeo
 	 * 			youtube
 	 * 	format (string) The tokens to use to display the social media block parts.
 	 * 		Permitted Tokens:
 	 * 			%title%
 	 * 			%url%
 	 * 			%icon%
+	 * 			%separator%
 	 * 	style (string) The icon style to be used.
 	 * 		Permitted Styles:
 	 * 			wpzoom
@@ -1346,9 +1404,13 @@ class cnOutput extends cnEntry
 	 * 			48
 	 * 			64
 	 * 	size (int) The icon size to be used.
+	 * 	separator (string) The separator to use.
 	 * 	before (string) HTML to output before the social media networks.
 	 * 	after (string) HTML to after before the social media networks.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * Filters:
+	 * 	cn_output_default_atts_socialmedia => (array) Register the methods default attributes.
 	 * 
 	 * @url http://microformats.org/wiki/hcard-examples#Site_profiles
 	 * @access public
@@ -1368,6 +1430,7 @@ class cnOutput extends cnEntry
 		$defaults['format'] = '%icon%';
 		$defaults['style'] = 'wpzoom';
 		$defaults['size'] = 32;
+		$defaults['separator'] = ':';
 		$defaults['before'] = '';
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
@@ -1382,7 +1445,7 @@ class cnOutput extends cnEntry
 		
 		$out = '';
 		$networks = $this->getSocialMedia( $atts , $cached );
-		$search = array('%label%' , '%url%' , '%icon%');
+		$search = array('%label%' , '%url%' , '%icon%' , '%separator%');
 		
 		$iconStyles = array('wpzoom');
 		$iconSizes = array(16, 24, 32, 48, 64);
@@ -1416,6 +1479,8 @@ class cnOutput extends cnEntry
 				$replace[] = '<a class="url ' . $network->type . '" href="' . $network->url . '" target="_blank" title="' . $network->name . '">' . $network->url . '</a>';
 				
 				$replace[] = '<a class="url ' . $network->type . '" href="' . $network->url . '" target="_blank" title="' . $network->name . '"><image class="' . implode(' ', $iconClass) . '" src="' . CN_URL . '/images/icons/' . $iconStyle . '/' . $iconSize . '/' . $network->type . '.png" height="' . $iconSize . 'px" width="' . $iconSize . 'px" style="width: ' . $iconSize . 'px; height: ' . $iconSize . 'px;"/></a>';
+				
+				$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );
 				
@@ -1456,11 +1521,16 @@ class cnOutput extends cnEntry
 	 * 			%title%
 	 * 			%url%
 	 * 			%image%
+	 * 			%separator%
 	 * 	label (string) The label to be displayed for the links.
 	 * 	size (string) The valid image sizes. Valid values are: mcr || tny || vsm || sm || lg || xlg
+	 * 	separator (string) The separator to use.
 	 * 	before (string) HTML to output before the social media networks.
 	 * 	after (string) HTML to after before the social media networks.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * Filters:
+	 * 	cn_output_default_atts_link => (array) Register the methods default attributes.
 	 * 
 	 * @url http://microformats.org/wiki/hcard-examples#Site_profiles
 	 * @access public
@@ -1477,9 +1547,10 @@ class cnOutput extends cnEntry
 		 */
 		$defaults['preferred'] = NULL;
 		$defaults['type'] = NULL;
-		$defaults['format'] = '%label%: %title%';
+		$defaults['format'] = '%label%%separator% %title%';
 		$defaults['label'] = NULL;
 		$defaults['size'] = 'lg';
+		$defaults['separator'] = ':';
 		$defaults['before'] = '';
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
@@ -1494,7 +1565,7 @@ class cnOutput extends cnEntry
 		
 		$out = '';
 		$links = $this->getLinks( $atts , $cached );
-		$search = array('%label%' , '%title%' , '%url%' , '%image%');
+		$search = array('%label%' , '%title%' , '%url%' , '%image%' , '%separator%');
 		
 		if ( empty($links) ) return '';
 		
@@ -1574,6 +1645,7 @@ class cnOutput extends cnEntry
 					$replace[] = '';
 				}
 				
+				$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );
 				
@@ -1606,9 +1678,16 @@ class cnOutput extends cnEntry
 	 * 		Permitted Tokens:
 	 * 			%label%
 	 * 			%date%
+	 * 			%separator%
+	 * 	name_format (string) Tokens for the parts of the name. See cnOutput::getNameBlock
+	 * 	date_format (string) See http://php.net/manual/en/function.date.php
+	 * 	separator (string) The separator to use between the label and date.
 	 * 	before (string) HTML to output before the dates.
 	 * 	after (string) HTML to after before the dates.
 	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
+	 * Filters:
+	 * 	cn_output_default_atts_date => (array) Register the methods default attributes.
 	 * 
 	 * @access public
 	 * @since 0.7.3
@@ -1624,8 +1703,10 @@ class cnOutput extends cnEntry
 		 */
 		$defaults['preferred'] = NULL;
 		$defaults['type'] = NULL;
-		$defaults['format'] = '%label%: %date%';
+		$defaults['format'] = '%label%%separator% %date%';
+		$defaults['name_format'] = '%prefix% %first% %middle% %last% %suffix%';
 		$defaults['date_format'] = 'F jS Y';
+		$defaults['separator'] = ':';
 		$defaults['before'] = '';
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
@@ -1640,7 +1721,7 @@ class cnOutput extends cnEntry
 		
 		$out = '';
 		$dates = $this->getDates( $atts , $cached );
-		$search = array('%label%' , '%date%');
+		$search = array('%label%' , '%date%' , '%separator%');
 		
 		if ( empty($dates) ) return '';
 		
@@ -1654,8 +1735,10 @@ class cnOutput extends cnEntry
 			$out .= "\n" . '<span class="vevent">';
 				
 				// Hidden elements are to maintain hCalendar spec compatibility
-				$replace[] = ( empty($date->name) ) ? '<span class="summary" style="display: none;">' . $date->name . '</span>' : '<span class="summary">' . $date->name . '</span>';
-				$replace[] = ( empty($date->date) ) ? '<span class="dtstart" style="display: none;"><span class="value">' . $dateObject->format( 'Y-m-d' ) . '</span></span>' : '<span class="dtstart"><span class="value" style="display: none;">' . $dateObject->format( 'Y-m-d' ) . '</span><span class="date-displayed">' . $dateObject->format( $atts['date_format'] ) . '</span></span>';
+				$replace[] = ( empty($date->name) ) ? '' : '<span class="date-name">' . $date->name . '</span>';
+				//$replace[] = ( empty($date->date) ) ? '' : '<span class="dtstart"><span class="value" style="display: none;">' . $dateObject->format( 'Y-m-d' ) . '</span><span class="date-displayed">' . $dateObject->format( $atts['date_format'] ) . '</span></span>';
+				$replace[] = ( empty($date->date) ) ? '' : '<abbr class="dtstart" title="' . $dateObject->format('Ymd') .'">' . $dateObject->format( $atts['date_format'] ) . '</abbr><span class="summary" style="display:none">' . $date->name . ' - ' . $this->getName( array( 'format' => $atts['name_format'] ) ) . '</span><span class="uid" style="display:none">' . $dateObject->format( 'YmdHis' ) . '</span>';
+				$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );
 				
@@ -1669,6 +1752,21 @@ class cnOutput extends cnEntry
 	}
 	
 	/**
+	 * Echo or return the entry's birthday in a HTML string.
+	 * 
+	 * Accepted options for the $atts property are:
+	 * 	format (string) The tokens to use to display the date block parts.
+	 * 		Permitted Tokens:
+	 * 			%label%
+	 * 			%date%
+	 * 			%separator%
+	 * 	name_format (string) Tokens for the parts of the name. See cnOutput::getNameBlock
+	 * 	date_format (string) See http://php.net/manual/en/function.date.php
+	 * 	separator (string) The separator to use between the label and date.
+	 * 	before (string) HTML to output before the dates.
+	 * 	after (string) HTML to after before the dates.
+	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
 	 * @access public
 	 * @since 0.7.3
 	 * @version 2.0
@@ -1681,12 +1779,13 @@ class cnOutput extends cnEntry
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-		$defaults['format'] = '%label%: %date%';
+		$defaults['format'] = '%label%%separator% %date%';
 		$defaults['name_format'] = '%prefix% %first% %middle% %last% %suffix%';
 		
 		// The $format option has been deprecated since 0.7.3. If it has been supplied override the $defaults['date_format] value.
 		$defaults['date_format'] = empty($format) ? 'F jS' : $format;
 		
+		$defaults['separator'] = ':';
 		$defaults['before'] = '';
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
@@ -1697,7 +1796,7 @@ class cnOutput extends cnEntry
 		 */
 		
 		$out = '';
-		$search = array('%label%' , '%date%');
+		$search = array('%label%' , '%date%' , '%separator%');
 		$replace = array();
 		
 		if ( ! $this->getBirthday() ) return '';
@@ -1711,11 +1810,12 @@ class cnOutput extends cnEntry
 			
 			$replace[] = '<span class="date-name">' . __('Birthday', 'connections') . '</span>';
 			$replace[] = '<abbr class="dtstart" title="' . $this->getBirthday('Ymd') .'">' . $this->getBirthday( $atts['date_format'] ) . '</abbr>';
-		
+			$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
+			
 			$out .= str_ireplace( $search , $replace , $atts['format'] );
 			
 			$out .= '<span class="bday" style="display:none">' . $this->getBirthday('Y-m-d') . '</span>';
-			$out .= '<span class="summary" style="display:none">' . __('Birthday', 'connections') . ' - ' . $this->getName( array( 'format' => $atts['name_format'] ) ) . '</span><span class="uid" style="display:none">' . $this->getBirthday('YmdHis') . '</span></span>';
+			$out .= '<span class="summary" style="display:none">' . __('Birthday', 'connections') . ' - ' . $this->getName( array( 'format' => $atts['name_format'] ) ) . '</span><span class="uid" style="display:none">' . $this->getBirthday('YmdHis') . '</span>';
 		
 		$out .= '</div>';
 		
@@ -1724,6 +1824,21 @@ class cnOutput extends cnEntry
 	}
 	
 	/**
+	 * Echo or return the entry's anniversary in a HTML string.
+	 * 
+	 * Accepted options for the $atts property are:
+	 * 	format (string) The tokens to use to display the date block parts.
+	 * 		Permitted Tokens:
+	 * 			%label%
+	 * 			%date%
+	 * 			%separator%
+	 * 	name_format (string) Tokens for the parts of the name. See cnOutput::getNameBlock
+	 * 	date_format (string) See http://php.net/manual/en/function.date.php
+	 * 	separator (string) The separator to use between the label and date.
+	 * 	before (string) HTML to output before the dates.
+	 * 	after (string) HTML to after before the dates.
+	 * 	return (bool) Return string if set to TRUE instead of echo string.
+	 * 
 	 * @access public
 	 * @since 0.7.3
 	 * @version 2.0
@@ -1736,12 +1851,12 @@ class cnOutput extends cnEntry
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-		$defaults['format'] = '%label%: %date%';
+		$defaults['format'] = '%label%%separator% %date%';
 		$defaults['name_format'] = '%prefix% %first% %middle% %last% %suffix%';
 		
 		// The $format option has been deprecated since 0.7.3. If it has been supplied override the $defaults['date_format] value.
 		$defaults['date_format'] = empty($format) ? 'F jS' : $format;
-		
+		$defaults['separator'] = ':';
 		$defaults['before'] = '';
 		$defaults['after'] = '';
 		$defaults['return'] = FALSE;
@@ -1752,7 +1867,7 @@ class cnOutput extends cnEntry
 		 */
 		
 		$out = '';
-		$search = array('%label%' , '%date%');
+		$search = array('%label%' , '%date%' , '%separator%');
 		$replace = array();
 		
 		if ( ! $this->getAnniversary() ) return '';
@@ -1762,15 +1877,16 @@ class cnOutput extends cnEntry
 		 * NOTE: The second birthday span [hidden] is for hCard compatibility.
 		 * NOTE: The third span series [hidden] is for hCalendar compatibility.
 		 */
-		$out .= '<div class="vevent"><span class="birthday">';
+		$out .= '<div class="vevent"><span class="anniversary">';
 			
 			$replace[] = '<span class="date-name">' . __('Anniversary', 'connections') . '</span>';
 			$replace[] = '<abbr class="dtstart" title="' . $this->getAnniversary('Ymd') .'">' . $this->getAnniversary( $atts['date_format'] ) . '</abbr>';
+			$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
 		
 			$out .= str_ireplace( $search , $replace , $atts['format'] );
 			
 			$out .= '<span class="bday" style="display:none">' . $this->getAnniversary('Y-m-d') . '</span>';
-			$out .= '<span class="summary" style="display:none">' . __('Anniversary', 'connections') . ' - ' . $this->getName( array( 'format' => $atts['name_format'] ) ) . '</span><span class="uid" style="display:none">' . $this->getAnniversary('YmdHis') . '</span></span>';
+			$out .= '<span class="summary" style="display:none">' . __('Anniversary', 'connections') . ' - ' . $this->getName( array( 'format' => $atts['name_format'] ) ) . '</span><span class="uid" style="display:none">' . $this->getAnniversary('YmdHis') . '</span>';
 		
 		$out .= '</div>';
 		
