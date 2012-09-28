@@ -1077,6 +1077,21 @@ if ( ! class_exists('connectionsLoad') )
 			$rule['(.?.+?)/' . $category . '/(.+?)/' . $country . '/([^/]*)?/?$'] 
 				= 'index.php?pagename=$matches[1]&cn-cat-slug=$matches[2]&cn-country=$matches[3]&cn-view=list';
 			
+			$rule['(.?.+?)/' . $category . '/(.+?)/' . $region . '/([^/]*)/pg/?([0-9]{1,})/?$'] 
+				= 'index.php?pagename=$matches[1]&cn-cat-slug=$matches[2]&cn-region=$matches[3]&cn-pg=$matches[4]&cn-view=list';
+			$rule['(.?.+?)/' . $category . '/(.+?)/' . $region . '/([^/]*)?/?$'] 
+				= 'index.php?pagename=$matches[1]&cn-cat-slug=$matches[2]&cn-region=$matches[3]&cn-view=list';
+			
+			$rule['(.?.+?)/' . $category . '/(.+?)/' . $locality . '/([^/]*)/pg/?([0-9]{1,})/?$'] 
+				= 'index.php?pagename=$matches[1]&cn-cat-slug=$matches[2]&cn-locality=$matches[3]&cn-pg=$matches[4]&cn-view=list';
+			$rule['(.?.+?)/' . $category . '/(.+?)/' . $locality . '/([^/]*)?/?$'] 
+				= 'index.php?pagename=$matches[1]&cn-cat-slug=$matches[2]&cn-locality=$matches[3]&cn-view=list';
+			
+			$rule['(.?.+?)/' . $category . '/(.+?)/' . $postal . '/([^/]*)/pg/?([0-9]{1,})/?$'] 
+				= 'index.php?pagename=$matches[1]&cn-cat-slug=$matches[2]&cn-postal-code=$matches[3]&cn-pg=$matches[4]&cn-view=list';
+			$rule['(.?.+?)/' . $category . '/(.+?)/' . $postal . '/([^/]*)?/?$'] 
+				= 'index.php?pagename=$matches[1]&cn-cat-slug=$matches[2]&cn-postal-code=$matches[3]&cn-view=list';
+			
 			$rule['(.?.+?)/' . $category . '/(.+?)/pg/?([0-9]{1,})/?$'] 
 				= 'index.php?pagename=$matches[1]&cn-cat-slug=$matches[2]&cn-pg=$matches[3]&cn-view=list';
 			$rule['(.?.+?)/' . $category . '/(.+?)?/?$'] 
