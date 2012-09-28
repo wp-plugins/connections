@@ -169,6 +169,15 @@ class cnRegisterSettings
 		
 		$sections[] = array(
 			'tab' => 'advanced',
+			'id' => 'connections_link', 
+			'position' => 15, 
+			'title' => __( 'Links' , 'connections' ), 
+			'callback' => create_function( '', "echo '<p>' , __( 'Enable certain entry data to become links.' , 'connections' ) , '</p>';" ), 
+			'page_hook' => $settings
+		);
+		
+		$sections[] = array(
+			'tab' => 'advanced',
 			'id' => 'connections_compatibility', 
 			'position' => 20, 
 			'title' => __( 'Compatibility' , 'connections' ), 
@@ -710,6 +719,36 @@ class cnRegisterSettings
 			'type' => 'text',
 			'size' => 'regular',
 			'default' => 'name'
+		);
+		
+		$fields[] = array(
+			'plugin_id' => 'connections',
+			'id' => 'name',
+			'position' => 10,
+			'page_hook' => $settings,
+			'tab' => 'advanced',
+			'section' => 'connections_link',
+			'title' => __('Name', 'connections'),
+			'desc' => __('Enabling this option will turn the name of every entry into a link. 
+				Clicking the link will take you to the page with only that entry.', 'connections'),
+			'help' => '',
+			'type' => 'checkbox',
+			'default' => 0
+		);
+		
+		$fields[] = array(
+			'plugin_id' => 'connections',
+			'id' => 'phone',
+			'position' => 10,
+			'page_hook' => $settings,
+			'tab' => 'advanced',
+			'section' => 'connections_link',
+			'title' => __('Telephone Number', 'connections'),
+			'desc' => __('Enabling this option will turn every telephone number into a link that when clicked by the user  
+				on a mobile phone or computer with a telephony application installed will dial the number.', 'connections'),
+			'help' => '',
+			'type' => 'checkbox',
+			'default' => 0
 		);
 		
 		$fields[] = array(

@@ -442,7 +442,7 @@ class cnOutput extends cnEntry
 			break;
 		}
 		
-		if ( $atts['link'] )
+		if ( $connections->settings->get('connections', 'connections_link', 'name') )
 		{
 			$out = $connections->url->permalink( array(
 				'type' => $atts['target'],
@@ -451,7 +451,7 @@ class cnOutput extends cnEntry
 				'text' => $out,
 				'return' => TRUE
 				)
-		);
+			);
 		}
 		
 		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
@@ -1006,6 +1006,8 @@ class cnOutput extends cnEntry
 	 */
 	public function getPhoneNumberBlock( $atts = array() , $cached = TRUE )
 	{
+		global $connections;
+		
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
@@ -1040,7 +1042,21 @@ class cnOutput extends cnEntry
 			$out .= "\n" . '<span class="tel">';
 			
 				( empty($phone->name) ) ? $replace[] = '' : $replace[] = '<span class="phone-name">' . $phone->name . '</span>';
-				( empty($phone->number) ) ? $replace[] = '' : $replace[] = '<a class="value" href="tel:' . $phone->number . '" value="' . preg_replace('/[^0-9]/', '', $phone->number) . '">' . $phone->number . '</a>';
+				
+				if ( empty($phone->number) )
+				{
+					$replace[] = '';
+				} else {
+					
+					if ( $connections->settings->get('connections', 'connections_link', 'phone') )
+					{
+						$replace[] = '<a class="value" href="tel:' . $phone->number . '" value="' . preg_replace('/[^0-9]/', '', $phone->number) . '">' . $phone->number . '</a>';
+					} else {
+						$replace[] = '<span class="value">' . $phone->number . '</span>';
+					}
+					
+				}
+				
 				$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );

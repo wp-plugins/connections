@@ -157,6 +157,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * OTHER: Add Connections and Database version to the Dashboard System widget.
 * OTHER: Updated the cnOutput:getAnniversaryBlock() and cnOutput::getBirthdayBlock() methods to allow greater flexibility in formatting the output.
 * OTHER: Added a separator token to most of the methods in the cnOutput class.
+* OTHER: Updated all default templates to use the new cnOutput::getDateBlock method.
 
 = 0.7.2.7 04/23/12 =
 * OTHER: Started to internationalize.
