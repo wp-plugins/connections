@@ -572,14 +572,14 @@ class cnFormObjects
 	{
 		global $connections;
 		
-		function metaboxModerateAtts($atts)
+		function cnMetaboxModerateAtts($atts)
 		{
 			$atts['status'] = 'pending';
 			
 			return $atts;
 		}
 		
-		add_filter( 'cn_list_atts_permitted', 'metaboxModerateAtts', 9 );
+		add_filter( 'cn_list_atts_permitted', 'cnMetaboxModerateAtts', 9 );
 		add_filter( 'cn_list_results', array($connections->retrieve, 'removeUnknownDateAdded'), 9 );
 		
 		$atts = array(
@@ -589,7 +589,7 @@ class cnFormObjects
 		
 		connectionsEntryList($atts);
 		
-		remove_filter( 'cn_list_atts_permitted', array($connections->retrieve, 'metaboxModerateAtts'), 9 );
+		remove_filter( 'cn_list_atts_permitted', 'cnMetaboxModerateAtts', 9 );
 		remove_filter( 'cn_list_results', array($connections->retrieve, 'removeUnknownDateAdded'), 9 );
 	}
 	

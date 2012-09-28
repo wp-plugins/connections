@@ -17,9 +17,7 @@
 		<?php $entry->getImBlock(); ?>
 		<?php $entry->getSocialMediaBlock(); ?>
 		<?php $entry->getWebsiteBlock(); ?>
-		
-		<?php echo $entry->getBirthdayBlock('F j'); ?>
-		<?php echo $entry->getAnniversaryBlock(); ?>
+		<?php $entry->getDateBlock(); ?>
 		
 	</div>	
 	

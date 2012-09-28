@@ -99,8 +99,9 @@
  * Anniversary/Birthday vEvent Styles
  */
 #cn-list div.vevent abbr{ border: 0; cursor: default; text-transform: none; letter-spacing: normal; }
-.vevent abbr{ border: 0; cursor: default; text-transform: none; letter-spacing: normal; }
+#cn-list span.vevent { display: block; }
 span.date-name { font-weight: bold; }
+.vevent abbr{ border: 0; cursor: default; text-transform: none; letter-spacing: normal; }
 
 /*
  * Bio/Notes Styles
@@ -269,7 +270,7 @@ input#cn-submit {
  * Tables
  */
 #cn-list table { border: none; border-collapse: separate; float: none; margin: 0; width: 100%; }
-#cn-list table tr { background: #FFFFFF; }
+#cn-list table tr { background: transparent; }
 #cn-list table tr.alternate { background: #F1F1F1; }
 #cn-list table td { background: transparent; border: none; line-height: normal; margin: 0; padding: 0; }
 #cn-list table, #cn-list th, #cn-list td { color: #888; font-family: "Helvetica Neue", Arial, Helvetica, "Nimbus Sans L", sans-serif; font-size: 12px; vertical-align: top; }

@@ -71,6 +71,9 @@ table.connections span.social-network { display: block; }
 table.connections div.links { margin-bottom: 6px; }
 table.connections span.link { display: block; }
 
+table.connections span.date-name { font-weight: bold; }
+
+
 /*
  * Phone Styles
  */
