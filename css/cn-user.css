@@ -63,7 +63,7 @@
  * Phone Styles
  */
 #cn-list span.phone-number-block { display: block; margin-bottom: 10px; }
-#cn-list span.tel { display: block; }
+#cn-list span.tel { display: block; margin: 0 0 5px; }
 #cn-list span.tel span.phone-name { font-weight: bold; }
 
 /*
@@ -195,9 +195,9 @@ input#cn-search-submit {
 /*
  * Pagination control styles.
  */
-#cn-page-nav { clear: both; display: block; font-size: 12px; margin: 10px 0; text-align: center; }
+#cn-page-nav { /*clear: both;*/ display: block; font-size: 12px; margin: 10px 0; text-align: center; } /* Setting clear breaks Market */
 #cn-page-nav a {
-	color: #AAAAAA;
+	color: #AAAAAA !important;
 	text-decoration: none;
 	background-color: #EEEEEE;
 	border: none;
@@ -212,10 +212,8 @@ input#cn-search-submit {
 	-khtml-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
-#cn-page-nav a:active, #cn-page-nav a:visited { color: #AAAAAA; }
-#cn-page-nav a.disabled {
-	color: #CCCCCC;
-}
+#cn-page-nav a:active, #cn-page-nav a:visited { color: #AAAAAA !important; }
+#cn-page-nav a.disabled { color: #CCCCCC !important; }
 #cn-page-nav input {
 	background: #FFFFFF none;
 	border-width: 1px;

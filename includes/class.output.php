@@ -1246,8 +1246,8 @@ class cnOutput extends cnEntry
 				$title = str_ireplace( array('%type%', '%name%') , array($email->type, $email->name), $title);
 				
 				$replace[] = ( empty($email->name) ) ? '' : '<span class="email-name">' . $email->name . '</span>';
-				$replace[] = ( empty($email->address) ) ? '' : '<a class="value" title="' . $title . '" href="mailto:' . $email->address . '">' . $email->address . '</a>';
-				$replace[] = ( empty($email->address) ) ? '' : '<a class="value" title="' . $title . '" href="mailto:' . $email->address . '"><image src="' . CN_URL . '/images/icons/mail/mail_' . $iconSize . '.png" height="' . $iconSize . 'px" width="' . $iconSize . 'px"/></a>';
+				$replace[] = ( empty($email->address) ) ? '' : '<span class="email-address"><a class="value" title="' . $title . '" href="mailto:' . $email->address . '">' . $email->address . '</a></span>';
+				$replace[] = ( empty($email->address) ) ? '' : '<span class="email-icon"><a class="value" title="' . $title . '" href="mailto:' . $email->address . '"><image src="' . CN_URL . '/images/icons/mail/mail_' . $iconSize . '.png" height="' . $iconSize . 'px" width="' . $iconSize . 'px"/></a></span>';
 				$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
 				
 				$out .= str_ireplace( $search , $replace , $atts['format'] );

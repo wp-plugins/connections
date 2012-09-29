@@ -690,12 +690,17 @@ if ( ! class_exists('connectionsLoad') )
 					owner bigint(20) NOT NULL,
 					user bigint(20) NOT NULL,
 					status varchar(20) NOT NULL,
-			        PRIMARY KEY  (id),
-					FULLTEXT search (family_name, first_name, middle_name, last_name, title, organization, department, contact_first_name, contact_last_name, bio, notes)
+			        PRIMARY KEY  (id)
 			    ) $charsetCollate";
 			    
 				// Create the table
 			    dbDelta($entryTable);
+				
+				/*
+				 * Alter the table after is was created to add FULLTEXT support.
+				 * That way if the db engine doesn't support it, at least the table will be created.
+				 */
+				$wpdb->query('ALTER TABLE ' . CN_ENTRY_TABLE . ' ADD FULLTEXT (family_name, first_name, middle_name, last_name, title, organization, department, contact_first_name, contact_last_name, bio, notes)');
 			}
 			
 			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_TERMS_TABLE . "'") != CN_TERMS_TABLE)
@@ -796,15 +801,17 @@ if ( ! class_exists('connectionsLoad') )
 					`latitude` decimal(15,12) default NULL,
 					`longitude` decimal(15,12) default NULL,
 					`visibility` tinytext NOT NULL,
-					PRIMARY KEY (`id`, `entry_id`),
-					FULLTEXT search (line_1, line_2, line_3, city, state, zipcode, country)
+					PRIMARY KEY (`id`, `entry_id`)
 			    ) $charsetCollate";
 			    
 				// Create the table
 			    dbDelta($entryTableAddress);
 				
-				// Add the FULLTEXT index
-				$wpdb->query('ALTER TABLE ' . CN_ENTRY_ADDRESS_TABLE . ' ADD FULLTEXT (' . implode(',', $fields['fields_address']) . ')');
+				/*
+				 * Alter the table after is was created to add FULLTEXT support.
+				 * That way if the db engine doesn't support it, at least the table will be created.
+				 */
+				$wpdb->query('ALTER TABLE ' . CN_ENTRY_ADDRESS_TABLE . ' ADD FULLTEXT (line_1, line_2, line_3, city, state, zipcode, country)');
 			}
 			
 			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_ENTRY_PHONE_TABLE . "'") != CN_ENTRY_PHONE_TABLE)
@@ -819,15 +826,17 @@ if ( ! class_exists('connectionsLoad') )
 					`type` tinytext NOT NULL,
 					`number` tinytext NOT NULL,
 					`visibility` tinytext NOT NULL,
-					PRIMARY KEY (`id`, `entry_id`),
-					FULLTEXT search (phone)
+					PRIMARY KEY (`id`, `entry_id`)
 			    ) $charsetCollate";
 			    
 				// Create the table
 			    dbDelta($entryTablePhone);
 				
-				// Create the table
-				$wpdb->query('ALTER TABLE ' . CN_ENTRY_PHONE_TABLE . ' ADD FULLTEXT (' . implode(',', $fields['fields_phone']) . ')');
+				/*
+				 * Alter the table after is was created to add FULLTEXT support.
+				 * That way if the db engine doesn't support it, at least the table will be created.
+				 */
+				$wpdb->query('ALTER TABLE ' . CN_ENTRY_PHONE_TABLE . ' ADD FULLTEXT (number)');
 			}
 			
 			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_ENTRY_EMAIL_TABLE . "'") != CN_ENTRY_EMAIL_TABLE)
@@ -1317,7 +1326,7 @@ if ( ! class_exists('connectionsLoad') )
 			$this->initErrorMessages();
 			$this->initSuccessMessages();
 			
-			// If the user changed the bases for the permalinks, flush the rewrite rules.
+			// If the user changed the base slugs for the permalinks, flush the rewrite rules.
 			if ( get_option('connections_flush_rewrite') )
 			{
 				flush_rewrite_rules();
@@ -1680,8 +1689,11 @@ if ( ! class_exists('connectionsLoad') )
 			
 			if ( in_array($_GET['page'], $adminPages) )
 			{
-				wp_enqueue_style('connections-admin', CN_URL . '/css/cn-admin.css', array(), CN_CURRENT_VERSION);
-				wp_enqueue_style('connections-admin-jquery-ui', CN_URL . '/css/cn-jquery-ui-fresh.css', array(), CN_CURRENT_VERSION);
+				wp_enqueue_style('cn-admin', CN_URL . '/css/cn-admin.css', array(), CN_CURRENT_VERSION);
+				
+				$jQueryUIStyle = ( 'classic' == get_user_option( 'admin_color' ) ) ? 'classic' : 'fresh';
+				
+				wp_enqueue_style('cn-admin-jquery-ui', CN_URL . 'css/jquery-ui-' . $jQueryUIStyle . '.css', array(), CN_CURRENT_VERSION);
 			}
 			
 			/*
