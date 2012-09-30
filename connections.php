@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.2.12
+Version: 0.7.3
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 
@@ -83,6 +83,9 @@ Author URI: http://connections-pro.com/
  * http://www.iconfinder.com/icondetails/50717/48/add_vcard_icon
  * License Free for commercial use
  * http://www.iconfinder.com/browse/iconset/iconset-addictive-flavour/#readme
+ * 
+ * jQuery UI CSS and icons by helenhousandi
+ * https://github.com/helenhousandi/wp-admin-jquery-ui
  */
 
 /**
@@ -220,7 +223,7 @@ if ( ! class_exists('connectionsLoad') )
 			
 			define('CN_LOG', FALSE);
 			
-			define('CN_CURRENT_VERSION', '0.7.2.12');
+			define('CN_CURRENT_VERSION', '0.7.3');
 			define('CN_DB_VERSION', '0.1.9');
 			
 			
@@ -700,7 +703,7 @@ if ( ! class_exists('connectionsLoad') )
 				 * Alter the table after is was created to add FULLTEXT support.
 				 * That way if the db engine doesn't support it, at least the table will be created.
 				 */
-				$wpdb->query('ALTER TABLE ' . CN_ENTRY_TABLE . ' ADD FULLTEXT (family_name, first_name, middle_name, last_name, title, organization, department, contact_first_name, contact_last_name, bio, notes)');
+				$wpdb->query('ALTER TABLE ' . CN_ENTRY_TABLE . ' ADD FULLTEXT search (family_name, first_name, middle_name, last_name, title, organization, department, contact_first_name, contact_last_name, bio, notes)');
 			}
 			
 			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_TERMS_TABLE . "'") != CN_TERMS_TABLE)
@@ -811,7 +814,7 @@ if ( ! class_exists('connectionsLoad') )
 				 * Alter the table after is was created to add FULLTEXT support.
 				 * That way if the db engine doesn't support it, at least the table will be created.
 				 */
-				$wpdb->query('ALTER TABLE ' . CN_ENTRY_ADDRESS_TABLE . ' ADD FULLTEXT (line_1, line_2, line_3, city, state, zipcode, country)');
+				$wpdb->query('ALTER TABLE ' . CN_ENTRY_ADDRESS_TABLE . ' ADD FULLTEXT search (line_1, line_2, line_3, city, state, zipcode, country)');
 			}
 			
 			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_ENTRY_PHONE_TABLE . "'") != CN_ENTRY_PHONE_TABLE)
@@ -836,7 +839,7 @@ if ( ! class_exists('connectionsLoad') )
 				 * Alter the table after is was created to add FULLTEXT support.
 				 * That way if the db engine doesn't support it, at least the table will be created.
 				 */
-				$wpdb->query('ALTER TABLE ' . CN_ENTRY_PHONE_TABLE . ' ADD FULLTEXT (number)');
+				$wpdb->query('ALTER TABLE ' . CN_ENTRY_PHONE_TABLE . ' ADD FULLTEXT search (number)');
 			}
 			
 			if ($wpdb->get_var("SHOW TABLES LIKE '" . CN_ENTRY_EMAIL_TABLE . "'") != CN_ENTRY_EMAIL_TABLE)

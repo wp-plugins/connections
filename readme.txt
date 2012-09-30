@@ -569,4 +569,4 @@ A couple bug fixes. Should be the last one.
 Bug fixes and updates to third party jQuery plugins and PHP classes. It is highly recommended to update.
 
 = 0.7.3 =
-This upgrade may break some custom templates using the old template system.
+This is a major update. It would be advisable to backup the Connections tables in the database before upgrading.
