@@ -84,7 +84,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 
 == Changelog ==
 
-= 0.7.3 xx/xx/12 =
+= 0.7.3 09/30/12 =
 * FEATURE: Added permalink support.
 * FEATURE: Added a date meta field which uses the jQuery UI Datepicker for easy data entry.
 * FEATURE: Added auto and manual geocoding of addresses.
