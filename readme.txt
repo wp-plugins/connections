@@ -43,8 +43,6 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 
 
 
-
-
 == Credits: ==
 * This plugin was based off LBB, ["Little Black Book"](http://wordpress.org/extend/plugins/lbb-little-black-book/); which was based on [Addressbook](http://wordpress.org/extend/plugins/addressbook/), both of which can be found in the Plugin Directory.
 * vCard class is a modified version by [Troy Wolf](http://www.troywolf.com/articles/php/class_vcard/)
