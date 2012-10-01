@@ -29,13 +29,11 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 
 = New features this version: =
 * Geocoding of addresses.
+* Localization
+* Pretty permalink support
 
 
 = Upcoming features: =
-* Localization
-* Pretty (permalink) support
-* Landing pages
-* Integration with WP users to permit registered users to maintain their own info with optional moderation.
 * Gravatar support
 * Backup
 * ...and any suggestions that I may receive...
@@ -83,6 +81,11 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 [FAQs can be found here.](http://connections-pro.com/faq/)
 
 == Changelog ==
+
+= 0.7.3.1 10/01/12 =
+* FEATURE: Spanish translation has been included.
+* BUG: Remove all occurrences of double slashing.
+* BUG: Add the missing 'dates' column that should be created on new activations.
 
 = 0.7.3 09/30/12 =
 * FEATURE: Added permalink support.
