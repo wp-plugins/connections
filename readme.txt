@@ -573,3 +573,6 @@ Bug fixes and updates to third party jQuery plugins and PHP classes. It is highl
 
 = 0.7.3 =
 This is a major update. It would be advisable to backup the Connections tables in the database before upgrading.
+
+= 0.7.3.1 =
+This is a major update. It would be advisable to backup the Connections tables in the database before upgrading.
