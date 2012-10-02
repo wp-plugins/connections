@@ -31,7 +31,7 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * Geocoding of addresses.
 * Localization
 * Pretty permalink support
-
+* Spanish Translation
 
 = Upcoming features: =
 * Gravatar support
