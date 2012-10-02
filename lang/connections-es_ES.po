@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Connection\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-01 17:33-0500\n"
-"PO-Revision-Date: 2012-10-01 17:33-0500\n"
+"POT-Creation-Date: 2012-10-01 20:10-0500\n"
+"PO-Revision-Date: 2012-10-01 20:12-0500\n"
 "Last-Translator: Connections Pro <helpdesk@connections-pro.com>\n"
 "Language-Team:  <helpdesk@connections-pro.com>\n"
 "Language: es_ES\n"
@@ -30,31 +30,31 @@ msgstr "EXITO"
 
 #: ../connections.php:528
 msgid "You are not authorized to view the entry list. Please contact the admin if you received this message in error."
-msgstr "Usted no tiene autorización  para ver la lista de entradas. Por favor, póngase en contacto con el administrador si ha recibido este mensaje por error."
+msgstr "No tiene autorización  para ver la lista de entradas. Por favor, póngase en contacto con el administrador si ha recibido este mensaje por error."
 
 #: ../connections.php:530
 msgid "You are not authorized to add entries. Please contact the admin if you received this message in error."
-msgstr "No tiene permiso para agregar entradas. Por favor, póngase en contacto con el administrador si ha recibido este mensaje por error."
+msgstr "No tiene autorización para agregar entradas. Por favor, póngase en contacto con el administrador si ha recibido este mensaje por error."
 
 #: ../connections.php:531
 msgid "You are not authorized to delete entries. Please contact the admin if you received this message in error."
-msgstr "No tiene permisos para borrar las entradas. Por favor, póngase en contacto con el administrador si ha recibido este mensaje por error."
+msgstr "No tiene autorización para borrar las entradas. Por favor, póngase en contacto con el administrador si ha recibido este mensaje por error."
 
 #: ../connections.php:532
 msgid "You are not authorized to edit entries. Please contact the admin if you received this message in error."
-msgstr "No tiene permisos para editar las entradas. Por favor, póngase en contacto con el administrador si ha recibido este mensaje por error."
+msgstr "No tiene autorización para editar las entradas. Por favor, póngase en contacto con el administrador si ha recibido este mensaje por error."
 
 #: ../connections.php:533
 msgid "You are not authorized to edit the categories. Please contact the admin if you received this message in error."
-msgstr "No tiene permisos para editar las categorías. Por favor, póngase en contacto con el administrador si ha recibido este mensaje por error."
+msgstr "No tiene autorización para editar las categorías. Por favor, póngase en contacto con el administrador si ha recibido este mensaje por error."
 
 #: ../connections.php:534
 msgid "You are not authorized to edit the settings. Please contact the admin if you received this message in error."
-msgstr "No tiene permisos para editar la configuración. Por favor, póngase en contacto con el administrador si ha recibido este mensaje por error."
+msgstr "No tiene autorización para editar la configuración. Por favor, póngase en contacto con el administrador si ha recibido este mensaje por error."
 
 #: ../connections.php:535
 msgid "You are not authorized to edit role capabilities. Please contact the admin if you received this message in error."
-msgstr "Usted no tiene autorización para editar los roles de permisos. Por favor, póngase en contacto con el administrador si ha recibido este mensaje por error."
+msgstr "No tiene autorización para editar los roles de permisos. Por favor, póngase en contacto con el administrador si ha recibido este mensaje por error."
 
 #: ../connections.php:537
 msgid "The category you are trying to create already exists."
@@ -66,15 +66,15 @@ msgstr "Categoría no puede ser superior de sí mismo."
 
 #: ../connections.php:539
 msgid "The Uncategorized category can not be deleted."
-msgstr "No puede borrarse sa categoría sin clasificación."
+msgstr "No se puede borrar la categoría Sin Clasificación."
 
 #: ../connections.php:540
 msgid "The Uncategorized category can not be altered."
-msgstr "No puede modificarse la categoría sin clasificación "
+msgstr "No se puede modificar la categoría Sin Clasificación "
 
 #: ../connections.php:541
 msgid "The Uncategorized category already exists."
-msgstr "La categoría sin clasificación ya existe"
+msgstr "La categoría Sin Clasificación ya existe"
 
 #: ../connections.php:542
 msgid "Failed to add category."
@@ -98,7 +98,7 @@ msgstr "No se pudo actualizar la entrada."
 
 #: ../connections.php:549
 msgid "Your preferred setting for a address was overridden because another address that you are not permitted to view or edit is set as the preferred address. Please contact the admin if you received this message in error."
-msgstr "Se anuló su configuración preferida para la direccion preferida, debido a que  otra dirección la cuál no tiene permiso de ver o editar está configurada como direccion preferida. Favor de ponerse en contacto con el administrador si recibió este mensaje por error."
+msgstr "Se anuló su configuración preferida para una direccion , debido a que  otra dirección la cuál no tiene permiso de ver o editar está configurada como direccion preferida. Favor de ponerse en contacto con el administrador si recibió este mensaje por error."
 
 #: ../connections.php:550
 msgid "Your preferred setting for a phone was overridden because another phone number that you are not permitted to view or edit is set as the preferred phone number. Please contact the admin if you received this message in error."
@@ -457,39 +457,39 @@ msgstr "Systema"
 
 #: ../includes/class.form.php:337
 msgid "FAQs"
-msgstr ""
+msgstr "FAQs"
 
 #: ../includes/class.form.php:342
 msgid "Have a question, maybe someone else had the same question, please check the FAQs."
-msgstr ""
+msgstr "¿Tiene alguna pregunta, tal vez alguien más tuvo la misma pregunta, por favor revise las preguntas frecuentes."
 
 #: ../includes/class.form.php:348
 msgid "Pro Modules"
-msgstr ""
+msgstr "Módulos Pro"
 
 #: ../includes/class.form.php:353
 msgid "Extend Connections with the Pro Module Addons."
-msgstr ""
+msgstr "Amplie Connections con las extensionse Pro Módulo."
 
 #: ../includes/class.form.php:364
 msgid "Check out the template market."
-msgstr ""
+msgstr "Visite el mercado de plantillas"
 
 #: ../includes/class.form.php:370
 msgid "Bug Report"
-msgstr ""
+msgstr "Reporte Errores"
 
 #: ../includes/class.form.php:375
 msgid "Did you find a bug, please take the time to report it. Thanks."
-msgstr ""
+msgstr "¿Encontró un error, por favor, tómese el tiempo para reportarlo. Gracias."
 
 #: ../includes/class.form.php:381
 msgid "Feature Request"
-msgstr ""
+msgstr "Solicitar Función"
 
 #: ../includes/class.form.php:386
 msgid "Need a feature, request a feature."
-msgstr ""
+msgstr "Necesito una función, solicitar una función"
 
 #: ../includes/class.form.php:412
 #, php-format
@@ -502,11 +502,11 @@ msgstr "Sin Título"
 
 #: ../includes/class.form.php:442
 msgid "ago"
-msgstr ""
+msgstr "hace"
 
 #: ../includes/class.form.php:450
 msgid "<p>No updates at this time</p>"
-msgstr ""
+msgstr "<p>No hay ninguna actualización</p>"
 
 #: ../includes/class.form.php:656
 msgid "Not set"
@@ -551,71 +551,67 @@ msgstr "No"
 
 #: ../includes/class.form.php:702
 msgid "Operating System"
-msgstr ""
+msgstr "Sistema Operativo"
 
 #: ../includes/class.form.php:703
 msgid "Server"
-msgstr ""
+msgstr "Servidor"
 
 #: ../includes/class.form.php:704
-#, fuzzy
 msgid "Memory usage"
-msgstr "Mensaje"
+msgstr "Uso de memoria"
 
 #: ../includes/class.form.php:705
 msgid "MYSQL Version"
-msgstr ""
+msgstr "Versión MYSQL"
 
 #: ../includes/class.form.php:706
 msgid "SQL Mode"
-msgstr ""
+msgstr "Modo SQL"
 
 #: ../includes/class.form.php:707
 msgid "PHP Version"
-msgstr ""
+msgstr "Versión PHP"
 
 #: ../includes/class.form.php:708
 msgid "PHP Safe Mode"
-msgstr ""
+msgstr "Modo Seguro PHP"
 
 #: ../includes/class.form.php:709
 msgid "PHP Allow URL fopen"
-msgstr ""
+msgstr "Parámetro PHP allow_url_fopen"
 
 #: ../includes/class.form.php:710
 msgid "PHP Memory Limit"
-msgstr ""
+msgstr "Limite de Memoria PHP"
 
 #: ../includes/class.form.php:711
 msgid "PHP Max Upload Size"
-msgstr ""
+msgstr "PHP Máximo Tamaño de Subida"
 
 #: ../includes/class.form.php:712
 msgid "PHP Max Post Size"
-msgstr ""
+msgstr "PHP Máximo Tamaño de Entrada "
 
 #: ../includes/class.form.php:713
 msgid "PCRE Backtracking Limit"
-msgstr ""
+msgstr "PCRE Limite de Retroceso"
 
 #: ../includes/class.form.php:714
 msgid "PHP Max Script Execute Time"
-msgstr ""
+msgstr "PHP Máximo Tiempo de Ejecución"
 
 #: ../includes/class.form.php:715
-#, fuzzy
 msgid "PHP Exif support"
-msgstr "No hay soporte para GD"
+msgstr "Soporte PHP Exif"
 
 #: ../includes/class.form.php:716
-#, fuzzy
 msgid "PHP IPTC support"
-msgstr "No hay soporte para GD"
+msgstr "PHP Soporte IPTC"
 
 #: ../includes/class.form.php:717
-#, fuzzy
 msgid "PHP XML support"
-msgstr "No hay soporte para GD"
+msgstr "Soporte PHP XML"
 
 #: ../includes/class.form.php:740
 msgid "No GD support"
@@ -1409,7 +1405,7 @@ msgstr "Habilitar substituir_píblico"
 
 #: ../includes/class.settings.php:264
 msgid "By default all entry's whose status is Public will be visible to all site visitors or registered users not logged in. If the option to require login has been enabled, the <em>public_override</em> shortcode option allows you to override requiring the site vistor to be logged in. This setting is useful in multi author sites where those authors may have a need to display specific entries to the public. For security reasons this option is disabled by default. If checked, this enables this shortcode option."
-msgstr ""
+msgstr "Por defecto, todas las entradas, cuyo estado sea público será visible para todos los visitantes del sitio o de los usuarios registrados aunque no hayan iniciado sesión. Si se ha activado la opción de inicio de sesión"
 
 #: ../includes/class.settings.php:276
 msgid "Enable private_override"
@@ -1417,7 +1413,7 @@ msgstr "Habilitar substituir-privado "
 
 #: ../includes/class.settings.php:277
 msgid "Entries can be set to a Private status which requires the user to be logged in to the site in order for them to be able to view those entries. The <em>private_override</em> shortcode option allows you to override their \"Private\" status. This setting is useful in multi author sites where those authors may have a need to display specific private entries to the public. For security reasons this option is disabled by default. If checked, this enables this shortcode option."
-msgstr ""
+msgstr "Las entradas se pueden configurar como privadas, las cuáles requieren que el usuario haya iniciado sesión en el sitio con el fin de que puedan ver esas entradas. El <em> private_override </ em> opción abreviada le permite anular su estado de \"Privado \""
 
 #: ../includes/class.settings.php:293
 #: ../includes/class.settings.php:353
@@ -1580,6 +1576,8 @@ msgid ""
 "Enabling this option will turn the name of every entry into a link. \n"
 "\t\t\t\tClicking the link will take you to the page with only that entry."
 msgstr ""
+"Al habilitar esta opción se convertirá el nombre de cada entrada en un enlace. \n"
+"\t\t\t\tHaciendo clic en el enlace lo llevará a la página con sólo esa entrada."
 
 #: ../includes/class.settings.php:739
 msgid "Telephone Number"
@@ -1587,7 +1585,7 @@ msgstr "Teléfono"
 
 #: ../includes/class.settings.php:740
 msgid "Enabling this option will turn every telephone number into a link that when clicked by the user on a mobile phone or computer with a telephony application installed will dial the number."
-msgstr ""
+msgstr "Al habilitar esta opción convertira cada número de teléfono en un enlace que al hacer clic el usuario en un teléfono móvil o una computadora con una aplicación de telefonía instalada marcará el número."
 
 #: ../includes/class.settings.php:753
 msgid "Google Maps API v3"
@@ -1618,9 +1616,8 @@ msgid "You do not have sufficient permissions to access this page."
 msgstr "Usted no tiene autorización para acceder a esta página."
 
 #: ../includes/inc.upgrade.php:30
-#, fuzzy
 msgid "Upgrade"
-msgstr "Necesario actualizar"
+msgstr "Actualizar"
 
 #: ../includes/inc.upgrade.php:44
 msgid "Upgrade Required"
@@ -1628,15 +1625,15 @@ msgstr "Necesario actualizar"
 
 #: ../includes/inc.upgrade.php:45
 msgid "Your database tables are out of date and must be upgraded before you can continue."
-msgstr ""
+msgstr "Sus tablas de la base de datos están desactualizadas y deben actualizarse antes de poder continuar."
 
 #: ../includes/inc.upgrade.php:46
 msgid "If you would like to downgrade later, please first make a complete backup of your database tables."
-msgstr ""
+msgstr "Si usted desea hacer un downgrade más tarde, por favor, primero haga una copia de seguridad completa de las tablas de sus bases de datos."
 
 #: ../includes/inc.upgrade.php:47
 msgid "Start Upgrade"
-msgstr ""
+msgstr "Iniciar Actualización"
 
 #: ../includes/inc.upgrade.php:75
 msgid "Upgrade the database structure..."
@@ -1889,14 +1886,12 @@ msgid "Continue"
 msgstr "Continuar"
 
 #: ../submenus/categories.php:44
-#, fuzzy
 msgid "Edit Category"
-msgstr "Editar Categorías"
+msgstr "Editar Categoría"
 
 #: ../submenus/categories.php:60
-#, fuzzy
 msgid "Update Category"
-msgstr "Sleccionar Categoría"
+msgstr "Actualizar Categoría"
 
 #: ../submenus/categories.php:92
 #: ../submenus/manage.php:391
@@ -1911,17 +1906,16 @@ msgstr "Aplicar"
 #: ../submenus/categories.php:110
 #: ../submenus/categories.php:120
 msgid "Info"
-msgstr ""
+msgstr "Información"
 
 #: ../submenus/categories.php:148
 msgid "<strong>Note:</strong><br/>Deleting a category which has been assigned to an entry will reassign that entry as <strong>Uncategorized</strong>."
-msgstr ""
+msgstr "<strong>Nota</strong><br/>Al eliminar una categoría, que ha sido asignado a una entrada volverá a asignar esa entrada como <strong>Sin Clasificación</strong>."
 
 #: ../submenus/categories.php:157
 #: ../submenus/categories.php:171
-#, fuzzy
 msgid "Add New Category"
-msgstr "Sleccionar Categoría"
+msgstr "Agregar Nueva Categoría"
 
 #: ../submenus/manage.php:84
 msgid "Copy Entry"
@@ -1934,22 +1928,20 @@ msgstr "Agregar Nuevo"
 #: ../submenus/manage.php:262
 #: ../submenus/templates.php:42
 msgid "All"
-msgstr ""
+msgstr "Todos"
 
 #: ../submenus/manage.php:263
-#, fuzzy
 msgid "Approved"
-msgstr "Aprobar"
+msgstr "Aprobado"
 
 #: ../submenus/manage.php:264
 msgid "Moderate"
-msgstr ""
+msgstr "Moderar"
 
 #: ../submenus/manage.php:271
 #: ../submenus/manage.php:273
-#, fuzzy
 msgid "Search Entries"
-msgstr "Campos de Búsqueda"
+msgstr "Buscar Entradas"
 
 #: ../submenus/manage.php:290
 msgid "Show All Enties"
@@ -2020,7 +2012,7 @@ msgstr "Aprobar"
 
 #: ../submenus/manage.php:399
 msgid "Set Public"
-msgstr "Píblico"
+msgstr "Público"
 
 #: ../submenus/manage.php:400
 msgid "Set Private"
@@ -2036,9 +2028,8 @@ msgstr "Ir a"
 
 #: ../submenus/manage.php:456
 #: ../submenus/manage.php:465
-#, fuzzy
 msgid "Last Modified"
-msgstr "Recientemente Modificados"
+msgstr "Recientemente Modificado"
 
 #: ../submenus/manage.php:514
 msgid "No Photo Available"
@@ -2095,21 +2086,19 @@ msgstr "Imágen enlazada"
 
 #: ../submenus/templates.php:39
 msgid "Get More"
-msgstr ""
+msgstr "Obtener más"
 
 #: ../submenus/templates.php:56
-#, fuzzy
 msgid "Current Template"
-msgstr "Página actual."
+msgstr "Plantilla actual."
 
 #: ../submenus/templates.php:73
 msgid "Visit author's homepage."
 msgstr "Visitar página autor"
 
 #: ../submenus/templates.php:97
-#, fuzzy
 msgid "Instructions"
-msgstr "Instrucciones Imágen y Logo"
+msgstr "Instrucciones"
 
 #: ../submenus/templates.php:99
 msgid ""
@@ -2120,28 +2109,34 @@ msgid ""
 "\t\t\t\t\t\t\t\tentry types are specified in the <code><a href=\"http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/list_type/\">list_type</a></code> shortcode option, the template for the entry type listed first\n"
 "\t\t\t\t\t\t\t\twill be used to display the entry list."
 msgstr ""
+"Por defecto el <code><a href=\"http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/\">[connections]</a></code> abreviado mostrara todos los tipos de entradas. Para cambiar la plantillae\n"
+"\t\t\t\t\t\t\t\tusada cuando muestra todos los tipos de entradas, seleccione la pestaña \"Todos\" y active la plantilla. Cuando <code><a href=\"http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/list_type/\">list_type</a></code>\n"
+"\t\t\t\t\t\t\t\tse us la opción abreviada para filtrar las entradas basadas eb ek tuoi de ntrada, se usara la plantilla para esa entrada se usara.\n"
+"\t\t\t\t\t\t\t\tPara cambiar la plantilla utilizada para un tipo específico de entrada, seleccione la pestaña correspondiente y luego active la plantilla. Si múltiple.\n"
+"\t\t\t\t\t\t\t\ttipos de entrada  se especifican en la <code><a href=\"http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/list_type/\">list_type</a></code> opción abreviada,a plantilla para el tipo de entrada aparece en primer lugar\n"
+"\t\t\t\t\t\t\t\tSe utiliza para mostrar la lista de entradas."
 
 #: ../submenus/templates.php:108
 msgid ""
 "The <code><a href=\"http://connections-pro.com/documentation/plugin/shortcodes/shortcode-upcoming-list/\">[upcoming_list]</a></code> shortcode which displays the upcoming anniversaries and birthdays will be displayed with the template\n"
 "\t\t\t\t\t\t\t\tthat is activated under their respective tabs."
 msgstr ""
+"El <code><a href=\"http://connections-pro.com/documentation/plugin/shortcodes/shortcode-upcoming-list/\">[upcoming_list]</a></code> abreviado que muestra los próximos aniversarios y cumpleaños los desplegara con la plantilla\n"
+"\t\t\t\t\t\t\t\tque este activada bajo sus pestañas correspondientes"
 
 #: ../submenus/templates.php:113
 msgid "The current active template for each template type can be overridden by using the the <code><a href=\"http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/template/\">template</a></code> shortcode option."
-msgstr ""
+msgstr "La plantilla actual activa para cada tipo de plantilla se puede anular mediante la<code><a href=\"http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/template/\">plantilla</a></code> opción abreviada."
 
 #: ../submenus/roles.php:34
-#, fuzzy
 msgid "Roles &amp; Capabilities"
 msgstr "Roles &amp; Permisos"
 
 #: ../submenus/roles.php:51
 msgid "Save Changes or Reset"
-msgstr ""
+msgstr "Salvar Cambios o Resetear"
 
 #: ../submenus/roles.php:59
-#, fuzzy
 msgid "Reset All Role Capabilities"
 msgstr "Restablecer  %s Permisos"
 
