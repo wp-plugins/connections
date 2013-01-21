@@ -60,11 +60,12 @@ if ( ! class_exists('cnSettingsAPI') )
 		 * @since 0.7.3.0
 		 * @return void
 		 */
-		public function getInstance()
+		public static function getInstance()
 		{
 			if ( ! self::$_instance )
 			{
 				self::$_instance = new cnSettingsAPI();
+				self::$_instance->init();
 			}
 			
 			return self::$_instance;
@@ -882,4 +883,3 @@ if ( ! class_exists('cnSettingsAPI') )
 		}
 	}
 }
-?>
