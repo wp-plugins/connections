@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.3.5
+Version: 0.7.3.6
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 Text Domain: connections
@@ -216,20 +216,23 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 
 			define( 'CN_LOG', FALSE );
 
-			define( 'CN_CURRENT_VERSION', '0.7.3.5' );
+			define( 'CN_CURRENT_VERSION', '0.7.3.6' );
 			define( 'CN_DB_VERSION', '0.1.9' );
 
 			/*
-			 * By default Connections will install and run as a single site install
-			 * on a multisite install. This requires manual activation on each sub-site.
-			 *
-			 * To run Connections in multisite mode.
-			 * Add to wp-config.php: define('CN_MULTISITE_ENABLED', TRUE);
+			 * To run Connections in single site mode on multi-site.
+			 * Add to wp-config.php: define('CN_MULTISITE_ENABLED', FALSE);
 			 *
 			 * @credit lancelot-du-lac
 			 * @url http://wordpress.org/support/topic/plugin-connections-support-multisite-in-single-mode
 			 */
-			if ( ! defined( 'CN_MULTISITE_ENABLED' ) ) define( 'CN_MULTISITE_ENABLED', FALSE );
+			if ( ! defined( 'CN_MULTISITE_ENABLED' ) ) {
+				if ( is_multisite() ) {
+					define( 'CN_MULTISITE_ENABLED', TRUE );
+				} else {
+					define( 'CN_MULTISITE_ENABLED', FALSE );
+				}
+			}
 
 
 			/*
@@ -1265,7 +1268,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			if ( $connections->options->getGoogleMapsAPI() || is_admin() ) {
 				wp_register_script( 'cn-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, $connections->options->getJavaScriptFooter() );
 				wp_register_script( 'jquery-gomap-min', CN_URL . 'js/jquery.gomap-1.3.2.min.js', array( 'jquery' , 'cn-google-maps-api' ), '1.3.2', $connections->options->getJavaScriptFooter() );
-				wp_register_script( 'jquery-markerclusterer-min', CN_URL . 'js/jquery.markerclusterer-2.0.10.min.js', array( 'jquery' , 'cn-google-maps-api' , 'jquery-gomap-min' ), '2.0.10', $connections->options->getJavaScriptFooter() );
+				wp_register_script( 'jquery-markerclusterer-min', CN_URL . 'js/jquery.markerclusterer.min.js', array( 'jquery' , 'cn-google-maps-api' , 'jquery-gomap-min' ), '2.0.15', $connections->options->getJavaScriptFooter() );
 			} else {
 				wp_register_script( 'jquery-gomap-min', CN_URL . 'js/jquery.gomap-1.3.2.min.js', array( 'jquery' ), '1.3.2', $connections->options->getJavaScriptFooter() );
 				wp_register_script( 'jquery-markerclusterer-min', CN_URL . 'js/jquery.markerclusterer.min.js', array( 'jquery' , 'jquery-gomap-min' ), '2.0.15', $connections->options->getJavaScriptFooter() );
@@ -1303,10 +1306,10 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 				wp_register_style( 'cn-admin-jquery-ui', CN_URL . 'css/jquery-ui-' . ( 'classic' == get_user_option( 'admin_color' ) ? 'classic' : 'fresh' ) . '.css', array(), CN_CURRENT_VERSION );
 			} else {
 				wp_register_style( 'connections-user', CN_URL . 'css/cn-user.css', array(), CN_CURRENT_VERSION );
-				wp_register_style( 'connections-qtip', CN_URL . 'css/jquery.qtip.min.css', array(), 'nightly' );
+				wp_register_style( 'connections-qtip', CN_URL . 'css/jquery.qtip.min.css', array(), '2.0.1' );
 			}
 
-			wp_register_style( 'connections-chosen', CN_URL . 'css/chosen.css', array(), '0.9.8' );
+			wp_register_style( 'connections-chosen', CN_URL . 'css/chosen.css', array(), '0.9.11' );
 		}
 
 		/**
