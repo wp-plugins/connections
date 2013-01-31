@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.3.6
+Version: 0.7.3.7
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 Text Domain: connections
@@ -216,7 +216,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 
 			define( 'CN_LOG', FALSE );
 
-			define( 'CN_CURRENT_VERSION', '0.7.3.6' );
+			define( 'CN_CURRENT_VERSION', '0.7.3.7' );
 			define( 'CN_DB_VERSION', '0.1.9' );
 
 			/*
@@ -254,7 +254,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			/*
 			 * Set the table prefix accordingly depedning if Connections is installed on a multisite WP installation.
 			 */
-			$prefix = ( is_multisite() && CN_MULTISITE_ENABLED ) ? $wpdb->base_prefix : $wpdb->prefix;
+			$prefix = ( is_multisite() && CN_MULTISITE_ENABLED ) ? $wpdb->prefix : $wpdb->base_prefix;
 
 			define( 'CN_ENTRY_TABLE', $prefix . 'connections' );
 			define( 'CN_ENTRY_ADDRESS_TABLE', $prefix . 'connections_address' );
