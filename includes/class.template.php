@@ -456,6 +456,99 @@ class cnTemplate {
 	}
 
 	/**
+	 * Creates the initisl character filter control.
+	 *
+	 * Accepted option for the $atts property are:
+	 * 	return (bool) Whether or not to return or echo the result.
+	 *
+	 * @access public
+	 * @since 0.7.4
+	 * @uses add_query_arg()
+	 * @uses get_query_var()
+	 * @uses wp_parse_args()
+	 * @uses is_admin()
+	 * @param  (array)  $atts [description]
+	 * @return (string)
+	 */
+	public static function index( $atts = array() ) {
+		$out = '';
+		$current = '';
+
+		$defaults = array(
+			'status' => array( 'approved' ),
+			'return' => FALSE
+		);
+
+		$atts = wp_parse_args( $atts, $defaults );
+
+		$characters = cnRetrieve::getCharacters( $atts );
+		$currentPageURL = add_query_arg( array( 'page' => FALSE , 'connections_process' => TRUE , 'process' => 'manage' , 'action' => 'filter' )  );
+
+		// If in the admin init an instance of the cnFormObjects class to be used to create the URL nonce.
+		if ( is_admin() ) $form = new cnFormObjects();
+
+		// Current character
+		if ( is_admin() ) {
+			if ( isset( $_GET['cn-char'] ) && 0 < strlen( $_GET['cn-char'] ) ) $current = urldecode( $_GET['cn-char'] );
+		} else {
+			if ( get_query_var('cn-char') ) $current = urldecode( get_query_var('cn-char') );
+		}
+
+		foreach ( $characters as $key => $char ) {
+			$char = strtoupper( $char );
+
+			// If we're in the admin, add the nonce to the URL to be verified when settings the current user filter.
+			if ( is_admin() ) {
+				$out .= '<a' . ( $current == $char ? ' class="cn-char-current"' : ' class="cn-char"' ) . ' href="' . $form->tokenURL( add_query_arg( array( 'cn-char' => urlencode( $char ) ) , $currentPageURL ) , 'filter' ) . '">' . $char . '</a> ';
+			} else {
+				$out .= '<a' . ( $current == $char ? ' class="cn-char-current"' : ' class="cn-char"' ) . ' href="' . add_query_arg( array( 'cn-char' => urlencode( $char ) ) , $currentPageURL ) . '">' . $char . '</a> ';
+			}
+
+		}
+
+		if ( $atts['return'] ) return $out;
+		echo $out;
+	}
+
+	/**
+	 * Retrieves the current character and outs a hidden form input.
+	 *
+	 * @access public
+	 * @since 0.7.4
+	 * @uses wp_parse_args()
+	 * @uses is_admin()
+	 * @uses get_query_var()
+	 * @uses esc_attr()
+	 * @param  (array)
+	 * @return (string)
+	 */
+	public static function currentCharacter( $atts = array() ) {
+		$out = '';
+		$current = '';
+
+		$defaults = array(
+			'type'   => 'input',	// Resevered for future use. Will define the type of output to render. In this case a form input.
+			'hidden' => TRUE,
+			'return' => FALSE
+		);
+
+		$atts = wp_parse_args( $atts, $defaults );
+
+		// Current character
+		if ( is_admin() ) {
+			if ( isset( $_GET['cn-char'] ) && 0 < strlen( $_GET['cn-char'] ) ) $current = urldecode( $_GET['cn-char'] );
+		} else {
+			if ( get_query_var('cn-char') ) $current = urldecode( get_query_var('cn-char') );
+		}
+
+		// Only output if there is a current character set in the query string.
+		if ( 0 < strlen( $current ) ) $out .= '<input class="cn-current-char-input" name="cn-char" title="' . __('Current Character', 'connections') . '" type="' . ( $atts['hidden'] ? 'hidden' : 'text' ) . '" size="1" value="' . esc_attr( $current ) . '">';
+
+		if ( $atts['return'] ) return $out;
+		echo $out;
+	}
+
+	/**
 	 * Creates the pagination controls.
 	 *
 	 * Accepted option for the $atts property are:
@@ -506,6 +599,7 @@ class cnTemplate {
 
 			// Store the query vars
 			if ( get_query_var('cn-s') ) $queryVars['cn-s'] = get_query_var('cn-s');
+			if ( get_query_var('cn-char') ) $queryVars['cn-char'] = get_query_var('cn-char');
 			if ( get_query_var('cn-cat') ) $queryVars['cn-cat'] = get_query_var('cn-cat');
 			if ( get_query_var('cn-near-coord') ) $queryVars['cn-near-coord'] = get_query_var('cn-near-coord');
 			if ( get_query_var('cn-radius') ) $queryVars['cn-radius'] = get_query_var('cn-radius');
@@ -556,11 +650,11 @@ class cnTemplate {
 			$out .= '<span class="cn-page-nav" id="cn-page-nav">';
 
 			$out .= '<a href="' . $url['first'] . '" title="' . __('First Page', 'connections') . '" class="cn-first-page' . $disabled['first'] . '">&laquo;</a> ';
-			$out .= '<a href="' . $url['previous'] . '" title="' . __('Previous Page', 'connections') . '" class="cn-prev-page' . $disabled['previous'] . '">&lsaquo;</a> ';
+			$out .= '<a href="' . $url['previous'] . '" title="' . __('Previous Page', 'connections') . '" class="cn-prev-page' . $disabled['previous'] . '" rel="prev">&lsaquo;</a> ';
 
 			$out .= '<span class="cn-paging-input"><input type="text" size="1" value="' . $current . '" name="cn-pg" title="' . __('Current Page', 'connections') . '" class="current-page"> ' . __('of', 'connections') . ' <span class="total-pages">' . $pageCount . '</span></span> ';
 
-			$out .= '<a href="' . $url['next'] . '" title="' . __('Next Page', 'connections') . '" class="cn-next-page' . $disabled['next'] . '">&rsaquo;</a> ';
+			$out .= '<a href="' . $url['next'] . '" title="' . __('Next Page', 'connections') . '" class="cn-next-page' . $disabled['next'] . '" rel="next">&rsaquo;</a> ';
 			$out .= '<a href="' . $url['last'] . '" title="' . __('Last Page', 'connections') . '" class="cn-last-page' . $disabled['last'] . '">&raquo;</a>';
 
 			$out .= '</span>';
@@ -1169,7 +1263,31 @@ class cnTemplate {
 				$slug = array( $category->slug );
 			}
 
-			$out .= '<li class="cat-item cat-item-' . $category->term_id . ' cn-cat-parent">';
+			/*
+			 * Get tge current category from the URL / query string.
+			 */
+			if ( get_query_var( 'cn-cat-slug' ) ) {
+
+				// Category slug
+				$queryCategorySlug = get_query_var( 'cn-cat-slug' );
+				if ( ! empty( $queryCategorySlug ) ) {
+					// If the category slug is a descendant, use the last slug from the URL for the query.
+					$queryCategorySlug = explode( '/' , $queryCategorySlug );
+
+					if ( isset( $queryCategorySlug[ count( $queryCategorySlug )-1 ] ) ) $currentCategory = $queryCategorySlug[ count( $queryCategorySlug )-1 ];
+				}
+
+			} elseif ( get_query_var( 'cn-cat' ) ) {
+
+				$currentCategory = get_query_var( 'cn-cat' );
+
+			} else {
+
+				$currentCategory = '';
+
+			}
+
+			$out .= '<li class="cat-item cat-item-' . $category->term_id . ( $currentCategory == $category->slug || $currentCategory == $category->term_id ? ' current-cat' : '' ) . ' cn-cat-parent">';
 
 			// Create the permalink anchor.
 			$out .= $connections->url->permalink( array(

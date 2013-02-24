@@ -27,6 +27,7 @@ class cnRetrieve {
 		$from[] = CN_ENTRY_TABLE;
 		$join = array();
 		$where[] = 'WHERE 1=1';
+		$having = array();
 		$orderBy = array();
 		$visibility = array();
 
@@ -43,6 +44,7 @@ class cnRetrieve {
 		$defaults['category_name'] = NULL;
 		$defaults['category_slug'] = NULL;
 		$defaults['wp_current_category'] = FALSE;
+		$defaults['char'] = '';
 		$defaults['id'] = NULL;
 		$defaults['slug'] = NULL;
 		$defaults['family_name'] = NULL;
@@ -112,6 +114,10 @@ class cnRetrieve {
 			// Entry slug
 			$queryEntrySlug = get_query_var( 'cn-entry-slug' );
 			if ( ! empty( $queryEntrySlug ) ) $atts['slug'] = urldecode( $queryEntrySlug );
+
+			// Initial character.
+			$queryInitialChar = get_query_var( 'cn-char' );
+			if ( ! empty( $queryInitialChar ) ) $atts['char'] = urldecode( $queryInitialChar );
 
 			// Pagination
 			$queryPage = get_query_var( 'cn-pg' );
@@ -418,6 +424,10 @@ class cnRetrieve {
 			if ( ! empty( $atts['zip_code'] ) ) $where[] = $wpdb->prepare( 'AND ' . CN_ENTRY_ADDRESS_TABLE . '.zipcode = %s' , $atts['zip_code'] );
 			if ( ! empty( $atts['country'] ) ) $where[] = $wpdb->prepare( 'AND ' . CN_ENTRY_ADDRESS_TABLE . '.country = %s' , $atts['country'] );
 		}
+
+		if ( 0 < strlen( $atts['char'] ) ) {
+			$having[] = $wpdb->prepare( 'HAVING sort_column LIKE %s' , like_escape ( $atts['char'] ) . '%' );
+		}
 		/*
 		 * // END --> Set up the query to only return the entries that match the supplied filters.
 		 */
@@ -707,7 +717,7 @@ class cnRetrieve {
 		 */
 
 
-		$sql = 'SELECT SQL_CALC_FOUND_ROWS DISTINCT ' . implode( ', ', $select ) . 'FROM ' . implode( ', ', $from ) . ' ' . implode( ' ', $join ) . ' ' . implode( ' ', $where ) . ' ' . $orderBy . ' ' . $limit . $offset;
+		$sql = 'SELECT SQL_CALC_FOUND_ROWS DISTINCT ' . implode( ', ', $select ) . 'FROM ' . implode( ', ', $from ) . ' ' . implode( ' ', $join ) . ' ' . implode( ' ', $where ) . ' ' . ' ' . implode( ' ', $having ) . ' ' . $orderBy . ' ' . $limit . $offset;
 		//print_r($sql); die;
 
 		$results = $wpdb->get_results( $sql );
@@ -762,6 +772,172 @@ class cnRetrieve {
 		global $wpdb;
 
 		return $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . CN_ENTRY_TABLE . ' WHERE id="%d"' , $id ) );
+	}
+
+	/**
+	 * Retrieve the unique initial characters of all entries in the entry table sorted by character.
+	 *
+	 * @access public
+	 * @since 0.7.4
+	 * @return (array)
+	 */
+	public static function getCharacters( $atts = array() ) {
+		global $wpdb;
+		$where[] = 'WHERE 1=1';
+
+		$defaults = array(
+			'status'                => array( 'approved' ),
+			'visibility'            => array(),
+			'allow_public_override' => FALSE,
+			'private_override'      => FALSE
+		);
+
+		$atts = wp_parse_args( $atts, $defaults );
+
+		// Limit the characters that are queried based on if the current user can view public, private or unlisted entries.
+		$where = self::setQueryVisibility( $where, $atts );
+
+		// Limit the characters that are queried based on if the current user can view approved and/or pending entries.
+		$where = self::setQueryStatus( $where, $atts );
+
+
+		$select = 'SUBSTRING( CASE `entry_type`
+					  WHEN \'individual\' THEN `last_name`
+					  WHEN \'organization\' THEN `organization`
+					  WHEN \'connection_group\' THEN `family_name`
+					  WHEN \'family\' THEN `family_name`
+					END, 1, 1 ) AS `char`';
+
+		return $wpdb->get_col( 'SELECT DISTINCT ' . $select . ' FROM ' . CN_ENTRY_TABLE . ' '  . implode( ' ', $where ) . ' ORDER BY `char`' );
+	}
+
+	/**
+	 * Set up the query to only return the entries based on user permissions.
+	 *
+	 * @param (array) $where
+	 * @param (array) $atts
+	 *
+	 * @access private
+	 * @since 0.7.4
+	 * @uses wp_parse_args()
+	 * @uses is_user_logged_in()
+	 * @uses current_user_can()
+	 * @return (array)
+	 */
+	public static function setQueryVisibility( $where, $atts = array() ) {
+		global $connections;
+		$visibility = array();
+
+		$defaults = array(
+			'visibility'            => array(),
+			'allow_public_override' => FALSE,
+			'private_override'      => FALSE
+		);
+
+		$atts = wp_parse_args( $atts, $defaults );
+
+		if ( is_user_logged_in() ) {
+
+			if ( ! isset( $atts['visibility'] ) || empty( $atts['visibility'] ) ) {
+				if ( current_user_can( 'connections_view_public' ) ) $visibility[] = 'public';
+				if ( current_user_can( 'connections_view_private' ) ) $visibility[] = 'private';
+				if ( current_user_can( 'connections_view_unlisted' ) && is_admin() ) $visibility[] = 'unlisted';
+			} else {
+				// Convert the supplied entry statuses $atts['visibility'] to an array.
+				if ( ! is_array( $atts['visibility'] ) ) {
+					// Trim the space characters if present.
+					$atts['visibility'] = str_replace( ' ', '', $atts['visibility'] );
+
+					// Convert to array.
+					$atts['visibility'] = explode( ',', $atts['visibility'] );
+				}
+
+				$visibility[] = $atts['visibility'];
+			}
+
+		} else {
+			//var_dump( $connections->options->getAllowPublic() ); die;
+
+			// Display the 'public' entries if the user is not required to be logged in.
+			if ( $connections->options->getAllowPublic() ) $visibility[] = 'public';
+
+			// Display the 'public' entries if the public override shortcode option is enabled.
+			if ( $connections->options->getAllowPublicOverride() ) {
+				if ( $atts['allow_public_override'] == TRUE ) $visibility[] = 'public';
+			}
+
+			// Display the 'public' & 'private' entries if the private override shortcode option is enabled.
+			if ( $connections->options->getAllowPrivateOverride() ) {
+				// If the user can view private entries then they should be able to view public entries too, so we'll add it. Just check to see if it is already set first.
+				if ( ! in_array( 'public', $visibility ) && $atts['private_override'] == TRUE ) $visibility[] = 'public';
+				if ( $atts['private_override'] == TRUE ) $visibility[] = 'private';
+			}
+
+		}
+
+		$where[] = 'AND ' . CN_ENTRY_TABLE . '.visibility IN (\'' . implode( "', '", $visibility ) . '\')';
+
+		return $where;
+	}
+
+	/**
+	 * Set up the query to only return the entries based on status.
+	 *
+	 * @param (array) $where
+	 * @param (array) $atts
+	 *
+	 * @access private
+	 * @since 0.7.4
+	 * @uses wp_parse_args()
+	 * @uses is_user_logged_in()
+	 * @uses current_user_can()
+	 * @return (array)
+	 */
+	public static function setQueryStatus( $where, $atts = array() ) {
+		$valid = array( 'approved', 'pending' );
+
+		$defaults = array(
+			'status' => array( 'approved' )
+		);
+
+		$atts = wp_parse_args( $atts, $defaults );
+
+		// Convert the supplied entry statuses $atts['status'] to an array.
+		if ( ! is_array( $atts['status'] ) ) {
+			// Trim the space characters if present.
+			$status = str_replace( ' ', '', $atts['status'] );
+
+			// Convert to array.
+			$status = explode( ',', $status );
+		} else {
+			$status = $atts['status'];
+		}
+
+		if ( is_user_logged_in() ) {
+			// If 'all' was supplied, set the array to all the permitted entry status types.
+			if ( in_array( 'all', $status ) ) $status = $valid;
+
+			// Limit the viewable status per role capability assigned to the current user.
+			if ( current_user_can( 'connections_edit_entry' ) ) {
+				$permitted = array( 'approved', 'pending' );
+
+				$status = array_intersect( $permitted, $status );
+
+			} elseif ( current_user_can( 'connections_edit_entry_moderated' ) ) {
+				$permitted = array( 'approved' );
+
+				$status = array_intersect( $permitted, $status );
+
+			} else {
+				$permitted = array( 'approved' );
+
+				$status = array_intersect( $permitted, $status );
+			}
+		}
+
+		$where[] = 'AND ' . CN_ENTRY_TABLE . '.status IN (\'' . implode( "', '", $status ) . '\')';
+
+		return $where;
 	}
 
 	public function upcoming( $atts = array() ) {
@@ -1697,8 +1873,7 @@ class cnRetrieve {
 		 * 		MySQL has a default stopwords file that has a list of common words (i.e., the, that, has) which are not returned in your search. In other words, searching for the will return zero rows.
 		 * 		According to MySQL's manual, the argument to AGAINST() must be a constant string. In other words, you cannot search for values returned within the query.
 		 */
-		//var_dump( $connections->options->getSearchUsingFulltext() );
-		if ( $connections->options->getSearchUsingFulltext() ) {
+		if ( $connections->settings->get( 'connections', 'connections_search', 'fulltext_enabled' ) ) {
 			// Convert the search terms to a string adding the wild card to the end of each term to allow wider search results.
 			//$terms = implode( '* ' , $atts['terms'] ) . '*';
 			$terms = '+' . implode( ' +' , $atts['terms'] );
@@ -1745,7 +1920,7 @@ class cnRetrieve {
 		 * Perform the search on each table individually because joining the tables doesn't scale when
 		 * there are a large number of entries.
 		 */
-		if ( TRUE ) {
+		if ( $connections->settings->get( 'connections', 'connections_search', 'keyword_enabled' ) ) {
 			/*
 			 * Only search the primary records if at least one fields is selected to be searched.
 			 */

@@ -246,6 +246,8 @@ function connectionsShowViewPage( $action = NULL ) {
 
 				$retrieveAttr['list_type'] = $connections->currentUser->getFilterEntryType();
 				$retrieveAttr['category'] = $connections->currentUser->getFilterCategory();
+
+				$retrieveAttr['char'] = isset( $_GET['cn-char'] ) && 0 < strlen( $_GET['cn-char'] ) ? $_GET['cn-char'] : '';
 				$retrieveAttr['visibility'] = $connections->currentUser->getFilterVisibility();
 				$retrieveAttr['status'] = $connections->currentUser->getFilterStatus();
 
@@ -255,7 +257,7 @@ function connectionsShowViewPage( $action = NULL ) {
 				if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) $retrieveAttr['search_terms'] = $_GET['s'];
 
 				$results = $connections->retrieve->entries( $retrieveAttr );
-				//print_r($connections->lastQuery);
+				// print_r($connections->lastQuery);
 				?>
 
 							<?php if ( current_user_can( 'connections_edit_entry' ) ) { ?>
@@ -413,25 +415,14 @@ function connectionsShowViewPage( $action = NULL ) {
 				?>
 
 								<div class="tablenav-pages">
-									<?php
-				echo '<span class="displaying-num">' , __( 'Jump to', 'connections' ) , ':</span>';
+				<?php
 
 				/*
-										 * Dynamically builds the alpha index based on the available entries.
-										 */
-				$previousLetter = NULL;
-				$setAnchor = NULL;
-
-				foreach ( $results as $row ) {
-					$entry = new cnEntry( $row );
-					$currentLetter = strtoupper( mb_substr( $entry->getSortColumn(), 0, 1 ) );
-					if ( $currentLetter != $previousLetter ) {
-						$setAnchor .= '<a href="#' . $currentLetter . '">' . $currentLetter . '</a> ';
-						$previousLetter = $currentLetter;
-					}
-				}
-
-				echo $setAnchor;
+				 * Display the character filter control.
+				 */
+				echo '<span class="displaying-num">' , __( 'Filter by character:', 'connections' ) , '</span>';
+				cnTemplate::index( array( 'status' => $connections->currentUser->getFilterStatus() ) );
+				cnTemplate::currentCharacter();
 				?>
 								</div>
 							</div>
@@ -458,7 +449,9 @@ function connectionsShowViewPage( $action = NULL ) {
 								</tfoot>
 								<tbody>
 
-									<?php
+				<?php
+
+				$previousLetter = '';
 
 				foreach ( $results as $row ) {
 					/**

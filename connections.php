@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.3.7
+Version: 0.7.4
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 Text Domain: connections
@@ -135,9 +135,6 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			$this->loadDependencies();
 			$this->initDependencies();
 
-			// Init the options if there is a version change just in case there were any changes.
-			if ( version_compare( $this->options->getVersion() , CN_CURRENT_VERSION ) < 0 ) $this->initOptions();
-
 			// Activation/Deactivation hooks
 			register_activation_hook( dirname( __FILE__ ) . '/connections.php', array( $this, 'activate' ) );
 			register_deactivation_hook( dirname( __FILE__ ) . '/connections.php', array( $this, 'deactivate' ) );
@@ -216,7 +213,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 
 			define( 'CN_LOG', FALSE );
 
-			define( 'CN_CURRENT_VERSION', '0.7.3.7' );
+			define( 'CN_CURRENT_VERSION', '0.7.4' );
 			define( 'CN_DB_VERSION', '0.1.9' );
 
 			/*
@@ -350,83 +347,106 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 
 			// Register all valid query variables.
 			cnRewrite::init();
+
+			// Init the options if there is a version change just in case there were any changes.
+			if ( version_compare( $this->options->getVersion() , CN_CURRENT_VERSION ) < 0 ) $this->initOptions();
 		}
 
 		/**
 		 * During activation this will initiate the options.
 		 */
 		private function initOptions() {
-			/*
-			 * Retrieve the settings stored prior to 0.7.3 and migrate them
-			 * so they will be accessible in the structure supported by the
-			 * Connections WordPress Settings API Wrapper Class.
-			 */
-			if ( get_option( 'connections_options' ) !== FALSE ) {
-				$options = get_option( 'connections_options' );
+			$version = $this->options->getVersion();
 
-				if ( get_option( 'connections_login' ) === FALSE ) {
-					update_option( 'connections_login' , array(
-							'required' => $options['settings']['allow_public'],
-							'message' => 'Please login to view the directory.'
-						)
-					);
-				}
+			switch ( TRUE ) {
 
-				if ( get_option( 'connections_visibility' ) === FALSE ) {
-					update_option( 'connections_visibility' , array(
-							'allow_public_override' => $options['settings']['allow_public_override'],
-							'allow_private_override' => $options['settings']['allow_private_override']
-						)
-					);
-				}
+				case ( version_compare( $version, '0.7.3', '<' ) ) :
+					/*
+					 * Retrieve the settings stored prior to 0.7.3 and migrate them
+					 * so they will be accessible in the structure supported by the
+					 * Connections WordPress Settings API Wrapper Class.
+					 */
+					if ( get_option( 'connections_options' ) !== FALSE ) {
+						$options = get_option( 'connections_options' );
 
-				if ( get_option( 'connections_image_thumbnail' ) === FALSE ) {
-					update_option( 'connections_image_thumbnail' , array(
-							'quality' => $options['settings']['image']['thumbnail']['quality'],
-							'width' => $options['settings']['image']['thumbnail']['x'],
-							'height' => $options['settings']['image']['thumbnail']['y'],
-							'ratio' => $options['settings']['image']['thumbnail']['crop']
-						)
-					);
-				}
-				if ( get_option( 'connections_image_medium' ) === FALSE ) {
-					update_option( 'connections_image_medium' , array(
-							'quality' => $options['settings']['image']['entry']['quality'],
-							'width' => $options['settings']['image']['entry']['x'],
-							'height' => $options['settings']['image']['entry']['y'],
-							'ratio' => $options['settings']['image']['entry']['crop']
-						)
-					);
-				}
+						if ( get_option( 'connections_login' ) === FALSE ) {
+							update_option( 'connections_login' , array(
+									'required' => $options['settings']['allow_public'],
+									'message' => 'Please login to view the directory.'
+								)
+							);
+						}
 
-				if ( get_option( 'connections_image_large' ) === FALSE ) {
-					update_option( 'connections_image_large' , array(
-							'quality' => $options['settings']['image']['profile']['quality'],
-							'width' => $options['settings']['image']['profile']['x'],
-							'height' => $options['settings']['image']['profile']['y'],
-							'ratio' => $options['settings']['image']['profile']['crop']
-						)
-					);
-				}
+						if ( get_option( 'connections_visibility' ) === FALSE ) {
+							update_option( 'connections_visibility' , array(
+									'allow_public_override' => $options['settings']['allow_public_override'],
+									'allow_private_override' => $options['settings']['allow_private_override']
+								)
+							);
+						}
 
-				if ( get_option( 'connections_image_logo' ) === FALSE ) {
-					update_option( 'connections_image_logo' , array(
-							'quality' => $options['settings']['image']['logo']['quality'],
-							'width' => $options['settings']['image']['logo']['x'],
-							'height' => $options['settings']['image']['logo']['y'],
-							'ratio' => $options['settings']['image']['logo']['crop']
-						)
-					);
-				}
+						if ( get_option( 'connections_image_thumbnail' ) === FALSE ) {
+							update_option( 'connections_image_thumbnail' , array(
+									'quality' => $options['settings']['image']['thumbnail']['quality'],
+									'width' => $options['settings']['image']['thumbnail']['x'],
+									'height' => $options['settings']['image']['thumbnail']['y'],
+									'ratio' => $options['settings']['image']['thumbnail']['crop']
+								)
+							);
+						}
+						if ( get_option( 'connections_image_medium' ) === FALSE ) {
+							update_option( 'connections_image_medium' , array(
+									'quality' => $options['settings']['image']['entry']['quality'],
+									'width' => $options['settings']['image']['entry']['x'],
+									'height' => $options['settings']['image']['entry']['y'],
+									'ratio' => $options['settings']['image']['entry']['crop']
+								)
+							);
+						}
 
-				if ( get_option( 'connections_compatibility' ) === FALSE ) {
-					update_option( 'connections_compatibility' , array(
-							'google_maps_api' => $options['settings']['advanced']['load_google_maps_api'],
-							'javascript_footer' => $options['settings']['advanced']['load_javascript_footer'] )
-					);
-				}
+						if ( get_option( 'connections_image_large' ) === FALSE ) {
+							update_option( 'connections_image_large' , array(
+									'quality' => $options['settings']['image']['profile']['quality'],
+									'width' => $options['settings']['image']['profile']['x'],
+									'height' => $options['settings']['image']['profile']['y'],
+									'ratio' => $options['settings']['image']['profile']['crop']
+								)
+							);
+						}
 
-				if ( get_option( 'connections_debug' ) === FALSE ) update_option( 'connections_debug' , array( 'debug_messages' => $options['debug'] ) );
+						if ( get_option( 'connections_image_logo' ) === FALSE ) {
+							update_option( 'connections_image_logo' , array(
+									'quality' => $options['settings']['image']['logo']['quality'],
+									'width' => $options['settings']['image']['logo']['x'],
+									'height' => $options['settings']['image']['logo']['y'],
+									'ratio' => $options['settings']['image']['logo']['crop']
+								)
+							);
+						}
+
+						if ( get_option( 'connections_compatibility' ) === FALSE ) {
+							update_option( 'connections_compatibility' , array(
+									'google_maps_api' => $options['settings']['advanced']['load_google_maps_api'],
+									'javascript_footer' => $options['settings']['advanced']['load_javascript_footer'] )
+							);
+						}
+
+						if ( get_option( 'connections_debug' ) === FALSE ) update_option( 'connections_debug' , array( 'debug_messages' => $options['debug'] ) );
+
+						unset( $options );
+
+					}
+
+
+				case ( version_compare( $version, '0.7.4', '<' ) ) :
+					/*
+					 * The option to disable keyowrd search was added in version 0.7.4. Set this option to be enabled by default.
+					 */
+					$options = get_option( 'connections_search' );
+					$options['keyword_enabled'] = 1;
+
+					update_option( 'connections_search', $options );
+					unset( $options );
 
 			}
 
@@ -1048,7 +1068,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 					'admin_notices',
 					create_function(
 						'',
-						'echo \'<div id="message" class="error"><p>' . __( '<strong>ERROR:</strong> The Connections directory home page has not been set. Please set it now on the Connections : Seetings page under the General tab.', 'connections' ) . '</p></div>\';'
+						'echo \'<div id="message" class="error"><p>' . __( '<strong>ERROR:</strong> The Connections directory home page has not been set. Please set it now on the Connections : Settings page under the General tab.', 'connections' ) . '</p></div>\';'
 					)
 				);
 
@@ -1258,6 +1278,9 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 		public static function registerScripts() {
 			global $connections;
 
+			// If SCRIPT_DEBUG is set and TRUE load the non-minified JS files, otherwise, load the minified files.
+			$min = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
+
 			/*
 			 * If the Google Maps API is disabled, do not register it and change the dependencies of
 			 * both goMap and MarkerClusterer. Allowing the Google Maps API to be turned "off" provides
@@ -1267,28 +1290,28 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			 */
 			if ( $connections->options->getGoogleMapsAPI() || is_admin() ) {
 				wp_register_script( 'cn-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, $connections->options->getJavaScriptFooter() );
-				wp_register_script( 'jquery-gomap-min', CN_URL . 'js/jquery.gomap-1.3.2.min.js', array( 'jquery' , 'cn-google-maps-api' ), '1.3.2', $connections->options->getJavaScriptFooter() );
-				wp_register_script( 'jquery-markerclusterer-min', CN_URL . 'js/jquery.markerclusterer.min.js', array( 'jquery' , 'cn-google-maps-api' , 'jquery-gomap-min' ), '2.0.15', $connections->options->getJavaScriptFooter() );
+				wp_register_script( 'jquery-gomap-min', CN_URL . "js/jquery.gomap-1.3.2$min.js", array( 'jquery' , 'cn-google-maps-api' ), '1.3.2', $connections->options->getJavaScriptFooter() );
+				wp_register_script( 'jquery-markerclusterer', CN_URL . "js/jquery.markerclusterer$min.js", array( 'jquery' , 'cn-google-maps-api' , 'jquery-gomap-min' ), '2.0.15', $connections->options->getJavaScriptFooter() );
 			} else {
-				wp_register_script( 'jquery-gomap-min', CN_URL . 'js/jquery.gomap-1.3.2.min.js', array( 'jquery' ), '1.3.2', $connections->options->getJavaScriptFooter() );
-				wp_register_script( 'jquery-markerclusterer-min', CN_URL . 'js/jquery.markerclusterer.min.js', array( 'jquery' , 'jquery-gomap-min' ), '2.0.15', $connections->options->getJavaScriptFooter() );
+				wp_register_script( 'jquery-gomap-min', CN_URL . "js/jquery.gomap-1.3.2$min.js", array( 'jquery' ), '1.3.2', $connections->options->getJavaScriptFooter() );
+				wp_register_script( 'jquery-markerclusterer', CN_URL . "js/jquery.markerclusterer$min.js", array( 'jquery' , 'jquery-gomap-min' ), '2.0.15', $connections->options->getJavaScriptFooter() );
 			}
 
 			if ( is_admin() ) {
-				wp_register_script( 'cn-ui-admin', CN_URL . 'js/cn-admin.js', array( 'jquery' ), CN_CURRENT_VERSION, TRUE );
-				wp_register_script( 'cn-widget', CN_URL . 'js/widgets.js', array( 'jquery' ), CN_CURRENT_VERSION, TRUE );
+				wp_register_script( 'cn-ui-admin', CN_URL . "js/cn-admin$min.js", array( 'jquery' ), CN_CURRENT_VERSION, TRUE );
+				wp_register_script( 'cn-widget', CN_URL . "js/widgets$min.js", array( 'jquery' ), CN_CURRENT_VERSION, TRUE );
 			} else {
-				wp_register_script( 'cn-ui', CN_URL . 'js/cn-user.js', array( 'jquery', 'jquery-preloader' ), CN_CURRENT_VERSION, $connections->options->getJavaScriptFooter() );
+				wp_register_script( 'cn-ui', CN_URL . "js/cn-user$min.js", array( 'jquery', 'jquery-preloader' ), CN_CURRENT_VERSION, $connections->options->getJavaScriptFooter() );
 			}
 
-			wp_register_script( 'jquery-qtip', CN_URL . 'js/jquery.qtip.min.js', array( 'jquery' ), '2.0.1', $connections->options->getJavaScriptFooter() );
-			wp_register_script( 'jquery-preloader', CN_URL . 'js/jquery.preloader.js', array( 'jquery' ), '1.1', $connections->options->getJavaScriptFooter() );
+			wp_register_script( 'jquery-qtip', CN_URL . "js/jquery.qtip$min.js", array( 'jquery' ), '2.0.1', $connections->options->getJavaScriptFooter() );
+			wp_register_script( 'jquery-preloader', CN_URL . "js/jquery.preloader$min.js", array( 'jquery' ), '1.1', $connections->options->getJavaScriptFooter() );
 
 			// Disble this for now, Elegant Theme uses the same registration name in the admin which causes errors.
 			// wp_register_script('jquery-spin', CN_URL . 'js/jquery.spin.js', array('jquery'), '1.2.5', $connections->options->getJavaScriptFooter() );
 
-			wp_register_script( 'jquery-chosen-min', CN_URL . 'js/jquery.chosen.min.js', array( 'jquery' ), '0.9.11', $connections->options->getJavaScriptFooter() );
-			wp_register_script( 'jquery-validate' , CN_URL . 'js/jquery.validate.min.js', array( 'jquery', 'jquery-form' ) , '1.9.0' , $connections->options->getJavaScriptFooter() );
+			wp_register_script( 'jquery-chosen-min', CN_URL . "js/jquery.chosen$min.js", array( 'jquery' ), '0.9.11', $connections->options->getJavaScriptFooter() );
+			wp_register_script( 'jquery-validate' , CN_URL . "js/jquery.validate$min.js", array( 'jquery', 'jquery-form' ) , '1.9.0' , $connections->options->getJavaScriptFooter() );
 		}
 
 		/**
@@ -1301,15 +1324,18 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 		 */
 		public static function registerCSS() {
 
+			// If SCRIPT_DEBUG is set and TRUE load the non-minified CSS files, otherwise, load the minified files.
+			$min = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
+
 			if ( is_admin() ) {
-				wp_register_style( 'cn-admin', CN_URL . 'css/cn-admin.css', array(), CN_CURRENT_VERSION );
-				wp_register_style( 'cn-admin-jquery-ui', CN_URL . 'css/jquery-ui-' . ( 'classic' == get_user_option( 'admin_color' ) ? 'classic' : 'fresh' ) . '.css', array(), CN_CURRENT_VERSION );
+				wp_register_style( 'cn-admin', CN_URL . "css/cn-admin$min.css", array(), CN_CURRENT_VERSION );
+				wp_register_style( 'cn-admin-jquery-ui', CN_URL . 'css/jquery-ui-' . ( 'classic' == get_user_option( 'admin_color' ) ? 'classic' : 'fresh' ) . "$min.css", array(), CN_CURRENT_VERSION );
 			} else {
-				wp_register_style( 'connections-user', CN_URL . 'css/cn-user.css', array(), CN_CURRENT_VERSION );
-				wp_register_style( 'connections-qtip', CN_URL . 'css/jquery.qtip.min.css', array(), '2.0.1' );
+				wp_register_style( 'connections-user', CN_URL . "css/cn-user$min.css", array(), CN_CURRENT_VERSION );
+				wp_register_style( 'connections-qtip', CN_URL . "css/jquery.qtip$min.css", array(), '2.0.1' );
 			}
 
-			wp_register_style( 'connections-chosen', CN_URL . 'css/chosen.css', array(), '0.9.11' );
+			wp_register_style( 'connections-chosen', CN_URL . "css/chosen$min.css", array(), '0.9.11' );
 		}
 
 		/**
@@ -1674,9 +1700,16 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 								break;
 
 							case 'filter':
+								$queryArgs = array();
+
 								check_admin_referer( 'filter' );
 								processSetUserFilter();
-								wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( array( 's' => (  isset( $_POST['s'] ) ? urlencode( $_POST['s'] ) : '' ) ) , 'admin.php?page=connections_manage' ) ) );
+
+								if ( isset( $_POST['s'] ) && ! empty( $_POST['s'] ) ) $queryArgs['s'] = urlencode( $_POST['s'] );
+								if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) $queryArgs['s'] = urlencode( $_GET['s'] );
+								if ( isset( $_GET['cn-char'] ) && 0 < strlen( $_GET['cn-char'] ) ) $queryArgs['cn-char'] = urlencode( $_GET['cn-char'] );
+
+								wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( $queryArgs, 'admin.php?page=connections_manage' ) ) );
 								exit();
 								break;
 
@@ -1740,15 +1773,25 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 											break;
 
 										default:
-											wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( array( 's' => urlencode( $_POST['s'] ) ) , 'admin.php?page=connections_manage' ) ) );
+
+											if ( isset( $_POST['s'] ) && ! empty( $_POST['s'] ) ) $queryArgs['s'] = urlencode( $_POST['s'] );
+											if ( isset( $_POST['cn-char'] ) && 0 < strlen( $_POST['cn-char'] ) ) $queryArgs['cn-char'] = urlencode( $_POST['cn-char'] );
+
+											wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( $queryArgs , 'admin.php?page=connections_manage' ) ) );
 											exit();
 											break;
 									}
 								}
 
+								$queryArgs = array();
+
 								check_admin_referer( $form->getNonce( 'bulk_action' ), '_cn_wpnonce' );
 								processSetUserFilter();
-								wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( array( 's' => urlencode( $_POST['s'] ) ) , 'admin.php?page=connections_manage' ) ) );
+
+								if ( isset( $_POST['s'] ) && ! empty( $_POST['s'] ) ) $queryArgs['s'] = urlencode( $_POST['s'] );
+								if ( isset( $_POST['cn-char'] ) && 0 < strlen( $_POST['cn-char'] ) ) $queryArgs['cn-char'] = urlencode( $_POST['cn-char'] );
+
+								wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( $queryArgs, 'admin.php?page=connections_manage' ) ) );
 								exit();
 								break;
 						}

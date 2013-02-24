@@ -1,6 +1,5 @@
 <?php
-class cnFormatting
-{
+class cnFormatting {
 	/**
 	 * Sanitize the input string. HTML tags can be permitted.
 	 * The permitted tags can be suppled in an array.
@@ -12,32 +11,28 @@ class cnFormatting
 	 * @param array $permittedTags [optional]
 	 * @return string
 	 */
-	public function sanitizeString($string, $allowHTML = FALSE, $permittedTags = NULL)
-	{
+	public function sanitizeString( $string, $allowHTML = FALSE, $permittedTags = NULL ) {
 		// Strip all tags except the permitted.
-		if ( ! $allowHTML)
-		{
+		if ( ! $allowHTML ) {
 			// Ensure all tags are closed. Uses WordPress method balanceTags().
-			$balancedText = balanceTags($string, TRUE);
+			$balancedText = balanceTags( $string, TRUE );
 
-			$strippedText = strip_tags($balancedText);
+			$strippedText = strip_tags( $balancedText );
 
 			// Strip all script and style tags.
 			$strippedText = preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', $strippedText );
 
 			// Escape text using the WordPress method and then strip slashes.
-			$escapedText = stripslashes(esc_attr($strippedText));
+			$escapedText = stripslashes( esc_attr( $strippedText ) );
 
 			// Remove line breaks and trim white space.
-			$escapedText = preg_replace('/[\r\n\t ]+/', ' ', $escapedText);
+			$escapedText = preg_replace( '/[\r\n\t ]+/', ' ', $escapedText );
 
-			return trim($escapedText);
-		}
-		else
-		{
+			return trim( $escapedText );
+		} else {
 			// Strip all script and style tags.
 			$strippedText = preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', $string );
-			$strippedText = preg_replace( '/&lt;(script|style).*?&gt;.*?&lt;\/\\1&gt;/si', '', stripslashes($strippedText) );
+			$strippedText = preg_replace( '/&lt;(script|style).*?&gt;.*?&lt;\/\\1&gt;/si', '', stripslashes( $strippedText ) );
 
 			/*
 			 * Use WordPress method make_clickable() to make links clickable and
@@ -45,7 +40,7 @@ class cnFormatting
 			 *
 			 * http://ottopress.com/2010/wp-quickie-kses/
 			 */
-			return wptexturize( wpautop( make_clickable( wp_kses_post($strippedText) ) ) );
+			return wptexturize( wpautop( make_clickable( wp_kses_post( $strippedText ) ) ) );
 		}
 
 	}
@@ -59,9 +54,9 @@ class cnFormatting
 	 * @param string $string
 	 * @return string
 	 */
-	public function sanitizeStringStrong($string)
-	{
-		$string = sanitize_title_with_dashes($string);
+	public static function sanitizeStringStrong( $string ) {
+		$string = str_ireplace( '%', '-', $string ); // Added this because sanitize_title_with_dashes will still allow % to passthru.
+		$string = sanitize_title_with_dashes( $string );
 		return $string;
 	}
 
@@ -71,9 +66,8 @@ class cnFormatting
 	 * @param string $string
 	 * @return string
 	 */
-	public function stripNonNumeric($string)
-	{
-		return preg_replace('/[^0-9]/', '', $string);
+	public function stripNonNumeric( $string ) {
+		return preg_replace( '/[^0-9]/', '', $string );
 	}
 
 	/**
@@ -83,37 +77,36 @@ class cnFormatting
 	 * @param string $value
 	 * @return boolean
 	 */
-	public function toBoolean(&$value)
-	{
-		switch ( strtolower($value) )
-		{
+	public function toBoolean( &$value ) {
+
+		switch ( strtolower( $value ) ) {
 			case 'yes':
 				$value = TRUE;
-			break;
+				break;
 
 			case 'no':
 				$value = FALSE;
-			break;
+				break;
 
 			case 'true':
 				$value = TRUE;
-			break;
+				break;
 
 			case 'false':
 				$value = FALSE;
-			break;
+				break;
 
 			case '1':
 				$value = TRUE;
-			break;
+				break;
 
 			case '0':
 				$value = FALSE;
-			break;
+				break;
 
 			default:
 				$value = NULL;
-			break;
+				break;
 		}
 
 		return $value;
@@ -128,11 +121,12 @@ class cnFormatting
 	 * @param bool $bool
 	 * @return return 'Yes' | 'No'
 	 */
-	public function toYesNo( $bool ){
-		if($bool)
+	public function toYesNo( $bool ) {
+		if( $bool ) {
 			return __('Yes', 'connections');
-		else
+		} else {
 			return __('No', 'connections');
+		}
 	}
 }
 
@@ -208,13 +202,13 @@ class cnValidate
 	    }
 
 	    // test for IP address (IPv4)
-	    $regex = "^(https?|ftp|news|file)\:\/\/";
-	    $regex .= "([0-9]{1,3}\.[0-9]{1,3}\.)";
-	    if (ereg($regex, $url_local))
+	    $regex = "#^(https?|ftp|news|file)\:\/\/";
+	    $regex .= "([0-9]{1,3}\.[0-9]{1,3}\.)#";
+	    if (preg_match($regex, $url_local))
 	    {
-	        $regex = "^(https?|ftps)\:\/\/";
-	        $regex .= "([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})";
-	        if (!ereg($regex, $url_local)) {return false;}
+	        $regex = "#^(https?|ftps)\:\/\/";
+	        $regex .= "([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#";
+	        if (!preg_match($regex, $url_local)) {return false;}
 	        $seg = preg_split('/[.\/]/', $url_local);
 	        if (($seg[2] > 255) || ($seg[3] > 255) || ($seg[4] > 255) || ($seg[5] > 255)) {return false;}
 	    }
@@ -231,7 +225,7 @@ class cnValidate
 
 	    // construct the REGEX for standard processing
 	    // scheme
-	    $regex = "^(https?|ftp|news|file)\:\/\/";
+	    $regex = "~^(https?|ftp|news|file)\:\/\/";
 	    // user and password (optional)
 	    $regex .= "([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?";
 	    // hostname or IP address
@@ -243,10 +237,10 @@ class cnValidate
 	    // query (optional)
 	    $regex .= "(\?[a-z+&\$_.-][a-z0-9;:@/&%=+\$_.-]*)?";
 	    // anchor (optional)
-	    $regex .= "(#[a-z_.-][a-z0-9+\$_.-]*)?\$";
+	    $regex .= "(#[a-z_.-][a-z0-9+\$_.-]*)?\$~";
 
 	    // test it
-	    $is_valid = ereg($regex, $url_local) > 0;
+	    $is_valid = preg_match($regex, $url_local) > 0;
 
 	    // final check for a TLD suffix
 	    if ($is_valid)

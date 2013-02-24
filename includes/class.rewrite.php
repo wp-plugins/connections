@@ -43,6 +43,7 @@ class cnRewrite {
 		$var[] = 'cn-region';  // state
 		$var[] = 'cn-locality';  // city
 		$var[] = 'cn-postal-code'; // zipcode
+		$var[] = 'cn-char'; // initial character
 		$var[] = 'cn-s';   // search term
 		$var[] = 'cn-pg';   // page
 		$var[] = 'cn-entry-slug'; // entry slug
@@ -87,6 +88,7 @@ class cnRewrite {
 		// Get the settings for the base of each data type to be used in the URL.
 		$base = get_option( 'connections_permalink' );
 
+		$character = $base['character_base'];
 		$category = $base['category_base'];
 		$country = $base['country_base'];
 		$region = $base['region_base'];
@@ -198,6 +200,11 @@ class cnRewrite {
 		$rule[ $locality . '/([^/]*)?/?$']
 			= 'index.php?page_id=' . $pageID . '&cn-locality=$matches[1]&cn-view=list';
 
+		// Initial character rewrite rules.
+		$rule[ $character . '/([^/]*)/pg/?([0-9]{1,})/?$']
+			= 'index.php?page_id=' . $pageID . '&cn-char=$matches[1]&cn-pg=$matches[2]&cn-view=list';
+		$rule[ $character . '/([^/]*)?/?$']
+			= 'index.php?page_id=' . $pageID . '&cn-char=$matches[1]&cn-view=list';
 
 		// Edit entry.
 		$rule[ $name . '/([^/]*)/edit/?$']
@@ -221,7 +228,7 @@ class cnRewrite {
 
 		// Single entry.
 		$rule[ $name . '/([^/]*)/?$']
-			= 'index.php?page_id=' . $pageID . '&cn-entry-slug=$matches[1]&cn-view=list';
+			= 'index.php?page_id=' . $pageID . '&cn-entry-slug=$matches[1]&cn-view=detail';
 
 
 		// Base Pagination.
@@ -259,6 +266,7 @@ class cnRewrite {
 		// Get the settings for the base of each data type to be used in the URL.
 		$base = get_option( 'connections_permalink' );
 
+		$character = $base['character_base'];
 		$category = $base['category_base'];
 		$country = $base['country_base'];
 		$region = $base['region_base'];
@@ -370,6 +378,11 @@ class cnRewrite {
 		$rule['(.?.+?)/' . $locality . '/([^/]*)?/?$']
 			= 'index.php?pagename=$matches[1]&cn-locality=$matches[2]&cn-view=list';
 
+		// Initial character rewrite rules.
+		$rule['(.?.+?)/' . $character . '/([^/]*)/pg/?([0-9]{1,})/?$']
+			= 'index.php?pagename=$matches[1]&cn-char=$matches[2]&cn-pg=$matches[3]&cn-view=list';
+		$rule['(.?.+?)/' . $character . '/([^/]*)?/?$']
+			= 'index.php?pagename=$matches[1]&cn-char=$matches[2]&cn-view=list';
 
 		// Edit entry.
 		$rule['(.?.+?)/' . $name . '/([^/]*)/edit/?$']
@@ -393,7 +406,7 @@ class cnRewrite {
 
 		// Single entry.
 		$rule['(.?.+?)/' . $name . '/([^/]*)/?$']
-			= 'index.php?pagename=$matches[1]&cn-entry-slug=$matches[2]&cn-view=list';
+			= 'index.php?pagename=$matches[1]&cn-entry-slug=$matches[2]&cn-view=detail';
 
 
 		// Base Pagination.
