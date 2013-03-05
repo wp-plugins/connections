@@ -575,8 +575,10 @@ class cnFormObjects {
 		add_filter( 'cn_list_results', array( $connections->retrieve, 'removeUnknownDateAdded' ), 9 );
 
 		$atts = array(
-			'order_by' => 'date_added|SORT_ASC',
-			'template' => 'dashboard-recent-added'
+			'order_by'        => 'date_added|SORT_ASC',
+			'template'        => 'dashboard-recent-added',
+			'show_alphaindex' => FALSE,
+			'show_alphahead'  => FALSE,
 		);
 
 		connectionsEntryList( $atts );
@@ -598,9 +600,11 @@ class cnFormObjects {
 		add_filter( 'cn_list_results', array( $connections->retrieve, 'removeUnknownDateAdded' ), 9 );
 
 		$atts = array(
-			'order_by' => 'date_added|SORT_DESC',
-			'template' => 'dashboard-recent-added',
-			'limit' => 10
+			'order_by'        => 'date_added|SORT_DESC',
+			'template'        => 'dashboard-recent-added',
+			'show_alphaindex' => FALSE,
+			'show_alphahead'  => FALSE,
+			'limit'           => 10
 		);
 
 		connectionsEntryList( $atts );
@@ -619,9 +623,11 @@ class cnFormObjects {
 		global $connections;
 
 		$atts = array(
-			'order_by' => 'date_modified|SORT_DESC',
-			'template' => 'dashboard-recent-modified',
-			'limit' => 10
+			'order_by'        => 'date_modified|SORT_DESC',
+			'template'        => 'dashboard-recent-modified',
+			'show_alphaindex' => FALSE,
+			'show_alphahead'  => FALSE,
+			'limit'           => 10
 		);
 
 		connectionsEntryList( $atts );
@@ -663,7 +669,7 @@ class cnFormObjects {
 		if ( ini_get( 'max_execution_time' ) ) $max_execute = ini_get( 'max_execution_time' );
 		else $max_execute = __( 'N/A', 'connections' );
 		// Get PHP Memory Limit
-		if ( ini_get( 'memory_limit' ) ) $memory_limit = $connections->phpMemoryLimit;
+		if ( ini_get( 'memory_limit' ) ) $memory_limit = ini_get( 'memory_limit' );
 		else $memory_limit = __( 'N/A', 'connections' );
 		// Get actual memory_get_usage
 		if ( function_exists( 'memory_get_usage' ) ) $memory_usage = round( memory_get_usage() / 1024 / 1024, 2 ) . ' ' . __( 'MByte', 'connections' );
