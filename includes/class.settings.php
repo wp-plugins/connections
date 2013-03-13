@@ -117,6 +117,14 @@ class cnRegisterSettings
 		);
 		$sections[] = array(
 			'tab'       => 'display',
+			'id'        => 'connections_display_list_actions',
+			'position'  => 15,
+			'title'     => __( 'List Actions' , 'connections' ),
+			'callback'  => create_function( '', 'echo \'' . __( 'Enable or disable various actions.', 'connections' ) . '\';' ),
+			'page_hook' => $settings
+		);
+		$sections[] = array(
+			'tab'       => 'display',
 			'id'        => 'connections_display_single',
 			'position'  => 20,
 			'title'     => __( 'Single Entry' , 'connections' ),
@@ -345,6 +353,20 @@ class cnRegisterSettings
 			'section'   => 'connections_display_results',
 			'title'     => '',
 			'desc'      => __('Show the current character at the beginning of each character group.', 'connections'),
+			'help'      => '',
+			'type'      => 'checkbox',
+			'default'   => 0
+		);
+
+		$fields[] = array(
+			'plugin_id' => 'connections',
+			'id'        => 'view_all',
+			'position'  => 10,
+			'page_hook' => $settings,
+			'tab'       => 'display',
+			'section'   => 'connections_display_list_actions',
+			'title'     => __('', 'connections'),
+			'desc'      => __('Show a "View All" link. When this option is enabled a "View All" link will be displayed.', 'connections'),
 			'help'      => '',
 			'type'      => 'checkbox',
 			'default'   => 0
@@ -841,7 +863,7 @@ class cnRegisterSettings
 			'desc'      => __('Enabling this option will turn the name of every entry into a link. Clicking the link will take you to the page with only that entry.', 'connections'),
 			'help'      => '',
 			'type'      => 'checkbox',
-			'default'   => 0
+			'default'   => 1
 		);
 
 		$fields[] = array(
@@ -883,6 +905,32 @@ class cnRegisterSettings
 			'help'      => '',
 			'type'      => 'checkbox',
 			'default'   => 1
+		);
+		$fields[] = array(
+			'plugin_id' => 'connections',
+			'id'        => 'strip_rnt',
+			'position'  => 30,
+			'page_hook' => $settings,
+			'tab'       => 'advanced',
+			'section'   => 'connections_compatibility',
+			'title'     => __('Templates', 'connections'),
+			'desc'      => __('Themes can break plugin shortcodes that output content on the page causing the content not to render correctly. If the templates do not display as expected try enabling this option.', 'connections'),
+			'help'      => '',
+			'type'      => 'checkbox',
+			'default'   => 0
+		);
+		$fields[] = array(
+			'plugin_id' => 'connections',
+			'id'        => 'jquery',
+			'position'  => 40,
+			'page_hook' => $settings,
+			'tab'       => 'advanced',
+			'section'   => 'connections_compatibility',
+			'title'     => 'jQuery',
+			'desc'      => __('Themes and plugins sometimes load a version of jQuery that is not bundled with WordPress. This is generally considered bad practice which can result in breaking plugins. Enabling this option will attempt to fix this issue. You should only enable this option at the direction of support.', 'connections'),
+			'help'      => '',
+			'type'      => 'checkbox',
+			'default'   => 0
 		);
 		$fields[] = array(
 			'plugin_id' => 'connections',

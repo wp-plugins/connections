@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.5.1
+Version: 0.7.6
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 Text Domain: connections
@@ -131,6 +131,19 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 		 */
 		private $dbUpgrade = FALSE;
 
+		/**
+		 * Stores the template parts object and any templates activated by the cnTemplateFactory object.
+		 *
+		 * NOTE: Technically not necessary to load the template parts into this opject but it's required
+		 * for backward compatibility for templates expecting to find those methods as part of this object.
+		 *
+		 * @access public
+		 * @since 0.7.6
+		 * @var (object)
+		 */
+		public $template;
+
+
 		public function __construct() {
 
 			$this->defineConstants();
@@ -202,6 +215,8 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 				add_action( 'template_redirect' , array( $connections, 'frontendActions' ) );
 			}
 
+			add_action( 'wp_print_scripts', array( __CLASS__, 'jQueryFixr' ), 9999 );
+
 		}
 
 		private function defineConstants() {
@@ -209,7 +224,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 
 			define( 'CN_LOG', FALSE );
 
-			define( 'CN_CURRENT_VERSION', '0.7.5.1' );
+			define( 'CN_CURRENT_VERSION', '0.7.6' );
 			define( 'CN_DB_VERSION', '0.1.9' );
 
 			/*
@@ -307,7 +322,9 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			require_once CN_PATH . 'includes/inc.shortcodes.php'; // Required for front end
 
 			//templates
-			require_once CN_PATH . 'includes/class.template.php'; // Required for the front end template processing
+			require_once CN_PATH . 'includes/class.template-api.php';
+			require_once CN_PATH . 'includes/class.template-parts.php';
+			require_once CN_PATH . 'includes/class.template.php';
 
 			// The class that inits the registered query vars, rewites reuls and canonical redirects.
 			require_once CN_PATH . 'includes/class.rewrite.php';
@@ -317,6 +334,9 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 
 			// Load the Connections core settings admin page tabs, section and fields using the WordPress Settings API.
 			require_once CN_PATH . 'includes/class.settings.php';
+
+			// Load the included templates that use the templates API introduced in 0.7.6
+			include_once CN_PATH . 'templates/names/names.php';
 
 			if ( is_admin() ) {
 				/*
@@ -347,11 +367,17 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			$this->currentUser = new cnUser();
 			$this->retrieve = new cnRetrieve();
 			$this->term = new cnTerms();
-			$this->template = new cnTemplate();
+			$this->template = new cnTemplatePart();
 			$this->url = new cnURL();
+
+			// Init the Template Factory API
+			cnTemplateFactory::init();
 
 			// Register all valid query variables.
 			cnRewrite::init();
+
+			// Init the included templates that use the API introduced in 0.7.6
+			add_action( 'plugins_loaded', array( 'cnNames', 'init' ), 11 );
 
 			// Init the options if there is a version change just in case there were any changes.
 			if ( version_compare( $this->options->getVersion() , CN_CURRENT_VERSION ) < 0 ) $this->initOptions();
@@ -457,7 +483,9 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 
 			if ( $this->options->getDefaultTemplatesSet() === NULL ) $this->options->setDefaultTemplates();
 
+			// Class used for managing role capabilites.
 			// @TODO: a version change should not reset the roles and capabilites.
+			// if ( ! class_exists( 'cnRole' ) ) require_once CN_PATH . 'includes/class.capabilities.php';
 			cnRole::reset();
 
 			// Increment the version number.
@@ -873,12 +901,15 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			 * require it.
 			 */
 			if ( $connections->options->getGoogleMapsAPI() || is_admin() ) {
-				wp_register_script( 'cn-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, $connections->options->getJavaScriptFooter() );
+				if ( ! is_ssl() ) wp_register_script( 'cn-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, $connections->options->getJavaScriptFooter() );
+				if ( is_ssl() ) wp_register_script( 'cn-google-maps-api', 'https://maps-api-ssl.google.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, $connections->options->getJavaScriptFooter() );
+
+
 				wp_register_script( 'jquery-gomap-min', CN_URL . "js/jquery.gomap-1.3.2$min.js", array( 'jquery' , 'cn-google-maps-api' ), '1.3.2', $connections->options->getJavaScriptFooter() );
-				wp_register_script( 'jquery-markerclusterer', CN_URL . "js/jquery.markerclusterer$min.js", array( 'jquery' , 'cn-google-maps-api' , 'jquery-gomap-min' ), '2.0.15', $connections->options->getJavaScriptFooter() );
+				wp_register_script( 'jquery-markerclusterer-min', CN_URL . "js/jquery.markerclusterer$min.js", array( 'jquery' , 'cn-google-maps-api' , 'jquery-gomap-min' ), '2.0.15', $connections->options->getJavaScriptFooter() );
 			} else {
 				wp_register_script( 'jquery-gomap-min', CN_URL . "js/jquery.gomap-1.3.2$min.js", array( 'jquery' ), '1.3.2', $connections->options->getJavaScriptFooter() );
-				wp_register_script( 'jquery-markerclusterer', CN_URL . "js/jquery.markerclusterer$min.js", array( 'jquery' , 'jquery-gomap-min' ), '2.0.15', $connections->options->getJavaScriptFooter() );
+				wp_register_script( 'jquery-markerclusterer-min', CN_URL . "js/jquery.markerclusterer$min.js", array( 'jquery' , 'jquery-gomap-min' ), '2.0.15', $connections->options->getJavaScriptFooter() );
 			}
 
 			if ( is_admin() ) {
@@ -1005,6 +1036,22 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			 */
 
 			wp_enqueue_script( 'cn-ui' );
+		}
+
+		/**
+		 * Attempt to re-register the bundled version of jQuery
+		 *
+		 * @access private
+		 * @since 0.7.6
+		 * @return (void)
+		 */
+		public static function jQueryFixr() {
+			global $connections;
+
+			if ( ! $connections->settings->get( 'connections', 'connections_compatibility', 'jquery' ) ) return;
+
+			wp_deregister_script( 'jquery' );
+			wp_register_script( 'jquery', '/wp-includes/js/jquery/jquery.js' );
 		}
 
 		/**
