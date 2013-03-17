@@ -3393,15 +3393,17 @@ class cnEntry {
 			$where[] = 'WHERE 1=1';
 
 			/*
-			 * Retrieve entry details from the object caches
+			 * Retrieve entry details.
+			 * NOTE: Entries details can not be pulled from the object caches and must be pulled from the DB
+			 * 	because the id for data item is needed to determine whether the item is to be updated or inserted.
 			 */
-			$addresses = $this->getAddresses( array(), TRUE, TRUE );
-			$phoneNumbers = $this->getPhoneNumbers( array(), TRUE, TRUE );
-			$emailAddresses = $this->getEmailAddresses( array(), TRUE, TRUE );
-			$imIDs = $this->getIm( array(), TRUE, TRUE );
-			$socialNetworks = $this->getSocialMedia( array(), TRUE, TRUE );
-			$links = $this->getLinks( array(), TRUE, TRUE );
-			$dates = $this->getDates( array(), TRUE, TRUE );
+			$addresses = $this->getAddresses( array(), FALSE, TRUE );
+			$phoneNumbers = $this->getPhoneNumbers( array(), FALSE, TRUE );
+			$emailAddresses = $this->getEmailAddresses( array(), FALSE, TRUE );
+			$imIDs = $this->getIm( array(), FALSE, TRUE );
+			$socialNetworks = $this->getSocialMedia( array(), FALSE, TRUE );
+			$links = $this->getLinks( array(), FALSE, TRUE );
+			$dates = $this->getDates( array(), FALSE, TRUE );
 
 			/*
 			 * Create a sql segment for the entry ID that can be used in the queries.
@@ -3420,8 +3422,7 @@ class cnEntry {
 			/*
 			 * Create a sql segment for the visibility that can be used in the queries.
 			 */
-			( ! empty( $notPermitted ) ) ? $sqlVisibility = 'AND `visibility` NOT IN (\'' . implode( "', '", (array) $notPermitted ) . '\')' : $sqlVisibility = '';
-			$where[] = $sqlVisibility;
+			$where['visibility'] = ! empty( $notPermitted ) ? 'AND `visibility` NOT IN (\'' . implode( "', '", $notPermitted ) . '\')' : '';
 
 			/*
 			 * Update and add addresses as necessary and removing the rest unless the current user does not have permission to view/edit.

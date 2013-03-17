@@ -579,18 +579,18 @@ class cnOptions {
 		$imgRatio = $connections->settings->get( 'connections', 'connections_image_logo', 'ratio' );
 
 		switch ( $imgRatio ) {
-		case 'none':
-			$imgRatioCrop = false;
-			break;
+			case 'none':
+				$imgRatioCrop = false;
+				break;
 
-		case 'crop':
-			$imgRatioCrop = true;
-			break;
+			case 'crop':
+				$imgRatioCrop = true;
+				break;
 
-		case 'fill':
-			$imgRatioCrop = false;
-			break;
-		}
+			case 'fill':
+				$imgRatioCrop = false;
+				break;
+			}
 
 		return $imgRatioCrop;
 	}
@@ -605,20 +605,20 @@ class cnOptions {
 	public function getImgLogoRatioFill() {
 		global $connections;
 
-		$imgRatio = $connections->settings->get( 'connections', 'connections_image_thumbnail', 'ratio' );
+		$imgRatio = $connections->settings->get( 'connections', 'connections_image_logo', 'ratio' );
 
 		switch ( $imgRatio ) {
-		case 'none':
-			$imgRatioFill = false;
-			break;
+			case 'none':
+				$imgRatioFill = false;
+				break;
 
-		case 'crop':
-			$imgRatioFill = false;
-			break;
+			case 'crop':
+				$imgRatioFill = false;
+				break;
 
-		case 'fill':
-			$imgRatioFill = true;
-			break;
+			case 'fill':
+				$imgRatioFill = true;
+				break;
 		}
 
 		return $imgRatioFill;
@@ -702,6 +702,7 @@ class cnOptions {
 			'daughterinlaw'    => __( 'Daughter-in-law', 'connections' ),
 			'father'           => __( 'Father', 'connections' ),
 			'fatherinlaw'      => __( 'Father-in-law', 'connections' ),
+			'friend'           => __( 'Friend', 'connections' ),
 			'granddaughter'    => __( 'Grand Daughter', 'connections' ),
 			'grandfather'      => __( 'Grand Father', 'connections' ),
 			'grandmother'      => __( 'Grand Mother', 'connections' ),
@@ -713,8 +714,11 @@ class cnOptions {
 			'motherinlaw'      => __( 'Mother-in-law', 'connections' ),
 			'nephew'           => __( 'Nephew', 'connections' ),
 			'niece'            => __( 'Niece', 'connections' ),
+			'partner'          => __( 'Partner', 'connections' ),
+			'significant_other'=> __( 'Significant Other', 'connections' ),
 			'sister'           => __( 'Sister', 'connections' ),
 			'sisterinlaw'      => __( 'Sister-in-law', 'connections' ),
+			'spouse'           => __( 'Spouse', 'connections' ),
 			'son'              => __( 'Son', 'connections' ),
 			'soninlaw'         => __( 'Son-in-law', 'connections' ),
 			'stepbrother'      => __( 'Step Brother', 'connections' ),

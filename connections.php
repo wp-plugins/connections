@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.6.1
+Version: 0.7.6.2
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 Text Domain: connections
@@ -224,7 +224,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 
 			define( 'CN_LOG', FALSE );
 
-			define( 'CN_CURRENT_VERSION', '0.7.6.1' );
+			define( 'CN_CURRENT_VERSION', '0.7.6.2' );
 			define( 'CN_DB_VERSION', '0.1.9' );
 
 			/*
@@ -485,7 +485,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 
 			// Class used for managing role capabilites.
 			// @TODO: a version change should not reset the roles and capabilites.
-			// if ( ! class_exists( 'cnRole' ) ) require_once CN_PATH . 'includes/class.capabilities.php';
+			if ( ! class_exists( 'cnRole' ) ) require_once CN_PATH . 'includes/class.capabilities.php';
 			cnRole::reset();
 
 			// Increment the version number.
@@ -901,8 +901,8 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			 * require it.
 			 */
 			if ( $connections->options->getGoogleMapsAPI() || is_admin() ) {
-				if ( ! is_ssl() ) wp_register_script( 'cn-google-maps-api', 'http://maps.google.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, $connections->options->getJavaScriptFooter() );
-				if ( is_ssl() ) wp_register_script( 'cn-google-maps-api', 'https://maps-api-ssl.google.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, $connections->options->getJavaScriptFooter() );
+				if ( ! is_ssl() ) wp_register_script( 'cn-google-maps-api', 'http://maps.googleapis.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, $connections->options->getJavaScriptFooter() );
+				if ( is_ssl() ) wp_register_script( 'cn-google-maps-api', 'https://maps.googleapis.com/maps/api/js?sensor=false', array( 'jquery' ), CN_CURRENT_VERSION, $connections->options->getJavaScriptFooter() );
 
 
 				wp_register_script( 'jquery-gomap-min', CN_URL . "js/jquery.gomap-1.3.2$min.js", array( 'jquery' , 'cn-google-maps-api' ), '1.3.2', $connections->options->getJavaScriptFooter() );

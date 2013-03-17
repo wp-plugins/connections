@@ -179,7 +179,7 @@ function connectionsList($atts, $content = NULL) {
 		$preLoadAtts['list_type'] = explode( ',' , str_replace(' ', '', $preLoadAtts['list_type']) );
 
 		// Set the template type to the first in the entry type from the supplied if multiple list types are provided.
-		if ( (bool) array_intersect( (array) $preLoadAtts['list_type'], $permittedListTypes) ) {
+		if ( (bool) array_intersect( (array) $preLoadAtts['list_type'], $permittedListTypes ) ) {
 
 			$templateType = $preLoadAtts['list_type'][0];
 
@@ -209,7 +209,7 @@ function connectionsList($atts, $content = NULL) {
 		$template = cnTemplateFactory::getTemplate( $preLoadAtts['template'] );
 	} else {
 		$templateSlug = $connections->options->getActiveTemplate( $templateType );
-		$template = cnTemplateFactory::getTemplate( $templateSlug, $templateType );
+		$template = cnTemplateFactory::getTemplate( $templateSlug );
 	}
 	//$out .= '<pre style="display: none;">' . print_r($template , TRUE) . '</pre>';
 
@@ -462,13 +462,13 @@ function connectionsList($atts, $content = NULL) {
 				$filterRegistry[] = 'cn_list_after-' . $template->getSlug();
 
 				ob_start();
-					do_action( 'cn_action_list_after' , $results );
-					do_action( 'cn_action_list_after-' . $template->getSlug() , $results );
-					$filterRegistry[] = 'cn_action_list_after-' . $template->getSlug();
-
 					do_action( 'cn_action_list_both' , $results  );
 					do_action( 'cn_action_list_both-' . $template->getSlug() , $results );
 					$filterRegistry[] = 'cn_action_list_both-' . $template->getSlug();
+
+					do_action( 'cn_action_list_after' , $results );
+					do_action( 'cn_action_list_after-' . $template->getSlug() , $results );
+					$filterRegistry[] = 'cn_action_list_after-' . $template->getSlug();
 
 					$out .= ob_get_contents();
 				ob_end_clean();
