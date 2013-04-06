@@ -145,16 +145,14 @@ add_shortcode('connections_list', 'connectionsView'); /** @deprecated since vers
 function connectionsList($atts, $content = NULL) {
 	global $wpdb, $wp_filter, $current_user, $connections;
 
-	$out = '';
-	$form = new cnFormObjects();
-	$convert = new cnFormatting();
-	$format =& $convert;
+	$out            = '';
+	$form           = new cnFormObjects();
+	$convert        = new cnFormatting();
+	$format         =& $convert;
 	$filterRegistry = array();
 
-	// $template =& $connections->template;
-
 	$previousLetter = '';
-	$alternate = '';
+	$alternate      = '';
 
 	/*
 	 * Parse the user supplied shortcode atts for the values only required to load the template.
@@ -197,7 +195,7 @@ function connectionsList($atts, $content = NULL) {
 	 * It's been over two years, so, remove the template_name option in the release after 0.7.3.
 	 */
 	if ( ! empty( $preLoadAtts['template_name'] ) ) {
-		$preLoadAtts['template'] = $preLoadAtts['template_name'];
+		$preLoadAtts['template']      = $preLoadAtts['template_name'];
 		$preLoadAtts['template_name'] = NULL;
 	}
 
@@ -217,7 +215,7 @@ function connectionsList($atts, $content = NULL) {
 	if ( $template == FALSE )
 		return '<p style="color:red; font-weight:bold; text-align:center;">' . sprintf( __( 'ERROR: Template %1$s not found.', 'connections' ), $preLoadAtts['template_name'] . $preLoadAtts['template'] ). "</p>";
 
-	do_action( 'cn_register_template_actions' );
+	do_action( 'cn_register_legacy_template_parts' );
 	do_action( 'cn_action_include_once-' . $template->getSlug() );
 	do_action( 'cn_action_js-' . $template->getSlug() );
 
@@ -287,15 +285,15 @@ function connectionsList($atts, $content = NULL) {
 	 * The WP post editor entity encodes the post text we have to decode it
 	 * so a match can be made when the query is run.
 	 */
-	$atts['family_name'] = html_entity_decode ($atts['family_name'] );
-	$atts['last_name'] = html_entity_decode( $atts['last_name'] );
-	$atts['title'] = html_entity_decode( $atts['title'] );
-	$atts['organization'] = html_entity_decode( $atts['organization'] );
-	$atts['department'] = html_entity_decode( $atts['department'] );
-	$atts['city'] = html_entity_decode( $atts['city'] );
-	$atts['state'] = html_entity_decode( $atts['state'] );
-	$atts['zip_code'] = html_entity_decode( $atts['zip_code'] );
-	$atts['country'] = html_entity_decode( $atts['country'] );
+	$atts['family_name']   = html_entity_decode ($atts['family_name'] );
+	$atts['last_name']     = html_entity_decode( $atts['last_name'] );
+	$atts['title']         = html_entity_decode( $atts['title'] );
+	$atts['organization']  = html_entity_decode( $atts['organization'] );
+	$atts['department']    = html_entity_decode( $atts['department'] );
+	$atts['city']          = html_entity_decode( $atts['city'] );
+	$atts['state']         = html_entity_decode( $atts['state'] );
+	$atts['zip_code']      = html_entity_decode( $atts['zip_code'] );
+	$atts['country']       = html_entity_decode( $atts['country'] );
 	$atts['category_name'] = html_entity_decode( $atts['category_name'] );
 
 	$atts = apply_filters('cn_list_retrieve_atts' , $atts );
@@ -386,10 +384,10 @@ function connectionsList($atts, $content = NULL) {
 
 				foreach ( (array) $results as $row ) {
 
-					$entry = new cnvCard( $row );
-					$vCard =& $entry;
+					$entry       = new cnvCard( $row );
+					$vCard       =& $entry;
 					$repeatIndex = '';
-					$setAnchor = '';
+					$setAnchor   = '';
 
 					// @TODO --> Fix this somehow in the query, see comment above for $skipEntry.
 					if ( in_array( $entry->getId() , $skipEntry ) ) continue;
@@ -488,8 +486,6 @@ function connectionsList($atts, $content = NULL) {
 
 	$out .= "\n" . '</div>' . "\n";
 
-	// $template->reset();
-
 	/*
 	 * Remove any filters a template may have added
 	 * so it is not run again if more than one template
@@ -569,7 +565,7 @@ function _upcoming_list( $atts, $content = NULL ) {
 	if ( $template == FALSE )
 		return '<p style="color:red; font-weight:bold; text-align:center;>' . sprintf( __( 'ERROR: Template %1$s not found.', 'connections' ), $atts['template'] ) . "</p>";
 
-	do_action( 'cn_register_template_actions' );
+	do_action( 'cn_register_legacy_template_parts' );
 	do_action( 'cn_action_include_once-' . $template->getSlug() );
 	do_action( 'cn_action_js-' . $template->getSlug() );
 
