@@ -159,49 +159,6 @@ class cnFormObjects {
 	}
 
 	/**
-	 * Builds an alpha index.
-	 *
-	 * @return string
-	 */
-	public function buildAlphaIndex() {
-		$linkindex = '';
-		$alphaindex = range( "A", "Z" );
-
-		// The URL in the address bar
-		$requestedURL  = is_ssl() ? 'https://' : 'http://';
-		$requestedURL .= $_SERVER['HTTP_HOST'];
-		$requestedURL .= $_SERVER['REQUEST_URI'];
-
-		$parsedURL   = @parse_url( $requestedURL );
-
-		$redirectURL = explode( '?', $requestedURL );
-		$redirectURL = $redirectURL[0];
-
-		// Ensure array index is set, prevent PHP error notice.
-		if( ! isset( $parsedURL['query'] ) ) $parsedURL['query'] = array();
-
-		$parsedURL['query'] = preg_replace( '#^\??&*?#', '', $parsedURL['query'] );
-
-		// Add back on to the URL any remaining query string values.
-		if ( $redirectURL && ! empty( $parsedURL['query'] ) ) {
-			parse_str( $parsedURL['query'], $_parsed_query );
-			$_parsed_query = array_map( 'rawurlencode_deep',  $_parsed_query );
-		}
-
-		foreach ( $alphaindex as $letter ) {
-
-			if ( ! empty( $parsedURL['query'] ) ) {
-				$linkindex .= '<a href="' . add_query_arg( $_parsed_query, $redirectURL . '#' . $letter ) . '">' . $letter . '</a> ';
-			} else {
-				$linkindex .= '<a href="#' . $letter . '">' . $letter . '</a> ';
-			}
-
-		}
-
-		return $linkindex;
-	}
-
-	/**
 	 * Builds a form select list
 	 *
 	 * @return HTML form select
@@ -490,6 +447,9 @@ class cnFormObjects {
 	 * @return string
 	 */
 	public function metaboxBirthdayUpcoming( $data = NULL ) {
+		$message = create_function( '', 'return "' . __( 'No Upcoming Birthdays.', 'connections' ) . '";' );
+		add_filter( 'cn_upcoming_no_result_message', $message );
+
 		$atts = array(
 			'list_type'        => 'birthday',
 			'days'             => '30',
@@ -503,6 +463,8 @@ class cnFormObjects {
 		);
 
 		connectionsUpcomingList( $atts );
+
+		remove_filter( 'cn_upcoming_no_result_message', $message );
 	}
 
 	/**
@@ -540,6 +502,9 @@ class cnFormObjects {
 	 * @param array   $data
 	 */
 	public function metaboxAnniversaryUpcoming( $data = NULL ) {
+		$message = create_function( '', 'return "' . __( 'No Upcoming Anniversaries.', 'connections' ) . '";' );
+		add_filter( 'cn_upcoming_no_result_message', $message );
+
 		$atts = array(
 			'list_type'        => 'anniversary',
 			'days'             => '30',
@@ -553,6 +518,8 @@ class cnFormObjects {
 		);
 
 		connectionsUpcomingList( $atts );
+
+		remove_filter( 'cn_upcoming_no_result_message', $message );
 	}
 
 	/**
@@ -573,6 +540,8 @@ class cnFormObjects {
 
 		add_filter( 'cn_list_atts_permitted', 'cnMetaboxModerateAtts', 9 );
 		add_filter( 'cn_list_results', array( $connections->retrieve, 'removeUnknownDateAdded' ), 9 );
+
+		remove_action( 'cn_action_list_actions', array( 'cnTemplatePart', 'listActions' ) );
 
 		$atts = array(
 			'order_by'        => 'date_added|SORT_ASC',
@@ -599,6 +568,8 @@ class cnFormObjects {
 
 		add_filter( 'cn_list_results', array( $connections->retrieve, 'removeUnknownDateAdded' ), 9 );
 
+		remove_action( 'cn_action_list_actions', array( 'cnTemplatePart', 'listActions' ) );
+
 		$atts = array(
 			'order_by'        => 'date_added|SORT_DESC',
 			'template'        => 'dashboard-recent-added',
@@ -621,6 +592,8 @@ class cnFormObjects {
 	 */
 	public function metaboxRecentModified( $data = NULL ) {
 		global $connections;
+
+		remove_action( 'cn_action_list_actions', array( 'cnTemplatePart', 'listActions' ) );
 
 		$atts = array(
 			'order_by'        => 'date_modified|SORT_DESC',

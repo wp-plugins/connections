@@ -38,8 +38,26 @@
         	<span><?php $entry->vcard(); ?></span>
         </td>
 		<td align="right" valign="bottom" style="vertical-align: top;">
-			<span style="<?php echo $entry->getLastUpdatedStyle() ?>; font-size:x-small; font-variant: small-caps;">Updated <?php echo $entry->getHumanTimeDiff() ?> ago</span>
-			<?php echo $entry->returnToTopAnchor(); ?>
+
+			<?php
+
+			cnTemplatePart::updated(
+				array(
+					'timestamp' => $entry->getUnixTimeStamp(),
+					'style' => array(
+						'font-size'    => 'x-small',
+						'font-variant' => 'small-caps',
+						'position'     => 'absolute',
+						'right'        => '36px',
+						'bottom'       => '8px'
+					)
+				)
+			);
+
+			cnTemplatePart::returnToTop( array( 'style' => array( 'position' => 'absolute', 'right' => '8px', 'bottom' => '5px' ) ) );
+
+			?>
+
         </td>
     </tr>
 </table>

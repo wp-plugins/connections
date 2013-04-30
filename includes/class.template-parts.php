@@ -16,6 +16,161 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class cnTemplatePart {
 
 	/**
+	 * Register the default template actions.
+	 *
+	 * @access private
+	 * @since 0.7.6.5
+	 * @uses add_action()
+	 * @return (void)
+	 */
+	public static function init() {
+
+		add_action( 'cn_action_list_actions', array( __CLASS__, 'listActions' ) );
+		add_action( 'cn_action_entry_actions', array( __CLASS__, 'entryActions' ), 10, 2 );
+
+		add_action( 'cn_action_no_results', array( __CLASS__, 'noResults' ), 10, 2 );
+
+		add_action( 'cn_action_character_index', array( __CLASS__, 'characterIndex' ) );
+		add_action( 'cn_action_return_to_target', array( __CLASS__, 'returnToTopTarget' ) );
+	}
+
+	/**
+	 * Output the result list actions.
+	 *
+	 * @access public
+	 * @since 0.7.6.5
+	 * @param  (array)  $atts [optional]
+	 * @uses wp_parse_args()
+	 * @uses apply_filters()
+	 * @return (string)
+	 */
+	public static function listActions( $atts = array() ) {
+		$out = '';
+		$actions = array();
+
+		$defaults = array(
+			'before'      => '<ul id="cn-list-actions">',
+			'before-item' => '<li class="cn-list-action-item">',
+			'after-item'  => '</li>',
+			'after'       => '</ul>',
+			'return'      => FALSE
+		);
+
+		$atts = wp_parse_args( $atts, $defaults );
+
+		if ( cnSettingsAPI::get( 'connections', 'connections_display_list_actions', 'view_all' ) && get_query_var( 'cn-view' ) !== 'all' )
+			$actions['view_all'] = cnURL::permalink( array( 'type' => 'all', 'text' => __( 'View All', 'connections' ), 'rel' => 'canonical', 'return' => TRUE ) );
+
+		$actions = apply_filters( 'cn_filter_list_actions', $actions );
+
+		foreach ( $actions as $key => $action ) {
+			$out .= "\n" . ( empty( $atts['before-item'] ) ? '' : $atts['before-item'] ) . $action . ( empty( $atts['after-item'] ) ? '' : $atts['after-item'] ) . "\n";
+		}
+
+		if ( $atts['return'] ) return "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
+		echo "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
+	}
+
+	/**
+	 * Output the entry list actions.
+	 *
+	 * @access public
+	 * @since 0.7.6.5
+	 * @param (array)  $atts [optional]
+	 * @param (object) $entry Instance of the cnEntry class.
+	 * @uses wp_parse_args()
+	 * @uses apply_filters()
+	 * @return (string)
+	 */
+	public static function entryActions( $atts = array(), $entry ) {
+		$out = '';
+		$actions = array();
+
+		$defaults = array(
+			'before'      => '<ul id="cn-entry-actions">',
+			'before-item' => '<li class="cn-entry-action-item">',
+			'after-item'  => '</li>',
+			'after'       => '</ul>',
+			'return'      => FALSE
+		);
+
+		$atts = wp_parse_args( $atts, $defaults );
+
+		if ( cnSettingsAPI::get( 'connections', 'connections_display_entry_actions', 'back' ) )
+			$actions['back'] = cnURL::permalink( array( 'type' => 'home', 'text' => __( 'Go back to directory.', 'connections' ), 'on_click' => 'history.back();return false;', 'return' => TRUE ) );
+
+		if ( cnSettingsAPI::get( 'connections', 'connections_display_entry_actions', 'vcard' ) )
+			$actions['vcard'] = $entry->vcard( array( 'return' => TRUE ) );
+
+		$actions = apply_filters( 'cn_filter_entry_actions', $actions );
+
+		foreach ( $actions as $key => $action ) {
+			$out .= "\n" . ( empty( $atts['before-item'] ) ? '' : $atts['before-item'] ) . $action . ( empty( $atts['after-item'] ) ? '' : $atts['after-item'] ) . "\n";
+		}
+
+		if ( $atts['return'] ) return "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
+		echo "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
+	}
+
+	/**
+	 * Outputs the "No Results" meesage.
+	 *
+	 * @access public
+	 * @since 0.7.6.5
+	 * @uses wp_parse_args()
+	 * @uses apply_filters()
+	 * @param  (array) $atts [optional]
+	 * @param  (string) $slug The template slug.
+	 * @return (string)
+	 */
+	public static function noResults( $atts = array(), $slug ) {
+		$out = '';
+		$actions = array();
+
+		$defaults = array(
+			'tag'     => 'p',
+			'message' => __('No results.', 'connections'),
+			'before'  => '',
+			'after'   => '',
+			'return'  => FALSE
+		);
+
+		$atts = wp_parse_args( $atts, $defaults );
+
+		$atts['message'] = apply_filters( 'cn_list_no_result_message' , $atts['message'] );
+		$atts['message'] = apply_filters( 'cn_list_no_result_message-' . $slug , $atts['message'] );
+
+		$out .=  "\n" . '<' . $atts['tag'] . ' class="cn-list-no-results">' . $atts['message'] . '</' . $atts['tag'] . '>' . "\n";
+
+		if ( $atts['return'] ) return "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
+		echo "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
+	}
+
+	/**
+	 * Output the return to top div.
+	 *
+	 * @access public
+	 * @since 0.7.6.5
+	 * @param  (array)  $atts [optional]
+	 * @uses wp_parse_args()
+	 * @uses apply_filters()
+	 * @return (string)
+	 */
+	public static function returnToTopTarget( $atts = array() ) {
+
+		$defaults = array(
+			'return' => FALSE
+		);
+
+		$atts = wp_parse_args( $atts, $defaults );
+
+		$out = apply_filters( 'cn_filter_return_to_top_target', '<div id="cn-top" style="position: absolute; top: 0; right: 0;"></div>' );
+
+		if ( $atts['return'] ) return $out;
+		echo $out;
+	}
+
+	/**
 	 * The return to top anchor.
 	 *
 	 * @access public
@@ -26,6 +181,116 @@ class cnTemplatePart {
 	 * @return string
 	 */
 	public static function returnToTop( $atts = array() ) {
+		$styles = '';
+
+		$defaults = array(
+			'tag'    => 'span',
+			'href'   => '#cn-top',
+			'style'  => array(),
+			'title'  => __('Return to top.', 'connections'),
+			'text'   => '<img src="' . CN_URL . 'images/uparrow.gif" alt="' . __('Return to top.', 'connections') . '"/>',
+			'before' => '',
+			'after'  => '',
+			'return' => FALSE
+		);
+
+		$atts = wp_parse_args( $atts, $defaults );
+
+		if ( is_array( $atts['style'] ) && ! empty( $atts['style'] ) ) {
+
+			array_walk( $atts['style'], create_function( '&$i, $property', '$i = "$property: $i";' ) );
+			$styles = implode( $atts['style'], '; ' );
+		}
+
+		$anchor = '<a href="' . $atts['href'] . '" title="' . $atts['title'] . '">' . $atts['text'] . '</a>';
+
+		$out = '<' . $atts['tag'] . ' class="cn-return-to-top"' . ( $styles ? ' style="' . $styles . '"' : ''  ) . '>' . $anchor . '</' . $atts['tag'] . '>';
+
+		if ( $atts['return'] ) return "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
+		echo "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
+	}
+
+	/**
+	 * The last updated messagefor an entry.
+	 *
+	 * @access public
+	 * @since 0.7.6.5
+	 * @uses wp_parse_args()
+	 * @uses human_time_diff()
+	 * @uses current_time()
+	 * @param (array) $atts [optional]
+	 * @return (string)
+	 */
+	public static function updated( $atts = array() ) {
+		$out = '';
+		$styles = '';
+
+		$defaults = array(
+			'timestamp'   => '',
+			'tag'         => 'span',
+			'style'       => array(),
+			'before'      => '',
+			'after'       => '',
+			'return'      => FALSE
+		);
+
+		$atts = wp_parse_args( $atts, $defaults );
+
+		// No need to continue if the timestamp was not supplied.
+		if ( ! isset( $atts['timestamp'] ) || empty( $atts['timestamp'] ) ) {
+
+			if ( $atts['return'] ) return $out;
+			echo $out;
+		}
+
+		$age = (int) abs( time() - strtotime( $atts['timestamp'] ) );
+
+		if ( $age < 657000 ) // less than one week: red
+			$atts['style']['color'] = 'red';
+		elseif ( $age < 1314000 ) // one-two weeks: maroon
+			$atts['style']['color'] = 'maroon';
+		elseif ( $age < 2628000 ) // two weeks to one month: green
+			$atts['style']['color'] = 'green';
+		elseif ( $age < 7884000 ) // one - three months: blue
+			$atts['style']['color'] = 'blue';
+		elseif ( $age < 15768000 ) // three to six months: navy
+			$atts['style']['color'] = 'navy';
+		elseif ( $age < 31536000 ) // six months to a year: black
+			$atts['style']['color'] = 'black';
+		else      // more than one year: don't show the update age
+			$atts['style']['display'] = 'none';
+
+		if ( is_array( $atts['style'] ) && ! empty( $atts['style'] ) ) {
+
+			array_walk( $atts['style'], create_function( '&$i, $property', '$i = "$property: $i";' ) );
+			$styles = implode( $atts['style'], '; ' );
+		}
+
+		$updated = sprintf( __( 'Updated %1$s ago.' ), human_time_diff( strtotime( $atts['timestamp'] ), current_time( 'timestamp' ) ) );
+
+		$out = '<' . $atts['tag'] . ' class="cn-last-updated"' . ( $styles ? ' style="' . $styles . '"' : ''  ) . '>' . $updated . '</' . $atts['tag'] . '>';
+
+		if ( $atts['return'] ) return "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
+		echo "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
+	}
+
+	/**
+	 * Outputs the legacy character index. This is being deprecated in favor of cnTemplatePart::index().
+	 * This was added for backward compatibility only for the legacy templates.
+	 *
+	 * @access public
+	 * @since 0.7.6.5
+	 * @deprecated since 0.7.6.5
+	 * @uses wp_parse_args()
+	 * @uses is_ssl()
+	 * @uses add_query_arg()
+	 * @param  (array) $atts [optional]
+	 * @return (string)
+	 */
+	public static function characterIndex( $atts = array() ) {
+		static $out = '';
+		$links = array();
+		$alphaindex = range( "A", "Z" );
 
 		$defaults = array(
 			'return' => FALSE
@@ -33,7 +298,48 @@ class cnTemplatePart {
 
 		$atts = wp_parse_args( $atts, $defaults );
 
-		$out = '<a href="#cn-top" title="' . __('Return to top.', 'connections') . '"><img src="' . CN_URL . 'images/uparrow.gif" alt="' . __('Return to top.', 'connections') . '"/></a>';
+		/*
+		 * $out is a static variable so if is not empty, this method was already run,
+		 * so there is no need to rebuild the chracter index.
+		 */
+		if ( ! empty( $out ) ) {
+			if ( $atts['return'] ) return $out;
+			echo $out;
+			return;
+		}
+
+		// The URL in the address bar
+		$requestedURL  = is_ssl() ? 'https://' : 'http://';
+		$requestedURL .= $_SERVER['HTTP_HOST'];
+		$requestedURL .= $_SERVER['REQUEST_URI'];
+
+		$parsedURL   = @parse_url( $requestedURL );
+
+		$redirectURL = explode( '?', $requestedURL );
+		$redirectURL = $redirectURL[0];
+
+		// Ensure array index is set, prevent PHP error notice.
+		if( ! isset( $parsedURL['query'] ) ) $parsedURL['query'] = array();
+
+		$parsedURL['query'] = preg_replace( '#^\??&*?#', '', $parsedURL['query'] );
+
+		// Add back on to the URL any remaining query string values.
+		if ( $redirectURL && ! empty( $parsedURL['query'] ) ) {
+			parse_str( $parsedURL['query'], $_parsed_query );
+			$_parsed_query = array_map( 'rawurlencode_deep',  $_parsed_query );
+		}
+
+		foreach ( $alphaindex as $letter ) {
+
+			if ( empty( $parsedURL['query'] ) ) {
+				$links[] = '<a href="#cn-char-' . $letter . '">' . $letter . '</a>';
+			} else {
+				$links[] = '<a href="' . add_query_arg( $_parsed_query, $redirectURL . '#cn-char-' . $letter ) . '">' . $letter . '</a>';
+			}
+
+		}
+
+		$out = "\n" . '<div class="cn-alphaindex">' . implode( ' ', $links ). '</div>' . "\n";
 
 		if ( $atts['return'] ) return $out;
 		echo $out;
@@ -406,14 +712,27 @@ class cnTemplatePart {
 	 */
 	private static function categorySelect( $atts ) {
 		global $connections;
-		$selected = '';
-
-		// $selected = get_query_var('cn-cat-slug') ? get_query_var('cn-cat-slug') : array();
+		$selected = array();
 
 		if ( get_query_var( 'cn-cat' ) ) {
+
 			$selected = get_query_var( 'cn-cat' );
-		} elseif( get_query_var( 'cn-cat-slug' ) ) {
-			$selected = get_query_var( 'cn-cat-slug' );
+
+
+		} elseif ( get_query_var( 'cn-cat-slug' ) ) {
+
+			// If the category slug is a descendant, use the last slug from the URL for the query.
+			$queryCategorySlug = explode( '/' , get_query_var( 'cn-cat-slug' ) );
+
+			if ( isset( $queryCategorySlug[ count( $queryCategorySlug ) - 1 ] ) ) $selected = $queryCategorySlug[ count( $queryCategorySlug ) - 1 ];
+		}
+
+		// If value is a string, strip the white space and covert to an array.
+		if ( ! is_array( $selected ) ) {
+
+			$selected = str_replace( ' ', '', $selected );
+
+			$selected = explode( ',', $selected );
 		}
 
 		$level = 1;
@@ -485,7 +804,7 @@ class cnTemplatePart {
 	 * @param object $category A category object.
 	 * @param int $level The current category level.
 	 * @param int $depth The depth limit.
-	 * @param array $selected An array of the selected category IDs.
+	 * @param array $selected An array of the selected category IDs / slugs.
 	 * @param array $atts
 	 * @return string
 	 */
@@ -564,7 +883,7 @@ class cnTemplatePart {
 	 * @param array $atts
 	 * @return string
 	 */
-	private function categoryInput( $atts = NULL ) {
+	private static function categoryInput( $atts = NULL ) {
 		global $connections;
 
 		$selected = ( get_query_var('cn-cat') ) ? get_query_var('cn-cat') : array();
@@ -695,7 +1014,7 @@ class cnTemplatePart {
 	 * @param array $atts
 	 * @return string
 	 */
-	private function categoryInputOption( $category, $level, $depth, $selected, $atts ) {
+	private static function categoryInputOption( $category, $level, $depth, $selected, $atts ) {
 
 		$out = '';
 
@@ -763,7 +1082,7 @@ class cnTemplatePart {
 	 * @param array $atts
 	 * @return string
 	 */
-	private function categoryLink( $atts = NULL ) {
+	private static function categoryLink( $atts = NULL ) {
 		global $connections;
 
 		$categories = array();
@@ -887,7 +1206,7 @@ class cnTemplatePart {
 	 * @param array $atts
 	 * @return string
 	 */
-	private function categoryLinkDescendant ( $category, $level, $depth, $slug, $atts ) {
+	private static function categoryLinkDescendant ( $category, $level, $depth, $slug, $atts ) {
 		global $wp_rewrite, $connections;
 
 		$out = '';

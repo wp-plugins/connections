@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.6.4
+Version: 0.7.6.5
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 Text Domain: connections
@@ -212,7 +212,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 
 			define( 'CN_LOG', FALSE );
 
-			define( 'CN_CURRENT_VERSION', '0.7.6.4' );
+			define( 'CN_CURRENT_VERSION', '0.7.6.5' );
 			define( 'CN_DB_VERSION', '0.1.9' );
 
 			/*
@@ -363,6 +363,9 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 
 			// Init the Template Factory API
 			cnTemplateFactory::init();
+
+			// Init the Template Parts API
+			cnTemplatePart::init();
 
 			// Register all valid query variables.
 			cnRewrite::init();
@@ -566,7 +569,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			cnFileSystem::mkIndex( CN_CUSTOM_TEMPLATE_PATH );
 
 			// Add an .htaccess file, create it if one doesn't exist, and add the no indexes option.
-			cnFileSystem::noIndexes( CN_IMAGE_PATH );
+			// cnFileSystem::noIndexes( CN_IMAGE_PATH ); // Causes some servers to respond w/ 403 when servering images.
 			cnFileSystem::noIndexes( CN_CUSTOM_TEMPLATE_PATH );
 
 			$connections->initOptions();

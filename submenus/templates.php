@@ -25,6 +25,9 @@ function connectionsShowTemplatesPage() {
 		$type = isset( $_GET['type'] ) ? esc_attr( $_GET['type'] ) : 'all';
 		$template = cnTemplateFactory::getCatalog( $type );
 
+		// Purge the transient so the page is freshly scanned by the template API.
+		delete_transient( 'cn_legacy_templates' );
+
 	?>
 		<div class="wrap">
 			<?php echo get_screen_icon( 'connections' ); ?>
@@ -90,17 +93,11 @@ function connectionsShowTemplatesPage() {
 						<td class="template_instructions" colspan="2">
 							<p><strong><?php _e( 'Instructions', 'connections' ); ?>:</strong></p>
 							<p>
-								<?php _e( 'By default the <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/">[connections]</a></code> shortcode will show all entries types. To change the template
-								used when displaying all entry types, select the "All" tab and activate the template. When the <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/list_type/">list_type</a></code>
-								shortcode option is used to filter the entries based on the entry type, the template for that entry type will be used.
-								To change the template used for a specific entry type, select the appropriate tab and then activate the template. If multiple
-								entry types are specified in the <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/list_type/">list_type</a></code> shortcode option, the template for the entry type listed first
-								will be used to display the entry list.', 'connections' ); ?>
+								<?php _e( 'By default the <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/">[connections]</a></code> shortcode will show all entries types. To change the template used when displaying all entry types, select the "All" tab and activate the template. When the <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/list_type/">list_type</a></code>shortcode option is used to filter the entries based on the entry type, the template for that entry type will be used. To change the template used for a specific entry type, select the appropriate tab and then activate the template. If multiple entry types are specified in the <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-connections/list_type/">list_type</a></code> shortcode option, the template for the entry type listed first will be used to display the entry list.', 'connections' ); ?>
 							</p>
 
 							<p>
-								<?php _e( 'The <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-upcoming-list/">[upcoming_list]</a></code> shortcode which displays the upcoming anniversaries and birthdays will be displayed with the template
-								that is activated under their respective tabs.', 'connections' ); ?>
+								<?php _e( 'The <code><a href="http://connections-pro.com/documentation/plugin/shortcodes/shortcode-upcoming-list/">[upcoming_list]</a></code> shortcode which displays the upcoming anniversaries and birthdays will be displayed with the template that is activated under their respective tabs.', 'connections' ); ?>
 							</p>
 
 							<p>
@@ -110,44 +107,6 @@ function connectionsShowTemplatesPage() {
 					</tr>
 				</tbody>
 			</table>
-
-			<?php
-			if ( file_exists( CN_CUSTOM_TEMPLATE_PATH ) && is_writeable( CN_CUSTOM_TEMPLATE_PATH ) ) {
-			?>
-
-			<table cellspacing="0" cellpadding="0" id="installthemes">
-				<tbody>
-					<tr>
-						<td class="install_template" colspan="3">
-							<h2><?php _e( 'Install Template', 'connections' ); ?></h2>
-
-							<?php
-									$formAttr = array(
-										'action' => 'admin.php?connections_process=true&process=template&type=' . $type . '&action=install',
-										'method' => 'post',
-										'enctype' => 'multipart/form-data'
-									);
-
-									$form->open( $formAttr );
-									$form->tokenField( 'install_template' );
-							?>
-
-							<p>
-								<label for='template'><?php _e( 'Select Template:', 'connections' ); ?>
-									<input type='file' value='' name='template' size='25' />
-								</label>
-								<input type="submit" value="<?php _e( 'Install Now', 'connections' ); ?>" class="button">
-							</p>
-
-							<?php $form->close(); ?>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-
-			<?php
-			}
-			?>
 
 			<table cellspacing="0" cellpadding="0" id="availablethemes">
 				<tbody>
@@ -250,6 +209,46 @@ function connectionsShowTemplatesPage() {
 
 				</tbody>
 			</table>
+
+			<?php
+			if ( file_exists( CN_CUSTOM_TEMPLATE_PATH ) && is_writeable( CN_CUSTOM_TEMPLATE_PATH ) ) {
+			?>
+
+			<table cellspacing="0" cellpadding="0" id="installthemes">
+				<tbody>
+					<tr>
+						<td class="install_template" colspan="3">
+							<h2><?php _e( 'Install Legacy Template', 'connections' ); ?></h2>
+
+							<p><?php _e( 'If you puchased your template after 3.25.2013, please follow these <a href="http://connections-pro.com/documentation/plugin/install/templates/">installation instructions</a>. If you are upgrading your template purchased prior to 3.25.2013, please take note of the special upgrade instructions found on the same page.' , 'connections' ); ?></p>
+
+							<?php
+									$formAttr = array(
+										'action' => 'admin.php?connections_process=true&process=template&type=' . $type . '&action=install',
+										'method' => 'post',
+										'enctype' => 'multipart/form-data'
+									);
+
+									$form->open( $formAttr );
+									$form->tokenField( 'install_template' );
+							?>
+
+							<p>
+								<label for='template'><?php _e( 'Select Template:', 'connections' ); ?>
+									<input type='file' value='' name='template' size='25' />
+								</label>
+								<input type="submit" value="<?php _e( 'Install Now', 'connections' ); ?>" class="button">
+							</p>
+
+							<?php $form->close(); ?>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<?php
+			}
+			?>
 
 		</div>
 	<?php
