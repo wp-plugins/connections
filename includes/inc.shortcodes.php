@@ -211,7 +211,7 @@ function connectionsList( $atts, $content = NULL, $tag = 'connections' ) {
 
 	// If no template was found, exit return an error message.
 	if ( $template == FALSE )
-		return '<p style="color:red; font-weight:bold; text-align:center;">' . sprintf( __( 'ERROR: Template %1$s not found.', 'connections' ), $preLoadAtts['template_name'] . $preLoadAtts['template'] ). "</p>";
+		return '<p style="color:red; font-weight:bold; text-align:center;">' . sprintf( __( 'ERROR: Template %1$s not found.', 'connections' ), $preLoadAtts['template_name'] . $preLoadAtts['template'] ) . '</p>';
 
 	do_action( 'cn_register_legacy_template_parts' );
 	do_action( 'cn_action_include_once-' . $template->getSlug() );
@@ -231,9 +231,9 @@ function connectionsList( $atts, $content = NULL, $tag = 'connections' ) {
 		'wp_current_category'   => 'false',
 		'allow_public_override' => 'false',
 		'private_override'      => 'false',
-		'show_alphaindex'       => $connections->settings->get( 'connections', 'connections_display_results', 'index' ),
-		'repeat_alphaindex'     => $connections->settings->get( 'connections', 'connections_display_results', 'index_repeat' ),
-		'show_alphahead'        => $connections->settings->get( 'connections', 'connections_display_results', 'show_current_character' ),
+		'show_alphaindex'       => cnSettingsAPI::get( 'connections', 'connections_display_results', 'index' ),
+		'repeat_alphaindex'     => cnSettingsAPI::get( 'connections', 'connections_display_results', 'index_repeat' ),
+		'show_alphahead'        => cnSettingsAPI::get( 'connections', 'connections_display_results', 'show_current_character' ),
 		'list_type'             => NULL,
 		'order_by'              => NULL,
 		'limit'                 => NULL,
@@ -254,7 +254,8 @@ function connectionsList( $atts, $content = NULL, $tag = 'connections' ) {
 		'unit'                  => 'mi',
 		'template'              => NULL, /** @since version 0.7.1.0 */
 		'template_name'         => NULL /** @deprecated since version 0.7.0.4 */,
-		'width'                 => NULL
+		'width'                 => NULL,
+		'lock'                  => FALSE
 	);
 
 	$permittedAtts = apply_filters( 'cn_list_atts_permitted' , $permittedAtts );
@@ -277,13 +278,14 @@ function connectionsList( $atts, $content = NULL, $tag = 'connections' ) {
 	$convert->toBoolean( $atts['repeat_alphaindex'] );
 	$convert->toBoolean( $atts['show_alphahead'] );
 	$convert->toBoolean( $atts['wp_current_category'] );
+	$convert->toBoolean( $atts['lock'] );
 	// $out .= var_dump($atts);
 
 	/*
 	 * The WP post editor entity encodes the post text we have to decode it
 	 * so a match can be made when the query is run.
 	 */
-	$atts['family_name']   = html_entity_decode ($atts['family_name'] );
+	$atts['family_name']   = html_entity_decode( $atts['family_name'] );
 	$atts['last_name']     = html_entity_decode( $atts['last_name'] );
 	$atts['title']         = html_entity_decode( $atts['title'] );
 	$atts['organization']  = html_entity_decode( $atts['organization'] );
@@ -301,18 +303,21 @@ function connectionsList( $atts, $content = NULL, $tag = 'connections' ) {
 	//$out .= print_r($connections->lastQuery , TRUE);
 	//$out .= print_r($results , TRUE);
 
-	if ( ! empty( $results ) ) $results = apply_filters( 'cn_list_results', $results );
-	if ( ! empty( $results ) ) $results = apply_filters( 'cn_list_results-' . $template->getSlug() , $results );
-	if ( ! empty( $results ) ) $filterRegistry[] = 'cn_list_results-' . $template->getSlug();
+	// Apply any registered filters to the results.
+	if ( ! empty( $results ) ) {
 
+		$results = apply_filters( 'cn_list_results', $results );
+		$results = apply_filters( 'cn_list_results-' . $template->getSlug() , $results );
+		$filterRegistry[] = 'cn_list_results-' . $template->getSlug();
+	}
 
 	ob_start();
 
 		// Prints the template's CSS file.
-		do_action( 'cn_action_css-' . $template->getSlug() );
+		do_action( 'cn_action_css-' . $template->getSlug() , $atts );
 
 		// The return to top anchor
-		do_action( 'cn_action_return_to_target' );
+		do_action( 'cn_action_return_to_target', $atts );
 
 		$out .= ob_get_contents();
 	ob_end_clean();
@@ -336,19 +341,19 @@ function connectionsList( $atts, $content = NULL, $tag = 'connections' ) {
 
 					// List actions.
 					ob_start();
-						do_action( 'cn_action_list_actions' );
+						do_action( 'cn_action_list_actions', $atts );
 						$out .= ob_get_contents();
 					ob_end_clean();
 
 				}
 
 				ob_start();
-					do_action( 'cn_action_list_before' , $results );
-					do_action( 'cn_action_list_before-' . $template->getSlug() , $results );
+					do_action( 'cn_action_list_before' , $atts , $results );
+					do_action( 'cn_action_list_before-' . $template->getSlug() , $atts , $results );
 					$filterRegistry[] = 'cn_action_list_before-' . $template->getSlug();
 
-					do_action( 'cn_action_list_both' , $results  );
-					do_action( 'cn_action_list_both-' . $template->getSlug() , $results );
+					do_action( 'cn_action_list_both' , $atts , $results  );
+					do_action( 'cn_action_list_both-' . $template->getSlug() , $atts , $results );
 					$filterRegistry[] = 'cn_action_list_both-' . $template->getSlug();
 
 					$out .= ob_get_contents();
@@ -360,7 +365,7 @@ function connectionsList( $atts, $content = NULL, $tag = 'connections' ) {
 
 				// The character index template part.
 				ob_start();
-					do_action( 'cn_action_character_index' );
+					do_action( 'cn_action_character_index' , $atts );
 					$charIndex = ob_get_contents();
 				ob_end_clean();
 
@@ -383,11 +388,11 @@ function connectionsList( $atts, $content = NULL, $tag = 'connections' ) {
 
 				// The no results message.
 				ob_start();
-					do_action( 'cn_action_no_results', array(), $template->getSlug() );
+					do_action( 'cn_action_no_results', $atts , $template->getSlug() );
+					$filterRegistry[] = 'cn_list_no_result_message-' . $template->getSlug();
+
 					$out .= ob_get_contents();
 				ob_end_clean();
-
-				$filterRegistry[] = 'cn_list_no_result_message-' . $template->getSlug();
 
 			} else {
 
@@ -404,8 +409,8 @@ function connectionsList( $atts, $content = NULL, $tag = 'connections' ) {
 				$skipEntry = array();
 
 				foreach ( $results as $row ) {
-					$entry       = new cnvCard( $row );
-					$vCard       =& $entry;
+					$entry = new cnvCard( $row );
+					$vCard =& $entry;
 
 					// @TODO --> Fix this somehow in the query, see comment above for $skipEntry.
 					if ( in_array( $entry->getId() , $skipEntry ) ) continue;
@@ -416,7 +421,7 @@ function connectionsList( $atts, $content = NULL, $tag = 'connections' ) {
 
 						// List actions template part.
 						ob_start();
-							do_action( 'cn_action_entry_actions', array(), $entry );
+							do_action( 'cn_action_entry_actions', $atts , $entry );
 							$out .= ob_get_contents();
 						ob_end_clean();
 
@@ -426,21 +431,36 @@ function connectionsList( $atts, $content = NULL, $tag = 'connections' ) {
 
 					if ( $currentLetter != $previousLetter ) {
 
-						$out .= "\n" . '<div class="cn-list-section-head cn-clear" id="cn-char-' . $currentLetter . '">' . "\n";
+						$out .= sprintf( '<div class="cn-list-section-head cn-clear" id="cn-char-%1$s">', $currentLetter );
 
 							if ( $atts['show_alphaindex'] && $atts['repeat_alphaindex'] ) $out .= $charIndex;
 
-							if ( $atts['show_alphahead'] ) $out .= "\n" . '<h4 class="cn-alphahead">' . $currentLetter . '</h4>' . "\n";
+							if ( $atts['show_alphahead'] ) $out .= sprintf( '<h4 class="cn-alphahead">%1$s</h4>', $currentLetter );
 
-						$out .= "\n" . '</div>' . "\n";
+						$out .= '</div>';
 
 						$previousLetter = $currentLetter;
 					}
 
+					// Before entry actions.
+					ob_start();
+						do_action( 'cn_action_entry_before' , $atts , $entry );
+						do_action( 'cn_action_entry_before-' . $template->getSlug() , $atts , $entry );
+						$filterRegistry[] = 'cn_action_entry_before-' . $template->getSlug();
 
-					$alternate == '' ? $alternate = '-alternate' : $alternate = '';
+						do_action( 'cn_action_entry_both' , $atts , $entry  );
+						do_action( 'cn_action_entry_both-' . $template->getSlug() , $atts , $entry );
+						$filterRegistry[] = 'cn_action_entry_both-' . $template->getSlug();
 
-					$out .= "\n" . '<div class="cn-list-row' . $alternate . ' vcard ' . $entry->getEntryType() . ' ' . $entry->getCategoryClass(TRUE) . '" id="' . $entry->getSlug() . '">' . "\n";
+						$out .= ob_get_contents();
+					ob_end_clean();
+
+					$out .= sprintf( '<div class="cn-list-row%1$s vcard %2$s %2$s" id="%4$s">',
+							$alternate = $alternate == '' ? '-alternate' : '',
+							$entry->getEntryType(),
+							$entry->getCategoryClass(TRUE),
+							$entry->getSlug()
+						);
 
 						$out .= apply_filters( 'cn_list_entry_before' , '' , $entry );
 						$out .= apply_filters( 'cn_list_entry_before-' . $template->getSlug() , '' , $entry );
@@ -466,6 +486,19 @@ function connectionsList( $atts, $content = NULL, $tag = 'connections' ) {
 
 					$out .= "\n" . '</div>' . "\n";
 
+					// After entry actions.
+					ob_start();
+						do_action( 'cn_action_entry_after' , $atts , $entry );
+						do_action( 'cn_action_entry_after-' . $template->getSlug() , $atts , $entry );
+						$filterRegistry[] = 'cn_action_entry_after-' . $template->getSlug();
+
+						do_action( 'cn_action_entry_both' , $atts , $entry  );
+						do_action( 'cn_action_entry_both-' . $template->getSlug() , $atts ,$entry );
+						$filterRegistry[] = 'cn_action_entry_both-' . $template->getSlug();
+
+						$out .= ob_get_contents();
+					ob_end_clean();
+
 				}
 			}
 
@@ -478,12 +511,12 @@ function connectionsList( $atts, $content = NULL, $tag = 'connections' ) {
 				$filterRegistry[] = 'cn_list_after-' . $template->getSlug();
 
 				ob_start();
-					do_action( 'cn_action_list_both' , $results  );
-					do_action( 'cn_action_list_both-' . $template->getSlug() , $results );
+					do_action( 'cn_action_list_both' , $atts , $results  );
+					do_action( 'cn_action_list_both-' . $template->getSlug() , $atts , $results );
 					$filterRegistry[] = 'cn_action_list_both-' . $template->getSlug();
 
-					do_action( 'cn_action_list_after' , $results );
-					do_action( 'cn_action_list_after-' . $template->getSlug() , $results );
+					do_action( 'cn_action_list_after' , $atts , $results );
+					do_action( 'cn_action_list_after-' . $template->getSlug() , $atts , $results );
 					$filterRegistry[] = 'cn_action_list_after-' . $template->getSlug();
 
 					$out .= ob_get_contents();
@@ -504,7 +537,7 @@ function connectionsList( $atts, $content = NULL, $tag = 'connections' ) {
 		if ( isset( $wp_filter[ $filter ] ) ) unset( $wp_filter[ $filter ] );
 	}
 
-	if ( $connections->settings->get( 'connections', 'connections_compatibility', 'strip_rnt' ) ) {
+	if ( cnSettingsAPI::get( 'connections', 'connections_compatibility', 'strip_rnt' ) ) {
 		$search = array( "\r\n", "\r", "\n", "\t" );
 		$replace = array( '', '', '', '' );
 		$out = str_replace( $search , $replace , $out );
@@ -721,7 +754,7 @@ function _upcoming_list( $atts, $content = NULL, $tag = 'upcoming_list' ) {
 
 	}
 
-	if ( $connections->settings->get( 'connections', 'connections_compatibility', 'strip_rnt' ) ) {
+	if ( cnSettingsAPI::get( 'connections', 'connections_compatibility', 'strip_rnt' ) ) {
 		$search = array( "\r\n", "\r", "\n", "\t" );
 		$replace = array( '', '', '', '' );
 		$out = str_replace( $search , $replace , $out );

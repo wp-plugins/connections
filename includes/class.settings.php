@@ -109,6 +109,14 @@ class cnRegisterSettings
 		 */
 		$sections[] = array(
 			'tab'       => 'display',
+			'id'        => 'connections_display_general',
+			'position'  => 5,
+			'title'     => __( 'General' , 'connections' ),
+			'callback'  => '',
+			'page_hook' => $settings
+		);
+		$sections[] = array(
+			'tab'       => 'display',
 			'id'        => 'connections_display_results',
 			'position'  => 10,
 			'title'     => __( 'Results List' , 'connections' ),
@@ -328,6 +336,21 @@ class cnRegisterSettings
 		 */
 		$fields[] = array(
 			'plugin_id' => 'connections',
+			'id'        => 'date_format',
+			'position'  => 10,
+			'page_hook' => $settings,
+			'tab'       => 'display',
+			'section'   => 'connections_display_general',
+			'title'     => __('Date Format', 'connections'),
+			'desc'      => __('<a href="http://codex.wordpress.org/Formatting_Date_and_Time" target="_blank">Documentation on date and time formatting</a>.', 'connections'),
+			'help'      => '',
+			'type'      => 'text',
+			'size'      => 'small',
+			'default'   => esc_attr( get_option('date_format') )
+		);
+
+		$fields[] = array(
+			'plugin_id' => 'connections',
 			'id'        => 'index',
 			'position'  => 10,
 			'page_hook' => $settings,
@@ -414,7 +437,7 @@ class cnRegisterSettings
 			'page_hook' => $settings,
 			'tab'       => 'display',
 			'section'   => 'connections_display_single',
-			'title'     => __( '', 'connections' ),
+			'title'     => '',
 			'desc'      => __( 'Display a single entry using the active template based on entry type. For example, if the entry is an organization it will be displayed using the template that is activated for the "Organization" template type found on the Connections : Templates admin page.', 'connections' ),
 			'help'      => '',
 			'type'      => 'checkbox',
@@ -425,18 +448,19 @@ class cnRegisterSettings
 		 * The Images tab fields.
 		 */
 		$fields[] = array(
-			'plugin_id' => 'connections',
-			'id'        => 'quality',
-			'position'  => 10,
-			'page_hook' => $settings,
-			'tab'       => 'images',
-			'section'   => 'connections_image_thumbnail',
-			'title'     => __('JPEG Quality', 'connections'),
-			'desc'      => '%',
-			'help'      => '',
-			'type'      => 'text',
-			'size'      => 'small',
-			'default'   => 80
+			'plugin_id'         => 'connections',
+			'id'                => 'quality',
+			'position'          => 10,
+			'page_hook'         => $settings,
+			'tab'               => 'images',
+			'section'           => 'connections_image_thumbnail',
+			'title'             => __('JPEG Quality', 'connections'),
+			'desc'              => '%',
+			'help'              => '',
+			'type'              => 'text',
+			'size'              => 'small',
+			'default'           => 80,
+			'sanitize_callback' => array( 'cnRegisterSettings' , 'sanitizeImageSettings' ) // Only need to add this once per image size, otherwise it would be run for each field.
 		);
 		$fields[] = array(
 			'plugin_id' => 'connections',
@@ -485,18 +509,19 @@ class cnRegisterSettings
 			'default'   => 'crop'
 		);
 		$fields[] = array(
-			'plugin_id' => 'connections',
-			'id'        => 'quality',
-			'position'  => 10,
-			'page_hook' => $settings,
-			'tab'       => 'images',
-			'section'   => 'connections_image_medium',
-			'title'     => __('JPEG Quality', 'connections'),
-			'desc'      => '%',
-			'help'      => '',
-			'type'      => 'text',
-			'size'      => 'small',
-			'default'   => 80
+			'plugin_id'         => 'connections',
+			'id'                => 'quality',
+			'position'          => 10,
+			'page_hook'         => $settings,
+			'tab'               => 'images',
+			'section'           => 'connections_image_medium',
+			'title'             => __('JPEG Quality', 'connections'),
+			'desc'              => '%',
+			'help'              => '',
+			'type'              => 'text',
+			'size'              => 'small',
+			'default'           => 80,
+			'sanitize_callback' => array( 'cnRegisterSettings' , 'sanitizeImageSettings' ) // Only need to add this once per image size, otherwise it would be run for each field.
 		);
 		$fields[] = array(
 			'plugin_id' => 'connections',
@@ -545,18 +570,19 @@ class cnRegisterSettings
 			'default'   => 'crop'
 		);
 		$fields[] = array(
-			'plugin_id' => 'connections',
-			'id'        => 'quality',
-			'position'  => 10,
-			'page_hook' => $settings,
-			'tab'       => 'images',
-			'section'   => 'connections_image_large',
-			'title'     => __('JPEG Quality', 'connections'),
-			'desc'      => '%',
-			'help'      => '',
-			'type'      => 'text',
-			'size'      => 'small',
-			'default'   => 80
+			'plugin_id'         => 'connections',
+			'id'                => 'quality',
+			'position'          => 10,
+			'page_hook'         => $settings,
+			'tab'               => 'images',
+			'section'           => 'connections_image_large',
+			'title'             => __('JPEG Quality', 'connections'),
+			'desc'              => '%',
+			'help'              => '',
+			'type'              => 'text',
+			'size'              => 'small',
+			'default'           => 80,
+			'sanitize_callback' => array( 'cnRegisterSettings' , 'sanitizeImageSettings' ) // Only need to add this once per image size, otherwise it would be run for each field.
 		);
 		$fields[] = array(
 			'plugin_id' => 'connections',
@@ -605,18 +631,19 @@ class cnRegisterSettings
 			'default'   => 'crop'
 		);
 		$fields[] = array(
-			'plugin_id' => 'connections',
-			'id'        => 'quality',
-			'position'  => 10,
-			'page_hook' => $settings,
-			'tab'       => 'images',
-			'section'   => 'connections_image_logo',
-			'title'     => __('JPEG Quality', 'connections'),
-			'desc'      => '%',
-			'help'      => '',
-			'type'      => 'text',
-			'size'      => 'small',
-			'default'   => 80
+			'plugin_id'         => 'connections',
+			'id'                => 'quality',
+			'position'          => 10,
+			'page_hook'         => $settings,
+			'tab'               => 'images',
+			'section'           => 'connections_image_logo',
+			'title'             => __('JPEG Quality', 'connections'),
+			'desc'              => '%',
+			'help'              => '',
+			'type'              => 'text',
+			'size'              => 'small',
+			'default'           => 80,
+			'sanitize_callback' => array( 'cnRegisterSettings' , 'sanitizeImageSettings' ) // Only need to add this once per image size, otherwise it would be run for each field.
 		);
 		$fields[] = array(
 			'plugin_id' => 'connections',
@@ -721,7 +748,7 @@ class cnRegisterSettings
 				'address_country',
 				'phone_number'
 			),
-			'sanitize_callback'  => array( 'cnRegisterSettings' , 'setSearchFields' )
+			'sanitize_callback'  => array( 'cnRegisterSettings' , 'setSearchFields' ) // Only need to add this once, otherwise it would be run for each field.
 		);
 
 		$fields[] = array(
@@ -840,34 +867,34 @@ class cnRegisterSettings
 			'size'      => 'regular',
 			'default'   => 'postal-code'
 		);
-		/*$fields[] = array(
+		$fields[] = array(
 			'plugin_id' => 'connections',
-			'id' => 'organization_base',
-			'position' => 60,
+			'id'        => 'organization_base',
+			'position'  => 60,
 			'page_hook' => $settings,
-			'tab' => 'advanced',
-			'section' => 'connections_permalink',
-			'title' => __('Organization Base', 'connections'),
-			'desc' => __('Enter a custom structure for the organization in the URL.', 'connections'),
-			'help' => '',
-			'type' => 'text',
-			'size' => 'regular',
-			'default' => 'organization'
+			'tab'       => 'advanced',
+			'section'   => 'connections_permalink',
+			'title'     => __('Organization Base', 'connections'),
+			'desc'      => __('Enter a custom structure for the organization in the URL.', 'connections'),
+			'help'      => '',
+			'type'      => 'text',
+			'size'      => 'regular',
+			'default'   => 'organization'
 		);
 		$fields[] = array(
 			'plugin_id' => 'connections',
-			'id' => 'department_base',
-			'position' => 70,
+			'id'        => 'department_base',
+			'position'  => 70,
 			'page_hook' => $settings,
-			'tab' => 'advanced',
-			'section' => 'connections_permalink',
-			'title' => __('Department Base', 'connections'),
-			'desc' => __('Enter a custom structure for the department in the URL.', 'connections'),
-			'help' => '',
-			'type' => 'text',
-			'size' => 'regular',
-			'default' => 'department'
-		);*/
+			'tab'       => 'advanced',
+			'section'   => 'connections_permalink',
+			'title'     => __('Department Base', 'connections'),
+			'desc'      => __('Enter a custom structure for the department in the URL.', 'connections'),
+			'help'      => '',
+			'type'      => 'text',
+			'size'      => 'regular',
+			'default'   => 'department'
+		);
 		$fields[] = array(
 			'plugin_id' => 'connections',
 			'id'        => 'name_base',
@@ -895,6 +922,84 @@ class cnRegisterSettings
 			'help'      => '',
 			'type'      => 'checkbox',
 			'default'   => 1
+		);
+		$fields[] = array(
+			'plugin_id' => 'connections',
+			'id'        => 'organization',
+			'position'  => 13,
+			'page_hook' => $settings,
+			'tab'       => 'advanced',
+			'section'   => 'connections_link',
+			'title'     => __('Organization', 'connections'),
+			'desc'      => __('Enabling this option will turn the name of organization into a link. Clicking the link will take you to the page filtered by that organization.', 'connections'),
+			'help'      => '',
+			'type'      => 'checkbox',
+			'default'   => 0
+		);
+		$fields[] = array(
+			'plugin_id' => 'connections',
+			'id'        => 'department',
+			'position'  => 16,
+			'page_hook' => $settings,
+			'tab'       => 'advanced',
+			'section'   => 'connections_link',
+			'title'     => __('Department', 'connections'),
+			'desc'      => __('Enabling this option will turn the name of department into a link. Clicking the link will take you to the page filtered by that department.', 'connections'),
+			'help'      => '',
+			'type'      => 'checkbox',
+			'default'   => 0
+		);
+		$fields[] = array(
+			'plugin_id' => 'connections',
+			'id'        => 'locality',
+			'position'  => 20,
+			'page_hook' => $settings,
+			'tab'       => 'advanced',
+			'section'   => 'connections_link',
+			'title'     => __('Locality', 'connections'),
+			'desc'      => __('Enabling this option will turn the name of locality (city) into a link. Clicking the link will take you to the page filtered by that locality.', 'connections'),
+			'help'      => '',
+			'type'      => 'checkbox',
+			'default'   => 0
+		);
+		$fields[] = array(
+			'plugin_id' => 'connections',
+			'id'        => 'region',
+			'position'  => 30,
+			'page_hook' => $settings,
+			'tab'       => 'advanced',
+			'section'   => 'connections_link',
+			'title'     => __('Region', 'connections'),
+			'desc'      => __('Enabling this option will turn the name of region (state/province) into a link. Clicking the link will take you to the page filtered by that region.', 'connections'),
+			'help'      => '',
+			'type'      => 'checkbox',
+			'default'   => 0
+		);
+		$fields[] = array(
+			'plugin_id' => 'connections',
+			'id'        => 'postal_code',
+			'position'  => 40,
+			'page_hook' => $settings,
+			'tab'       => 'advanced',
+			'section'   => 'connections_link',
+			'title'     => __('Postal Code', 'connections'),
+			'desc'      => __('Enabling this option will turn the postal code into a link. Clicking the link will take you to the page filtered by that postal code.', 'connections'),
+			'help'      => '',
+			'type'      => 'checkbox',
+			'default'   => 0
+		);
+		$fields[] = array(
+			'plugin_id' => 'connections',
+			'id'        => 'country',
+			'position'  => 50,
+			'page_hook' => $settings,
+			'tab'       => 'advanced',
+			'section'   => 'connections_link',
+			'title'     => __('Country', 'connections'),
+			'desc'      => __('Enabling this option will turn the name of country into a link. Clicking the link will take you to the page filtered by that country.', 'connections'),
+			'help'      => '',
+			'type'      => 'checkbox',
+			'default'   => 0
 		);
 
 		$fields[] = array(
@@ -1029,6 +1134,39 @@ class cnRegisterSettings
 		return $loginRequired;
 	}
 
+	public static function sanitizeImageSettings( $settings ) {
+
+		$validate = new cnValidate();
+
+		$defaults = array(
+			'quality' => 80,
+			'height'  => 150,
+			'width'   => 225,
+			'ratio'   => 'crop'
+			);
+
+		// Use this instead of wp_parse_args since it doesn't drop invalid atts. NOTE: could use shortcode_atts() instead, I suppose.
+		$settings = $validate->attributesArray( $defaults, $settings );
+
+		// Ensure positive int values
+		$settings['quality'] = absint( $settings['quality'] );
+		$settings['height']  = absint( $settings['height'] );
+		$settings['width']   = absint( $settings['width'] );
+
+		// If the values is empty, set a default.
+		$settings['quality'] = empty( $settings['quality'] ) ? 80 : $settings['quality'];
+		$settings['height']  = empty( $settings['height'] ) ? 150 : $settings['height'];
+		$settings['width']   = empty( $settings['width'] ) ? 225 : $settings['width'];
+
+		// The valid ratio options
+		$ratio = array( 'crop', 'fill', 'none' );
+
+		// Make sure the value is one of the permitted options and if it is not, set it to the 'crop' value.
+		$settings['ratio'] = in_array( $settings['ratio'], $ratio ) ? $settings['ratio'] : 'crop';
+
+		return $settings;
+	}
+
 	/**
 	 * Sanitize the slug to help prevent some unfriendly slugs that users might enter
 	 *
@@ -1045,13 +1183,15 @@ class cnRegisterSettings
 		/*
 		 * Make sure there is a value saved for each permalink base.
 		 */
-		if ( ! isset( $settings['character_base'] ) || empty( $settings['character_base'] ) ) $settings['character_base']       = 'char';
-		if ( ! isset( $settings['category_base'] ) || empty( $settings['category_base'] ) ) $settings['category_base']          = 'cat';
-		if ( ! isset( $settings['country_base'] ) || empty( $settings['country_base'] ) ) $settings['country_base']             = 'country';
-		if ( ! isset( $settings['region_base'] ) || empty( $settings['region_base'] ) ) $settings['region_base']                = 'region';
-		if ( ! isset( $settings['locality_base'] ) || empty( $settings['locality_base'] ) ) $settings['locality_base']          = 'locality';
-		if ( ! isset( $settings['postal_code_base'] ) || empty( $settings['postal_code_base'] ) ) $settings['postal_code_base'] = 'postal_code';
-		if ( ! isset( $settings['name_base'] ) || empty( $settings['name_base'] ) ) $settings['name_base']                      = 'name';
+		if ( ! isset( $settings['character_base'] ) || empty( $settings['character_base'] ) ) $settings['character_base']          = 'char';
+		if ( ! isset( $settings['category_base'] ) || empty( $settings['category_base'] ) ) $settings['category_base']             = 'cat';
+		if ( ! isset( $settings['country_base'] ) || empty( $settings['country_base'] ) ) $settings['country_base']                = 'country';
+		if ( ! isset( $settings['region_base'] ) || empty( $settings['region_base'] ) ) $settings['region_base']                   = 'region';
+		if ( ! isset( $settings['locality_base'] ) || empty( $settings['locality_base'] ) ) $settings['locality_base']             = 'locality';
+		if ( ! isset( $settings['postal_code_base'] ) || empty( $settings['postal_code_base'] ) ) $settings['postal_code_base']    = 'postal_code';
+		if ( ! isset( $settings['name_base'] ) || empty( $settings['name_base'] ) ) $settings['name_base']                         = 'name';
+		if ( ! isset( $settings['organization_base'] ) || empty( $settings['organization_base'] ) ) $settings['organization_base'] = 'organization';
+		if ( ! isset( $settings['department_base'] ) || empty( $settings['department_base'] ) ) $settings['department_base']       = 'department';
 
 		$settings = array_map( array( 'cnFormatting', 'sanitizeStringStrong' ), $settings );
 
@@ -1108,27 +1248,27 @@ class cnRegisterSettings
 		/*
 		 * Build the array to store the user preferences.
 		 */
-		$search['family_name'] = in_array( 'family_name' , $fields ) ? TRUE : FALSE;
-		$search['first_name'] = in_array( 'first_name' , $fields ) ? TRUE : FALSE;
-		$search['middle_name'] = in_array( 'middle_name' , $fields ) ? TRUE : FALSE;
-		$search['last_name'] = in_array( 'last_name' , $fields ) ? TRUE : FALSE;
-		$search['title'] = in_array( 'title' , $fields ) ? TRUE : FALSE;
-		$search['organization'] = in_array( 'organization' , $fields ) ? TRUE : FALSE;
-		$search['department'] = in_array( 'department' , $fields ) ? TRUE : FALSE;
+		$search['family_name']        = in_array( 'family_name' , $fields ) ? TRUE : FALSE;
+		$search['first_name']         = in_array( 'first_name' , $fields ) ? TRUE : FALSE;
+		$search['middle_name']        = in_array( 'middle_name' , $fields ) ? TRUE : FALSE;
+		$search['last_name']          = in_array( 'last_name' , $fields ) ? TRUE : FALSE;
+		$search['title']              = in_array( 'title' , $fields ) ? TRUE : FALSE;
+		$search['organization']       = in_array( 'organization' , $fields ) ? TRUE : FALSE;
+		$search['department']         = in_array( 'department' , $fields ) ? TRUE : FALSE;
 		$search['contact_first_name'] = in_array( 'contact_first_name' , $fields ) ? TRUE : FALSE;
-		$search['contact_last_name'] = in_array( 'contact_last_name' , $fields ) ? TRUE : FALSE;
-		$search['bio'] = in_array( 'bio' , $fields ) ? TRUE : FALSE;
-		$search['notes'] = in_array( 'notes' , $fields ) ? TRUE : FALSE;
+		$search['contact_last_name']  = in_array( 'contact_last_name' , $fields ) ? TRUE : FALSE;
+		$search['bio']                = in_array( 'bio' , $fields ) ? TRUE : FALSE;
+		$search['notes']              = in_array( 'notes' , $fields ) ? TRUE : FALSE;
 
-		$search['address_line_1'] = in_array( 'address_line_1' , $fields ) ? TRUE : FALSE;
-		$search['address_line_2'] = in_array( 'address_line_2' , $fields ) ? TRUE : FALSE;
-		$search['address_line_3'] = in_array( 'address_line_3' , $fields ) ? TRUE : FALSE;
-		$search['address_city'] = in_array( 'address_city' , $fields ) ? TRUE : FALSE;
-		$search['address_state'] = in_array( 'address_state' , $fields ) ? TRUE : FALSE;
-		$search['address_zipcode'] = in_array( 'address_zipcode' , $fields ) ? TRUE : FALSE;
-		$search['address_country'] = in_array( 'address_country' , $fields ) ? TRUE : FALSE;
+		$search['address_line_1']     = in_array( 'address_line_1' , $fields ) ? TRUE : FALSE;
+		$search['address_line_2']     = in_array( 'address_line_2' , $fields ) ? TRUE : FALSE;
+		$search['address_line_3']     = in_array( 'address_line_3' , $fields ) ? TRUE : FALSE;
+		$search['address_city']       = in_array( 'address_city' , $fields ) ? TRUE : FALSE;
+		$search['address_state']      = in_array( 'address_state' , $fields ) ? TRUE : FALSE;
+		$search['address_zipcode']    = in_array( 'address_zipcode' , $fields ) ? TRUE : FALSE;
+		$search['address_country']    = in_array( 'address_country' , $fields ) ? TRUE : FALSE;
 
-		$search['phone_number'] = in_array( 'phone_number' , $fields ) ? TRUE : FALSE;
+		$search['phone_number']       = in_array( 'phone_number' , $fields ) ? TRUE : FALSE;
 
 		//var_dump($search);
 
@@ -1149,27 +1289,27 @@ class cnRegisterSettings
 		 */
 
 		// Build the arrays that will be imploded in the query statement.
-		if ( $search['family_name'] ) $column['entry'][] = 'family_name';
-		if ( $search['first_name'] ) $column['entry'][] = 'first_name';
-		if ( $search['middle_name'] ) $column['entry'][] = 'middle_name';
-		if ( $search['last_name'] ) $column['entry'][] = 'last_name';
-		if ( $search['title'] ) $column['entry'][] = 'title';
-		if ( $search['organization'] ) $column['entry'][] = 'organization';
-		if ( $search['department'] ) $column['entry'][] = 'department';
+		if ( $search['family_name'] ) $column['entry'][]        = 'family_name';
+		if ( $search['first_name'] ) $column['entry'][]         = 'first_name';
+		if ( $search['middle_name'] ) $column['entry'][]        = 'middle_name';
+		if ( $search['last_name'] ) $column['entry'][]          = 'last_name';
+		if ( $search['title'] ) $column['entry'][]              = 'title';
+		if ( $search['organization'] ) $column['entry'][]       = 'organization';
+		if ( $search['department'] ) $column['entry'][]         = 'department';
 		if ( $search['contact_first_name'] ) $column['entry'][] = 'contact_first_name';
-		if ( $search['contact_last_name'] ) $column['entry'][] = 'contact_last_name';
-		if ( $search['bio'] ) $column['entry'][] = 'bio';
-		if ( $search['notes'] ) $column['entry'][] = 'notes';
+		if ( $search['contact_last_name'] ) $column['entry'][]  = 'contact_last_name';
+		if ( $search['bio'] ) $column['entry'][]                = 'bio';
+		if ( $search['notes'] ) $column['entry'][]              = 'notes';
 
-		if ( $search['address_line_1'] ) $column['address'][] = 'line_1';
-		if ( $search['address_line_2'] ) $column['address'][] = 'line_2';
-		if ( $search['address_line_3'] ) $column['address'][] = 'line_3';
-		if ( $search['address_city'] ) $column['address'][] = 'city';
-		if ( $search['address_state'] ) $column['address'][] = 'state';
-		if ( $search['address_zipcode'] ) $column['address'][] = 'zipcode';
-		if ( $search['address_country'] ) $column['address'][] = 'country';
+		if ( $search['address_line_1'] ) $column['address'][]   = 'line_1';
+		if ( $search['address_line_2'] ) $column['address'][]   = 'line_2';
+		if ( $search['address_line_3'] ) $column['address'][]   = 'line_3';
+		if ( $search['address_city'] ) $column['address'][]     = 'city';
+		if ( $search['address_state'] ) $column['address'][]    = 'state';
+		if ( $search['address_zipcode'] ) $column['address'][]  = 'zipcode';
+		if ( $search['address_country'] ) $column['address'][]  = 'country';
 
-		if ( $search['phone_number'] ) $column['phone'][] = 'number';
+		if ( $search['phone_number'] ) $column['phone'][]       = 'number';
 
 		// Add the FULLTEXT indexes.
 		if ( ! empty( $column['entry'] ) ) $wpdb->query( 'ALTER TABLE ' . CN_ENTRY_TABLE . ' ADD FULLTEXT search (' . implode( ',', $column['entry'] ) . ')' );
@@ -1181,7 +1321,7 @@ class cnRegisterSettings
 		//die;
 
 		// Ensure at least keyword search enabled if user decides to try to disable both keyword and FULLTEXT searching.
-		if ( ! $settings['fulltext_enabled'] && ! $settings['keyword_enabled'] ) $settings['keyword_enabled'] = 1;
+		if ( empty( $settings['fulltext_enabled'] ) && empty( $settings['keyword_enabled'] ) ) $settings['keyword_enabled'] = 1;
 
 		return $settings;
 	}

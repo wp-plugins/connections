@@ -4,7 +4,7 @@ Donate link: http://connections-pro.com/
 Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, business directory, business-directory, business directory plugin, directory plugin, directory widget, church, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, member directory, members directory, members directories, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, staff, user, users, vcard, wordpress business directory, wordpress directory, wordpress directory plugin, wordpress business directory
 Requires at least: 3.3
 Tested up to: 3.6
-Stable tag: 0.7.6.6
+Stable tag: 0.7.7
 Connections is a simple to use directory manager which can be used to create an addressbook, business directory, staff directory or church directory.
 
 == Description ==
@@ -26,22 +26,6 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 * Displaying your entries on the front end is as simple as putting a shortcode on a page. Don't let this simplicity fool you. The Connections shortcode provides almost a dizzying array of options that are just too numerous to list. But if you want to know more, you can find it [here](http://connections-pro.com/documentation/plugin/shortcodes/).
 * Even a bit of SEO was sprinkled in. Every entry outputs following the [hCard](http://microformats.org/wiki/hcard) spec.
 * One last item. [Extensibility](http://connections-pro.com/pro-module/).
-
-= New features this version: =
-* Geocoding of addresses.
-* Localization
-* Pretty permalink support
-* Spanish Translation
-
-= Upcoming features: =
-* Gravatar support
-* Backup
-* ...and any suggestions that I may receive...
-
-
-
-
-
 
 == Credits: ==
 * This plugin was based off LBB, ["Little Black Book"](http://wordpress.org/extend/plugins/lbb-little-black-book/); which was based on [Addressbook](http://wordpress.org/extend/plugins/addressbook/), both of which can be found in the Plugin Directory.
@@ -81,6 +65,39 @@ Quite simply, Connections is the best directory plugin available for WordPress. 
 [FAQs can be found here.](http://connections-pro.com/faq/)
 
 == Changelog ==
+
+= 0.7.7 06/02/13 =
+* FEATURE: The organization field can now be set to show as a link and when a user clicks the link, the list will be filtered by that organization.
+* FEATURE: The department field can now be set to show as a link and when a user clicks the link, the list will be filtered by that department.
+* FEATURE: The city field can now be set to show as a link and when a user clicks the link, the list will be filtered by that city.
+* FEATURE: The state field can now be set to show as a link and when a user clicks the link, the list will be filtered by that state.
+* FEATURE: The zip code field can now be set to show as a link and when a user clicks the link, the list will be filtered by that zip code.
+* FEATURE: The country field can now be set to show as a link and when a user clicks the link, the list will be filtered by that country.
+* FEATURE: Add a date format option which will default to the current WP setting.
+* FEATURE: Add a "lock" shortcode option. When set to true, that shortcode instance will be unaffected for queries.
+* TWEAK: If an entry is linked to a user, show the user's name and link it to their profile.
+* TWEAK: Dates will now output localized.
+* TWEAK: Add before and after entry action hooks.
+* TWEAK: Minor optimization in the alternate row CSS logic in the shortcode output.
+* TWEAK: Pass the shortcode $atts to all action hooks.
+* TWEAK: Output dates using the new dateformat option.
+* TWEAK: Add filter hook to cnOutput::getImage().
+* TWEAK: Remove the !important statement from width in the CSS #cn-list span.cn-image img.
+* TWEAK: Validate and sanitize the image settings.
+* BUG: Do not output an empty <ul> container if there are no registered list actions.
+* BUG: Fixed undefined index error: fulltext_enabled.
+* OTHER: Moved all admin actions for template administration to cnAdminAction().
+* OTHER: Moved all admin actions for category administration to cnAdminAction().
+* OTHER: Prefix all category admin fields to avoid plugin conflicts when processing admin actions.
+* OTHER: Prefix all role/capability admin fields to avoid plugin conflicts when processing admin actions.
+* OTHER: Prefix all template admin fields to avoid plugin conflicts when processing admin actions.
+* OTHER: Spanish translation has been updated.
+* OTHER: Convert much of the shortcode output to be run thru sprintf() for easier code reading/processing.
+* OTHER: Removed unused code in the shortcode.
+* OTHER: Code cleanup of cnOutput::getImage().
+* OTHER: Ensure default values are in place for the rewrite rules.
+* OTHER: Add a .htaccess file to the TimThumb folder to ensure it can be called directly.
+* OTHER: Update the jQuery Fixr option to support the upcoming WP 3.6.
 
 = 0.7.6.6 04/30/13 =
 * NOTICE: Requires WordPress 3.3 or newer.

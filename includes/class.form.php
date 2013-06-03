@@ -426,7 +426,7 @@ class cnFormObjects {
 			'list_type'        => 'birthday',
 			'days'             => '0',
 			'private_override' => FALSE,
-			'date_format'      => 'F jS',
+			'date_format'      => cnSettingsAPI::get( 'connections', 'connections_display_general', 'date_format' ),
 			'show_lastname'    => TRUE,
 			'list_title'       => NULL,
 			'show_title'       => FALSE,
@@ -455,7 +455,7 @@ class cnFormObjects {
 			'days'             => '30',
 			'include_today'    => FALSE,
 			'private_override' => FALSE,
-			'date_format'      => 'F jS',
+			'date_format'      => cnSettingsAPI::get( 'connections', 'connections_display_general', 'date_format' ),
 			'show_lastname'    => TRUE,
 			'list_title'       => NULL,
 			'show_title'       => FALSE,
@@ -482,7 +482,7 @@ class cnFormObjects {
 			'list_type'        => 'anniversary',
 			'days'             => '0',
 			'private_override' => FALSE,
-			'date_format'      => 'F jS',
+			'date_format'      => cnSettingsAPI::get( 'connections', 'connections_display_general', 'date_format' ),
 			'show_lastname'    => TRUE,
 			'list_title'       => NULL,
 			'show_title'       => FALSE,
@@ -510,7 +510,7 @@ class cnFormObjects {
 			'days'             => '30',
 			'include_today'    => FALSE,
 			'private_override' => FALSE,
-			'date_format'      => 'F jS',
+			'date_format'      => cnSettingsAPI::get( 'connections', 'connections_display_general', 'date_format' ),
 			'show_lastname'    => TRUE,
 			'list_title'       => NULL,
 			'show_title'       => FALSE,
@@ -1866,8 +1866,8 @@ class cnCategoryObjects {
 		/*
 		 * Genreate the edit & delete tokens.
 		 */
-		$editToken = $form->tokenURL( 'admin.php?page=connections_categories&action=edit&id=' . $category->getId(), 'category_edit_' . $category->getId() );
-		$deleteToken = $form->tokenURL( 'admin.php?connections_process=true&process=category&action=delete&id=' . $category->getId(), 'category_delete_' . $category->getId() );
+		$editToken = $form->tokenURL( 'admin.php?page=connections_categories&action=cn_edit_category&id=' . $category->getId(), 'category_edit_' . $category->getId() );
+		$deleteToken = $form->tokenURL( 'admin.php?cn-action=cn_delete_category&id=' . $category->getId(), 'category_delete_' . $category->getId() );
 
 		$out = '<tr id="cat-' . $category->getId() . '" class="' . $this->rowClass . '">';
 		$out .= '<th class="check-column">';

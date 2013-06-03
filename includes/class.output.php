@@ -68,6 +68,7 @@ class cnOutput extends cnEntry
 	 *
 	 * Filters:
 	 *  cn_output_default_atts_image => (array) Register the methods default attributes.
+	 *  cn_output_image => (string) The output string, (array) The $atts.
 	 *
 	 * @todo Enable support for a default image to be set.
 	 *
@@ -78,6 +79,12 @@ class cnOutput extends cnEntry
 	 * @return string
 	 */
 	public function getImage( $atts = array() ) {
+
+		$displayImage = FALSE;
+		$tag          = array();
+		$anchorStart  = '';
+		$out          = '';
+
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
@@ -107,14 +114,6 @@ class cnOutput extends cnEntry
 		 * // END -- Set the default attributes array if not supplied. \\
 		 */
 
-		global $connections;
-		$displayImage = FALSE;
-		$style = array();
-		$tag = array();
-		$anchorStart = '';
-		$anchorEnd = '</a>';
-		$out = '';
-
 		/*
 		 * The $atts key that are not image tag attributes.
 		 */
@@ -123,52 +122,58 @@ class cnOutput extends cnEntry
 		( ! empty( $atts['height'] ) || ! empty( $atts['width'] ) ) ? $customSize = TRUE : $customSize = FALSE;
 
 		switch ( $atts['image'] ) {
+
 			case 'photo':
+
 				if ( $this->getImageLinked() && $this->getImageDisplay() ) {
-					$displayImage = TRUE;
+
+					$displayImage  = TRUE;
 					$atts['class'] = 'photo';
-					$atts['alt'] = __( 'Photo of', 'connections' ) . ' ' . $this->getName();
+					$atts['alt']   = __( 'Photo of', 'connections' ) . ' ' . $this->getName();
 					$atts['title'] = __( 'Photo of', 'connections' ) . ' ' . $this->getName();
 
 					if ( $customSize ) {
+
 						$atts['src'] = CN_URL . 'includes/timthumb/timthumb.php?src=' .
 							CN_IMAGE_BASE_URL . $this->getImageNameOriginal() .
-							( ( empty( $atts['height'] ) ) ? '' : '&amp;h=' . $atts['height'] ) .
-							( ( empty( $atts['width'] ) ) ? '' : '&amp;w=' . $atts['width'] ) .
-							( ( empty( $atts['zc'] ) ) ? '' : '&amp;zc=' . $atts['zc'] );
+							( empty( $atts['height'] ) ? '' : '&amp;h=' . $atts['height'] ) .
+							( empty( $atts['width'] ) ? '' : '&amp;w=' . $atts['width'] ) .
+							( empty( $atts['zc'] ) ? '' : '&amp;zc=' . $atts['zc'] );
+
 					} else {
+
 						switch ( $atts['preset'] ) {
 							case 'entry':
 								if ( is_file( CN_IMAGE_PATH . $this->getImageNameCard() ) ) {
 									$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
-									$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameCard();
+									$atts['src']        = CN_IMAGE_BASE_URL . $this->getImageNameCard();
 								}
 								break;
 
 							case 'profile':
 								if ( is_file( CN_IMAGE_PATH . $this->getImageNameProfile() ) ) {
 									$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameProfile() );
-									$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameProfile();
+									$atts['src']        = CN_IMAGE_BASE_URL . $this->getImageNameProfile();
 								}
 								break;
 
 							case 'thumbnail':
 								if ( is_file( CN_IMAGE_PATH . $this->getImageNameThumbnail() ) ) {
 									$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameThumbnail() );
-									$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameThumbnail();
+									$atts['src']        = CN_IMAGE_BASE_URL . $this->getImageNameThumbnail();
 								}
 								break;
 
 							default:
 								if ( is_file( CN_IMAGE_PATH . $this->getImageNameThumbnail() ) ) {
 									$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getImageNameCard() );
-									$atts['src'] = CN_IMAGE_BASE_URL . $this->getImageNameCard();
+									$atts['src']        = CN_IMAGE_BASE_URL . $this->getImageNameCard();
 								}
 								break;
 						}
 
 						if ( isset( $atts['image_size'] ) && $atts['image_size'] !== FALSE ) {
-							$atts['width'] = $atts['image_size'][0];
+							$atts['width']  = $atts['image_size'][0];
 							$atts['height'] = $atts['image_size'][1];
 						}
 					}
@@ -182,30 +187,38 @@ class cnOutput extends cnEntry
 				if ( ! empty( $links ) ) {
 					$link = $links[0];
 
-					$anchorStart = '<a href="' . $link->url . '"' . ( ( empty( $link->target ) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty( $link->followString ) ? '' : ' rel="' . $link->followString . '"' ) ) . '>';
+					$anchorStart = sprintf( '<a href="%1$s"%2$s%3$s>',
+						$link->url,
+						empty( $link->target ) ? '' : ' target="' . $link->target . '"',
+						empty( $link->followString ) ? '' : ' rel="' . $link->followString . '"'
+					);
 				}
 
 				break;
 
 			case 'logo':
+
 				if ( $this->getLogoLinked() && $this->getLogoDisplay() ) {
-					$displayImage = TRUE;
+
+					$displayImage  = TRUE;
 					$atts['class'] = 'logo';
-					$atts['alt'] = __( 'Logo for', 'connections' ) . ' ' . $this->getName();
+					$atts['alt']   = __( 'Logo for', 'connections' ) . ' ' . $this->getName();
 					$atts['title'] = __( 'Logo for', 'connections' ) . ' ' . $this->getName();
 
 					if ( $customSize ) {
+
 						$atts['src'] = CN_URL . 'includes/timthumb/timthumb.php?src=' .
 							CN_IMAGE_BASE_URL . $this->getLogoName() .
-							( ( empty( $atts['height'] ) ) ? '' : '&amp;h=' . $atts['height'] ) .
-							( ( empty( $atts['width'] ) ) ? '' : '&amp;w=' . $atts['width'] ) .
-							( ( empty( $atts['zc'] ) ) ? '' : '&amp;zc=' . $atts['zc'] );
+							( empty( $atts['height'] ) ? '' : '&amp;h=' . $atts['height'] ) .
+							( empty( $atts['width'] ) ? '' : '&amp;w=' . $atts['width'] ) .
+							( empty( $atts['zc'] ) ? '' : '&amp;zc=' . $atts['zc'] );
+
 					} else {
-						$atts['src'] = CN_IMAGE_BASE_URL . $this->getLogoName();
 						$atts['image_size'] = @getimagesize( CN_IMAGE_PATH . $this->getLogoName() );
+						$atts['src']        = CN_IMAGE_BASE_URL . $this->getLogoName();
 
 						if ( $atts['image_size'] !== FALSE ) {
-							$atts['width'] = $atts['image_size'][0];
+							$atts['width']  = $atts['image_size'][0];
 							$atts['height'] = $atts['image_size'][1];
 						}
 					}
@@ -219,35 +232,45 @@ class cnOutput extends cnEntry
 				if ( ! empty( $links ) ) {
 					$link = $links[0];
 
-					$anchorStart = '<a href="' . $link->url . '"' . ( ( empty( $link->target ) ? '' : ' target="' . $link->target . '"' ) ) . ( ( empty( $link->followString ) ? '' : ' rel="' . $link->followString . '"' ) ) . '>';
+					$anchorStart = sprintf( '<a href="%1$s"%2$s%3$s>',
+						$link->url,
+						empty( $link->target ) ? '' : ' target="' . $link->target . '"',
+						empty( $link->followString ) ? '' : ' rel="' . $link->followString . '"'
+					);
 				}
 
 				break;
 		}
 
-		/*
-		 * Add to the inline style the user supplied styles.
-		 */
-		foreach ( (array) $atts['style'] as $attr => $value ) {
-			if ( ! empty( $value ) ) $style[] = "$attr: $value";
-		}
-
 		if ( $displayImage ) {
+
 			foreach ( $atts as $attr => $value ) {
 				if ( ! empty( $value ) && ! in_array( $attr , $nonAtts ) ) $tag[] = "$attr=\"$value\"";
 			}
 
-			if ( ! empty( $atts['height'] ) ) $style[] = 'height: ' . $atts['height'] . 'px';
-			if ( ! empty( $atts['width'] ) ) $style[] = 'width: ' . $atts['width'] . 'px';
+			if ( ! empty( $atts['height'] ) ) $atts['style']['height'] = $atts['height'] . 'px';
+			if ( ! empty( $atts['width'] ) )  $atts['style']['width']  = $atts['width'] . 'px';
 
-			$out = '<span class="cn-image-style" style="display: inline-block;"><span class="cn-image' . ( $customSize ? ' cn-image-loading' : '' ) . '"' . ( ( empty( $style ) ) ? '' : ' style="' . implode( '; ', $style ) . ';"' ) . '>' . ( ( empty( $anchorStart ) ) ? '' : $anchorStart ) . '<img ' . implode( ' ', $tag ) . ' />' . ( ( empty( $anchorStart ) ) ? '' : $anchorEnd ) . '</span></span>';
+			if ( is_array( $atts['style'] ) && ! empty( $atts['style'] ) ) array_walk( $atts['style'], create_function( '&$i, $property', '$i = "$property: $i";' ) );
+
+			$out = sprintf( '<span class="cn-image-style" style="display: inline-block;"><span class="cn-image%1$s"%2$s>%3$s<img %4$s/>%5$s</span></span>',
+				$customSize ? ' cn-image-loading' : '',
+				empty( $atts['style'] ) ? '' : ' style="' . implode( '; ', $atts['style'] ) . ';"',
+				empty( $anchorStart ) ? '' : $anchorStart,
+				implode( ' ', $tag ),
+				empty( $anchorStart ) ? '' : '</a>'
+			);
+
 		} else {
+
 			if ( $customSize ) {
+
 				/*
 				 * Set the size to the supplied custom. The fallback custom size would take priority if it has been supplied.
 				 */
-				( empty( $atts['fallback']['height'] ) ) ? $style[] = 'height: ' . $atts['height'] . 'px' : $style[] = 'height: ' . $atts['fallback']['height'] . 'px';
-				( empty( $atts['fallback']['width'] ) ) ? $style[] = 'width: ' . $atts['width'] . 'px' : $style[] = 'width: ' . $atts['fallback']['width'] . 'px';
+				$atts['style']['height'] = empty( $atts['fallback']['height'] ) ? $atts['height'] . 'px' : $atts['fallback']['height'] . 'px';
+				$atts['style']['width']  = empty( $atts['fallback']['width'] ) ? $atts['width'] . 'px' : $atts['fallback']['width'] . 'px';
+
 			} else {
 				/*
 				 * If a custom size was not set, use the dimensions saved in the settings.
@@ -256,51 +279,65 @@ class cnOutput extends cnEntry
 					case 'photo':
 
 						switch ( $atts['preset'] ) {
+
 							case 'entry':
-								$style[] = 'height: ' . $connections->options->getImgEntryY() . 'px';
-								$style[] = 'width: ' . $connections->options->getImgEntryX() . 'px';
+								$atts['style']['height'] = cnSettingsAPI::get( 'connections', 'connections_image_medium', 'height' ) . 'px';
+								$atts['style']['width']  = cnSettingsAPI::get( 'connections', 'connections_image_medium', 'width' ) . 'px';
 								break;
+
 							case 'profile':
-								$style[] = 'height: ' . $connections->options->getImgProfileY() . 'px';
-								$style[] = 'width: ' . $connections->options->getImgProfileX() . 'px';
+								$atts['style']['height'] = cnSettingsAPI::get( 'connections', 'connections_image_large', 'height' ) . 'px';
+								$atts['style']['width']  = cnSettingsAPI::get( 'connections', 'connections_image_large', 'width' ) . 'px';
 								break;
+
 							case 'thumbnail':
-								$style[] = 'height: ' . $connections->options->getImgThumbY() . 'px';
-								$style[] = 'width: ' . $connections->options->getImgThumbX() . 'px';
+								$atts['style']['height'] = cnSettingsAPI::get( 'connections', 'connections_image_thumbnail', 'height' ) . 'px';
+								$atts['style']['width']  = cnSettingsAPI::get( 'connections', 'connections_image_thumbnail', 'width' ) . 'px';
 								break;
+
 							default:
-								$style[] = 'height: ' . $connections->options->getImgEntryY() . 'px';
-								$style[] = 'width: ' . $connections->options->getImgEntryX() . 'px';
+								$atts['style']['height'] = cnSettingsAPI::get( 'connections', 'connections_image_medium', 'height' ) . 'px';
+								$atts['style']['width']  = cnSettingsAPI::get( 'connections', 'connections_image_medium', 'width' ) . 'px';
 								break;
 						}
 
 						break;
 
 					case 'logo':
-						$style[] = 'height: ' . $connections->options->getImgLogoY() . 'px';
-						$style[] = 'width: ' . $connections->options->getImgLogoX() . 'px';
+
+						$atts['style']['height'] = cnSettingsAPI::get( 'connections', 'connections_image_logo', 'height' ) . 'px';
+						$atts['style']['width']  = cnSettingsAPI::get( 'connections', 'connections_image_logo', 'width' ) . 'px';
 						break;
 				}
 			}
 
 			switch ( $atts['fallback']['type'] ) {
+
 				case 'block':
-					$style[] = 'display: inline-block';
 
-					( empty( $atts['fallback']['string'] ) ) ? $string = '' : $string = '<p>' . $atts['fallback']['string'] . '</p>';
+					$atts['style']['display'] = 'inline-block';
 
-					$out = '<span class="cn-image-style" style="display: inline-block;"><span class="cn-image-none"' . ( ( empty( $style ) ) ? '' : ' style="' . implode( '; ', $style ) . ';"' ) . '>' . $string . '</span></span>';
+					if ( is_array( $atts['style'] ) && ! empty( $atts['style'] ) ) array_walk( $atts['style'], create_function( '&$i, $property', '$i = "$property: $i";' ) );
+
+					$string = empty( $atts['fallback']['string'] ) ? '' : '<p>' . $atts['fallback']['string'] . '</p>';
+
+					$out = sprintf( '<span class="cn-image-style" style="display: inline-block;"><span class="cn-image-none"%1$s>%2$s</span></span>',
+						empty( $atts['style'] ) ? '' : ' style="' . implode( '; ', $atts['style'] ) . ';"',
+						$string
+					);
 
 					break;
 
 				case 'default':
 					/*
-						 * @TODO Enable support for a default image to be set.
-						 * NOTE: Use switch for image type to allow a default image for both the image and logo.
-						 */
+					 * @TODO Enable support for a default image to be set.
+					 * NOTE: Use switch for image type to allow a default image for both the image and logo.
+					 */
 					break;
 			}
 		}
+
+		$out = apply_filters( 'cn_output_image', $out, $atts, $this );
 
 		/*
 		 * Return or echo the string.
@@ -570,6 +607,10 @@ class cnOutput extends cnEntry
 		$defaults = array(
 			'before' => '',
 			'after'  => '',
+			'link'   => array(
+				'organization'  => cnSettingsAPI::get( 'connections', 'connections_link', 'organization' ),
+				'department' => cnSettingsAPI::get( 'connections', 'connections_link', 'department' )
+				),
 			'return' => FALSE
 		);
 
@@ -581,12 +622,61 @@ class cnOutput extends cnEntry
 		 */
 
 		if ( ! empty( $org ) || ! empty( $dept ) ) {
+
 			$out .= '<span class="org">';
-			if ( ! empty( $org ) ) $out .= '<span class="organization-name"' . ( ( $this->getEntryType() == 'organization' ) ? ' style="display: none;"' : '' ) . '>' . $org . '</span>';
-			if ( ! empty( $dept ) ) $out .= '<span class="organization-unit">' . $dept . '</span>';
+
+			// if ( ! empty( $org ) ) $out .= '<span class="organization-name"' . ( ( $this->getEntryType() == 'organization' ) ? ' style="display: none;"' : '' ) . '>' . $org . '</span>';
+
+			if ( ! empty( $org ) ) {
+
+				if ( $atts['link']['organization'] ) {
+
+					$organization = cnURL::permalink( array(
+							'type'   => 'organization',
+							'slug'   => $org,
+							'title'  => $org,
+							'text'   => $org,
+							'return' => TRUE
+						)
+					);
+
+				} else {
+
+					$organization = $org;
+				}
+
+				$out .= '<span class="organization-name"' . ( $this->getEntryType() == 'organization' ? ' style="display: none;"' : '' ) . '>' . $organization . '</span>';
+
+			}
+
+			// if ( ! empty( $dept ) ) $out .= '<span class="organization-unit">' . $dept . '</span>';
+
+			if ( ! empty( $dept ) ) {
+
+				if ( $atts['link']['department'] ) {
+
+					$department = cnURL::permalink( array(
+							'type'   => 'department',
+							'slug'   => $dept,
+							'title'  => $dept,
+							'text'   => $dept,
+							'return' => TRUE
+						)
+					);
+
+				} else {
+
+					$department = $dept;
+				}
+
+				$out .= '<span class="organization-unit">' . $department . '</span>';
+
+			}
+
 			$out .= '</span>';
-		}
-		else {
+
+		} else {
+
 			return '';
 		}
 
@@ -725,22 +815,27 @@ class cnOutput extends cnEntry
 		/*
 		 * // START -- Set the default attributes array. \\
 		 */
-		$defaults['preferred'] = NULL;
-		$defaults['type'] = NULL;
-		$defaults['city'] = NULL;
-		$defaults['state'] = NULL;
-		$defaults['zipcode'] = NULL;
-		$defaults['country'] = NULL;
-		$defaults['coordinates'] = array();
-		$defaults['format'] = '%label% %line1% %line2% %line3% %city% %state%  %zipcode% %country%';
-		$defaults['separator'] = ':';
-		$defaults['before'] = '';
-		$defaults['after'] = '';
-		$defaults['return'] = FALSE;
+		$defaults['preferred']           = NULL;
+		$defaults['type']                = NULL;
+		$defaults['city']                = NULL;
+		$defaults['state']               = NULL;
+		$defaults['zipcode']             = NULL;
+		$defaults['country']             = NULL;
+		$defaults['coordinates']         = array();
+		$defaults['format']              = '%label% %line1% %line2% %line3% %city% %state%  %zipcode% %country%';
+		$defaults['link']['locality']    = cnSettingsAPI::get( 'connections', 'connections_link', 'locality' );
+		$defaults['link']['region']      = cnSettingsAPI::get( 'connections', 'connections_link', 'region' );
+		$defaults['link']['postal_code'] = cnSettingsAPI::get( 'connections', 'connections_link', 'postal_code' );
+		$defaults['link']['country']     = cnSettingsAPI::get( 'connections', 'connections_link', 'country' );
+		$defaults['separator']           = ':';
+		$defaults['before']              = '';
+		$defaults['after']               = '';
+		$defaults['return']              = FALSE;
 
 		$defaults = apply_filters( 'cn_output_default_atts_address' , $defaults );
 
 		$atts = $this->validate->attributesArray( $defaults, $atts );
+		$atts['link'] = $this->validate->attributesArray( $defaults['link'], $atts['link'] );
 		$atts['id'] = $this->getId();
 		/*
 		 * // END -- Set the default attributes array if not supplied. \\
@@ -764,11 +859,109 @@ class cnOutput extends cnEntry
 			( empty( $address->line_2 ) ) ? $replace[] = '' : $replace[] = '<span class="street-address">' . $address->line_2 . '</span>';
 			( empty( $address->line_3 ) ) ? $replace[] = '' : $replace[] = '<span class="street-address">' . $address->line_3 . '</span>';
 
-			( empty( $address->city ) ) ? $replace[] = '' : $replace[] = '<span class="locality">' . $address->city . '</span>';
-			( empty( $address->state ) ) ? $replace[] = '' : $replace[] = '<span class="region">' . $address->state . '</span>';
-			( empty( $address->zipcode ) ) ? $replace[] = '' : $replace[] = '<span class="postal-code">' . $address->zipcode . '</span>';
+			if ( empty( $address->city ) ) {
 
-			( empty( $address->country ) ) ? $replace[] = '' : $replace[] = '<span class="country-name">' . $address->country . '</span>';
+				$replace[] = '';
+
+			} else {
+
+				if ( $atts['link']['locality'] ) {
+
+					$locality = cnURL::permalink( array(
+							'type'   => 'locality',
+							'slug'   => $address->city,
+							'title'  => $address->city,
+							'text'   => $address->city,
+							'return' => TRUE
+						)
+					);
+
+				} else {
+
+					$locality = $address->city;
+				}
+
+				$replace[] = '<span class="locality">' . $locality . '</span>';
+
+			}
+
+			if ( empty( $address->state ) ) {
+
+				$replace[] = '';
+
+			} else {
+
+				if ( $atts['link']['region'] ) {
+
+					$region = cnURL::permalink( array(
+							'type'   => 'region',
+							'slug'   => $address->state,
+							'title'  => $address->state,
+							'text'   => $address->state,
+							'return' => TRUE
+						)
+					);
+
+				} else {
+
+					$region = $address->state;
+				}
+
+				$replace[] = '<span class="region">' . $region . '</span>';
+
+			}
+
+			if ( empty( $address->zipcode ) ) {
+
+				$replace[] = '';
+
+			} else {
+
+				if ( $atts['link']['postal_code'] ) {
+
+					$postal = cnURL::permalink( array(
+							'type'   => 'postal_code',
+							'slug'   => $address->zipcode,
+							'title'  => $address->zipcode,
+							'text'   => $address->zipcode,
+							'return' => TRUE
+						)
+					);
+
+				} else {
+
+					$postal = $address->zipcode;
+				}
+
+				$replace[] = '<span class="postal-code">' . $postal . '</span>';
+
+			}
+
+			if ( empty( $address->country ) ) {
+
+				$replace[] = '';
+
+			} else {
+
+				if ( $atts['link']['country'] ) {
+
+					$country = cnURL::permalink( array(
+							'type'   => 'country',
+							'slug'   => $address->country,
+							'title'  => $address->country,
+							'text'   => $address->country,
+							'return' => TRUE
+						)
+					);
+
+				} else {
+
+					$country = $address->country;
+				}
+
+				$replace[] = '<span class="country-name">' . $country . '</span>';
+
+			}
 
 			if ( ! empty( $address->latitude ) || ! empty( $address->longitude ) ) {
 				$replace[] = '<span class="geo">' .
@@ -1641,7 +1834,7 @@ class cnOutput extends cnEntry
 		$defaults['type'] = NULL;
 		$defaults['format'] = '%label%%separator% %date%';
 		$defaults['name_format'] = '%prefix% %first% %middle% %last% %suffix%';
-		$defaults['date_format'] = 'F jS Y';
+		$defaults['date_format'] = cnSettingsAPI::get( 'connections', 'connections_display_general', 'date_format' );
 		$defaults['separator'] = ':';
 		$defaults['before'] = '';
 		$defaults['after'] = '';
@@ -1672,7 +1865,7 @@ class cnOutput extends cnEntry
 			// Hidden elements are to maintain hCalendar spec compatibility
 			$replace[] = ( empty( $date->name ) ) ? '' : '<span class="date-name">' . $date->name . '</span>';
 			//$replace[] = ( empty($date->date) ) ? '' : '<span class="dtstart"><span class="value" style="display: none;">' . $dateObject->format( 'Y-m-d' ) . '</span><span class="date-displayed">' . $dateObject->format( $atts['date_format'] ) . '</span></span>';
-			$replace[] = ( empty( $date->date ) ) ? '' : '<abbr class="dtstart" title="' . $dateObject->format( 'Ymd' ) .'">' . $dateObject->format( $atts['date_format'] ) . '</abbr><span class="summary" style="display:none">' . $date->name . ' - ' . $this->getName( array( 'format' => $atts['name_format'] ) ) . '</span><span class="uid" style="display:none">' . $dateObject->format( 'YmdHis' ) . '</span>';
+			$replace[] = ( empty( $date->date ) ) ? '' : '<abbr class="dtstart" title="' . $dateObject->format( 'Ymd' ) .'">' . date_i18n( $atts['date_format'] , strtotime( $date->date ) , TRUE ) /*$dateObject->format( $atts['date_format'] )*/ . '</abbr><span class="summary" style="display:none">' . $date->name . ' - ' . $this->getName( array( 'format' => $atts['name_format'] ) ) . '</span><span class="uid" style="display:none">' . $dateObject->format( 'YmdHis' ) . '</span>';
 			$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
 
 			$out .= str_ireplace( $search , $replace , $atts['format'] );

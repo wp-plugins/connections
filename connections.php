@@ -3,7 +3,7 @@
 Plugin Name: Connections
 Plugin URI: http://connections-pro.com/
 Description: A business directory and address book manager.
-Version: 0.7.6.6
+Version: 0.7.7
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 Text Domain: connections
@@ -212,7 +212,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 
 			define( 'CN_LOG', FALSE );
 
-			define( 'CN_CURRENT_VERSION', '0.7.6.6' );
+			define( 'CN_CURRENT_VERSION', '0.7.7' );
 			define( 'CN_DB_VERSION', '0.1.9' );
 
 			/*
@@ -571,6 +571,9 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			// Add an .htaccess file, create it if one doesn't exist, and add the no indexes option.
 			// cnFileSystem::noIndexes( CN_IMAGE_PATH ); // Causes some servers to respond w/ 403 when servering images.
 			cnFileSystem::noIndexes( CN_CUSTOM_TEMPLATE_PATH );
+
+			// Create a .htaccess file in the timthumb folder to allow it to be called directly.
+			cnFileSystem::permitTimThumb( CN_PATH . 'includes/timthumb' );
 
 			$connections->initOptions();
 
@@ -1221,87 +1224,6 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 								exit();
 								break;
 						}
-					}
-
-					break;
-
-				case 'category':
-					/*
-					 * Check whether user can edit Settings
-					 */
-					if ( current_user_can( 'connections_edit_categories' ) ) {
-						if ( $_GET['action'] ) {
-							switch ( $_GET['action'] ) {
-								case 'add':
-									check_admin_referer( $form->getNonce( 'add_category' ), '_cn_wpnonce' );
-									processAddCategory();
-									wp_redirect( get_admin_url( get_current_blog_id(), 'admin.php?page=connections_categories' ) );
-									exit();
-									break;
-
-								case 'update':
-									check_admin_referer( $form->getNonce( 'update_category' ), '_cn_wpnonce' );
-									processUpdateCategory();
-									wp_redirect( get_admin_url( get_current_blog_id(), 'admin.php?page=connections_categories' ) );
-									exit();
-									break;
-
-								case 'delete':
-									processDeleteCategory( 'delete' );
-									wp_redirect( get_admin_url( get_current_blog_id(), 'admin.php?page=connections_categories' ) );
-									exit();
-									break;
-
-								case 'bulk_delete':
-									check_admin_referer( $form->getNonce( 'bulk_delete_category' ), '_cn_wpnonce' );
-									processDeleteCategory( 'bulk_delete' );
-									wp_redirect( get_admin_url( get_current_blog_id(), 'admin.php?page=connections_categories' ) );
-									exit();
-									break;
-							}
-						}
-					}
-					else {
-						$connections->setErrorMessage( 'capability_categories' );
-					}
-					break;
-
-				case 'template':
-					/*
-					 * Check whether user can manage Templates
-					 */
-					if ( current_user_can( 'connections_manage_template' ) ) {
-						if ( $_GET['action'] ) {
-							switch ( $_GET['action'] ) {
-								case 'activate':
-									processActivateTemplate();
-
-									( ! isset( $_GET['type'] ) ) ? $tab = 'all' : $tab = esc_attr( $_GET['type'] );
-									wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( array( 'type' => $tab ) , 'admin.php?page=connections_templates' ) ) );
-									exit();
-									break;
-
-								case 'install':
-									check_admin_referer( $form->getNonce( 'install_template' ), '_cn_wpnonce' );
-									processInstallTemplate();
-
-									( ! isset( $_GET['type'] ) ) ? $tab = 'all' : $tab = esc_attr( $_GET['type'] );
-									wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( array( 'type' => $tab ) , 'admin.php?page=connections_templates' ) ) );
-									exit();
-									break;
-
-								case 'delete':
-									processDeleteTemplate();
-
-									( ! isset( $_GET['type'] ) ) ? $tab = 'all' : $tab = esc_attr( $_GET['type'] );
-									wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( array( 'type' => $tab ) , 'admin.php?page=connections_templates' ) ) );
-									exit();
-									break;
-							}
-						}
-					} else {
-						// @TODO: Create template specific error message.
-						$connections->setErrorMessage( 'capability_settings' );
 					}
 
 					break;

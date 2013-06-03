@@ -42,18 +42,20 @@ class cnTemplatePart {
 	 * @param  (array)  $atts [optional]
 	 * @uses wp_parse_args()
 	 * @uses apply_filters()
-	 * @return (string)
+	 * @return string | void
 	 */
 	public static function listActions( $atts = array() ) {
 		$out = '';
 		$actions = array();
 
 		$defaults = array(
-			'before'      => '<ul id="cn-list-actions">',
-			'before-item' => '<li class="cn-list-action-item">',
-			'after-item'  => '</li>',
-			'after'       => '</ul>',
-			'return'      => FALSE
+			'container_tag' => 'ul',
+			'item_tag'      => 'li',
+			'before'        => '',
+			'before-item'   => '',
+			'after-item'    => '',
+			'after'         => '',
+			'return'        => FALSE
 		);
 
 		$atts = wp_parse_args( $atts, $defaults );
@@ -63,9 +65,22 @@ class cnTemplatePart {
 
 		$actions = apply_filters( 'cn_filter_list_actions', $actions );
 
+		if ( empty( $actions ) ) return;
+
 		foreach ( $actions as $key => $action ) {
-			$out .= "\n" . ( empty( $atts['before-item'] ) ? '' : $atts['before-item'] ) . $action . ( empty( $atts['after-item'] ) ? '' : $atts['after-item'] ) . "\n";
+
+			$out .= sprintf( '%1$s<%2$s class="cn-list-action-item">%3$s</%2$s>%4$s',
+				empty( $atts['before-item'] ) ? '' : $atts['before-item'],
+				$atts['item_tag'],
+				$action,
+				empty( $atts['after-item'] ) ? '' : $atts['after-item']
+			 );
 		}
+
+		$out = sprintf( '<%1$s id="cn-list-actions">%2$s</%1$s>',
+				$atts['container_tag'],
+				$out
+			);
 
 		if ( $atts['return'] ) return "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
 		echo "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
@@ -80,18 +95,20 @@ class cnTemplatePart {
 	 * @param (object) $entry Instance of the cnEntry class.
 	 * @uses wp_parse_args()
 	 * @uses apply_filters()
-	 * @return (string)
+	 * @return string | void
 	 */
 	public static function entryActions( $atts = array(), $entry ) {
 		$out = '';
 		$actions = array();
 
 		$defaults = array(
-			'before'      => '<ul id="cn-entry-actions">',
-			'before-item' => '<li class="cn-entry-action-item">',
-			'after-item'  => '</li>',
-			'after'       => '</ul>',
-			'return'      => FALSE
+			'container_tag' => 'ul',
+			'item_tag'      => 'li',
+			'before'        => '',
+			'before-item'   => '',
+			'after-item'    => '',
+			'after'         => '',
+			'return'        => FALSE
 		);
 
 		$atts = wp_parse_args( $atts, $defaults );
@@ -104,9 +121,22 @@ class cnTemplatePart {
 
 		$actions = apply_filters( 'cn_filter_entry_actions', $actions );
 
+		if ( empty( $actions ) ) return;
+
 		foreach ( $actions as $key => $action ) {
-			$out .= "\n" . ( empty( $atts['before-item'] ) ? '' : $atts['before-item'] ) . $action . ( empty( $atts['after-item'] ) ? '' : $atts['after-item'] ) . "\n";
+
+			$out .= sprintf( '%1$s<%2$s class="cn-entry-action-item">%3$s</%2$s>%4$s',
+				empty( $atts['before-item'] ) ? '' : $atts['before-item'],
+				$atts['item_tag'],
+				$action,
+				empty( $atts['after-item'] ) ? '' : $atts['after-item']
+			 );
 		}
+
+		$out = sprintf( '<%1$s id="cn-entry-actions">%2$s</%1$s>',
+				$atts['container_tag'],
+				$out
+			);
 
 		if ( $atts['return'] ) return "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
 		echo "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
@@ -140,7 +170,10 @@ class cnTemplatePart {
 		$atts['message'] = apply_filters( 'cn_list_no_result_message' , $atts['message'] );
 		$atts['message'] = apply_filters( 'cn_list_no_result_message-' . $slug , $atts['message'] );
 
-		$out .=  "\n" . '<' . $atts['tag'] . ' class="cn-list-no-results">' . $atts['message'] . '</' . $atts['tag'] . '>' . "\n";
+		$out .=  sprintf('<%1$s class="cn-list-no-results">%2$s</%1$s>',
+				$atts['tag'],
+				$atts['message']
+			);
 
 		if ( $atts['return'] ) return "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
 		echo "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) . $out . ( empty( $atts['after'] ) ? '' : $atts['after'] ) . "\n";
@@ -584,6 +617,24 @@ class cnTemplatePart {
 
 				// Add the category base and path if paging thru a category.
 				if ( get_query_var('cn-cat-slug') ) $permalink = trailingslashit( $permalink . $base['category_base'] . '/' . get_query_var('cn-cat-slug') );
+
+				// Add the organization base and path if paging thru a organization.
+				if ( get_query_var('cn-organization') ) $permalink = trailingslashit( $permalink . $base['organization_base'] . '/' . get_query_var('cn-organization') );
+
+				// Add the department base and path if paging thru a department.
+				if ( get_query_var('cn-department') ) $permalink = trailingslashit( $permalink . $base['department_base'] . '/' . get_query_var('cn-department') );
+
+				// Add the locality base and path if paging thru a locality.
+				if ( get_query_var('cn-locality') ) $permalink = trailingslashit( $permalink . $base['locality_base'] . '/' . get_query_var('cn-locality') );
+
+				// Add the region base and path if paging thru a region.
+				if ( get_query_var('cn-region') ) $permalink = trailingslashit( $permalink . $base['region_base'] . '/' . get_query_var('cn-region') );
+
+				// Add the postal code base and path if paging thru a postal code.
+				if ( get_query_var('cn-postal-code') ) $permalink = trailingslashit( $permalink . $base['postal_code_base'] . '/' . get_query_var('cn-postal-code') );
+
+				// Add the country base and path if paging thru a country.
+				if ( get_query_var('cn-country') ) $permalink = trailingslashit( $permalink . $base['country_base'] . '/' . get_query_var('cn-country') );
 
 				$url['first'] = add_query_arg( $queryVars , $permalink . 'pg/' . $page['first'] );
 				$url['previous'] = add_query_arg( $queryVars , $permalink . 'pg/' . $page['previous'] );
