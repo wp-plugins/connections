@@ -1,6 +1,21 @@
 <?php
 
 /**
+ * Class for creating various form HTML elements.
+ *
+ * @todo This class is an absolute mess, clean and optimize.
+ *
+ * @package     Connections
+ * @subpackage  HTML Form Elements
+ * @copyright   Copyright (c) 2013, Steven A. Zahm
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       unknown
+ */
+
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+/**
  * Create custom HTML forms.
  */
 class cnFormObjects {
@@ -110,21 +125,23 @@ class cnFormObjects {
 	 * @param string  $name    [optional] Nonce name.
 	 * @param bool    $referer [optional] Whether to set and display the refer field for validation.
 	 * @param bool    $echo    [optional] Whether to display or return the hidden form field.
-	 *
 	 * @return string
 	 */
 	public function tokenField( $action, $item = FALSE, $name = '_cn_wpnonce', $referer = TRUE, $echo = TRUE ) {
 		$name = esc_attr( $name );
 
 		if ( $item == FALSE ) {
+
 			$token = wp_nonce_field( $this->nonceBase . '_' . $action, $name, $referer, FALSE );
-		}
-		else {
+
+		} else {
+
 			$token = wp_nonce_field( $this->nonceBase . '_' . $action . '_' . $item, $name, $referer, FALSE );
 		}
 
 		if ( $echo ) echo $token;
-		if ( $referer ) wp_referer_field( $echo, 'previous' );
+
+		// if ( $referer ) wp_referer_field( $echo, 'previous' );
 
 		return $token;
 	}
@@ -137,6 +154,7 @@ class cnFormObjects {
 	 * @return string
 	 */
 	public function tokenURL( $actionURL, $item ) {
+
 		return wp_nonce_url( $actionURL, $item );
 	}
 
@@ -148,10 +166,13 @@ class cnFormObjects {
 	 * @return string
 	 */
 	public function getNonce( $action, $item = FALSE ) {
+
 		if ( $item == FALSE ) {
+
 			$nonce = $this->nonceBase . '_' . $action;
-		}
-		else {
+
+		} else {
+
 			$nonce = $this->nonceBase . '_' . $action . '_' . $item;
 		}
 
@@ -778,8 +799,8 @@ class cnFormObjects {
 
 		$atts = wp_parse_args( apply_filters( 'cn_admin_metabox_publish_atts', $defaults ), $defaults );
 
-		if ( isset( $_GET['action'] ) ) {
-			$action = esc_attr( $_GET['action'] );
+		if ( isset( $_GET['cn-action'] ) ) {
+			$action = esc_attr( $_GET['cn-action'] );
 		} else {
 			$action = $atts['action'];
 		}
@@ -816,17 +837,20 @@ class cnFormObjects {
 		echo '<div id="major-publishing-actions">';
 
 		switch ( $action ) {
-			case 'edit':
+			case 'edit_entry' || 'edit':
+				echo '<input type="hidden" name="cn-action" value="update_entry"/>';
 				echo '<div id="cancel-button"><a href="admin.php?page=connections_manage" class="button button-warning">' , __( 'Cancel', 'connections' ) , '</a></div>';
 				echo '<div id="publishing-action"><input  class="button-primary" type="submit" name="update" value="' , __( 'Update', 'connections' ) , '" /></div>';
 				break;
 
-			case 'copy':
+			case 'copy_entry' || 'copy':
+				echo '<input type="hidden" name="cn-action" value="copy_entry"/>';
 				echo '<div id="cancel-button"><a href="admin.php?page=connections_manage" class="button button-warning">' , __( 'Cancel', 'connections' ) , '</a>';
 				echo '</div><div id="publishing-action"><input class="button-primary" type="submit" name="save" value="' , __( 'Add Entry', 'connections' ) , '" /></div>';
 				break;
 
 			default:
+				echo '<input type="hidden" name="cn-action" value="add_entry"/>';
 				echo '<div id="publishing-action"><input class="button-primary" type="submit" name="save" value="' , __( 'Add Entry', 'connections' ) , '" /></div>';
 				break;
 		}
@@ -1550,6 +1574,7 @@ class cnFormObjects {
 		echo '<div>' , "\n";
 		echo '<label><input type="radio" name="link[image]" value="::FIELD::"> ' , __( 'Assign link to the image.', 'connections' ) , '</label>' , "\n";
 		echo '<label><input type="radio" name="link[logo]" value="::FIELD::"> ' , __( 'Assign link to the logo.', 'connections' ) , '</label>' , "\n";
+		// echo '<label><input type="checkbox" name="link[none]" value="::FIELD::"> ' , __( 'None', 'connections' ) , '</label>' , "\n";
 		echo '</div>' , "\n";
 
 		echo  '<p class="remove-button"><a href="#" class="cn-remove cn-button button button-warning" data-type="link" data-token="::FIELD::">' , __( 'Remove', 'connections' ) , '</a></p>' , "\n";
@@ -1564,11 +1589,12 @@ class cnFormObjects {
 		if ( ! empty( $links ) ) {
 
 			foreach ( $links as $link ) {
-				$token = $this->token( $entry->getId() );
-				$selectName = 'link['  . $token . '][type]';
-				( $link->preferred ) ? $preferredLink = 'CHECKED' : $preferredLink = '';
-				( $link->image ) ? $imageLink = 'CHECKED' : $imageLink = '';
-				( $link->logo ) ? $logoLink = 'CHECKED' : $logoLink = '';
+				$token         = $this->token( $entry->getId() );
+				$selectName    = 'link['  . $token . '][type]';
+				$preferredLink = ( $link->preferred ) ? 'CHECKED' : '';
+				$imageLink     = ( $link->image ) ? 'CHECKED' : '';
+				$logoLink      = ( $link->logo ) ? 'CHECKED' : '';
+				// $noneLink      = ( empty( $imageLink ) && empty( $logoLink ) ) ? 'CHECKED' : '';
 				//var_dump($link);
 
 				echo '<div class="widget link" id="link-row-'  . $token . '">' , "\n";
@@ -1598,6 +1624,7 @@ class cnFormObjects {
 				echo '<div>' , "\n";
 				echo '<label><input type="radio" name="link[image]" value="' , $token , '" ' , $imageLink , '> ' , __( 'Assign link to the image.', 'connections' ) , '</label>' , "\n";
 				echo '<label><input type="radio" name="link[logo]" value="' , $token , '" ' , $logoLink , '> ' , __( 'Assign link to the logo.', 'connections' ) , '</label>' , "\n";
+				// echo '<label><input type="checkbox" name="link[none]" value="' , $token , '" ' , $noneLink , '> ' , __( 'None', 'connections' ) , '</label>' , "\n";
 				echo '</div>' , "\n";
 
 				echo  '<input type="hidden" name="link[' , $token , '][id]" value="' , $link->id , '">' , "\n";
@@ -1866,8 +1893,8 @@ class cnCategoryObjects {
 		/*
 		 * Genreate the edit & delete tokens.
 		 */
-		$editToken = $form->tokenURL( 'admin.php?page=connections_categories&action=cn_edit_category&id=' . $category->getId(), 'category_edit_' . $category->getId() );
-		$deleteToken = $form->tokenURL( 'admin.php?cn-action=cn_delete_category&id=' . $category->getId(), 'category_delete_' . $category->getId() );
+		$editToken = $form->tokenURL( 'admin.php?page=connections_categories&cn-action=edit_category&id=' . $category->getId(), 'category_edit_' . $category->getId() );
+		$deleteToken = $form->tokenURL( 'admin.php?cn-action=delete_category&id=' . $category->getId(), 'category_delete_' . $category->getId() );
 
 		$out = '<tr id="cat-' . $category->getId() . '" class="' . $this->rowClass . '">';
 		$out .= '<th class="check-column">';
@@ -1889,7 +1916,8 @@ class cnCategoryObjects {
 		/*
 				 * Genreate the category link token URL.
 				 */
-		$categoryFilterURL = $form->tokenURL( 'admin.php?connections_process=true&process=manage&action=filter&category_id=' . $category->getId(), 'filter' );
+		// $categoryFilterURL = $form->tokenURL( 'admin.php?connections_process=true&process=manage&action=filter&category_id=' . $category->getId(), 'filter' );
+		$categoryFilterURL = $form->tokenURL( 'admin.php?cn-action=filter&category=' . $category->getId(), 'filter' );
 
 		if ( (integer) $category->getCount() > 0 ) {
 			$out .= '<strong>' . __( 'Count', 'connections' ) . ':</strong> ' . '<a href="' . $categoryFilterURL . '">' . $category->getCount() . '</a><br />';
@@ -1970,11 +1998,31 @@ class cnCategoryObjects {
 		$out .= '<p>' . __( 'Categories can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional.', 'connections' ) . '</p>';
 		$out .= '</div>';
 
-		$out .= '<div class="form-field connectionsform">';
-		$out .= '<label for="category_description">' . __( 'Description', 'connections' ) . '</label>';
-		$out .= '<textarea cols="40" rows="5" id="category_description" name="category_description">' . $category->getDescription() . '</textarea>';
-		$out .= '<p>' . __( 'The description is not displayed by default; however, templates may be created or altered to show it.', 'connections' ) . '</p>';
-		$out .= '</div>';
+		// $out .= '<div class="form-field connectionsform">';
+		// $out .= '<label for="category_description">' . __( 'Description', 'connections' ) . '</label>';
+		// $out .= '<textarea cols="40" rows="5" id="category_description" name="category_description">' . $category->getDescription() . '</textarea>';
+		// $out .= '<p>' . __( 'The description is not displayed by default; however, templates may be created or altered to show it.', 'connections' ) . '</p>';
+		// $out .= '</div>';
+
+		ob_start();
+
+		wp_editor( $category->getDescription(),
+			'category_description',
+			array(
+				'media_buttons' => FALSE,
+				'tinymce' => array(
+					'editor_selector' => 'tinymce',
+					'theme_advanced_buttons1' => 'bold, italic, underline, |, bullist, numlist, |, justifyleft, justifycenter, justifyright, |, link, unlink, |, pastetext, pasteword, removeformat, |, undo, redo',
+					'theme_advanced_buttons2' => '',
+					'inline_styles' => TRUE,
+					'relative_urls' => FALSE,
+					'remove_linebreaks' => FALSE,
+					'plugins' => 'inlinepopups,spellchecker,tabfocus,paste,wordpress,wpdialogs'
+				)
+			)
+		);
+
+		$out .= ob_get_clean();
 
 		echo $out;
 	}

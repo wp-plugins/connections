@@ -107,7 +107,7 @@ Connections has been translated in the following languages.
 * TWEAK: Add filter hook to cnOutput::getImage().
 * TWEAK: Remove the !important statement from width in the CSS #cn-list span.cn-image img.
 * TWEAK: Validate and sanitize the image settings.
-* BUG: Do not output an empty <ul> container if there are no registered list actions.
+* BUG: Do not output an empty ul container if there are no registered list actions.
 * BUG: Fixed undefined index error: fulltext_enabled.
 * OTHER: Moved all admin actions for template administration to cnAdminAction().
 * OTHER: Moved all admin actions for category administration to cnAdminAction().

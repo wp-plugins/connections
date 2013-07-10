@@ -1,6 +1,19 @@
 <?php
 
 /**
+ * Class for working with an entry object.
+ *
+ * @package     Connections
+ * @subpackage  Entry
+ * @copyright   Copyright (c) 2013, Steven A. Zahm
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       unknown
+ */
+
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+/**
  * Entry class
  */
 class cnEntry {
@@ -2903,7 +2916,7 @@ class cnEntry {
 
 		// Convert the date to a string to convert to a sting again. Why? Because doing it this way should keep PHP from timezone adjusting the output.
 		// date_default_timezone_set('UTC')
-		return date_i18n( $format, strtotime( gmdate( 'r', $nextUDay ) ) );
+		return date_i18n( $format, strtotime( gmdate( 'r', $nextUDay ) ), TRUE );
 
 	}
 
@@ -2937,33 +2950,37 @@ class cnEntry {
 	 *
 	 * Filters:
 	 *   cn_excerpt_length => change the default excerpt length of 55 words.
-	 *   cn_excerpt_more  => change the default more string of [...]
+	 *   cn_excerpt_more  => change the default more string of &hellip;
 	 *   cn_trim_excerpt  => change returned string
 	 *
-	 * @param string  $text [optional]
-	 * @return
+	 * @param (string)  $atts [optional]
+	 * @param (string)  $text [optional]
+	 * @return (string)
 	 */
-	public function getExcerpt( $text = NULL ) {
+	public function getExcerpt( $atts = array(), $text = NULL ) {
 
-		if ( !isset( $text ) ) $text = $this->getBio();
+		$defaults = array(
+			'length' => apply_filters( 'cn_excerpt_length', 55 ),
+			'more'   => apply_filters( 'cn_excerpt_more', '&hellip;' )
+		);
 
-		$text = $this->format->sanitizeString( $text, FALSE );
-		$excerptLength = apply_filters( 'cn_excerpt_length', 55 );
-		$excerptMore = apply_filters( 'cn_excerpt_more', ' ' . '[...]' );
+		$atts = $this->validate->attributesArray( $defaults, $atts );
 
-		$words = preg_split( "/[\n\r\t ]+/", $text, $excerptLength + 1, PREG_SPLIT_NO_EMPTY );
+		$text = empty( $text ) ? $this->getBio() : $this->format->sanitizeString( $text, FALSE );
 
-		if ( count( $words ) > $excerptLength ) {
+		$words = preg_split( "/[\n\r\t ]+/", $text, $atts['length'] + 1, PREG_SPLIT_NO_EMPTY );
+
+		if ( count( $words ) > $atts['length'] ) {
+
 			array_pop( $words );
-			$text = implode( ' ', $words );
-			$text = $text . $excerptMore;
-		}
-		else {
+			$text = implode( ' ', $words ) . $atts['more'];
+
+		} else {
+
 			$text = implode( ' ', $words );
 		}
 
 		return apply_filters( 'cn_trim_excerpt', $text );
-
 	}
 
 	/**

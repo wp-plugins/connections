@@ -7,7 +7,7 @@ Version: 0.7.7.1
 Author: Steven A. Zahm
 Author URI: http://connections-pro.com/
 Text Domain: connections
-Domain Path: /lang
+Domain Path: /languages
 
 	Copyright 2009  Steven A. Zahm  (email : helpdesk@connections-pro.com)
 
@@ -167,7 +167,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			//$connections->options->setDBVersion('0.1.8'); $connections->options->saveOptions();
 
 			// Load the translation files.
-			load_plugin_textdomain( 'connections' , false , CN_DIR_NAME . '/lang' );
+			load_plugin_textdomain( 'connections' , FALSE , CN_DIR_NAME . '/languages' );
 
 			/*
 			 * Register the settings tabs shown on the Settings admin page tabs, sections and fields.
@@ -186,9 +186,6 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 				add_action( 'admin_menu', array( $connections , 'adminMenu' ) );
 
 				add_action( 'admin_init', array( __CLASS__, 'adminInit' ) );
-
-				// Parse admin queries.
-				add_action( 'admin_init', array( $connections, 'adminActions' ) );
 
 				/*
 				 * Add the filter to update the user settings when the 'Apply" button is clicked.
@@ -294,8 +291,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			require_once CN_PATH . 'includes/class.date.php'; // Required for activation, entry list, add entry
 			//entry objects
 			require_once CN_PATH . 'includes/class.entry.php'; // Required for activation, entry list
-			//plugin option objects
-			require_once CN_PATH . 'includes/class.options.php'; // Required for activation
+
 			//plugin utility objects
 			require_once CN_PATH . 'includes/class.utility.php'; // Required for activation, entry list
 			//plugin template objects
@@ -310,18 +306,21 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			require_once CN_PATH . 'includes/inc.shortcodes.php'; // Required for front end
 
 			//templates
-			require_once CN_PATH . 'includes/class.template-api.php';
-			require_once CN_PATH . 'includes/class.template-parts.php';
-			require_once CN_PATH . 'includes/class.template.php';
+			require_once CN_PATH . 'includes/template/class.template-api.php';
+			require_once CN_PATH . 'includes/template/class.template-parts.php';
+			require_once CN_PATH . 'includes/template/class.template.php';
 
 			// The class that inits the registered query vars, rewites reuls and canonical redirects.
 			require_once CN_PATH . 'includes/class.rewrite.php';
 
 			// Load the Connections Settings API Wrapper Class.
-			require_once CN_PATH . 'includes/class.settings-api.php';
+			require_once CN_PATH . 'includes/settings/class.settings-api.php';
+
+			// plugin option objects
+			require_once CN_PATH . 'includes/settings/class.options.php'; // Required for activation
 
 			// Load the Connections core settings admin page tabs, section and fields using the WordPress Settings API.
-			require_once CN_PATH . 'includes/class.settings.php';
+			require_once CN_PATH . 'includes/settings/class.settings.php';
 
 			// Load the class that manages the registration and enqueueing of CSS and JS files.
 			require_once CN_PATH . 'includes/class.scripts.php';
@@ -329,24 +328,39 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			// Load the included templates that use the templates API introduced in 0.7.6
 			include_once CN_PATH . 'templates/names/names.php';
 
+			// Class for processing email.
+			require_once CN_PATH . 'includes/email/class.email.php';
+
+			// Class for handling email template registration and management.
+			require_once CN_PATH . 'includes/email/class.email-template-api.php';
+
+			// Class for registering the default email templates.
+			require_once CN_PATH . 'includes/email/class.default-template.php';
+
 			if ( is_admin() ) {
 				/*
 				 * Include the Screen Options class by Janis Elsts
 				 * http://w-shadow.com/blog/2010/06/29/adding-stuff-to-wordpress-screen-options/
 				 */
-				include CN_PATH . 'includes/screen-options/screen-options.php';
+				include CN_PATH . 'includes/libraries/screen-options/screen-options.php';
 
 				// The class for working with the file system.
-				require_once CN_PATH . 'includes/class.filesystem.php';
+				require_once CN_PATH . 'includes/admin/class.filesystem.php';
 
 				// The class for handling admin notices.
-				require_once CN_PATH . 'includes/class.message.php';
+				require_once CN_PATH . 'includes/admin/class.message.php';
 
 				// Class used for managing role capabilites.
-				require_once CN_PATH . 'includes/class.capabilities.php';
+				require_once CN_PATH . 'includes/admin/class.capabilities.php';
 
 				// The class for processing admin actions.
-				require_once CN_PATH . 'includes/class.admin-actions.php';
+				require_once CN_PATH . 'includes/admin/class.actions.php';
+
+			} else {
+
+				// Class for SEO
+				require_once CN_PATH . 'includes/class.seo.php';
+
 			}
 
 		}
@@ -369,6 +383,15 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 
 			// Register all valid query variables.
 			cnRewrite::init();
+
+			// Init the SEO class.
+			if ( ! is_admin() ) cnSEO::init();
+
+			// Init the email template API.
+			cnEmail_Template::init();
+
+			// Register the default email templates.
+			cnEmail_DefaultTemplates::init();
 
 			// Init the included templates that use the API introduced in 0.7.6
 			add_action( 'plugins_loaded', array( 'cnNames', 'init' ), 11 );
@@ -482,8 +505,8 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 
 			// Class used for managing role capabilites.
 			// @TODO: a version change should not reset the roles and capabilites.
-			if ( ! class_exists( 'cnRole' ) ) require_once CN_PATH . 'includes/class.capabilities.php';
-			cnRole::reset();
+			if ( ! class_exists( 'cnRole' ) ) require_once CN_PATH . 'includes/admin/class.capabilities.php';
+			if ( $this->options->getCapabilitiesSet() != TRUE ) cnRole::reset();
 
 			// Increment the version number.
 			$this->options->setVersion( CN_CURRENT_VERSION );
@@ -739,7 +762,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 		 * @return void
 		 */
 		public static  function managePageLimitSaveAJAX() {
-			include_once CN_PATH . '/includes/inc.processes.php';
+			include_once CN_PATH . 'includes/admin/inc.processes.php';
 
 			processSetUserFilter();
 		}
@@ -790,7 +813,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 			}
 
 			// Register the top level menu item.
-			$this->pageHook->topLevel = add_menu_page( 'Connections', 'Connections', 'connections_view_dashboard', 'connections_dashboard', array ( &$this, 'showPage' ), CN_URL . 'images/menu.png' );
+			$this->pageHook->topLevel = add_menu_page( 'Connections', 'Connections', 'connections_view_dashboard', 'connections_dashboard', array ( &$this, 'showPage' ), CN_URL . 'assets/images/menu.png' );
 
 			$submenu[0]   = array( 'hook' => 'dashboard', 'page_title' => 'Connections : ' . __( 'Dashboard', 'connections' ), 'menu_title' => __( 'Dashboard', 'connections' ), 'capability' => 'connections_view_dashboard', 'menu_slug' => 'connections_dashboard', 'function' => array ( &$this, 'showPage' ) );
 			$submenu[20]  = array( 'hook' => 'manage', 'page_title' => 'Connections : ' . __( 'Manage', 'connections' ), 'menu_title' => __( 'Manage', 'connections' ), 'capability' => 'connections_manage', 'menu_slug' => 'connections_manage', 'function' => array ( &$this, 'showPage' ) );
@@ -826,7 +849,7 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 		 */
 		public static function registerEditMetaboxes() {
 			// The meta boxes do not need diplayed/registered if no action is being taken on an entry. Such as copy/edit.
-			if ( $_GET['page'] === 'connections_manage' && ! isset( $_GET['action'] ) )  return;
+			if ( $_GET['page'] === 'connections_manage' && ! isset( $_GET['cn-action'] ) )  return;
 
 			$form = new cnFormObjects();
 
@@ -986,249 +1009,49 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 
 			switch ( $_GET['page'] ) {
 				case 'connections_dashboard':
-					include_once CN_PATH . '/submenus/dashboard.php';
+					include_once CN_PATH . '/includes/admin/pages/dashboard.php';
 					connectionsShowDashboardPage();
 					break;
 
 				case 'connections_manage':
-					include_once CN_PATH . '/submenus/manage.php';
-					( isset( $_GET['action'] ) && ! empty( $_GET['action'] ) ) ? $action = $_GET['action'] : $action = '';
+					include_once CN_PATH . '/includes/admin/pages/manage.php';
+					$action = ( isset( $_GET['cn-action'] ) && ! empty( $_GET['cn-action'] ) ) ? $_GET['cn-action'] : '';
 
 					connectionsShowViewPage( $action );
 					break;
 
 				case 'connections_add':
-					include_once CN_PATH . '/submenus/manage.php';
+					include_once CN_PATH . '/includes/admin/pages/manage.php';
 
-					connectionsShowViewPage( 'add' );
+					connectionsShowViewPage( 'add_entry' );
 					break;
 
 				case 'connections_categories':
-					include_once CN_PATH . '/submenus/categories.php';
+					include_once CN_PATH . '/includes/admin/pages/categories.php';
 					connectionsShowCategoriesPage();
 					break;
 
 				case 'connections_settings':
-					include_once CN_PATH . '/submenus/settings.php';
+					include_once CN_PATH . '/includes/admin/pages/settings.php';
 					connectionsShowSettingsPage();
 					break;
 
 				case 'connections_templates':
-					include_once CN_PATH . '/submenus/templates.php';
+					include_once CN_PATH . '/includes/admin/pages/templates.php';
 					connectionsShowTemplatesPage();
 					break;
 
 				case 'connections_roles':
-					include_once CN_PATH . '/submenus/roles.php';
+					include_once CN_PATH . '/includes/admin/pages/roles.php';
 					connectionsShowRolesPage();
 					break;
 
 				case 'connections_help':
-					include_once CN_PATH . '/submenus/help.php';
+					include_once CN_PATH . '/includes/admin/pages/help.php';
 					connectionsShowHelpPage();
 					break;
 			}
 
-		}
-
-		/**
-		 * Verify and process requested actions in the admin.
-		 *
-		 * @since unknown
-		 * @access private
-		 * @return void
-		 */
-		public function adminActions( $wp ) {
-			// Exit the method if $_GET['connections_process'] isn't set.
-			if ( ! isset( $_GET['connections_process'] ) ) return;
-
-			global $connections;
-
-			include_once CN_PATH . '/includes/inc.processes.php';
-			$form = new cnFormObjects();
-
-			switch ( $_GET['process'] ) {
-				case 'manage':
-					if ( isset( $_GET['action'] ) && ! empty( $_GET['action'] ) ) {
-						switch ( $_GET['action'] ) {
-							case 'add':
-								/*
-								 * Check whether the current user can add an entry.
-								 */
-								if ( current_user_can( 'connections_add_entry' ) || current_user_can( 'connections_add_entry_moderated' ) ) {
-									check_admin_referer( $form->getNonce( 'add_entry' ), '_cn_wpnonce' );
-
-									// Setup the redirect URL.
-									$redirect = isset( $_POST['redirect'] ) ? $_POST['redirect'] : 'admin.php?page=connections_add';
-
-									processEntry( $_POST, 'add' );
-
-									wp_redirect( get_admin_url( get_current_blog_id(), $redirect) );
-									exit();
-								} else {
-									$connections->setErrorMessage( 'capability_add' );
-								}
-								break;
-
-							case 'update':
-								/*
-								 * Check whether the current user can edit an entry.
-								 */
-								if ( current_user_can( 'connections_edit_entry' ) || current_user_can( 'connections_edit_entry_moderated' ) ) {
-									check_admin_referer( $form->getNonce( 'update_entry' ), '_cn_wpnonce' );
-
-									// Setup the redirect URL.
-									$redirect = isset( $_POST['redirect'] ) ? $_POST['redirect'] : 'admin.php?page=connections_manage';
-
-									processEntry( $_POST, 'update' );
-
-									wp_redirect( get_admin_url( get_current_blog_id(), $redirect ) );
-									exit();
-								} else {
-									$connections->setErrorMessage( 'capability_edit' );
-								}
-								break;
-
-							case 'approve':
-								/*
-								 * Check whether the current user can edit an entry.
-								 */
-								if ( current_user_can( 'connections_edit_entry' ) ) {
-									processSetEntryStatus( 'approved' );
-									wp_redirect( get_admin_url( get_current_blog_id(), 'admin.php?page=connections_manage' ) );
-									exit();
-								} else {
-									$connections->setErrorMessage( 'capability_edit' );
-								}
-								break;
-
-							case 'unapprove':
-								/*
-								 * Check whether the current user can edit an entry.
-								 */
-								if ( current_user_can( 'connections_edit_entry' ) ) {
-									processSetEntryStatus( 'pending' );
-									wp_redirect( get_admin_url( get_current_blog_id(), 'admin.php?page=connections_manage' ) );
-									exit();
-								} else {
-									$connections->setErrorMessage( 'capability_edit' );
-								}
-								break;
-
-							case 'delete':
-								/*
-								 * Check whether the current user delete an entry.
-								 */
-								if ( current_user_can( 'connections_delete_entry' ) ) {
-									processDeleteEntry();
-									wp_redirect( get_admin_url( get_current_blog_id(), 'admin.php?page=connections_manage' ) );
-									exit();
-								} else {
-									$connections->setErrorMessage( 'capability_delete' );
-								}
-								break;
-
-							case 'filter':
-								$queryArgs = array();
-
-								check_admin_referer( 'filter' );
-								processSetUserFilter();
-
-								if ( isset( $_POST['s'] ) && ! empty( $_POST['s'] ) ) $queryArgs['s'] = urlencode( $_POST['s'] );
-								if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) $queryArgs['s'] = urlencode( $_GET['s'] );
-								if ( isset( $_GET['cn-char'] ) && 0 < strlen( $_GET['cn-char'] ) ) $queryArgs['cn-char'] = urlencode( $_GET['cn-char'] );
-
-								wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( $queryArgs, 'admin.php?page=connections_manage' ) ) );
-								exit();
-								break;
-
-							case 'do':
-								if ( isset( $_POST['action'] ) && ! empty( $_POST['action'] ) ) {
-									switch ( $_POST['action'] ) {
-										case 'delete':
-											/*
-											 * Check whether the current user delete an entry.
-											 */
-											if ( current_user_can( 'connections_delete_entry' ) ) {
-												check_admin_referer( $form->getNonce( 'bulk_action' ), '_cn_wpnonce' );
-												processDeleteEntries();
-												wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( array( 's' => urlencode( $_POST['s'] ) ) , 'admin.php?page=connections_manage' ) ) );
-												exit();
-											} else {
-												$connections->setErrorMessage( 'capability_delete' );
-											}
-											break;
-
-										case 'approve':
-											/*
-											 * Check whether the current user delete an entry.
-											 */
-											if ( current_user_can( 'connections_edit_entry' ) ) {
-												check_admin_referer( $form->getNonce( 'bulk_action' ), '_cn_wpnonce' );
-												processSetEntryStatuses( 'approved' );
-												wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( array( 's' => urlencode( $_POST['s'] ) ) , 'admin.php?page=connections_manage' ) ) );
-												exit();
-											} else {
-												$connections->setErrorMessage( 'capability_edit' );
-											}
-											break;
-
-										case 'unapprove':
-											/*
-											 * Check whether the current user delete an entry.
-											 */
-											if ( current_user_can( 'connections_edit_entry' ) ) {
-												check_admin_referer( $form->getNonce( 'bulk_action' ), '_cn_wpnonce' );
-												processSetEntryStatuses( 'pending' );
-												wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( array( 's' => urlencode( $_POST['s'] ) ) , 'admin.php?page=connections_manage' ) ) );
-												exit();
-											} else {
-												$connections->setErrorMessage( 'capability_edit' );
-											}
-											break;
-
-										case 'public' || 'private' || 'unlisted':
-											/*
-											 * Check whether the current user can edit entries.
-											 */
-											if ( current_user_can( 'connections_edit_entry' ) ) {
-												check_admin_referer( $form->getNonce( 'bulk_action' ), '_cn_wpnonce' );
-												processSetEntryVisibility();
-												wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( array( 's' => urlencode( $_POST['s'] ) ) , 'admin.php?page=connections_manage' ) ) );
-												exit();
-											} else {
-												$connections->setErrorMessage( 'capability_edit' );
-											}
-											break;
-
-										default:
-
-											if ( isset( $_POST['s'] ) && ! empty( $_POST['s'] ) ) $queryArgs['s'] = urlencode( $_POST['s'] );
-											if ( isset( $_POST['cn-char'] ) && 0 < strlen( $_POST['cn-char'] ) ) $queryArgs['cn-char'] = urlencode( $_POST['cn-char'] );
-
-											wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( $queryArgs , 'admin.php?page=connections_manage' ) ) );
-											exit();
-											break;
-									}
-								}
-
-								$queryArgs = array();
-
-								check_admin_referer( $form->getNonce( 'bulk_action' ), '_cn_wpnonce' );
-								processSetUserFilter();
-
-								if ( isset( $_POST['s'] ) && ! empty( $_POST['s'] ) ) $queryArgs['s'] = urlencode( $_POST['s'] );
-								if ( isset( $_POST['cn-char'] ) && 0 < strlen( $_POST['cn-char'] ) ) $queryArgs['cn-char'] = urlencode( $_POST['cn-char'] );
-
-								wp_redirect( get_admin_url( get_current_blog_id(), add_query_arg( $queryArgs, 'admin.php?page=connections_manage' ) ) );
-								exit();
-								break;
-						}
-					}
-
-					break;
-
-			}
 		}
 
 		/**
@@ -1282,7 +1105,9 @@ if ( ! class_exists( 'connectionsLoad' ) ) {
 				header( 'Content-Length: ' . strlen( $data ) );
 				header( 'Pragma: public' );
 				header( "Pragma: no-cache" );
-				header( "Expires: 0" );
+				//header( "Expires: 0" );
+				header( 'Expires: Wed, 11 Jan 1984 05:00:00 GMT' );
+				header( 'Cache-Control: private' );
 				header( 'Connection: close' );
 
 				echo $data;

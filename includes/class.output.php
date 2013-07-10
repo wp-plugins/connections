@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * Class containing all necessary methods to output structured HTML output of an entry object.
+ *
+ * @package     Connections
+ * @subpackage  Entry HTML
+ * @copyright   Copyright (c) 2013, Steven A. Zahm
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       unknown
+ */
+
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class cnOutput extends cnEntry
 {
 	/**
@@ -99,7 +112,7 @@ class cnOutput extends cnEntry
 			),
 			'height' => 0,
 			'width'  => 0,
-			'zc'     => 2,
+			'zc'     => 1,
 			'before' => '',
 			'after'  => '',
 			'style'  => array(),
@@ -134,7 +147,7 @@ class cnOutput extends cnEntry
 
 					if ( $customSize ) {
 
-						$atts['src'] = CN_URL . 'includes/timthumb/timthumb.php?src=' .
+						$atts['src'] = CN_URL . 'includes/libraries/timthumb/timthumb.php?src=' .
 							CN_IMAGE_BASE_URL . $this->getImageNameOriginal() .
 							( empty( $atts['height'] ) ? '' : '&amp;h=' . $atts['height'] ) .
 							( empty( $atts['width'] ) ? '' : '&amp;w=' . $atts['width'] ) .
@@ -207,7 +220,7 @@ class cnOutput extends cnEntry
 
 					if ( $customSize ) {
 
-						$atts['src'] = CN_URL . 'includes/timthumb/timthumb.php?src=' .
+						$atts['src'] = CN_URL . 'includes/libraries/timthumb/timthumb.php?src=' .
 							CN_IMAGE_BASE_URL . $this->getLogoName() .
 							( empty( $atts['height'] ) ? '' : '&amp;h=' . $atts['height'] ) .
 							( empty( $atts['width'] ) ? '' : '&amp;w=' . $atts['width'] ) .
@@ -1374,7 +1387,7 @@ class cnOutput extends cnEntry
 
 			$replace[] = ( empty( $email->name ) ) ? '' : '<span class="email-name">' . $email->name . '</span>';
 			$replace[] = ( empty( $email->address ) ) ? '' : '<span class="email-address"><a class="value" title="' . $title . '" href="mailto:' . $email->address . '">' . $email->address . '</a></span>';
-			$replace[] = ( empty( $email->address ) ) ? '' : '<span class="email-icon"><a class="value" title="' . $title . '" href="mailto:' . $email->address . '"><image src="' . CN_URL . 'images/icons/mail/mail_' . $iconSize . '.png" height="' . $iconSize . 'px" width="' . $iconSize . 'px"/></a></span>';
+			$replace[] = ( empty( $email->address ) ) ? '' : '<span class="email-icon"><a class="value" title="' . $title . '" href="mailto:' . $email->address . '"><image src="' . CN_URL . 'assets/images/icons/mail/mail_' . $iconSize . '.png" height="' . $iconSize . 'px" width="' . $iconSize . 'px"/></a></span>';
 			$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
 
 			$out .= str_ireplace( $search , $replace , $atts['format'] );
@@ -1616,7 +1629,7 @@ class cnOutput extends cnEntry
 
 			$replace[] = '<a class="url ' . $network->type . '" href="' . $network->url . '" target="_blank" title="' . $network->name . '">' . $network->url . '</a>';
 
-			$replace[] = '<a class="url ' . $network->type . '" href="' . $network->url . '" target="_blank" title="' . $network->name . '"><image class="' . implode( ' ', $iconClass ) . '" src="' . CN_URL . 'images/icons/' . $iconStyle . '/' . $iconSize . '/' . $network->type . '.png" height="' . $iconSize . 'px" width="' . $iconSize . 'px" style="width: ' . $iconSize . 'px; height: ' . $iconSize . 'px;"/></a>';
+			$replace[] = '<a class="url ' . $network->type . '" href="' . $network->url . '" target="_blank" title="' . $network->name . '"><image class="' . implode( ' ', $iconClass ) . '" src="' . CN_URL . 'assets/images/icons/' . $iconStyle . '/' . $iconSize . '/' . $network->type . '.png" height="' . $iconSize . 'px" width="' . $iconSize . 'px" style="width: ' . $iconSize . 'px; height: ' . $iconSize . 'px;"/></a>';
 
 			$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
 
@@ -1865,7 +1878,7 @@ class cnOutput extends cnEntry
 			// Hidden elements are to maintain hCalendar spec compatibility
 			$replace[] = ( empty( $date->name ) ) ? '' : '<span class="date-name">' . $date->name . '</span>';
 			//$replace[] = ( empty($date->date) ) ? '' : '<span class="dtstart"><span class="value" style="display: none;">' . $dateObject->format( 'Y-m-d' ) . '</span><span class="date-displayed">' . $dateObject->format( $atts['date_format'] ) . '</span></span>';
-			$replace[] = ( empty( $date->date ) ) ? '' : '<abbr class="dtstart" title="' . $dateObject->format( 'Ymd' ) .'">' . date_i18n( $atts['date_format'] , strtotime( $date->date ) , TRUE ) /*$dateObject->format( $atts['date_format'] )*/ . '</abbr><span class="summary" style="display:none">' . $date->name . ' - ' . $this->getName( array( 'format' => $atts['name_format'] ) ) . '</span><span class="uid" style="display:none">' . $dateObject->format( 'YmdHis' ) . '</span>';
+			$replace[] = ( empty( $date->date ) ) ? '' : '<abbr class="dtstart" title="' . $dateObject->format( 'Ymd' ) .'">' . date_i18n( $atts['date_format'] , strtotime( $date->date ) , FALSE ) /*$dateObject->format( $atts['date_format'] )*/ . '</abbr><span class="summary" style="display:none">' . $date->name . ' - ' . $this->getName( array( 'format' => $atts['name_format'] ) ) . '</span><span class="uid" style="display:none">' . $dateObject->format( 'YmdHis' ) . '</span>';
 			$replace[] = '<span class="cn-separator">' . $atts['separator'] . '</span>';
 
 			$out .= str_ireplace( $search , $replace , $atts['format'] );
@@ -2262,6 +2275,10 @@ class cnOutput extends cnEntry
 	public function vcard( $atts = array() ) {
 		global $wp_rewrite, $connections;
 
+		// The class.seo.file is only loaded in the frontend; do not attempt to remove the filter
+		// otherwise it'll cause an error.
+		if ( ! is_admin() ) cnSEO::doFilterPermalink( FALSE );
+
 		$base = get_option( 'connections_permalink' );
 		$name = $base['name_base'];
 		$homeID = $connections->settings->get( 'connections', 'connections_home_page', 'page_id' ); // Get the directory home page ID.
@@ -2322,13 +2339,16 @@ class cnOutput extends cnEntry
 
 		$replace[] = '<a ' . implode( ' ', $piece ) . '>' . $atts['text'] . '</a>';
 
-		$replace[] = '<a ' . implode( ' ', $piece ) . '><image src="' . CN_URL . 'images/icons/vcard/vcard_' . $iconSize . '.png" height="' . $iconSize . 'px" width="' . $iconSize . 'px"/></a>';
+		$replace[] = '<a ' . implode( ' ', $piece ) . '><image src="' . CN_URL . 'assets/images/icons/vcard/vcard_' . $iconSize . '.png" height="' . $iconSize . 'px" width="' . $iconSize . 'px"/></a>';
 
 
 		$out .= str_ireplace( $search , $replace , $atts['format'] );
 
 		$out .= '</span>';
 
+		// The class.seo.file is only loaded in the frontend; do not attempt to add the filter
+		// otherwise it'll cause an error.
+		if ( ! is_admin() ) cnSEO::doFilterPermalink();
 
 		if ( $atts['return'] ) return ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";
 		echo ( "\n" . ( empty( $atts['before'] ) ? '' : $atts['before'] ) ) . $out . ( ( empty( $atts['after'] ) ? '' : $atts['after'] ) ) . "\n";

@@ -1,4 +1,18 @@
 <?php
+
+/**
+ * String sanitation and validation.
+ *
+ * @package     Connections
+ * @subpackage  Sanitation and Validation
+ * @copyright   Copyright (c) 2013, Steven A. Zahm
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       unknown
+ */
+
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 class cnFormatting {
 	/**
 	 * Sanitize the input string. HTML tags can be permitted.
@@ -406,6 +420,10 @@ class cnURL {
 	public static function permalink( $atts ) {
 		global $wp_rewrite, $post, $connections;
 
+		// The class.seo.file is only loaded in the frontend; do not attempt to remove the filter
+		// otherwise it'll cause an error.
+		if ( ! is_admin() ) cnSEO::doFilterPermalink( FALSE );
+
 		// The anchor attributes.
 		$piece = array();
 
@@ -560,6 +578,10 @@ class cnURL {
 		$piece['href'] = 'href="' . esc_url( $permalink ) . '"';
 
 		$out = '<a ' . implode(' ', $piece) . '>' . $atts['text'] . '</a>';
+
+		// The class.seo.file is only loaded in the frontend; do not attempt to add the filter
+		// otherwise it'll cause an error.
+		if ( ! is_admin() ) cnSEO::doFilterPermalink( TRUE );
 
 		if ( $atts['return'] ) return $out;
 		echo $out;
