@@ -272,3 +272,6 @@ Fix potential XSS vulnerability. Updating is highly advised.
 
 = 0.7.9.5 =
 Fix potential XSS vulnerability. Updating is highly advised.
+
+= 0.7.9.7 =
+Minor tweak for WordPress 3.9 compatibility.
