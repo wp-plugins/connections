@@ -95,10 +95,35 @@ Connections Business Directory has been embraced around the world and has been t
 == Installation ==
 [Installation instructions can be found here.](http://connections-pro.com/documentation/plugin/install/)
 
+= Using the WordPress Plugin Search =
+
+1. Navigate to the `Add New` sub-page under the Plugins admin page.
+2. Search for `connections business directory`.
+3. The plugin should be listed first in the search results.
+4. Click the `Install Now` link.
+5. Lastly click the `Activate Plugin` link to activate the plugin.
+
+= Uploading in WordPress Admin =
+
+1. [Download the plugin zip file](http://wordpress.org/plugins/connections/) and save it to your computer.
+2. Navigate to the `Add New` sub-page under the Plugins admin page.
+3. Click the `Upload` link.
+4. Select Connections Business Directory zip file from where you saved the zip file on your computer.
+5. Click the `Install Now` button.
+6. Lastly click the `Activate Plugin` link to activate the plugin.
+
+= Using FTP =
+
+1. [Download the plugin zip file](http://wordpress.org/plugins/connections/) and save it to your computer.
+2. Extract the Connections Business Directory zip file.
+3. Create a new directory named `connections` directory in the `../wp-content/plugins/` directory.
+4. Upload the files from the folder extracted in Step 2.
+4. Activate the plugin on the Plugins admin page.
+
 = Requirements =
 * **WordPress version:** >= 3.8
 * **PHP version:** >= 5.2.4
-* **NOTE:** Upgrading from version 0.6.1 and newer only, is supported. Previous version must upgrade to 0.6.1 before upgrading to the current version.
+* **NOTE:** Upgrading from version 0.6.1 and newer only is supported. Previous version must upgrade to 0.6.1 before upgrading to the current version.
 
 == Frequently Asked Questions ==
 [FAQs can be found here.](http://connections-pro.com/faq/)
@@ -106,24 +131,24 @@ Connections Business Directory has been embraced around the world and has been t
 == Changelog ==
 
 = 0.8.14 07/21/2014 =
-FEATURE: Improve responsive readiness of the Dashboard and Manage admin pages.
-BUG: Rename the base for of the Single Entry Card template.
-BUG: Fix HTML syntax for text areas.
-BUG: Fix permalink encoding issue.
-BUG: Fix Dashboard column toggle.
-BUG: Fix the Screen Options tab display and functions.
-BUG: Escape the template file path before including it.
-TWEAK: Remove section head relative positioning.
-TWEAK: Improve Visibility CSS in metabox header.
-OTHER: Update TimThumb to 2.8.14.
-I18N: Update German (Germany) translation.
+* FEATURE: Improve responsive readiness of the Dashboard and Manage admin pages.
+* BUG: Rename the base for of the Single Entry Card template.
+* BUG: Fix HTML syntax for text areas.
+* BUG: Fix permalink encoding issue.
+* BUG: Fix Dashboard column toggle.
+* BUG: Fix the Screen Options tab display and functions.
+* BUG: Escape the template file path before including it.
+* TWEAK: Remove section head relative positioning.
+* TWEAK: Improve Visibility CSS in metabox header.
+* OTHER: Update TimThumb to 2.8.14.
+* I18N: Update German (Germany) translation.
 
 = 0.8.13 06/20/2014 =
-BUG: Fix logic that determines if cnEntry_Shortcode should process $content for the `cn_entry` shortcode.
-BUG: Fix cnFormatting::toBoolean(). Check if value is bool and return it if it is. Otherwise convert value to bool.
-TWEAK: Add submit, textarea & hidden to cnHTML.
-TWEAK: Re-order before/after list/entry action hooks to be more consistent.
-OTHER: Update EDD_SL_Plugin_Updater to version 1.2.
+* BUG: Fix logic that determines if cnEntry_Shortcode should process $content for the `cn_entry` shortcode.
+* BUG: Fix cnFormatting::toBoolean(). Check if value is bool and return it if it is. Otherwise convert value to bool.
+* TWEAK: Add submit, textarea & hidden to cnHTML.
+* TWEAK: Re-order before/after list/entry action hooks to be more consistent.
+* OTHER: Update EDD_SL_Plugin_Updater to version 1.2.
 
 = 0.8.12 06/13/2014 =
 * FEATURE: Add Goodreads to social media options.
