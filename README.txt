@@ -4,7 +4,7 @@ Donate link: http://connections-pro.com/
 Tags: addresses, address book, addressbook, bio, bios, biographies, business, businesses, business directory, business-directory, business directory plugin, directory widget, church, contact, contacts, connect, connections, directory, directories, hcalendar, hcard, ical, icalendar, image, images, list, lists, listings, member directory, members directory, members directories, microformat, microformats, page, pages, people, profile, profiles, post, posts, plugin, shortcode, staff, user, users, vcard, wordpress business directory, wordpress directory, wordpress directory plugin, wordpress business directory, wordpress local directory plugin
 Requires at least: 3.8
 Tested up to: 4.1
-Stable tag: 8.2.1
+Stable tag: 8.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Connections Business Directory is a simple to use directory plugin which can be 
 
 == Description ==
 
-[Plugin Homepage](http://connections-pro.com/) | [Documentation](http://connections-pro.com/documentation/plugin/) | [Showcase](http://connections-pro.com/showcase/) | [Premium Templates](http://connections-pro.com/templates/) | [Extensions](http://connections-pro.com/extensions/) | [Github](https://github.com/shazahm1/Connections)
+[Homepage](http://connections-pro.com/) | [Documentation](http://connections-pro.com/documentation/plugin/) | [Showcase](http://connections-pro.com/showcase/) | [Templates](http://connections-pro.com/templates/) | [Extensions](http://connections-pro.com/extensions/) | [Github](https://github.com/shazahm1/Connections)
 
 Quite simply, Connections Business Directory is the best directory plugin available for WordPress. Its simplicity in design and function, vast array of unique features and versatility are the reasons more and more people are turning to Connections for their directory needs. You can use Connections to create a simple address book, maintain a staff directory and run a business directory or link directory. Connections was built bottom up to be as configurable as possible while providing the features you need. Read on to learn about some of the best features Connections has to offer...
 
@@ -64,27 +64,29 @@ Templates and CSS overriding is very granular and update safe. Check out these l
 
 Connections Business Directory has been embraced around the world and has been translated by its users in the following languages.
 
-* Catalan [79% Complete]
-* Danish [48% Complete]
-* Danish (Denmark) [41% Complete]
-* Dutch (Netherlands) [73% Complete]
-* French (France) [88% Complete]
-* German (Germany) [68% Complete]
-* Hebrew (Israel) [91% Complete]
-* Hungarian (Hungry) [78% Complete]
-* Italian (Italy) [46% Complete]
-* Norwegian [19% Complete]
-* Persian (Iran) [78% Complete]
-* Polish (Poland) [79% Complete]
-* Portuguese (Brazil) [70% Complete]
-* Portuguese (Portugal) [35% Complete]
-* Romanian (Romania) [79% Complete]
-* Russian (Russia) [40% Complete]
-* Serbian (Latin) [4% Complete]
-* Spanish (Latin America) [74% Complete]
-* Spanish (Spain) [74% Complete]
+* Arabic [86% Complete]
+* Catalan [77% Complete]
+* Croatian (Croatia) [36% Complete]
+* Danish [46% Complete]
+* Danish (Denmark) [46% Complete]
+* Dutch (Netherlands) [71% Complete]
+* French (France) [85% Complete]
+* German (Germany) [66% Complete]
+* Hebrew (Israel) [88% Complete]
+* Hungarian (Hungry) [75% Complete]
+* Italian (Italy) [45% Complete]
+* Norwegian [18% Complete]
+* Persian (Iran) [76% Complete]
+* Polish (Poland) [77% Complete]
+* Portuguese (Brazil) [72% Complete]
+* Portuguese (Portugal) [34% Complete]
+* Romanian (Romania) [90% Complete]
+* Russian (Russia) [39% Complete]
+* Serbian (Latin) [3% Complete]
+* Spanish (Latin America) [71% Complete]
+* Spanish (Spain) [88% Complete]
 * Thai [1% Complete]
-* Turkish (Turkey) [86% Complete]
+* Turkish (Turkey) [83% Complete]
 
 == Credits: ==
 * This plugin was based off LBB, ["Little Black Book"](http://wordpress.org/extend/plugins/lbb-little-black-book/); which was based on [Addressbook](http://wordpress.org/extend/plugins/addressbook/), both of which can be found in the Plugin Directory.
@@ -167,6 +169,47 @@ Connections Business Directory has been designed to work with any theme.
 Yes it is. Connections Business Directory comes with many user supplied translations. We use Transifex to manage translations. This service make it easy for us manage and easy for you to translate. To read more, see [this page](http://connections-pro.com/documentation/connections/translation/).
 
 == Changelog ==
+
+= 8.2.2 03/16/2015 =
+* TWEAK: Move third party js libraries from assets folder to the vendor folder.
+* TWEAK: Move the jQuery qTip CSS from the assets folder to the vendor folder.
+* TWEAK: Update css/js paths to the vendor folder.
+* TWEAK: Use grunt-contrib-uglify to minify the JS files.
+* BUG: The select that add the `sort_column` needs to be part of the query when performing a random query so the query will not fail when filtering by character.
+* BUG: When updated meta by ID, the value should be unslashed.
+* BUG: The geocode should not be shown on the frontend.
+* BUG: No need to runt the category description thru __().
+* BUG: No need to runt the bio thru __().
+* BUG: No need to runt the notes thru __().
+* I18N: Add missing text domains.
+* I18N: Fix misspelled text domains.
+* I18N: Update MO files.
+* I18N: Ignore the connections-en_US.mo file.
+* I18N: Include the Arabic translation.
+* I18N: Include the Thai translation.
+* OTHER: Add Grunt to .gitignore.
+* OTHER: Update Eclipse in .gitignore.
+* OTHER: Update Sublime Text in .gitignore.
+* OTHER: Change phpStorm comment header in .gitignore.
+* OTHER: Change PO File comment header to i18n and move connections.mo to be under it.
+* OTHER: Add a Misc section in .gitignore.
+* OTHER: Change the Misc comment header to Dreamweaver.
+* OTHER: Remove several unnecessary sections from .gitignore.
+* OTHER: Add Transifex to .gitignore.
+* OTHER: Add package.json for Node.js.
+* OTHER: Add Gruntfile.js.
+* OTHER: Ignore the `build` folder.
+* OTHER: Minor readme.txt changes.
+* OTHER: Initial readme.md commit.
+* OTHER: Add grunt-uglify to package.json.
+* OTHER: Add minify-js to grunt tasks.
+* OTHER: Add grunt-autoprefixer to package.json.
+* OTHER: Add prefix-css task to grunt.
+* OTHER: Add grunt-contrib-cssmin to package.json.
+* OTHER: Add minify-css task to grunt.
+* OTHER: Clean up grunt syntax to be uniform.
+* OTHER: More complete package.json file with a config key to be used in the Gruntfile.js.
+* OTHER: Update many of the tasks to use the variable from the config key in the package.json file.
 
 = 8.2.1 03/03/2015 =
 * BUG: Fixed Parse error: syntax error, unexpected T_PAAMAYIM_NEKUDOTAYIM fatal error with PHP 5.2.x.
